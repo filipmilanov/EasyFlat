@@ -24,9 +24,14 @@ public class SimpleMessageService implements MessageService {
     }
 
     @Override
-    public List<Message> findAll() {
-        LOGGER.debug("Find all messages");
-        return messageRepository.findAllByOrderByPublishedAtDesc();
+  public List<Message> findAll() {
+             LOGGER.debug("Find all messages");
+
+
+
+         return messageRepository.findAllByOrderByPublishedAtDesc();
+
+
     }
 
     @Override
