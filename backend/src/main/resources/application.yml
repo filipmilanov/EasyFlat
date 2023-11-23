@@ -62,12 +62,12 @@ management:
       export:
         enabled: true
 
-#---
-#spring:
-#  config:
-#    activate:
-#      on-cloud-platform: kubernetes
-#  lifecycle:
-#    timeout-per-shutdown-phase: 30s
-#server:
-#  shutdown: graceful
+---
+spring:
+  config:
+    activate:
+      on-cloud-platform: kubernetes
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+server:
+  shutdown: graceful
