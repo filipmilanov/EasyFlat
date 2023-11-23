@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -74,6 +75,12 @@ public class MessageEndpointTest implements TestData {
             .withPublishedAt(TEST_NEWS_PUBLISHED_AT)
             .build();
     }
+
+    @Test
+    public void ciCdTest_shouldFail() {
+        assertThat(true).isEqualTo(false);
+    }
+
 
     @Test
     public void givenNothing_whenFindAll_thenEmptyList() throws Exception {
