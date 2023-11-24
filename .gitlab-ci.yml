@@ -57,9 +57,6 @@ cache:
     - 'cd backend'
     - 'mvn $MAVEN_CLI_OPTS clean'
     - 'mvn $MAVEN_CLI_OPTS compile'
-  except:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 
 # For merge requests do not `deploy` but only run `verify`.
@@ -69,9 +66,6 @@ cache:
   script:
     - 'cd backend'
     - 'mvn $MAVEN_CLI_OPTS test'
-  except:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 
 # Build test
