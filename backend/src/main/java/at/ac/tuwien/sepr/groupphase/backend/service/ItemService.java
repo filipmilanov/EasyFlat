@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 
 import java.util.Optional;
@@ -23,7 +24,7 @@ public interface ItemService {
      * @param item a storage without ID
      * @return an object of type {@link Item} which is persisted and has an ID
      */
-    Item create(Item item);
+    Item create(ItemDto item);
 
     /**
      * Validates and Updates a new {@link Item} in the db.
@@ -31,7 +32,7 @@ public interface ItemService {
      * @param item a storage with existing ID
      * @return an object of type {@link Item} which is updated
      */
-    Item update(Item item);
+    Item update(ItemDto item);
 
     /**
      * Removes an {@link Item} stored in the db.
