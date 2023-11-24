@@ -28,7 +28,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item create(ItemDto itemDto) {
-        Item item = itemMapper.itemDtoToItem(itemDto);
+        Item item = itemMapper.dtoToItem(itemDto);
 
         return itemRepository.save(item);
     }
