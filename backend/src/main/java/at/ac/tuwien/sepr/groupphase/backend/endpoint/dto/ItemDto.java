@@ -46,36 +46,80 @@ public class ItemDto {
         return itemId;
     }
 
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
+    }
+
     public String getEan() {
         return ean;
+    }
+
+    public void setEan(String ean) {
+        this.ean = ean;
     }
 
     public String getGeneralName() {
         return generalName;
     }
 
+    public void setGeneralName(String generalName) {
+        this.generalName = generalName;
+    }
+
     public String getProductName() {
         return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public String getBrand() {
         return brand;
     }
 
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
     public Long getQuantityCurrent() {
         return quantityCurrent;
+    }
+
+    public void setQuantityCurrent(Long quantityCurrent) {
+        this.quantityCurrent = quantityCurrent;
     }
 
     public Long getQuantityTotal() {
         return quantityTotal;
     }
 
+    public void setQuantityTotal(Long quantityTotal) {
+        this.quantityTotal = quantityTotal;
+    }
+
     public String getUnit() {
         return unit;
     }
 
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
     public LocalDate getExpireDate() {
         return expireDate;
+    }
+
+    public void setExpireDate(LocalDate expireDate) {
+        this.expireDate = expireDate;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPriceInCent(Long priceInCent) {
+        this.priceInCent = priceInCent;
     }
 
     public String getDescription() {
