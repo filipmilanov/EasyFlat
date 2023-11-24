@@ -1,45 +1,34 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+
 import java.time.LocalDate;
 
 public class ItemDto {
 
+
     private Long itemId;
+
+    @Pattern(regexp = "[0-9](13)", message = "EAN number has exactly 13 numbers")
     private String ean;
     private String generalName;
+    @NotEmpty
     private String productName;
+    @NotEmpty
     private String brand;
+    @Min(value = 0, message = "The quantity must be positive")
     private Long quantityCurrent;
+    @Min(value = 0, message = "The quantity must be positive")
     private Long quantityTotal;
+    @NotEmpty
     private String unit;
     private LocalDate expireDate;
     private String description;
     private Long priceInCent;
 
-    public ItemDto(
-        Long itemId,
-        String ean,
-        String generalName,
-        String productName,
-        String brand,
-        Long quantityCurrent,
-        Long quantityTotal,
-        String unit,
-        LocalDate expireDate,
-        String description,
-        Long priceInCent
-    ) {
-        this.itemId = itemId;
-        this.ean = ean;
-        this.generalName = generalName;
-        this.productName = productName;
-        this.brand = brand;
-        this.quantityCurrent = quantityCurrent;
-        this.quantityTotal = quantityTotal;
-        this.unit = unit;
-        this.expireDate = expireDate;
-        this.description = description;
-        this.priceInCent = priceInCent;
+    public ItemDto() {
     }
 
     public Long getItemId() {
