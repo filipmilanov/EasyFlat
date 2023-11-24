@@ -1,0 +1,51 @@
+package at.ac.tuwien.sepr.groupphase.backend.service;
+
+import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Service for working with Items.
+ */
+public interface ItemService {
+
+    /**
+     * Search for an item in the database with given ID.
+     *
+     * @param id a valid ID
+     * @return if the id exists in the DB, an Optional of a persisted Item with given ID, an empty optional otherwise
+     */
+    Optional<Item> findById(Long id);
+
+    /**
+     * Search for all Items of a DigitalStorage stored in the database.
+     *
+     * @param id an ID of a DigitalStorage
+     * @return if the id exists in the DB, an Optional of a persisted Item with given ID, an empty optional otherwise
+     */
+    List<Item> findAllOfStorage(Long id);
+
+    /**
+     * Validates and Creates a new {@link Item} in the db.
+     *
+     * @param item a storage without ID
+     * @return an object of type {@link Item} which is persisted and has an ID
+     */
+    Item create(Item item);
+
+    /**
+     * Validates and Updates a new {@link Item} in the db.
+     *
+     * @param item a storage with existing ID
+     * @return an object of type {@link Item} which is updated
+     */
+    Item update(Item item);
+
+    /**
+     * Removes an {@link Item} stored in the db.
+     *
+     * @param id an ID of a stored {@link Item}
+     */
+    void remove(Long id);
+}
