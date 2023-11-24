@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -9,17 +10,20 @@ public class Storage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long storId;
 
-    @Column(name = "title")
+    @Column
     private String title;
 
-    public Long getId() {
-        return id;
+    @OneToMany(mappedBy = "storage")
+    private List<Item> itemList;
+
+    public Long getStorId() {
+        return storId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setStorId(Long id) {
+        this.storId = id;
     }
 
     public String getTitle() {
@@ -30,16 +34,24 @@ public class Storage {
         this.title = title;
     }
 
+    public List<Item> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(List<Item> itemList) {
+        this.itemList = itemList;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Storage storage = (Storage) o;
-        return Objects.equals(id, storage.id);
+        return Objects.equals(storId, storage.storId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(storId);
     }
 }

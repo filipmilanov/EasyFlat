@@ -3,53 +3,60 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "ttem_typ")
+@DiscriminatorColumn
 public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long itemId;
 
-    @Column(name = "ean")
+    @Column
     private String ean;
 
-    @Column(name = "general_name")
+    @Column
     private String generalName;
 
-    @Column(name = "product_name")
+    @Column
     private String productName;
 
-    @Column(name = "brand")
+    @Column
     private String brand;
 
-    @Column(name = "quantity_current")
+    @Column
     private Long quantityCurrent;
 
-    @Column(name = "quantity_total")
+    @Column
     private Long quantityTotal;
 
-    @Column(name = "unit")
+    @Column
     private String unit;
 
-    @Column(name = "expire_date")
+    @Column
     private LocalDate expireDate;
 
-    @Column(name = "description")
+    @Column
     private String description;
 
-    @Column(name = "price_in_cent")
+    @Column
     private Long priceInCent;
 
-    public Long getId() {
-        return id;
+    @ManyToOne
+    private Storage storage;
+
+    @ManyToMany
+    private List<Ingredient> ingredientList;
+
+    public Long getItemId() {
+        return itemId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setItemId(Long id) {
+        this.itemId = id;
     }
 
     public String getEan() {
@@ -132,17 +139,33 @@ public class Item {
         this.priceInCent = priceInCent;
     }
 
+    public Storage getStorage() {
+        return storage;
+    }
+
+    public void setStorage(Storage storage) {
+        this.storage = storage;
+    }
+
+    public List<Ingredient> getIngredientList() {
+        return ingredientList;
+    }
+
+    public void setIngredientList(List<Ingredient> ingredientList) {
+        this.ingredientList = ingredientList;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Item item = (Item) o;
-        return Objects.equals(id, item.id);
+        return Objects.equals(itemId, item.itemId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(itemId);
     }
 
 
