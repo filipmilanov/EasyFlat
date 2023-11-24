@@ -1,14 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 /**
  * Service for working with Items.
  */
-@Service
 public interface ItemService {
 
     /**
