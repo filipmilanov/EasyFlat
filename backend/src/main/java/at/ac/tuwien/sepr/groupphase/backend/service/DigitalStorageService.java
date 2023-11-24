@@ -1,7 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,6 +19,23 @@ public interface DigitalStorageService {
      * @return if the id exists in the DB, an Optional of a persisted DigitalStorage with given ID, an empty optional otherwise
      */
     Optional<DigitalStorage> findById(Long id);
+
+    /**
+     * Search for all Items of a DigitalStorage stored in the database.
+     *
+     * @param id an ID of a DigitalStorage
+     * @return if the id exists a List of all correlated items
+     */
+    List<Item> findAllItemsOfStorage(Long id);
+
+    /**
+     * Search for all Items of a DigitalStorage stored in the database ordered by defined orderType.
+     *
+     * @param id        an ID of a DigitalStorage
+     * @param orderType defines how to order
+     * @return if the id exists a List of all correlated items ordered by orderType
+     */
+    List<Item> findAllItemsOfStorageOrdered(Long id, ItemOrderType orderType);
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.

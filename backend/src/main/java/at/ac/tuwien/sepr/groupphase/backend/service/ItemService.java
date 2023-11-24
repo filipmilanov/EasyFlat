@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,14 +16,6 @@ public interface ItemService {
      * @return if the id exists in the DB, an Optional of a persisted Item with given ID, an empty optional otherwise
      */
     Optional<Item> findById(Long id);
-
-    /**
-     * Search for all Items of a DigitalStorage stored in the database.
-     *
-     * @param id an ID of a DigitalStorage
-     * @return if the id exists in the DB, an Optional of a persisted Item with given ID, an empty optional otherwise
-     */
-    List<Item> findAllOfStorage(Long id);
 
     /**
      * Validates and Creates a new {@link Item} in the db.
