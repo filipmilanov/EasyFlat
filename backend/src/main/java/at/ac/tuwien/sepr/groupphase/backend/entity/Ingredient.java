@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -13,6 +14,9 @@ public class Ingredient {
 
     @Column
     private String title;
+
+    @ManyToMany(mappedBy = "ingredientList")
+    private List<Item> itemList;
 
     public Long getIngrId() {
         return ingrId;
