@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
@@ -40,18 +41,18 @@ public interface DigitalStorageService {
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.
      *
-     * @param storage a storage without ID
+     * @param storageDto a storage without ID
      * @return an object of type {@link DigitalStorage} which is persisted and has an ID
      */
-    DigitalStorage create(DigitalStorage storage);
+    DigitalStorage create(DigitalStorageDto storageDto);
 
     /**
      * Validates and Updates a new {@link DigitalStorage} in the db.
      *
-     * @param storage a storage with existing ID
+     * @param storageDto a storage with existing ID
      * @return an object of type {@link DigitalStorage} which is updated
      */
-    DigitalStorage update(DigitalStorage storage);
+    DigitalStorage update(DigitalStorageDto storageDto);
 
     /**
      * Removes an {@link DigitalStorage} stored in the db.
