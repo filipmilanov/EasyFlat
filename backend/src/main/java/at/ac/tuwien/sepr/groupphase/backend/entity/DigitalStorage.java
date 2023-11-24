@@ -1,11 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +15,7 @@ public class DigitalStorage {
     @Column
     private String title;
 
-    @OneToMany(mappedBy = "storage")
+    @OneToMany(mappedBy = "digitalStorage")
     private List<Item> itemList;
 
     public Long getStorId() {
