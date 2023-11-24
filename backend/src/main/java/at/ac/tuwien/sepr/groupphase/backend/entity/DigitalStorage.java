@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Storage {
+public class DigitalStorage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,8 +55,8 @@ public class Storage {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Storage storage = (Storage) o;
-        return Objects.equals(storId, storage.storId);
+        DigitalStorage digitalStorage = (DigitalStorage) o;
+        return Objects.equals(storId, digitalStorage.storId);
     }
 
     @Override

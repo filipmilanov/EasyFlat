@@ -55,7 +55,7 @@ public class Item {
     private Long priceInCent;
 
     @ManyToOne
-    private Storage storage;
+    private DigitalStorage digitalStorage;
 
     @ManyToMany
     private List<Ingredient> ingredientList;
@@ -148,12 +148,12 @@ public class Item {
         this.priceInCent = priceInCent;
     }
 
-    public Storage getStorage() {
-        return storage;
+    public DigitalStorage getStorage() {
+        return digitalStorage;
     }
 
-    public void setStorage(Storage storage) {
-        this.storage = storage;
+    public void setStorage(DigitalStorage digitalStorage) {
+        this.digitalStorage = digitalStorage;
     }
 
     public List<Ingredient> getIngredientList() {
