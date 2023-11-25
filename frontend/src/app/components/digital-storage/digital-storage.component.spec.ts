@@ -6,6 +6,7 @@ describe('DigitalStorageComponent', () => {
   let component: DigitalStorageComponent;
   let fixture: ComponentFixture<DigitalStorageComponent>;
 
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [DigitalStorageComponent]

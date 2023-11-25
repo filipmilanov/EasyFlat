@@ -5,6 +5,7 @@ import { Component } from '@angular/core';
   templateUrl: './digital-storage.component.html',
   styleUrls: ['./digital-storage.component.scss']
 })
+
 export class DigitalStorageComponent {
 
 }
