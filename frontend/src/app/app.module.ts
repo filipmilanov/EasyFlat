@@ -13,6 +13,7 @@ import {MessageComponent} from './components/message/message.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
 import { DigitalStorageComponent } from './components/digital-storage/digital-storage.component';
+import { ItemCardComponent } from './components/digital-storage/item-card/item-card.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { DigitalStorageComponent } from './components/digital-storage/digital-st
     LoginComponent,
     MessageComponent,
     DigitalStorageComponent,
+    ItemCardComponent,
   ],
   imports: [
     BrowserModule,
