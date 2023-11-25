@@ -35,5 +35,6 @@ import { DigitalStorageComponent } from './components/digital-storage/digital-st
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
 })
+
 export class AppModule {
 }
