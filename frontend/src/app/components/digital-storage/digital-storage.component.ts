@@ -18,7 +18,7 @@ export class DigitalStorageComponent {
 
   constructor(private storageService:StorageService) {
 
-    this.initializeTestItems();
+
   }
 
 
@@ -35,23 +35,6 @@ export class DigitalStorageComponent {
     }
 
   )
-  }
-
-  private initializeTestItems() {
-    // Add test items to the items array
-    this.items.push({
-      description: "", ean: "", generalName: "", priceInCent: 0, unit: "",
-      brand: "", expireDate: "", itemId: 0, productName: "", quantityCurrent: 0, quantityTotal: 0
-
-    });
-
-    this.items.push({
-      description: "", ean: "", generalName: "", priceInCent: 0, unit: "",
-      brand: "", expireDate: "", itemId: 0, productName: "", quantityCurrent: 0, quantityTotal: 0
-
-    });
-
-    // Add more test items as needed
   }
 
 

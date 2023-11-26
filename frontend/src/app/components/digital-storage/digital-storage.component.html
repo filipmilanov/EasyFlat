@@ -75,7 +75,7 @@
   <div style="width: 100%; height: 100%; border: 1px black solid"></div>
   <div class="row row-cols-4">
     <div class="col" *ngFor="let item of items">
-      <app-item-card [title]="item." [quantity]="item.quantityCurrent" [maxQuantity]="item.quantityTotal"
+      <app-item-card [title]="item.productName" [quantity]="item.quantityCurrent" [maxQuantity]="item.quantityTotal"
                      [expirationDate]="item.expireDate"></app-item-card>
     </div>
   </div>
