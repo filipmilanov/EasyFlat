@@ -10,5 +10,6 @@ export class ItemDto {
   expireDate?: Date;
   description?: string;
   priceInCent?: number;
-  ingredients?: [string];
+  alwaysInStock: boolean;
+  ingredients: [string];
 }
