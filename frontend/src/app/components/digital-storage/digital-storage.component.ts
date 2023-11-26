@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import {storageItemList} from "../../dtos/storageItemList";
+import {StorageService} from "../../services/storage.service";
+import {StorageItemList} from "../../dtos/storageItemList";
+
 
 @Component({
   selector: 'app-digital-storage',
@@ -11,33 +13,42 @@ export class DigitalStorageComponent {
   title = "Test Title"
   itemQuantity = 50
   itemExpirationDate  = "Test Date"
-  items: storageItemList[] = [];
+  items: StorageItemList[] = [];
 
 
-  constructor() {
-    // Initialize the items array with test items
+  constructor(private storageService:StorageService) {
+
     this.initializeTestItems();
   }
 
 
   public loadStorage(){
+    console.log("loadStorage")
+  this.storageService.getItems("1").subscribe({
 
+    next: res => {
+      this.items = res;
+    },
+    error: err => {
+
+    }
+    }
+
+  )
   }
 
   private initializeTestItems() {
     // Add test items to the items array
     this.items.push({
-      title: 'Item 1',
-      quantity: 10,
-      maxQuantity: 100,
-      expirationDate: '2023-12-31'
+      description: "", ean: "", generalName: "", priceInCent: 0, unit: "",
+      brand: "", expireDate: "", itemId: 0, productName: "", quantityCurrent: 0, quantityTotal: 0
+
     });
 
     this.items.push({
-      title: 'Item 2',
-      quantity: 20,
-      maxQuantity: 200,
-      expirationDate: '2023-11-30'
+      description: "", ean: "", generalName: "", priceInCent: 0, unit: "",
+      brand: "", expireDate: "", itemId: 0, productName: "", quantityCurrent: 0, quantityTotal: 0
+
     });
 
     // Add more test items as needed
