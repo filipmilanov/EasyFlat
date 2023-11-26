@@ -34,7 +34,9 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public List<Item> findAllItemsOfStorage(Long id) {
-        return null;
+        Optional<DigitalStorage> optionalStorage = digitalStorageRepository.findById(id);
+
+        return optionalStorage.map(DigitalStorage::getItemList).orElse(List.of());
     }
 
     @Override

@@ -1,4 +1,5 @@
-export class storageItemList {
+export class StorageItemList {
+
   title:string;
   quantity:number;
   maxQuantity:number;

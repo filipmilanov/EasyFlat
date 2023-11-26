@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {storageItemList} from "../../dtos/storageItem";
+import {storageItemList} from "../../dtos/storageItemList";
 
 @Component({
   selector: 'app-digital-storage',
@@ -20,6 +20,10 @@ export class DigitalStorageComponent {
   }
 
 
+  public loadStorage(){
+
+  }
+
   private initializeTestItems() {
     // Add test items to the items array
     this.items.push({
@@ -38,4 +42,6 @@ export class DigitalStorageComponent {
 
     // Add more test items as needed
   }
+
+
 }
