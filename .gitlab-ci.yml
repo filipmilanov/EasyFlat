@@ -35,12 +35,6 @@ variables:
     -DinstallAtEnd=true
     -DdeployAtEnd=true
 
-# This template uses the latest Maven 3 release, e.g., 3.8.6, and OpenJDK 8 (LTS)
-# for verifying and deploying images
-# Maven 3.8.x REQUIRES HTTPS repositories.
-# See https://maven.apache.org/docs/3.8.1/release-notes.html#how-to-fix-when-i-get-a-http-repository-blocked for more.
-image: maven:3-openjdk-17
-
 # Cache downloaded dependencies and plugins between builds.
 # To keep cache across branches add 'key: "$CI_JOB_NAME"'
 # Be aware that `mvn deploy` will install the built jar into this repository. If you notice your cache size
@@ -51,27 +45,40 @@ cache:
 
 # For merge requests do not `deploy` but only run `verify`.
 # See https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
-.build:
+.build-backend:
   stage: build
+  image: maven:3-openjdk-17
   script:
     - 'cd backend'
     - 'mvn $MAVEN_CLI_OPTS clean'
     - 'mvn $MAVEN_CLI_OPTS compile'
 
+.build-frontend:
+  stage: build
+  image: node:lts
+  script:
+    - 'cd frontend'
+    - 'npm install'
+    - 'npm run build'
 
 # For merge requests do not `deploy` but only run `verify`.
 # See https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
 .unit-test:
   stage: test
+  image: maven:3-openjdk-17
   script:
     - 'cd backend'
     - 'mvn $MAVEN_CLI_OPTS test'
 
 
 # Build test
-build:
+backend:
   extends:
-    - .build
+    - .build-backend
+
+frontend:
+  extends:
+    - .build-frontend
 
 # Verify merge requests using JDK8
 unit-test:
