@@ -26,4 +26,12 @@ public class DigitalStorageDto {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    @Override
+    public String toString() {
+        return "DigitalStorageDto{"
+            + "storId=" + storId
+            + ", title='" + title + '\''
+            + '}';
+    }
 }
