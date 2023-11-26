@@ -121,18 +121,21 @@ public class ItemDto {
 
     @Override
     public String toString() {
-        return "ItemDto{" +
-            "itemId=" + itemId +
-            ", ean='" + ean + '\'' +
-            ", generalName='" + generalName + '\'' +
-            ", productName='" + productName + '\'' +
-            ", brand='" + brand + '\'' +
-            ", quantityCurrent=" + quantityCurrent +
-            ", quantityTotal=" + quantityTotal +
-            ", unit='" + unit + '\'' +
-            ", expireDate=" + expireDate +
-            ", description='" + description + '\'' +
-            ", priceInCent=" + priceInCent +
-            '}';
+        return "ItemDto{"
+            + "itemId="
+            + itemId
+            + ", ean='"
+            + ean + '\''
+            + ", generalName='"
+            + generalName + '\''
+            + ", productName='" + productName + '\''
+            + ", brand='" + brand + '\''
+            + ", quantityCurrent=" + quantityCurrent
+            + ", quantityTotal=" + quantityTotal
+            + ", unit='" + unit + '\''
+            + ", expireDate=" + expireDate
+            + ", description='" + description + '\''
+            + ", priceInCent=" + priceInCent
+            + '}';
     }
 }
