@@ -11,5 +11,6 @@ export class ItemDto {
   description?: string;
   priceInCent?: number;
   alwaysInStock: boolean;
-  ingredients: [string];
+  addToFiance: boolean;
+  ingredients?: [string];
 }
