@@ -82,4 +82,30 @@ public class CustomUserDetailService implements UserService {
         }
         throw new BadCredentialsException("Username or password is incorrect or account is locked");
     }
+
+    @Override
+    public String register(UserLoginDto userLoginDto) {
+        LOGGER.debug("Registering a new user");
+
+        // Check if the email already exists
+        if (userRepository.findUserByEmail(userLoginDto.getEmail()) != null) {
+            throw new BadCredentialsException("User with this email already exists");
+        }
+
+        // Create a new ApplicationUser entity for registration
+        ApplicationUser newUser = new ApplicationUser(userLoginDto.getEmail(), passwordEncoder.encode(userLoginDto.getPassword()), false);
+        userRepository.save(newUser);
+
+        // Generate token for the registered user
+        UserDetails userDetails = loadUserByUsername(userLoginDto.getEmail());
+        if (userDetails != null) {
+            List<String> roles = userDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+            return jwtTokenizer.getAuthToken(userDetails.getUsername(), roles);
+        }
+
+        throw new BadCredentialsException("Failed to register the user");
+    }
 }

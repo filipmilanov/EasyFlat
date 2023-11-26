@@ -28,6 +28,13 @@ export class AuthService {
       );
   }
 
+  registerUser(authRequest: AuthRequest): Observable<string> {
+    return this.httpClient.post(this.globals.backendUri + '/register', authRequest, { responseType: 'text' })
+      .pipe(
+        tap((authResponse: string) => this.setToken(authResponse))
+      );
+  }
+
 
   /**
    * Check if a valid JWT token is saved in the localStorage
