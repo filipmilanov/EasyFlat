@@ -1,7 +1,13 @@
 export class StorageItemList {
-
-  title:string;
-  quantity:number;
-  maxQuantity:number;
-  expirationDate:string;
+  itemId: string;
+  ean:string;
+  generalName:string;
+  productName:string;
+  brand:string;
+  quantityCurrent:number;
+  quantityTotal:number;
+  unit:number;
+  expireDate:string;
+  description:string;
+  priceInCent:number;
 }
