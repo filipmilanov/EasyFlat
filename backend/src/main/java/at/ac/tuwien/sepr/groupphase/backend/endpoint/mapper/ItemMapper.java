@@ -11,4 +11,6 @@ public interface ItemMapper {
     @Mapping(target = "storage", ignore = true)
     @Mapping(target = " ingredientList", ignore = true)
     Item dtoToItem(ItemDto itemDto);
+
+    ItemDto itemToDto(Item item);
 }
