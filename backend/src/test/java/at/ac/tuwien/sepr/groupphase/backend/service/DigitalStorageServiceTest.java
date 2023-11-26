@@ -23,7 +23,7 @@ class DigitalStorageServiceTest {
     private DigitalStorageService service;
 
     @Test
-    void givenValidStorageWhenCreateThenStorageIsPersistedAndHasId() {
+    void givenValidStorageWhenCreateThenStorageIsPersistedAndHasId() throws ValidationException {
         // given
         DigitalStorageDto digitalStorageDto = new DigitalStorageDto().setTitle("MyTestStorage");
 
