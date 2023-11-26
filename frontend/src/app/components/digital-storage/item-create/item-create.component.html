@@ -7,14 +7,14 @@
 </div>
 
 
-<div class="container ">
+<div class="container">
   <h1 class="display-4">Product</h1>
   <div style="width: 100%; height: 100%; border: 1px black solid"></div>
 
   <form #form="ngForm" [class.was-validated]="form.submitted" (submit)="submit(form)">
 
     <div class="row row-cols-1">
-      <div class="row">
+      <div class="row p-2">
         <label for="ean"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
@@ -29,7 +29,7 @@
                  [(ngModel)]="item.ean">
         </div>
       </div>
-      <div class="row">
+      <div class="row p-2">
         <label for="productName"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
@@ -44,7 +44,7 @@
                  [(ngModel)]="item.productName">
         </div>
       </div>
-      <div class="row">
+      <div class="row p-2">
         <label for="generalName"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
@@ -60,7 +60,7 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row p-2">
         <label for="brand"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
@@ -76,7 +76,7 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row p-2">
         <label for="quantityAndUnit"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
@@ -100,7 +100,7 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row p-2">
         <label for="alwaysInStock"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
@@ -116,7 +116,7 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row p-2">
         <label for="price"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
@@ -144,7 +144,7 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row p-2">
         <label for="broughtAt"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
@@ -159,7 +159,7 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row p-2">
         <label for="ingredients"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
@@ -178,22 +178,21 @@
             </div>
           </span>
 
-            <input type="text"
-                   class="form-control"
-                   placeholder="Ingredient"
-                   #ingredientInput>
-            <button type="button"
-                    class="btn btn-light ms-2"
-                    (click)="addIngredient(ingredientInput.value)">
-              <i class="bi bi-plus-square">Add</i>
-            </button>
+          <input type="text"
+                 class="form-control"
+                 placeholder="Ingredient"
+                 #ingredientInput>
+          <button type="button"
+                  class="btn btn-light ms-2"
+                  (click)="addIngredient(ingredientInput.value)">
+            <i class="bi bi-plus-square">Add</i>
+          </button>
         </div>
       </div>
     </div>
     <button type="submit"
-            class="btn btn-primary"
+            class="btn btn-primary float-end"
             [disabled]="!form.valid"
-            type="submit"
     >
       Create
     </button>
