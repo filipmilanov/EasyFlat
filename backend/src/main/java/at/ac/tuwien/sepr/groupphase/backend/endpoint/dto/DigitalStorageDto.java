@@ -15,16 +15,18 @@ public class DigitalStorageDto {
         return storId;
     }
 
-    public void setStorId(Long storId) {
+    public DigitalStorageDto setStorId(Long storId) {
         this.storId = storId;
+        return this;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public DigitalStorageDto setTitle(String title) {
         this.title = title;
+        return this;
     }
 
     @Override
