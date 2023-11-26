@@ -1,0 +1,83 @@
+<form class="d-flex flex-row w-auto mb-3">
+
+  <button type="submit" hidden="hidden">submit</button>
+  <div class="flex-grow-1">
+    <label for="searchTitle" class="col-form-label">
+      Title
+    </label>
+    <input type="text" id="searchTitle" name="searchTitle"
+           class="form-control"
+    >
+  </div>
+  <div class="flex-grow-1">
+    <label for="searchBrand" class="col-form-label">
+      Brand
+    </label>
+    <input type="text" id="searchBrand" name="searchBrand"
+           class="form-control"
+    >
+  </div>
+
+  <div class="ms-1">
+    <label for="ExpirationDateStart" class="col-form-label">
+      Expiration Date start
+    </label>
+
+    <input type="date" id="ExpirationDateStart" name="expirationDateStart"
+           pattern="\d{4}-\d{2}-\d{2}"
+           placeholder="yyyy-mm-dd"
+           class="form-control"
+
+    >
+  </div>
+  <div class="ms-1">
+    <label for="ExpirationDateEnd" class="col-form-label">
+      Expiration Date end
+    </label>
+
+    <input type="date" id="ExpirationDateEnd" name="expirationDateEnd"
+           pattern="\d{4}-\d{2}-\d{2}"
+           placeholder="yyyy-mm-dd"
+           class="form-control"
+
+    >
+  </div>
+  <div class="ms-1">
+    <label for="searchBrand" class="col-form-label">
+      Fill level
+    </label>
+    <select id="searchBradsnd" name="searchBrand"
+            class="form-select"
+    >
+      <option></option>
+      <option value="full">full</option>
+      <option value="nearly empty">nearly empty</option>
+      <option value="empty">empty</option>
+    </select>
+  </div>
+
+</form>
+
+
+<div class="container ">
+  <h1 class="display-4">In Stock</h1>
+  <div style="width: 100%; height: 100%; border: 1px black solid"></div>
+  <div class="row row-cols-4">
+    <div class="col" *ngFor="let item of items">
+      <app-item-card [title]="item.title" [quantity]="item.quantity" [maxQuantity]="item.maxQuantity"
+                     [expirationDate]="item.expirationDate"></app-item-card>
+    </div>
+  </div>
+</div>
+
+<div class="container ">
+  <h1 class="display-4">Always in Stock</h1>
+  <div style="width: 100%; height: 100%; border: 1px black solid"></div>
+  <div class="row row-cols-4">
+    <div class="col" *ngFor="let item of items">
+      <app-item-card [title]="item.title" [quantity]="item.quantity" [maxQuantity]="item.maxQuantity"
+                     [expirationDate]="item.expirationDate"></app-item-card>
+    </div>
+  </div>
+</div>
+<button type="button" class="btn btn-primary float-end m-3">Add</button>
