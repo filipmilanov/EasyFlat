@@ -1,7 +1,11 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-import java.time.LocalDate;
+import io.soabase.recordbuilder.core.RecordBuilder;
 
+import java.time.LocalDate;
+import java.util.List;
+
+@RecordBuilder
 public record ItemDto(
     Long itemId,
     String ean,
@@ -13,6 +17,10 @@ public record ItemDto(
     String unit,
     LocalDate expireDate,
     String description,
-    Long priceInCent
+    Long priceInCent,
+    Long storageId,
+    List<Long> ingredientsIdList
 ) {
+
+
 }

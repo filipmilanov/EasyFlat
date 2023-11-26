@@ -10,6 +10,9 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,24 +28,31 @@ public class Item {
     private Long itemId;
 
     @Column
+    @Pattern(regexp = "[0-9](13)", message = "EAN number has exactly 13 numbers")
     private String ean;
 
     @Column
+    @NotEmpty
     private String generalName;
 
     @Column
+    @NotEmpty
     private String productName;
 
     @Column
+    @NotEmpty
     private String brand;
 
     @Column
+    @Min(value = 0, message = "The quantity must be positive")
     private Long quantityCurrent;
 
     @Column
+    @Min(value = 0, message = "The quantity must be positive")
     private Long quantityTotal;
 
     @Column
+    @NotEmpty
     private String unit;
 
     @Column
