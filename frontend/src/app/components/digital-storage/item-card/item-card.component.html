@@ -1,6 +1,55 @@
 <div class="card mt-3" style="width: 18rem; height: 200px;">
   <div class="card-header text-black">
-    <h5 class="card-title">{{title}}<br>Alpro</h5>
+    <div class="row row-cols-2">
+      <div class="col">
+        <h5 class="card-title">{{title}}<br>Alpro</h5>
+      </div>
+      <div class="col d-flex justify-content-end align-items-center">
+
+        <div style="position: relative; display: inline-block; z-index: 1;">
+          <!-- Button Triggering Custom Modal -->
+          <button type="button" class="btn text-bg-dark custom-btn me-2" (click)="toggleCustomModal()">
+            -
+          </button>
+
+          <!-- Custom Modal with Text Input -->
+          <div *ngIf="customModalOpen" class="custom-modal"
+               style="position: absolute; background-color: white; padding: 10px; border: 1px solid #ccc; width: 100px;">
+            <div class="row">
+              <div class="col">
+                Subtract Quantity:
+                <input type="number" class="form-control" #quantityInput>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-primary btn-sm" style="width: 100%" (click)="onSave(quantityInput.value, 0)">✓</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="position: relative; display: inline-block; z-index: 1;">
+          <!-- Button Triggering Custom Modal -->
+          <button type="button" class="btn text-bg-dark custom-btn" (click)="toggleCustomModal1()">
+            +
+          </button>
+
+          <!-- Custom Modal with Text Input -->
+          <div *ngIf="customModalOpen1" class="custom-modal"
+               style="position: absolute; background-color: white; padding: 10px; border: 1px solid #ccc; width: 100px;">
+            <div class="row">
+              <div class="col">
+                Add Quantity:
+                <input type="number" class="form-control" #quantityInput>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-primary btn-sm" style="width: 100%" (click)="onSave(quantityInput.value, 1)">✓</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
   <div class="card-body">
     <div class="row">
@@ -8,3 +57,5 @@
     </div>
   </div>
 </div>
+
+
