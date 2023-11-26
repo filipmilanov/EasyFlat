@@ -5,13 +5,16 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 @Service
 public class ItemServiceImpl implements ItemService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final ItemRepository itemRepository;
     private final ItemMapper itemMapper;
@@ -28,6 +31,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item create(ItemDto itemDto) {
+        LOGGER.trace("create({})", itemDto);
         Item item = itemMapper.dtoToItem(itemDto);
 
         return itemRepository.save(item);

@@ -7,13 +7,17 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class DigitalStorageServiceImpl implements DigitalStorageService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final DigitalStorageRepository digitalStorageRepository;
     private final DigitalStorageMapper digitalStorageMapper;
@@ -40,6 +44,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public DigitalStorage create(DigitalStorageDto storageDto) {
+        LOGGER.trace("create({})", storageDto);
         DigitalStorage storage = digitalStorageMapper.dtoToEntity(storageDto);
 
         return digitalStorageRepository.save(storage);
