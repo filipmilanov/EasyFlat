@@ -137,9 +137,10 @@
         </label>
         <div class="col-md-10 col-lg-8"
              id="ingredients">
-          <span class="p-2">
+          <span *ngFor="let ingredient of item.ingredients"
+                class="p-2">
             <div class="border-bottom p-1">
-              Banane
+              {{ingredient}}
               <button type="button"
                       class="btn btn-light ms-2">
                 <i class="bi bi-trash"></i>
@@ -148,12 +149,13 @@
 
           </span>
           <div class="row">
-
             <input type="text"
                    class="form-control col-10"
-                   placeholder="Ingredient">
+                   placeholder="Ingredient"
+                   #ingredientInput>
             <button type="button"
-                    class="btn btn-light ms-2 col-2">
+                    class="btn btn-light ms-2 col-2"
+                    (click)="addIngredient(ingredientInput.value)">
               <i class="bi bi-plus-square">Add</i>
             </button>
           </div>
