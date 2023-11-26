@@ -1,0 +1,167 @@
+<div class="container ">
+  <h1 class="display-4">Scan the product</h1>
+  <div style="width: 100%; height: 100%; border: 1px black solid"></div>
+  <div class="row row-cols-4">
+
+  </div>
+</div>
+
+
+<div class="container ">
+  <h1 class="display-4">Product</h1>
+  <div style="width: 100%; height: 100%; border: 1px black solid"></div>
+
+  <form>
+
+    <div class="row row-cols-1">
+      <div class="row">
+
+        <label for="productName"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Product Name
+        </label>
+        <div class="col-md-10 col-lg-8">
+          <input type="text"
+                 class="form-control"
+                 id="productName"
+                 placeholder="Product Name">
+        </div>
+      </div>
+      <div class="row">
+        <label for="generalName"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          General Name
+        </label>
+        <div class="col-md-10 col-lg-8">
+          <input type="text"
+                 class="form-control"
+                 id="generalName"
+                 placeholder="General Name">
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="brand"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Brand
+        </label>
+        <div class="col-md-10 col-lg-8">
+          <input type="text"
+                 class="form-control"
+                 id="brand"
+                 placeholder="Brand">
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="quantityAndUnit"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Quantity
+        </label>
+        <div class="col-md-8 col-lg-5">
+          <input type="text"
+                 class="form-control"
+                 id="quantityAndUnit"
+                 placeholder="Quantity">
+        </div>
+        <div class="col-md-2 col-lg-3">
+          <input type="text"
+                 class="form-control"
+                 id="unit"
+                 placeholder="Unit">
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="alwaysInStock"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Always In Stock
+        </label>
+        <div class="form-check form-switch col-md-10 col-lg-8">
+          <input class="form-check-input"
+                 type="checkbox"
+                 role="switch"
+                 id="alwaysInStock">
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="price"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Price
+        </label>
+        <div class="col-md-8 col-lg-5">
+          <input type="text"
+                 class="form-control"
+                 id="price"
+                 placeholder="Price">
+        </div>
+        <div class="form-check form-switch col-md-2 col-lg-2">
+          <label for="addToFinance"
+                 class="col-form-label text-muted">
+            Add to Finance
+          </label>
+          <input class="form-check-input"
+                 type="checkbox"
+                 role="switch"
+                 id="addToFinance">
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="broughtAt"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Brought At
+        </label>
+        <div class="col-md-10 col-lg-8">
+          <input type="text"
+                 data-toggle="toggle"
+                 class="form-control"
+                 id="broughtAt"
+                 placeholder="Bought At">
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="ingredients"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Ingredients
+        </label>
+        <div class="col-md-10 col-lg-8"
+             id="ingredients">
+          <span class="p-2">
+            <div class="border-bottom p-1">
+              Banane
+              <button type="button"
+                      class="btn btn-light ms-2">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+
+          </span>
+          <div class="row">
+
+            <input type="text"
+                   class="form-control col-10"
+                   placeholder="Ingredient">
+            <button type="button"
+                    class="btn btn-light ms-2 col-2">
+              <i class="bi bi-plus-square">Add</i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </form>
+</div>
+<button type="button" class="btn btn-primary float-end m-3">Add</button>
