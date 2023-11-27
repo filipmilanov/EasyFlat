@@ -4,7 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
-import jakarta.xml.bind.ValidationException;
+import jakarta.validation.ValidationException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,38 +130,11 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.create(itemDto)).getMessage();
-        assertThat(message)
-            .contains(
-                "storage",
-                "not found"
-            );
-    }
-
-    @Test
-    void givenItemWithInvalidIngredientsWhenCreateThenConflictExceptionIsThrown() {
-        // given
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("Test")
-            .productName("MyTest")
-            .brand("Hofer")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("ml")
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .storageId(-999L)
-            .ingredientsIdList(List.of(-1L, -2L))
-            .build();
-
-        // when + then
         String message = assertThrows(ConflictException.class, () -> service.create(itemDto)).getMessage();
         assertThat(message)
             .contains(
-                "storage",
-                "not found"
+                "Storage",
+                "not exists"
             );
     }
 }

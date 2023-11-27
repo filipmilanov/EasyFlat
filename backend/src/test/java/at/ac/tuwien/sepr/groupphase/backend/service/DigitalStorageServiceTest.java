@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.xml.bind.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,6 @@ class DigitalStorageServiceTest {
             .build();
 
         // when + then
-        assertThrows(ValidationException.class, () -> service.create(digitalStorageDto));
+        assertThrows(ConstraintViolationException.class, () -> service.create(digitalStorageDto));
     }
 }
