@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -41,6 +42,14 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
 
         return digitalStorageRepository.findById(id);
+    }
+
+    @Override
+    public List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto) {
+        LOGGER.trace("findAll({})", digitalStorageSearchDto);
+        return digitalStorageRepository.findByTitleContaining(
+            (digitalStorageSearchDto != null) ? digitalStorageSearchDto.title() : ""
+        );
     }
 
     @Override

@@ -1,9 +1,9 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
@@ -37,6 +37,17 @@ public class StorageEndpoint {
     }
 
     @Secured("ROLE_USER")
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<DigitalStorageDto> findAll(DigitalStorageSearchDto digitalStorageDto) {
+        LOGGER.info("findAll({})", digitalStorageDto);
+
+        return digitalStorageMapper.entityListToDtoList(
+            digitalStorageService.findAll(digitalStorageDto)
+        );
+    }
+
+    @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public DigitalStorageDto create(@RequestBody DigitalStorageDto digitalStorageDto) throws ValidationException, ConflictException {
@@ -50,7 +61,7 @@ public class StorageEndpoint {
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     public List<Item> getStorageItems(@PathVariable Long id, ItemSearchDto itemSearchDto) {
-        LOGGER.info("getStorageItems({})", id);
+        LOGGER.info("getStorageItems({}, {})", id, itemSearchDto);
         return digitalStorageService.searchItems(id, itemSearchDto);
     }
 }

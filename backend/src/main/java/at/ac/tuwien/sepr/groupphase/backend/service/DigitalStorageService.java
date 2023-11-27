@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
@@ -22,6 +23,14 @@ public interface DigitalStorageService {
      * @return if the id exists in the DB, an Optional of a persisted DigitalStorage with given ID, an empty optional otherwise
      */
     Optional<DigitalStorage> findById(Long id);
+
+    /**
+     * Search for all Storages stored in the database which matches with the given search criteria.
+     *
+     * @param digitalStorageSearchDto search criteria
+     * @return a List of all persisted Storages
+     */
+    List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto);
 
     /**
      * Search for all Items of a DigitalStorage stored in the database.
