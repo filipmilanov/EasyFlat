@@ -1,12 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.persistence.FetchType;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,10 +20,10 @@ public class DigitalStorage {
     private Long storId;
 
     @Column
-    @NotEmpty(message = "Title cannot be empty")
     private String title;
 
-    @OneToMany(mappedBy = "digitalStorage")
+    @OneToMany(mappedBy = "digitalStorage", fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<Item> itemList;
 
     public Long getStorId() {
