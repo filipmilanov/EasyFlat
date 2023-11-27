@@ -7,7 +7,6 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +56,6 @@ class StorageEndpointTest {
 
     private final String BASE_URI = "/api/v1/storage";
 
-    @BeforeEach
-    public void beforeEach() {
-        digitalStorageRepository.deleteAll();
-    }
 
     @Test
     public void givenStorageWhenCreateThenStorageCreated() throws Exception {

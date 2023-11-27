@@ -18,9 +18,30 @@ public record ItemDto(
     LocalDate expireDate,
     String description,
     Long priceInCent,
+    Boolean alwaysInStock,
+    Long minimumQuantity,
     Long storageId,
     List<Long> ingredientsIdList
 ) {
+    public ItemDto withAlwaysInStock(Boolean alwaysInStock) {
+        return new ItemDto(
+            itemId,
+            ean,
+            generalName,
+            productName,
+            brand,
+            quantityCurrent,
+            quantityTotal,
+            unit,
+            expireDate,
+            description,
+            priceInCent,
+            alwaysInStock,
+            minimumQuantity,
+            storageId,
+            ingredientsIdList
+        );
+    }
 
 
 }

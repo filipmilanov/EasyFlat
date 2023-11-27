@@ -186,6 +186,18 @@ public class Item {
         this.ingredientList = ingredientList;
     }
 
+    public Long getMinimumQuantity() {
+        return null;
+    }
+
+    public void setMinimumQuantity(Long minimumQuantity) {
+
+    }
+
+    public boolean alwaysInStock() {
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

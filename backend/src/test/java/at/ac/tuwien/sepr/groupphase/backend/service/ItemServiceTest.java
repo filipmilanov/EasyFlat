@@ -86,6 +86,70 @@ class ItemServiceTest {
     }
 
     @Test
+    void givenValidAlwaysInStockItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException {
+        // given
+        ItemDto itemDto = ItemDtoBuilder.builder()
+            .ean("0123456789123")
+            .generalName("Test")
+            .productName("MyTest")
+            .brand("Hofer")
+            .quantityCurrent(100L)
+            .quantityTotal(200L)
+            .unit("ml")
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .storageId(1L)
+            .ingredientsIdList(List.of(1L, 2L))
+            .alwaysInStock(true)
+            .minimumQuantity(10L)
+            .build();
+
+        // when
+        Item actual = service.create(itemDto);
+
+        // then
+        Optional<Item> persisted = service.findById(actual.getItemId());
+
+        assertTrue(persisted.isPresent());
+        Assertions.assertThat(actual).isEqualTo(persisted.get());
+        Assertions.assertThat(actual)
+            .extracting(
+                Item::getEan,
+                Item::getGeneralName,
+                Item::getProductName,
+                Item::getBrand,
+                Item::getQuantityCurrent,
+                Item::getQuantityTotal,
+                Item::getUnit,
+                Item::getExpireDate,
+                Item::getDescription,
+                Item::getPriceInCent,
+                Item::alwaysInStock,
+                Item::getMinimumQuantity
+            )
+            .containsExactly(
+                itemDto.ean(),
+                itemDto.generalName(),
+                itemDto.productName(),
+                itemDto.brand(),
+                itemDto.quantityCurrent(),
+                itemDto.quantityTotal(),
+                itemDto.unit(),
+                itemDto.expireDate(),
+                itemDto.description(),
+                itemDto.priceInCent(),
+                itemDto.alwaysInStock(),
+                itemDto.minimumQuantity()
+            );
+        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.storageId());
+        assertThat(actual.getIngredientList().stream()
+            .map(Ingredient::getIngrId)
+            .toList()
+        ).isEqualTo(itemDto.ingredientsIdList());
+    }
+
+    @Test
     void givenInvalidItemWhenCreateThenValidationExceptionIsThrown() {
         // given
         ItemDto itemDto = ItemDtoBuilder.builder()
@@ -110,6 +174,33 @@ class ItemServiceTest {
                 "13",
                 "brand",
                 "quantity"
+            );
+    }
+
+    @Test
+    void givenInvalidAlwaysInStockItemWhenCreateThenValidationExceptionIsThrown() {
+        // given
+        ItemDto itemDto = ItemDtoBuilder.builder()
+            .ean("0123456789123")
+            .generalName("Test")
+            .productName("MyTest")
+            .brand("Hofer")
+            .quantityCurrent(100L)
+            .quantityTotal(200L)
+            .unit("ml")
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .storageId(1L)
+            .ingredientsIdList(List.of(1L, 2L))
+            .alwaysInStock(true)
+            .build();
+
+        // when + then
+        String message = assertThrows(ValidationException.class, () -> service.create(itemDto)).getMessage();
+        assertThat(message)
+            .contains(
+                "minimum quantity"
             );
     }
 
