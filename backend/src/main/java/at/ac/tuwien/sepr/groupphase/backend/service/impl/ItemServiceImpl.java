@@ -73,12 +73,24 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item update(ItemDto item) {
-        return null;
+    public Item update(ItemDto itemDto) throws ConflictException {
+        LOGGER.trace("update({})", itemDto);
+
+        Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.storageId());
+        if (digitalStorage.isEmpty()) {
+            throw new ConflictException("Digital Storage does not exists");
+        }
+        itemValidator.checkItemForUpdate(itemDto, digitalStorage.get());
+        List<Ingredient> ingredientList = ingredientService.findAllByIds(itemDto.ingredientsIdList());
+        Item item = itemMapper.dtoToItem(itemDto, digitalStorage.get(), ingredientList);
+
+        return itemRepository.save(item);
     }
 
     @Override
-    public void remove(Long id) {
+    public void delete(Long id) {
+        LOGGER.trace("delete({})", id);
 
+        itemRepository.deleteById(id);
     }
 }
