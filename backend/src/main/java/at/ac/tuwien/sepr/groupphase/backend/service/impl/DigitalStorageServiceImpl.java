@@ -29,7 +29,12 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public Optional<DigitalStorage> findById(Long id) {
-        return Optional.empty();
+        LOGGER.trace("findById({})", id);
+        if (id == null) {
+            return Optional.empty();
+        }
+
+        return digitalStorageRepository.findById(id);
     }
 
     @Override
