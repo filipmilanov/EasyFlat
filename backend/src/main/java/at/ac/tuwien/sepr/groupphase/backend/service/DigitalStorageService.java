@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
@@ -38,6 +39,15 @@ public interface DigitalStorageService {
      * @return if the id exists a List of all correlated items ordered by orderType
      */
     List<Item> findAllItemsOfStorageOrdered(Long id, ItemOrderType orderType);
+
+    /**
+     * Search for all Items of a DigitalStorage stored in the database filtered by search parameters.
+     *
+     * @param id            an ID of a DigitalStorage
+     * @param itemSearchDto search parameters
+     * @return a List of filtered items
+     */
+    List<Item> searchItem(Long id, ItemSearchDto itemSearchDto);
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.
