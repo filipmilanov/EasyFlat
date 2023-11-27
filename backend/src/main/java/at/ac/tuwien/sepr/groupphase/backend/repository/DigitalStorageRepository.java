@@ -2,12 +2,10 @@ package at.ac.tuwien.sepr.groupphase.backend.repository;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,10 +15,10 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
 
     List<DigitalStorage> findByTitleContaining(String title);
 
-    @Query("UPDATE Item i " +
-        "SET i.quantityCurrent = :quantity " +
-        "WHERE i.itemId = :itemId " +
-        "AND i.digitalStorage.storId = :storageId")
+    @Query("UPDATE Item i "
+        + "SET i.quantityCurrent = :quantity "
+        + "WHERE i.itemId = :itemId "
+        + "AND i.digitalStorage.storId = :storageId")
     Item updateItemQuantity(@Param("storageId") long storageId, @Param("itemId") long itemId, @Param("quantity") long quantity);
 
     @Query("SELECT i FROM Item i WHERE i.digitalStorage.storId = :storageId AND "
