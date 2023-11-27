@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +45,7 @@ public interface DigitalStorageService {
      * @param storageDto a storage without ID
      * @return an object of type {@link DigitalStorage} which is persisted and has an ID
      */
-    DigitalStorage create(DigitalStorageDto storageDto);
+    DigitalStorage create(DigitalStorageDto storageDto) throws ConflictException;
 
     /**
      * Validates and Updates a new {@link DigitalStorage} in the db.

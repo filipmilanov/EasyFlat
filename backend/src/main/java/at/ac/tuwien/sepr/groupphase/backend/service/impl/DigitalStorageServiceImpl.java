@@ -5,8 +5,10 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,10 +23,12 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     private final DigitalStorageRepository digitalStorageRepository;
     private final DigitalStorageMapper digitalStorageMapper;
+    private final DigitalStorageValidator digitalStorageValidator;
 
-    public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository, DigitalStorageMapper digitalStorageMapper) {
+    public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository, DigitalStorageMapper digitalStorageMapper, DigitalStorageValidator digitalStorageValidator) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
+        this.digitalStorageValidator = digitalStorageValidator;
     }
 
     @Override
@@ -50,10 +54,12 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public DigitalStorage create(DigitalStorageDto storageDto) {
+    public DigitalStorage create(DigitalStorageDto storageDto) throws ConflictException {
         LOGGER.trace("create({})", storageDto);
-        DigitalStorage storage = digitalStorageMapper.dtoToEntity(storageDto);
 
+        digitalStorageValidator.checkDigitalStorageForCreate(storageDto);
+
+        DigitalStorage storage = digitalStorageMapper.dtoToEntity(storageDto);
 
         return digitalStorageRepository.save(storage);
     }

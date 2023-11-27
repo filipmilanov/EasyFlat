@@ -1,9 +1,14 @@
 package at.ac.tuwien.sepr.groupphase.backend.exception;
 
-public class ConflictException extends Exception {
+import java.util.List;
+
+public class ConflictException extends ErrorListException {
     public ConflictException(String message) {
-        super(message);
+        super(message, List.of());
     }
 
-    // TODO: Not implemented
+    public ConflictException(String generalMessage, List<String> errors) {
+        super(generalMessage, errors);
+    }
+
 }
