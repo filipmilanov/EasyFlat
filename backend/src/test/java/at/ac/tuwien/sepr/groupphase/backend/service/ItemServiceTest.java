@@ -40,7 +40,7 @@ class ItemServiceTest {
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
-            .storageId(-1L)
+            .storageId(1L)
             .ingredientsIdList(List.of(-1L, -2L))
             .build();
 
@@ -96,7 +96,7 @@ class ItemServiceTest {
             .unit("")
             .description("")
             .priceInCent(-1234L)
-            .storageId(-1L)
+            .storageId(1L)
             .ingredientsIdList(List.of(-1L, -2L))
             .build();
 

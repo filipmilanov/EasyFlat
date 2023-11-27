@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
-@Profile("generateData")
+@Profile({"generateData", "test"})
 @Component
 public class StorageDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

@@ -40,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
 
         // check for conflict
 
-        Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.itemId());
+        Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.storageId());
         if (digitalStorage.isEmpty()) {
             throw new ConflictException("Digital Storage does not exists");
         }
