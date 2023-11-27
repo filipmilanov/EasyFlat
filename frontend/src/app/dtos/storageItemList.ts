@@ -1,3 +1,5 @@
+import {OrderType} from "./OrderType";
+
 export class StorageItemList {
   itemId?: string;
   ean?:string;
@@ -19,5 +21,6 @@ export class ItemSearchDto {
   fillLevel?:number;
   expireDateStart?:string;
   expireDateEnd?:string;
+  orderBy: OrderType;
 }
 

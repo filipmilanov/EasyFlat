@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {StorageService} from "../../services/storage.service";
 import {ItemSearchDto, StorageItemList} from "../../dtos/storageItemList";
+import {OrderType} from "../../dtos/OrderType";
 
 
 @Component({
@@ -11,7 +12,7 @@ import {ItemSearchDto, StorageItemList} from "../../dtos/storageItemList";
 
 export class DigitalStorageComponent {
   items: StorageItemList[] = [];
-  searchParameters:ItemSearchDto = {};
+  searchParameters: ItemSearchDto = {orderBy: OrderType.PRODUCT_NAME};
 
 
   constructor(private storageService: StorageService) {
@@ -38,4 +39,5 @@ export class DigitalStorageComponent {
   }
 
 
+  protected readonly OrderType = OrderType;
 }

@@ -38,9 +38,13 @@ export class StorageService {
 
 
   findAll(titleSearch: string, limit: number): Observable<DigitalStorageDto[]> {
+    console.log(titleSearch);
     let params = new HttpParams();
     params.append('titleSearch', titleSearch);
-    params.append('limit', limit.toString());
-    return this.httpClient.get<DigitalStorageDto[]>(this.storageBaseUri, {params});
+    params.append('limit', limit);
+    return this.httpClient.get<DigitalStorageDto[]>(
+      this.storageBaseUri,
+      {params: params}
+    );
   }
 }
