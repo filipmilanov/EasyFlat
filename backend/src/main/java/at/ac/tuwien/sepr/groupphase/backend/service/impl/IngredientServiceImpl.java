@@ -23,6 +23,9 @@ public class IngredientServiceImpl implements IngredientService {
     @Override
     public List<Ingredient> findAllByIds(List<Long> ids) {
         LOGGER.trace("findAllByIds({})", ids);
+        if (ids == null) {
+            return List.of();
+        }
 
         return ingredientRepository.findAllById(ids);
 
