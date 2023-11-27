@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/v1/item")
@@ -37,6 +39,13 @@ public class ItemEndpoint {
     public Item create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException {
         LOGGER.info("create({})", itemDto);
         return itemService.create(itemDto);
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("{itemId}")
+    public Optional<Item> findById(@PathVariable Long itemId) {
+        LOGGER.info("findById({})", itemId);
+        return itemService.findById(itemId);
     }
 
     @Secured("ROLE_USER")
