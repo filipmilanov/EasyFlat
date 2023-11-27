@@ -46,15 +46,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public List<Item> findAllItemsOfStorage(Long id) {
-        LOGGER.trace("findAllItemsOfStorage({})",id);
-        Optional<DigitalStorage> optionalStorage = digitalStorageRepository.findById(id);
-        if (optionalStorage.isPresent()) {
-            List<Item> allItems = optionalStorage.get().getItemList();
-            return allItems;
-        } else {
-            return Collections.emptyList();
-        }
-
+      return null;
     }
 
     @Override

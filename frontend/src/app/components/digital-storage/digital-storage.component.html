@@ -6,7 +6,8 @@
       Title
     </label>
     <input type="text" id="searchTitle" name="searchTitle"
-           class="form-control"
+           class="form-control" [(ngModel)]="searchParameters.productName"
+           (change)="loadStorage()"
     >
   </div>
   <div class="flex-grow-1">
@@ -14,7 +15,8 @@
       Brand
     </label>
     <input type="text" id="searchBrand" name="searchBrand"
-           class="form-control"
+           class="form-control" [(ngModel)]="searchParameters.brand"
+           (change)="loadStorage()"
     >
   </div>
 
@@ -27,7 +29,8 @@
            pattern="\d{4}-\d{2}-\d{2}"
            placeholder="yyyy-mm-dd"
            class="form-control"
-
+           [(ngModel)]="searchParameters.expireDateStart"
+           (change)="loadStorage()"
     >
   </div>
   <div class="ms-1">
@@ -39,7 +42,8 @@
            pattern="\d{4}-\d{2}-\d{2}"
            placeholder="yyyy-mm-dd"
            class="form-control"
-
+           [(ngModel)]="searchParameters.expireDateEnd"
+           (change)="loadStorage()"
     >
   </div>
   <div class="ms-1">
