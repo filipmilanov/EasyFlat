@@ -35,7 +35,7 @@ public class ItemEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     public ItemDto create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException {
         LOGGER.info("create({})", itemDto);
-        return itemMapper.itemToDto(
+        return itemMapper.entityToDto(
             itemService.create(itemDto)
         );
     }

@@ -33,6 +33,12 @@ public class ItemValidator {
             errors.add("The given Digital Storage does not exists");
         }
 
+        if (itemDto.alwaysInStock() == null) {
+            errors.add("There is no AlwaysInStock defined");
+        } else if (itemDto.alwaysInStock() && itemDto.minimumQuantity() == null) {
+            errors.add("There is no minimum quantity defined");
+        }
+
         if (!errors.isEmpty()) {
             throw new ConflictException("There is a conflict with persisted data", errors);
         }

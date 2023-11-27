@@ -51,15 +51,25 @@ public class ItemServiceImpl implements ItemService {
     public Item create(ItemDto itemDto) throws ConflictException {
         LOGGER.trace("create({})", itemDto);
 
+        if (itemDto.alwaysInStock() == null) {
+            itemDto = itemDto.withAlwaysInStock(false);
+        }
         Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.storageId());
         if (digitalStorage.isEmpty()) {
             throw new ConflictException("Cannot process given entity", List.of("Digital Storage does not exists"));
         }
         itemValidator.checkItemForCreate(itemDto, digitalStorage.get());
         List<Ingredient> ingredientList = ingredientService.findAllByIds(itemDto.ingredientsIdList());
-        Item item = itemMapper.dtoToItem(itemDto, digitalStorage.get(), ingredientList);
 
+
+        Item item;
+        if (itemDto.alwaysInStock()) {
+            item = itemMapper.dtoToAlwaysInStock(itemDto, digitalStorage.get(), ingredientList);
+        } else {
+            item = itemMapper.dtoToEntity(itemDto, digitalStorage.get(), ingredientList);
+        }
         return itemRepository.save(item);
+
     }
 
     @Override
