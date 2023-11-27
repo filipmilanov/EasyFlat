@@ -197,6 +197,7 @@ public class Item {
     public boolean alwaysInStock() {
         return false;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -82,7 +82,7 @@ public class ItemServiceImpl implements ItemService {
         }
         itemValidator.checkItemForUpdate(itemDto, digitalStorage.get());
         List<Ingredient> ingredientList = ingredientService.findAllByIds(itemDto.ingredientsIdList());
-        Item item = itemMapper.dtoToItem(itemDto, digitalStorage.get(), ingredientList);
+        Item item = itemMapper.dtoToEntity(itemDto, digitalStorage.get(), ingredientList);
 
         return itemRepository.save(item);
     }

@@ -52,14 +52,14 @@ public class ItemEndpoint {
         LOGGER.info("findById({})", itemId);
         Optional<Item> item = itemService.findById(itemId);
 
-        return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.itemToDto(currentItem)));
+        return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToDto(currentItem)));
     }
 
     @Secured("ROLE_USER")
     @PutMapping
     public ItemDto update(@RequestBody ItemDto itemDto) throws ConflictException {
         LOGGER.info("update({})", itemDto);
-        return itemMapper.itemToDto(
+        return itemMapper.entityToDto(
             itemService.update(itemDto)
         );
     }
