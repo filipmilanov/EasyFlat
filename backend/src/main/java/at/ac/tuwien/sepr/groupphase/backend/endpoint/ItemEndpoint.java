@@ -57,9 +57,11 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping
-    public Item update(@RequestBody ItemDto itemDto) throws ConflictException {
+    public ItemDto update(@RequestBody ItemDto itemDto) throws ConflictException {
         LOGGER.info("update({})", itemDto);
-        return itemService.update(itemDto);
+        return itemMapper.itemToDto(
+            itemService.update(itemDto)
+        );
     }
 
     @Secured("ROLE_USER")
