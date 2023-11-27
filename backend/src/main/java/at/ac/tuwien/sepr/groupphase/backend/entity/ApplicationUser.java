@@ -26,12 +26,6 @@ public class ApplicationUser {
     public ApplicationUser() {
     }
 
-    public ApplicationUser(String email, String password, Boolean admin) {
-        this.email = email;
-        this.password = password;
-        this.admin = admin;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -54,10 +48,6 @@ public class ApplicationUser {
 
     public void setAdmin(Boolean admin) {
         this.admin = admin;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Long getId() {

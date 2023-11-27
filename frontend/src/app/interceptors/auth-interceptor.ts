@@ -11,10 +11,10 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const authUri = this.globals.backendUri + '/authentication';
+    const whiteList = ['/authentication', '/register'];
 
     // Do not intercept authentication requests
-    if (req.url === authUri) {
+    if (whiteList.find(whiteListedEndpoint => req.url.startsWith(this.globals.backendUri + whiteListedEndpoint))) {
       return next.handle(req);
     }
 

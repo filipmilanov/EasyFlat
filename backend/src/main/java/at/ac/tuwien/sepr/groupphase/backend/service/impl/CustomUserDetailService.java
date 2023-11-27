@@ -6,6 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,7 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
+    @Transactional
     public String register(UserLoginDto userLoginDto) {
         LOGGER.debug("Registering a new user");
 
@@ -93,7 +95,10 @@ public class CustomUserDetailService implements UserService {
         }
 
         // Create a new ApplicationUser entity for registration
-        ApplicationUser newUser = new ApplicationUser(userLoginDto.getEmail(), passwordEncoder.encode(userLoginDto.getPassword()), false);
+        ApplicationUser newUser = new ApplicationUser();
+        newUser.setEmail(userLoginDto.getEmail());
+        newUser.setPassword(passwordEncoder.encode(userLoginDto.getPassword()));
+        newUser.setAdmin(false);
         userRepository.save(newUser);
 
         // Generate token for the registered user

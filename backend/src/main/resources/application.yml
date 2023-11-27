@@ -17,7 +17,7 @@ spring:
       enabled: true
   jpa:
     # Set this property to true if you want to see the executed queries
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: update
     # Allows to fetch lazy properties outside of the original transaction. Although this sounds helpful, the property
