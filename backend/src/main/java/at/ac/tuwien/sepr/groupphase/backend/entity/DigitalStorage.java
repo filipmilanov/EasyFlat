@@ -19,7 +19,7 @@ public class DigitalStorage {
     private Long storId;
 
     @Column
-    @NotEmpty
+    @NotEmpty(message = "Title cannot be empty")
     private String title;
 
     @OneToMany(mappedBy = "digitalStorage")

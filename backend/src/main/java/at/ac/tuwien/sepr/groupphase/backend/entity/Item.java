@@ -31,7 +31,7 @@ public class Item {
     private Long itemId;
 
     @Column
-    @Pattern(regexp = "[0-9](13)", message = "EAN number has exactly 13 numbers")
+    @Pattern(regexp = "^\\d{13}$", message = "EAN number has exactly 13 numbers")
     private String ean;
 
     @Column
