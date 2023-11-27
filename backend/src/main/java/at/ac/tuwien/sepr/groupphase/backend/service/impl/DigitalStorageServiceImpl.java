@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,19 +45,25 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public List<Item> findAllItemsOfStorage(Long id) {
-        Optional<DigitalStorage> optionalStorage = digitalStorageRepository.findById(id);
-        if (optionalStorage.isPresent()) {
-            List<Item> allItems = optionalStorage.get().getItemList();
-            return allItems;
-        } else {
-            return Collections.emptyList();
-        }
-
+        return null;
     }
 
     @Override
     public List<Item> findAllItemsOfStorageOrdered(Long id, ItemOrderType orderType) {
         return null;
+    }
+
+    @Override
+    public List<Item> searchItems(Long id, ItemSearchDto searchItem) {
+        LOGGER.trace("searchItems({}, {})", id, searchItem);
+        return digitalStorageRepository.searchItems(
+            id,
+            (searchItem != null) ? searchItem.productName() : null,
+            (searchItem != null) ? searchItem.brand() : null,
+            (searchItem != null) ? searchItem.expireDateStart() : null,
+            (searchItem != null) ? searchItem.expireDateEnd() : null,
+            (searchItem != null) ? searchItem.fillLevel() : null
+        );
     }
 
     @Override
@@ -80,4 +86,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     public void remove(Long id) {
 
     }
+
+
 }

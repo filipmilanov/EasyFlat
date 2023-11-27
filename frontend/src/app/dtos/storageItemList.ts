@@ -11,3 +11,13 @@ export class StorageItemList {
   description?:string;
   priceInCent?:number;
 }
+
+export class ItemSearchDto {
+  itemId?: string;
+  productName?:string;
+  brand?:string;
+  fillLevel?:number;
+  expireDateStart?:string;
+  expireDateEnd?:string;
+}
+
