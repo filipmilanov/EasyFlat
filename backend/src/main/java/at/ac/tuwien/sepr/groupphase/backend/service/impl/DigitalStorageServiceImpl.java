@@ -49,6 +49,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         LOGGER.trace("create({})", storageDto);
         DigitalStorage storage = digitalStorageMapper.dtoToEntity(storageDto);
 
+
         return digitalStorageRepository.save(storage);
     }
 

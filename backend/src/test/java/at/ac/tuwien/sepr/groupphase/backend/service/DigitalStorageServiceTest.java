@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import jakarta.xml.bind.ValidationException;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,9 @@ class DigitalStorageServiceTest {
     @Test
     void givenValidStorageWhenCreateThenStorageIsPersistedAndHasId() throws ValidationException {
         // given
-        DigitalStorageDto digitalStorageDto = new DigitalStorageDto().setTitle("MyTestStorage");
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("MyTestStorage")
+            .build();
 
         // when
         DigitalStorage actual = service.create(digitalStorageDto);
@@ -35,13 +38,15 @@ class DigitalStorageServiceTest {
 
         assertTrue(persisted.isPresent());
         assertThat(actual).isEqualTo(persisted.get());
-        assertThat(actual.getTitle()).isEqualTo(digitalStorageDto.getTitle());
+        assertThat(actual.getTitle()).isEqualTo(digitalStorageDto.title());
     }
 
     @Test
     void givenInvalidStorageWhenCreateThenValidationExceptionIsThrown() {
         // given
-        DigitalStorageDto digitalStorageDto = new DigitalStorageDto();
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("")
+            .build();
 
         // when + then
         assertThrows(ValidationException.class, () -> service.create(digitalStorageDto));
