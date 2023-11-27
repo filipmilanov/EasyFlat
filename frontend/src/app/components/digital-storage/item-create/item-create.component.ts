@@ -3,6 +3,9 @@ import {ItemDto} from "../../../dtos/item";
 import {NgForm} from "@angular/forms";
 import {ItemService} from "../../../services/item.service";
 import {ToastrService} from "ngx-toastr";
+import {DigitalStorageDto} from "../../../dtos/digitalStorageDto";
+import {of} from "rxjs";
+import {StorageService} from "../../../services/storage.service";
 
 @Component({
   selector: 'app-item-create',
@@ -21,7 +24,8 @@ export class ItemCreateComponent implements OnInit{
 
   constructor(
     private itemService: ItemService,
-    private notification: ToastrService
+    private notification: ToastrService,
+    private storageService: StorageService,
   ) {
   }
 
@@ -73,6 +77,11 @@ export class ItemCreateComponent implements OnInit{
     return  value ? `${value} € ` : '';
   }
 
+  formatStorageName(storage: DigitalStorageDto | null): string {
+    return storage ? storage.title : '';
+  }
 
-
+  storageSuggestions = (input: string) => (input === '')
+    ? of([])
+    : this.storageService.findAll(input, 5);
 }

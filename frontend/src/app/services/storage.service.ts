@@ -3,6 +3,7 @@ import {HttpClient, HttpParams} from "@angular/common/http";
 import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
 import {ItemSearchDto, StorageItemList} from "../dtos/storageItemList";
+import {DigitalStorageDto} from "../dtos/digitalStorageDto";
 
 @Injectable({
   providedIn: 'root'
@@ -35,4 +36,11 @@ export class StorageService {
     return this.httpClient.get<StorageItemList[]>(this.storageBaseUri + '/' + id, {params});
   }
 
+
+  findAll(titleSearch: string, limit: number): Observable<DigitalStorageDto[]> {
+    let params = new HttpParams();
+    params.append('titleSearch', titleSearch);
+    params.append('limit', limit.toString());
+    return this.httpClient.get<DigitalStorageDto[]>(this.storageBaseUri, {params});
+  }
 }

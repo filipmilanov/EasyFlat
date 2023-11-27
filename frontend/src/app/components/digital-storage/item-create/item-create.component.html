@@ -107,12 +107,17 @@
           Digital Storage
         </label>
         <div class="col-md-10 col-lg-8">
-          <input type="text"
-                 class="form-control"
-                 id="digitalStorage"
-                 name="digitalStorage"
-                 placeholder="Digital Storage"
-                 [(ngModel)]="item.storageId">
+          <app-autocomplete
+            id="horseBreed"
+            name="horseBreed"
+            class="col-md-10 col-lg-8"
+            textInputClass="form-control"
+            valueNeedsToMatchSuggestion="true"
+            [(ngModel)]="item.storageId"
+            [formatModel]="formatStorageName"
+            [suggestions]="storageSuggestions"
+            placeholder="Digital Storage"
+          ></app-autocomplete>
         </div>
       </div>
 
