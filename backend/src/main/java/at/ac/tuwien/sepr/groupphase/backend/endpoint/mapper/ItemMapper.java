@@ -11,13 +11,23 @@ import org.mapstruct.Mapping;
 import java.util.List;
 
 @Mapper
-public interface ItemMapper {
+public abstract class ItemMapper {
 
     @Mapping(target = "storage", expression = "java( persistedDigitalStorage )")
     @Mapping(target = "ingredientList", expression = "java( ingredientList )")
-    Item dtoToItem(ItemDto itemDto,
+    public abstract Item dtoToItem(ItemDto itemDto,
                    @Context DigitalStorage persistedDigitalStorage,
                    @Context List<Ingredient> ingredientList);
 
-    ItemDto itemToDto(Item item);
+    @Mapping(target = "storageId", source = "storage")
+    @Mapping(target = "ingredientsIdList", source = "ingredientList")
+    public abstract ItemDto itemToDto(Item item);
+
+    Long digitalStorageToId(DigitalStorage storage) {
+        return storage.getStorId();
+    }
+
+    List<Long> ingredientListToIdList(List<Ingredient> ingredientList) {
+        return ingredientList.stream().map(Ingredient::getIngrId).toList();
+    }
 }

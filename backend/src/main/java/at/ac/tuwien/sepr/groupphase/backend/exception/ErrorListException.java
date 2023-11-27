@@ -10,17 +10,17 @@ import java.util.List;
 public abstract class ErrorListException extends Exception {
 
     /**
-     * a List of Error Messages
+     * a List of Error Messages.
      */
     private final List<String> errors;
 
     /**
-     * A summary of the messages
+     * A summary of the messages.
      */
     private final String messageSummary;
 
     /**
-     * Creates an Object of typ {@link ErrorListException}
+     * Creates an Object of typ {@link ErrorListException}.
      *
      * @param messageSummary a summary of the problem
      * @param errors         a list of detail problem descriptions
@@ -44,7 +44,7 @@ public abstract class ErrorListException extends Exception {
     }
 
     /**
-     * Gives a description of this exception
+     * Gives a description of this exception.
      *
      * @return a String
      */
@@ -53,7 +53,7 @@ public abstract class ErrorListException extends Exception {
     }
 
     /**
-     * Gives a List of errors
+     * Gives a List of errors.
      *
      * @return an unmodifiable List of error messages
      */

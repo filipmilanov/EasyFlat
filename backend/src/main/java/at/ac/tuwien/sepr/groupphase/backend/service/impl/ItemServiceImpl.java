@@ -53,7 +53,7 @@ public class ItemServiceImpl implements ItemService {
 
         Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.storageId());
         if (digitalStorage.isEmpty()) {
-            throw new ConflictException("Digital Storage does not exists");
+            throw new ConflictException("Cannot process given entity", List.of("Digital Storage does not exists"));
         }
         itemValidator.checkItemForCreate(itemDto, digitalStorage.get());
         List<Ingredient> ingredientList = ingredientService.findAllByIds(itemDto.ingredientsIdList());
