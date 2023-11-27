@@ -31,7 +31,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Optional<Item> findById(Long id) {
-        return Optional.empty();
+        LOGGER.trace("findById({})", id);
+        if (id == null) {
+            return Optional.empty();
+        }
+
+        return itemRepository.findById(id);
     }
 
     @Override
