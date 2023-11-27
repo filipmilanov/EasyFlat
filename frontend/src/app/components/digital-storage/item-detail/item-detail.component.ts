@@ -54,4 +54,8 @@ export class ItemDetailComponent implements OnInit {
     });
   }
 
+  get itemPrice(): string {
+    return "€ " + (this.item.priceInCent / 100).toFixed(2).toString();
+  }
+
 }
