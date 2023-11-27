@@ -70,6 +70,9 @@ public class Item {
     @Column
     private Long priceInCent;
 
+    @Column
+    private String boughtAt;
+
     @ManyToOne
     @NotNull(message = "A Item need to be linked to a storage")
     private DigitalStorage digitalStorage;
@@ -168,6 +171,14 @@ public class Item {
 
     public void setPriceInCent(Long priceInCent) {
         this.priceInCent = priceInCent;
+    }
+
+    public String getBoughtAt() {
+        return boughtAt;
+    }
+
+    public void setBoughtAt(String boughtAt) {
+        this.boughtAt = boughtAt;
     }
 
     public DigitalStorage getStorage() {

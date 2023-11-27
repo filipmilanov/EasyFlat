@@ -20,6 +20,7 @@ public record ItemDto(
     Long priceInCent,
     Boolean alwaysInStock,
     Long minimumQuantity,
+    String boughtAt,
     Long storageId,
     List<Long> ingredientsIdList
 ) {
@@ -38,6 +39,7 @@ public record ItemDto(
             priceInCent,
             alwaysInStock,
             minimumQuantity,
+            boughtAt,
             storageId,
             ingredientsIdList
         );

@@ -74,6 +74,7 @@ class ItemEndpointTest {
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
+            .boughtAt("Hofer")
             .storageId(1L)
             .ingredientsIdList(List.of(1L, 2L))
             .build();
@@ -109,7 +110,8 @@ class ItemEndpointTest {
                 ItemDto::description,
                 ItemDto::priceInCent,
                 ItemDto::storageId,
-                ItemDto::ingredientsIdList
+                ItemDto::ingredientsIdList,
+                ItemDto::boughtAt
             )
             .containsExactly(
                 itemDto.ean(),
@@ -123,7 +125,8 @@ class ItemEndpointTest {
                 itemDto.description(),
                 itemDto.priceInCent(),
                 itemDto.storageId(),
-                itemDto.ingredientsIdList()
+                itemDto.ingredientsIdList(),
+                itemDto.boughtAt()
             );
     }
 
@@ -142,6 +145,7 @@ class ItemEndpointTest {
             .priceInCent(-1234L)
             .storageId(1L)
             .ingredientsIdList(List.of(1L, 2L))
+            .boughtAt("Hofer")
             .build();
 
         String body = objectMapper.writeValueAsString(itemDto);
@@ -183,6 +187,7 @@ class ItemEndpointTest {
             .priceInCent(1234L)
             .storageId(-1L)
             .ingredientsIdList(List.of(-1L, -2L))
+            .boughtAt("Hofer")
             .build();
 
         String body = objectMapper.writeValueAsString(itemDto);

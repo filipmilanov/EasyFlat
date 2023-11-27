@@ -103,6 +103,7 @@ class ItemServiceTest {
             .ingredientsIdList(List.of(1L, 2L))
             .alwaysInStock(true)
             .minimumQuantity(10L)
+            .boughtAt("Hofer")
             .build();
 
         // when
@@ -126,7 +127,8 @@ class ItemServiceTest {
                 Item::getDescription,
                 Item::getPriceInCent,
                 Item::alwaysInStock,
-                Item::getMinimumQuantity
+                Item::getMinimumQuantity,
+                Item::getBoughtAt
             )
             .containsExactly(
                 itemDto.ean(),
@@ -140,7 +142,8 @@ class ItemServiceTest {
                 itemDto.description(),
                 itemDto.priceInCent(),
                 itemDto.alwaysInStock(),
-                itemDto.minimumQuantity()
+                itemDto.minimumQuantity(),
+                itemDto.boughtAt()
             );
         assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.storageId());
         assertThat(actual.getIngredientList().stream()
@@ -164,6 +167,7 @@ class ItemServiceTest {
             .priceInCent(-1234L)
             .storageId(1L)
             .ingredientsIdList(List.of(1L, 2L))
+            .boughtAt("Hofer")
             .build();
 
         // when + then
@@ -194,6 +198,7 @@ class ItemServiceTest {
             .storageId(1L)
             .ingredientsIdList(List.of(1L, 2L))
             .alwaysInStock(true)
+            .boughtAt("Hofer")
             .build();
 
         // when + then
