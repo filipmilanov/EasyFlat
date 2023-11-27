@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +45,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public List<Item> findAllItemsOfStorage(Long id) {
-      return null;
+        return null;
     }
 
     @Override
@@ -87,7 +86,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     public void remove(Long id) {
 
     }
-
 
 
 }

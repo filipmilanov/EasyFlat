@@ -44,8 +44,8 @@ public class StorageEndpoint {
     @PermitAll
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Item> getStorageItems(@PathVariable Long id,ItemSearchDto itemSearchDto) {
+    public List<Item> getStorageItems(@PathVariable Long id, ItemSearchDto itemSearchDto) {
         LOGGER.info("getStorageItems({})", id);
-        return digitalStorageService.searchItems(id,itemSearchDto);
+        return digitalStorageService.searchItems(id, itemSearchDto);
     }
 }
