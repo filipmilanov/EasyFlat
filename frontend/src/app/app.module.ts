@@ -12,10 +12,12 @@ import {LoginComponent} from './components/login/login.component';
 import {MessageComponent} from './components/message/message.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
-import { DigitalStorageComponent } from './components/digital-storage/digital-storage.component';
-import { ItemCardComponent } from './components/digital-storage/item-card/item-card.component';
-import { ItemCreateComponent } from './components/digital-storage/item-create/item-create.component';
-import { ItemDetailComponent } from './components/digital-storage/item-detail/item-detail.component';
+import {DigitalStorageComponent} from './components/digital-storage/digital-storage.component';
+import {ItemCardComponent} from './components/digital-storage/item-card/item-card.component';
+import {ItemCreateComponent} from './components/digital-storage/item-create/item-create.component';
+import {ItemDetailComponent} from './components/digital-storage/item-detail/item-detail.component';
+import {ToastrModule} from "ngx-toastr";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @NgModule({
   declarations: [
@@ -37,6 +39,8 @@ import { ItemDetailComponent } from './components/digital-storage/item-detail/it
     HttpClientModule,
     NgbModule,
     FormsModule,
+    ToastrModule.forRoot(),
+    BrowserAnimationsModule,
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

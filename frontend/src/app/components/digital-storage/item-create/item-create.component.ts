@@ -1,10 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ItemDto} from "../../../dtos/item";
-import {update} from "lodash";
 import {NgForm} from "@angular/forms";
-import {StorageService} from "../../../services/storage.service";
 import {ItemService} from "../../../services/item.service";
-import {Router} from "@angular/router";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-item-create',
@@ -22,7 +20,8 @@ export class ItemCreateComponent implements OnInit{
 
 
   constructor(
-    private itemService: ItemService
+    private itemService: ItemService,
+    private notification: ToastrService
   ) {
   }
 
@@ -38,11 +37,12 @@ export class ItemCreateComponent implements OnInit{
 
     o.subscribe({
       next: res => {
-        console.log("Item created", res);
+        this.notification.success(this.item.productName + " was added to your storage", "Success");
         form.reset();
       },
       error: err => {
-        console.error("Error creating item:", err);
+        console.error("Error adding item to storage:", err);
+        this.notification.error(err.error, "Error");
       }
     })
 
