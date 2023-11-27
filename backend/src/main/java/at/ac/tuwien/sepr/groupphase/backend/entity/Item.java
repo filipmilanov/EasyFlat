@@ -10,8 +10,11 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
@@ -32,43 +35,51 @@ public class Item {
     private String ean;
 
     @Column
-    @NotEmpty
+    @NotEmpty(message = "The general name cannot be empty")
     private String generalName;
 
     @Column
-    @NotEmpty
+    @NotEmpty(message = "The product name cannot be empty")
     private String productName;
 
     @Column
-    @NotEmpty
+    @NotEmpty(message = "The brand cannot be empty")
     private String brand;
 
     @Column
-    @Min(value = 0, message = "The quantity must be positive")
+    @Min(value = 0, message = "The actual quantity must be positive")
     private Long quantityCurrent;
 
     @Column
-    @Min(value = 0, message = "The quantity must be positive")
+    @Min(value = 0, message = "The total quantity must be positive")
     private Long quantityTotal;
 
     @Column
-    @NotEmpty
+    @NotEmpty(message = "The unit cannot be empty")
     private String unit;
 
     @Column
+    @FutureOrPresent(message = "You cannot store products which are over the expire date")
     private LocalDate expireDate;
 
     @Column
+    @NotEmpty(message = "The description is necessary")
     private String description;
 
     @Column
     private Long priceInCent;
 
     @ManyToOne
+    @NotNull(message = "A Item need to be linked to a storage")
     private DigitalStorage digitalStorage;
 
     @ManyToMany
     private List<Ingredient> ingredientList;
+
+    @AssertTrue(message = "The current quantity cannot be larger then the total")
+    private boolean quantityCurrentLessThenTotal() {
+        return this.quantityCurrent < this.quantityTotal;
+    }
 
     public Long getItemId() {
         return itemId;
