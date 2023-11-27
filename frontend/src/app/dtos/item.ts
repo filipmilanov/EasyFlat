@@ -9,8 +9,11 @@ export class ItemDto {
   unit?: string;
   expireDate?: Date;
   description?: string;
+  boughtAt?: string;
   priceInCent?: number;
   alwaysInStock: boolean;
+  minimumQuantity?: number;
   addToFiance: boolean;
   ingredients?: [string];
+  storageId?: number;
 }

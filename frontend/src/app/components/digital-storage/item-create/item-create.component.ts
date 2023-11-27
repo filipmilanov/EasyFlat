@@ -2,6 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {ItemDto} from "../../../dtos/item";
 import {update} from "lodash";
 import {NgForm} from "@angular/forms";
+import {StorageService} from "../../../services/storage.service";
+import {ItemService} from "../../../services/item.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-item-create',
@@ -16,7 +19,12 @@ export class ItemCreateComponent implements OnInit{
   }
   isCreateMode: boolean;
   priceInEuro: number = 0.00;
-  addToFiance: boolean = false;
+
+
+  constructor(
+    private itemService: ItemService
+  ) {
+  }
 
   ngOnInit(): void {
 
@@ -24,12 +32,24 @@ export class ItemCreateComponent implements OnInit{
 
   submit(form: NgForm): void {
     this.item.priceInCent = this.priceInEuro * 100;
+    this.item.quantityCurrent = this.item.quantityTotal;
+
+    let o = this.itemService.createItem(this.item);
+
+    o.subscribe({
+      next: res => {
+        console.log("Item created", res);
+        form.reset();
+      },
+      error: err => {
+        console.error("Error creating item:", err);
+      }
+    })
 
   }
 
   addIngredient(ingredient: string): void {
     if (ingredient == undefined || ingredient.length == 0) {
-      console.log("sdfa");
       return
     }
     if (this.item.ingredients === undefined) {
@@ -37,6 +57,10 @@ export class ItemCreateComponent implements OnInit{
     } else {
       this.item.ingredients.push(ingredient);
     }
+  }
+
+  removeIngredient(i: number) {
+    this.item.ingredients.splice(i, 1);
   }
 
   validatePriceInput(event: any): void {

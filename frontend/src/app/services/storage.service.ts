@@ -4,6 +4,7 @@ import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
 import {Message} from "../dtos/message";
 import {StorageItemList} from "../dtos/storageItemList";
+import {ItemDto} from "../dtos/item";
 
 @Injectable({
   providedIn: 'root'
@@ -17,5 +18,6 @@ export class StorageService {
   getItems(id:string): Observable<StorageItemList[]> {
     return this.httpClient.get<StorageItemList[]>(this.storageBaseUri + '/' + id);
   }
+
 
 }
