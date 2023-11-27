@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import jakarta.validation.ValidationException;
@@ -41,7 +42,7 @@ class ItemServiceTest {
             .description("This is valid description")
             .priceInCent(1234L)
             .storageId(1L)
-            .ingredientsIdList(List.of(-1L, -2L))
+            .ingredientsIdList(List.of(1L, 2L))
             .build();
 
         // when
@@ -63,24 +64,25 @@ class ItemServiceTest {
                 Item::getUnit,
                 Item::getExpireDate,
                 Item::getDescription,
-                Item::getPriceInCent,
-                Item::getStorage,
-                Item::getIngredientList
+                Item::getPriceInCent
             )
             .containsExactly(
                 itemDto.ean(),
                 itemDto.generalName(),
-                itemDto.priceInCent(),
+                itemDto.productName(),
                 itemDto.brand(),
                 itemDto.quantityCurrent(),
                 itemDto.quantityTotal(),
                 itemDto.unit(),
                 itemDto.expireDate(),
                 itemDto.description(),
-                itemDto.priceInCent(),
-                itemDto.storageId(),
-                itemDto.ingredientsIdList()
+                itemDto.priceInCent()
             );
+        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.storageId());
+        assertThat(actual.getIngredientList().stream()
+            .map(Ingredient::getIngrId)
+            .toList()
+        ).isEqualTo(itemDto.ingredientsIdList());
     }
 
     @Test
@@ -97,7 +99,7 @@ class ItemServiceTest {
             .description("")
             .priceInCent(-1234L)
             .storageId(1L)
-            .ingredientsIdList(List.of(-1L, -2L))
+            .ingredientsIdList(List.of(1L, 2L))
             .build();
 
         // when + then
