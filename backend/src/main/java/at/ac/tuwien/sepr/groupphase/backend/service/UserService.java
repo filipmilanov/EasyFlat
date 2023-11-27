@@ -39,4 +39,6 @@ public interface UserService extends UserDetailsService {
     String login(UserLoginDto userLoginDto);
 
     String register(UserLoginDto userLoginDto);
+
+    UserLoginDto getUser(String authToken);
 }

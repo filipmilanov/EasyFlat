@@ -26,13 +26,11 @@ export class RegisterComponent {
     this.submitted = true;
     if (this.registerForm.valid) {
       const authRequest: AuthRequest = new AuthRequest(this.registerForm.controls.email.value, this.registerForm.controls.password.value);
-      // Pass the authRequest to the authentication service for user registration
       console.log(authRequest)
       this.authService.registerUser(authRequest).subscribe({
         next: () => {
           console.log('Successfully registered user: ' + authRequest.email);
-          // After successful registration, you can redirect the user to the login page or any other desired route
-          this.router.navigate(['/message']);
+          this.router.navigate(['']);
         },
         error: error => {
           console.log('Could not register due to:');

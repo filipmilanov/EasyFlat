@@ -1,12 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +29,15 @@ public class CustomUserDetailService implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenizer jwtTokenizer;
+    private final UserMapper userMapper;
 
     @Autowired
-    public CustomUserDetailService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenizer jwtTokenizer) {
+    public CustomUserDetailService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenizer jwtTokenizer,
+                                   UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenizer = jwtTokenizer;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -85,23 +88,19 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    @Transactional
     public String register(UserLoginDto userLoginDto) {
         LOGGER.debug("Registering a new user");
 
-        // Check if the email already exists
         if (userRepository.findUserByEmail(userLoginDto.getEmail()) != null) {
             throw new BadCredentialsException("User with this email already exists");
         }
 
-        // Create a new ApplicationUser entity for registration
         ApplicationUser newUser = new ApplicationUser();
         newUser.setEmail(userLoginDto.getEmail());
         newUser.setPassword(passwordEncoder.encode(userLoginDto.getPassword()));
         newUser.setAdmin(false);
         userRepository.save(newUser);
 
-        // Generate token for the registered user
         UserDetails userDetails = loadUserByUsername(userLoginDto.getEmail());
         if (userDetails != null) {
             List<String> roles = userDetails.getAuthorities()
@@ -112,5 +111,13 @@ public class CustomUserDetailService implements UserService {
         }
 
         throw new BadCredentialsException("Failed to register the user");
+    }
+
+    @Override
+    public UserLoginDto getUser(String authToken)
+    {
+        String email = jwtTokenizer.getEmailFromToken(authToken);
+        ApplicationUser user = userRepository.findUserByEmail(email);
+        return userMapper.mapToUserLoginDto(user);
     }
 }

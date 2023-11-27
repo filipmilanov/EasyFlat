@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AuthRequest} from '../dtos/auth-request';
 import {Observable} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {tap} from 'rxjs/operators';
 import {jwtDecode} from 'jwt-decode';
 import {Globals} from '../global/globals';
@@ -33,6 +33,14 @@ export class AuthService {
       .pipe(
         tap((authResponse: string) => this.setToken(authResponse))
       );
+  }
+
+  getUser(authToken: string): Observable<AuthRequest> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${authToken}`
+    });
+
+    return this.httpClient.get<AuthRequest>(this.authBaseUri, { headers });
   }
 
 
