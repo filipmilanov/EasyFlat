@@ -6,6 +6,7 @@ import {AuthGuard} from './guards/auth.guard';
 import {MessageComponent} from './components/message/message.component';
 import {DigitalStorageComponent} from "./components/digital-storage/digital-storage.component";
 import {ItemCreateComponent} from "./components/digital-storage/item-create/item-create.component";
+import {ItemDetailComponent} from "./components/digital-storage/item-detail/item-detail.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -14,7 +15,8 @@ const routes: Routes = [
   {path: 'digital-storage', children: [
       {path: '', component: DigitalStorageComponent},
       {path: 'item', children: [
-          {path: 'new', component: ItemCreateComponent}
+          {path: 'new', component: ItemCreateComponent},
+          {path: ':id/detail', component: ItemDetailComponent}
         ]}
   ]}
 ];

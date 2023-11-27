@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.exceptionhandler;
 
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +32,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
-     * Use the @ExceptionHandler annotation to write handler for custom exceptions.
+     * Handles NotFoundException and sends a NOT_FOUND status.
      */
     @ExceptionHandler(value = {NotFoundException.class})
     protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
@@ -39,13 +41,33 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Handles ValidationExceptions and sends a UNPROCESSABLE_ENTITY status.
+     */
+    @ExceptionHandler(value = {ValidationException.class})
+    protected ResponseEntity<Object> handleValidation(RuntimeException ex, WebRequest request) {
+        LOGGER.warn(ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
+    }
+
+
+    /**
+     * Handles ConflictException and sends a CONFLICT status.
+     */
+    @ExceptionHandler(value = {ConflictException.class})
+    protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {
+        LOGGER.warn(ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT, request);
+    }
+
+    /**
      * Override methods from ResponseEntityExceptionHandler to send a customized HTTP response for a know exception
      * from e.g. Spring
      */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-        HttpHeaders headers,
-        HttpStatusCode status, WebRequest request) {
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
         Map<String, Object> body = new LinkedHashMap<>();
         //Get all errors
         List<String> errors = ex.getBindingResult()

@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
@@ -28,17 +29,21 @@ import java.util.List;
 public class StorageEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final DigitalStorageService digitalStorageService;
+    private final DigitalStorageMapper digitalStorageMapper;
 
-    public StorageEndpoint(DigitalStorageService digitalStorageService) {
+    public StorageEndpoint(DigitalStorageService digitalStorageService, DigitalStorageMapper digitalStorageMapper) {
         this.digitalStorageService = digitalStorageService;
+        this.digitalStorageMapper = digitalStorageMapper;
     }
 
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DigitalStorage create(@RequestBody DigitalStorageDto digitalStorageDto) throws ValidationException, ConflictException {
+    public DigitalStorageDto create(@RequestBody DigitalStorageDto digitalStorageDto) throws ValidationException, ConflictException {
         LOGGER.info("create({})", digitalStorageDto);
-        return digitalStorageService.create(digitalStorageDto);
+        return digitalStorageMapper.entityToDto(
+            digitalStorageService.create(digitalStorageDto)
+        );
     }
 
     @PermitAll

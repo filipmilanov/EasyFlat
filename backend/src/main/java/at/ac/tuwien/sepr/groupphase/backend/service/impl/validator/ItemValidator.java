@@ -33,6 +33,30 @@ public class ItemValidator {
             errors.add("The given Digital Storage does not exists");
         }
 
+        if (itemDto.alwaysInStock() == null) {
+            errors.add("There is no AlwaysInStock defined");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ConflictException("There is a conflict with persisted data", errors);
+        }
+    }
+
+    public void checkItemForUpdate(ItemDto itemDto,
+                                   DigitalStorage digitalStorage) throws ConflictException {
+        LOGGER.trace("checkItemForUpdate({}, {})", itemDto, digitalStorage);
+
+        List<String> errors = new ArrayList<>();
+        if (itemDto.itemId() == null) {
+            errors.add("The item id can't be null");
+        }
+
+        if (itemDto.storageId() == null) {
+            errors.add("There is no Digital Storage defined for this item");
+        } else if (digitalStorage == null || !Objects.equals(digitalStorage.getStorId(), itemDto.storageId())) {
+            errors.add("The given Digital Storage does not exists");
+        }
+
         if (!errors.isEmpty()) {
             throw new ConflictException("There is a conflict with persisted data", errors);
         }
