@@ -47,7 +47,7 @@ public interface DigitalStorageService {
      * @param itemSearchDto search parameters
      * @return a List of filtered items
      */
-    List<Item> searchItem(Long id, ItemSearchDto itemSearchDto);
+    List<Item> searchItems(Long id, ItemSearchDto itemSearchDto);
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.

@@ -6,8 +6,9 @@ public record ItemSearchDto(
     Long itemId,
     String productName,
     String brand,
-    String fillLevel,
-    LocalDate expireDate
+    Long fillLevel,
+    LocalDate expireDateStart,
+    LocalDate expireDateEnd
 
 ) {
 }

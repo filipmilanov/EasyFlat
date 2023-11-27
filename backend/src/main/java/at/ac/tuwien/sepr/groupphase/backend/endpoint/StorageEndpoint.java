@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -43,9 +44,8 @@ public class StorageEndpoint {
     @PermitAll
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Item> getAllItems(@PathVariable Long id) {
+    public List<Item> getAllItems(@PathVariable Long id, @RequestBody ItemSearchDto itemSearchDto) {
         LOGGER.info("getAllItems({})", id);
-        List<Item> test = digitalStorageService.findAllItemsOfStorage(id);
-        return test;
+        return digitalStorageService.searchItems(id,itemSearchDto);
     }
 }

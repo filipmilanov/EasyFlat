@@ -46,6 +46,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public List<Item> findAllItemsOfStorage(Long id) {
+        LOGGER.trace("findAllItemsOfStorage({})",id);
         Optional<DigitalStorage> optionalStorage = digitalStorageRepository.findById(id);
         if (optionalStorage.isPresent()) {
             List<Item> allItems = optionalStorage.get().getItemList();
@@ -61,8 +62,17 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         return null;
     }
 
-    public List<Item> searchItems(Long id, ItemSearchDto itemSearchDto) {
-        return null;
+    @Override
+    public List<Item> searchItems(Long id, ItemSearchDto searchItem) {
+        LOGGER.trace("searchItems({}, {})", id, searchItem);
+        return digitalStorageRepository.searchItems(
+            id,
+            (searchItem != null) ? searchItem.productName() : null,
+            (searchItem != null) ? searchItem.brand() : null,
+            (searchItem != null) ? searchItem.expireDateStart() : null,
+            (searchItem != null) ? searchItem.expireDateEnd() : null,
+            (searchItem != null) ? searchItem.fillLevel() : null
+        );
     }
 
     @Override
@@ -85,4 +95,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     public void remove(Long id) {
 
     }
+
+
+
 }
