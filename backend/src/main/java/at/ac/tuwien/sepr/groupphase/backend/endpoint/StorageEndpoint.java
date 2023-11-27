@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
@@ -64,5 +65,13 @@ public class StorageEndpoint {
     public List<Item> getStorageItems(@PathVariable Long id, ItemSearchDto itemSearchDto, ItemOrderType orderType) {
         LOGGER.info("getStorageItems({}, {})", id, itemSearchDto);
         return digitalStorageService.searchItems(id, itemSearchDto, orderType);
+    }
+
+    @Secured("ROLE_USER")
+    @PatchMapping("{storageId}/{itemId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Item updateItemQuantity(@PathVariable long storageId, @PathVariable long itemId, long quantity) {
+        LOGGER.info("updateItemQuantity({}, {}, {})", storageId, itemId, quantity);
+        return digitalStorageService.updateItemQuantity(storageId, itemId, quantity);
     }
 }

@@ -1,9 +1,10 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
 import {ItemSearchDto, StorageItemList} from "../dtos/storageItemList";
 import {DigitalStorageDto} from "../dtos/digitalStorageDto";
+import {ItemDto} from "../dtos/item";
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +37,9 @@ export class StorageService {
     return this.httpClient.get<StorageItemList[]>(this.storageBaseUri + '/' + id, {params});
   }
 
+  updateItemQuantity(storageId: string, value: string, item: ItemDto) {
+    return this.httpClient.patch<ItemDto>(this.storageBaseUri + '/' + storageId + '/' + item.itemId, item.quantityCurrent)
+  }
 
   findAll(titleSearch: string, limit: number): Observable<DigitalStorageDto[]> {
     console.log(titleSearch);

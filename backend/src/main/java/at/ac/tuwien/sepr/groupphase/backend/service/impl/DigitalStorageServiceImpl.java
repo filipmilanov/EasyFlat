@@ -4,18 +4,22 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
+import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +58,14 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public List<Item> findAllItemsOfStorage(Long id) {
-        return null;
+        Optional<DigitalStorage> optionalStorage = digitalStorageRepository.findById(id);
+        if (optionalStorage.isPresent()) {
+            List<Item> allItems = optionalStorage.get().getItemList();
+            return allItems;
+        } else {
+            return Collections.emptyList();
+        }
+
     }
 
     @Override
@@ -97,5 +108,10 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     }
 
+    @Override
+    public Item updateItemQuantity(long storageId, long itemId, long quantity) {
+        LOGGER.trace("updateItemQuantity({}, {}, {})", storageId, itemId, quantity);
 
+        return digitalStorageRepository.updateItemQuantity(storageId, itemId, quantity);
+    }
 }

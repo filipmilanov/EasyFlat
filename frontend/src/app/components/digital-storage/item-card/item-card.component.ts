@@ -1,5 +1,7 @@
 import {Component, ElementRef, HostListener, Input} from '@angular/core';
 import {DigitalStorageComponent} from "../digital-storage.component";
+import {StorageService} from "../../../services/storage.service";
+import {ItemService} from "../../../services/item.service";
 
 @Component({
   selector: 'app-item-card',
@@ -8,6 +10,7 @@ import {DigitalStorageComponent} from "../digital-storage.component";
 })
 
 export class ItemCardComponent {
+  @Input() id: number;
   @Input() title: string;
   @Input() quantity: number;
   @Input() maxQuantity: number;
@@ -15,9 +18,9 @@ export class ItemCardComponent {
 
   customModalOpen: boolean = false;
   customModalOpen1: boolean = false;
-  private popupTimeout: any;
 
-  constructor(private el: ElementRef, private digitalStorage: DigitalStorageComponent) {}
+  constructor(private el: ElementRef, private digitalStorage: DigitalStorageComponent, private storageService: StorageService,
+              private itemService: ItemService) {}
 
   getCardColor(): string {
     const ratio = this.quantity / this.maxQuantity;
@@ -43,7 +46,7 @@ export class ItemCardComponent {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    // Check if the clicked element is outside the popup
+    // Check if the clicked element is outside the card
     if (!this.el.nativeElement.contains(event.target)) {
       this.customModalOpen = false;
       this.customModalOpen1 = false;
@@ -58,11 +61,27 @@ export class ItemCardComponent {
       return;
     }
 
-    if (mode == 0) {
+    let item;
+    this.itemService.getById(this.id).subscribe({
+      next: res => {
+        item = res;
+      },
+      error: err => {
+        console.error("Error finding item:", err);
+      }
+    });
 
-    } else {
+    let quantityCurrent;
+    if (mode == 0) { // Subtract
+      quantityCurrent = item.quantityCurrent - parseInt(value);
 
+      this.customModalOpen = false;
+    } else { // mode == 1, Add
+      quantityCurrent = item.quantityCurrent + parseInt(value);
+
+      this.customModalOpen1 = false;
     }
-    this.digitalStorage.loadStorage();
+    this.storageService.updateItemQuantity('1', value, quantityCurrent);
+    this.storageService.getItems('1', null);
   }
 }
