@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -34,6 +35,13 @@ public class ItemEndpoint {
     public Item create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException {
         LOGGER.info("create({})", itemDto);
         return itemService.create(itemDto);
+    }
+
+    @Secured("ROLE_USER")
+    @PutMapping
+    public Item update(@RequestBody ItemDto itemDto) throws ConflictException {
+        LOGGER.info("update({})", itemDto);
+        return itemService.update(itemDto);
     }
 
 }
