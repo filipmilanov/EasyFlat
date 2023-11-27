@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,12 +27,14 @@ public class ItemServiceImpl implements ItemService {
     private final DigitalStorageService digitalStorageService;
     private final IngredientService ingredientService;
     private final ItemMapper itemMapper;
+    private final ItemValidator itemValidator;
 
-    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService, IngredientService ingredientService, ItemMapper itemMapper) {
+    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService, IngredientService ingredientService, ItemMapper itemMapper, ItemValidator itemValidator) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
         this.itemMapper = itemMapper;
+        this.itemValidator = itemValidator;
     }
 
     @Override
@@ -48,12 +51,11 @@ public class ItemServiceImpl implements ItemService {
     public Item create(ItemDto itemDto) throws ConflictException {
         LOGGER.trace("create({})", itemDto);
 
-        // check for conflict
-
         Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.storageId());
         if (digitalStorage.isEmpty()) {
             throw new ConflictException("Digital Storage does not exists");
         }
+        itemValidator.checkItemForCreate(itemDto, digitalStorage.get());
         List<Ingredient> ingredientList = ingredientService.findAllByIds(itemDto.ingredientsIdList());
         Item item = itemMapper.dtoToItem(itemDto, digitalStorage.get(), ingredientList);
 
