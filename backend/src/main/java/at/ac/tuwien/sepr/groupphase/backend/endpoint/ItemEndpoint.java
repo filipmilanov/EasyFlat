@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import jakarta.xml.bind.ValidationException;
@@ -47,9 +48,11 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("{itemId}")
-    public Optional<Item> findById(@PathVariable Long itemId) {
+    public Optional<ItemDto> findById(@PathVariable Long itemId) {
         LOGGER.info("findById({})", itemId);
-        return itemService.findById(itemId);
+        Optional<Item> item = itemService.findById(itemId);
+
+        return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.itemToDto(currentItem)));
     }
 
     @Secured("ROLE_USER")
