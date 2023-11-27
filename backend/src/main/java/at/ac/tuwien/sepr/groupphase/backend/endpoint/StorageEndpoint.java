@@ -3,7 +3,9 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.xml.bind.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,15 +35,17 @@ public class StorageEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DigitalStorage create(@RequestBody DigitalStorageDto digitalStorageDto) throws ValidationException {
+    public DigitalStorage create(@RequestBody DigitalStorageDto digitalStorageDto) throws ValidationException, ConflictException {
         LOGGER.info("create({})", digitalStorageDto);
         return digitalStorageService.create(digitalStorageDto);
     }
 
-
+    @PermitAll
     @GetMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
     public List<Item> getAllItems(@PathVariable Long id) {
         LOGGER.info("getAllItems({})", id);
-        return digitalStorageService.findAllItemsOfStorage(id);
+        List<Item> test = digitalStorageService.findAllItemsOfStorage(id);
+        return test;
     }
 }
