@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +44,14 @@ public class ItemEndpoint {
     public Item update(@RequestBody ItemDto itemDto) throws ConflictException {
         LOGGER.info("update({})", itemDto);
         return itemService.update(itemDto);
+    }
+
+    @Secured("ROLE_USER")
+    @DeleteMapping("{itemId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long itemId) {
+        LOGGER.info("delete({})", itemId);
+        itemService.delete(itemId);
     }
 
 }

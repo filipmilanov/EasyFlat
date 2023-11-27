@@ -78,7 +78,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void remove(Long id) {
+    public void delete(Long id) {
+        LOGGER.trace("delete({})", id);
 
+        itemRepository.deleteById(id);
     }
 }
