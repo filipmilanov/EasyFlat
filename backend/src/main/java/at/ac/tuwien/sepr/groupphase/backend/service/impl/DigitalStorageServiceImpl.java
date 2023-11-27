@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
@@ -57,6 +58,10 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public List<Item> findAllItemsOfStorageOrdered(Long id, ItemOrderType orderType) {
+        return null;
+    }
+
+    public List<Item> searchItems(Long id, ItemSearchDto itemSearchDto) {
         return null;
     }
 
