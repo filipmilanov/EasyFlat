@@ -1,9 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import jakarta.xml.bind.ValidationException;
 import org.slf4j.Logger;
@@ -43,10 +42,12 @@ public class StorageEndpoint {
         );
     }
 
-
+    @PermitAll
     @GetMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
     public List<Item> getAllItems(@PathVariable Long id) {
         LOGGER.info("getAllItems({})", id);
-        return digitalStorageService.findAllItemsOfStorage(id);
+        List<Item> test = digitalStorageService.findAllItemsOfStorage(id);
+        return test;
     }
 }

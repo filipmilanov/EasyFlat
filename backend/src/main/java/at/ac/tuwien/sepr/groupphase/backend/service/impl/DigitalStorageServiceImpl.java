@@ -14,10 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+
 public class DigitalStorageServiceImpl implements DigitalStorageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -44,8 +46,13 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     @Override
     public List<Item> findAllItemsOfStorage(Long id) {
         Optional<DigitalStorage> optionalStorage = digitalStorageRepository.findById(id);
+        if (optionalStorage.isPresent()) {
+            List<Item> allItems = optionalStorage.get().getItemList();
+            return allItems;
+        } else {
+            return Collections.emptyList();
+        }
 
-        return optionalStorage.map(DigitalStorage::getItemList).orElse(List.of());
     }
 
     @Override
