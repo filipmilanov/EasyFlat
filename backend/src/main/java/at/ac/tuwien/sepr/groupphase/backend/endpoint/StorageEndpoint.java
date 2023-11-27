@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -13,13 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -52,5 +47,13 @@ public class StorageEndpoint {
     public List<Item> getStorageItems(@PathVariable Long id, ItemSearchDto itemSearchDto) {
         LOGGER.info("getStorageItems({})", id);
         return digitalStorageService.searchItems(id, itemSearchDto);
+    }
+
+    @Secured("ROLE_USER")
+    @PatchMapping("{storageId}/{itemId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Item updateItemQuantity(@PathVariable long storageId, @PathVariable long itemId, long quantity) {
+        LOGGER.info("updateItemQuantity({}, {}, {})", storageId, itemId, quantity);
+        return digitalStorageService.updateItemQuantity(storageId, itemId, quantity);
     }
 }

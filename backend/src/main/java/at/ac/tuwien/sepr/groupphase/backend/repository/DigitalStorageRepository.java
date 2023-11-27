@@ -5,11 +5,20 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
 public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, Long> {
+
+    @Query("UPDATE Item i " +
+        "SET i.quantityCurrent = :quantity " +
+        "WHERE i.itemId = :itemId " +
+        "AND i.digitalStorage.storId = :storageId")
+    Item updateItemQuantity(@Param("storageId") long storageId, @Param("itemId") long itemId, @Param("quantity") long quantity);
+
     @Query("SELECT i FROM Item i WHERE i.digitalStorage.storId = :storageId AND "
         + "(:title IS NULL OR LOWER(i.productName) LIKE LOWER(CONCAT('%', :title, '%'))) AND "
         + "(:brand IS NULL OR LOWER(i.brand) LIKE LOWER(CONCAT('%', :brand, '%'))) AND "
