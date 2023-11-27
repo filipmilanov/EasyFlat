@@ -6,9 +6,12 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper
-public interface DigitalStorageMapper {
+public abstract class DigitalStorageMapper {
 
 
     @Mapping(target = "itemList", ignore = true)
-    DigitalStorage dtoToEntity(DigitalStorageDto digitalStorageDto);
+    public abstract DigitalStorage dtoToEntity(DigitalStorageDto digitalStorageDto);
+
+    public abstract DigitalStorageDto entityToDto(DigitalStorage digitalStorage);
+
 }

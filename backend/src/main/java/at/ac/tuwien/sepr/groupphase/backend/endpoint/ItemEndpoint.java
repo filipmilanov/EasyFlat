@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import jakarta.xml.bind.ValidationException;
@@ -23,17 +23,21 @@ public class ItemEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ItemService itemService;
+    private final ItemMapper itemMapper;
 
-    public ItemEndpoint(ItemService itemService) {
+    public ItemEndpoint(ItemService itemService, ItemMapper itemMapper) {
         this.itemService = itemService;
+        this.itemMapper = itemMapper;
     }
 
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Item create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException {
+    public ItemDto create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException {
         LOGGER.info("create({})", itemDto);
-        return itemService.create(itemDto);
+        return itemMapper.itemToDto(
+            itemService.create(itemDto)
+        );
     }
 
 }
