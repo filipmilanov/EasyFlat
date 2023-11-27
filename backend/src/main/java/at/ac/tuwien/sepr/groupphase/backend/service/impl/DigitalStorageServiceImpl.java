@@ -9,11 +9,9 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
@@ -48,13 +46,12 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     @Override
     public List<Item> findAllItemsOfStorage(Long id) {
         Optional<DigitalStorage> optionalStorage = digitalStorageRepository.findById(id);
-      if(optionalStorage.isPresent()) {
-          List<Item> allItems = optionalStorage.get().getItemList();
-          return allItems;
-      }
-      else {
-          return Collections.emptyList();
-      }
+        if (optionalStorage.isPresent()) {
+            List<Item> allItems = optionalStorage.get().getItemList();
+            return allItems;
+        } else {
+            return Collections.emptyList();
+        }
 
     }
 

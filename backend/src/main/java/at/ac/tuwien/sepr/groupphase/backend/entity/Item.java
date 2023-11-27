@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -73,7 +74,7 @@ public class Item {
     @NotNull(message = "A Item need to be linked to a storage")
     private DigitalStorage digitalStorage;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Ingredient> ingredientList;
 
     @AssertTrue(message = "The current quantity cannot be larger then the total")
