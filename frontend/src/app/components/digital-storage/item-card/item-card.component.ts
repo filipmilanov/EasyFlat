@@ -19,6 +19,13 @@ export class ItemCardComponent {
 
   constructor(private el: ElementRef, private digitalStorage: DigitalStorageComponent) {}
 
+  getCardColor(): string {
+    const ratio = this.quantity / this.maxQuantity;
+    if (ratio < 0.2) return 'bg-danger'; // Low quantity
+    if (ratio < 0.4) return 'bg-warning'; // Medium quantity
+    return 'bg-primary'; // High quantity
+  }
+
   // Method to open/close the custom modal
   toggleCustomModal() {
     this.customModalOpen = !this.customModalOpen;
