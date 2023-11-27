@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import jakarta.annotation.security.PermitAll;
@@ -60,8 +61,8 @@ public class StorageEndpoint {
     @PermitAll
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Item> getStorageItems(@PathVariable Long id, ItemSearchDto itemSearchDto) {
+    public List<Item> getStorageItems(@PathVariable Long id, ItemSearchDto itemSearchDto, ItemOrderType orderType) {
         LOGGER.info("getStorageItems({}, {})", id, itemSearchDto);
-        return digitalStorageService.searchItems(id, itemSearchDto);
+        return digitalStorageService.searchItems(id, itemSearchDto, orderType);
     }
 }

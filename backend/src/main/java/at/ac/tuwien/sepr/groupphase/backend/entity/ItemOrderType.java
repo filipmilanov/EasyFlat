@@ -2,9 +2,9 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 public enum ItemOrderType {
 
-    NAME("productName"),
-    DATE("expireDate"),
-    QUANTITY("quantityCurrent");
+    NAME("product_name"),
+    DATE("expire_date"),
+    QUANTITY("quantity_current");
 
     final String columnName;
 

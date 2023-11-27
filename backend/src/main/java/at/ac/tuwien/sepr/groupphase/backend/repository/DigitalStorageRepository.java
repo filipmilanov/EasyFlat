@@ -2,9 +2,11 @@ package at.ac.tuwien.sepr.groupphase.backend.repository;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,11 +21,13 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
         + "(:expireDateStart IS NULL OR "
         + "(i.expireDate >= :expireDateStart AND "
         + "(:expireDateEnd IS NULL OR i.expireDate <= :expireDateEnd))) AND "
-        + "(:fillLevel IS NULL OR i.quantityCurrent = :fillLevel)")
+        + "(:fillLevel IS NULL OR i.quantityCurrent = :fillLevel) "
+        + "ORDER BY :orderType")
     List<Item> searchItems(@Param("storageId") Long storageId,
                            @Param("title") String title,
                            @Param("brand") String brand,
                            @Param("expireDateStart") LocalDate expireDateStart,
                            @Param("expireDateEnd") LocalDate expireDateEnd,
-                           @Param("fillLevel") Long fillLevel);
+                           @Param("fillLevel") Long fillLevel,
+                           @Param("orderType") String orderType);
 }

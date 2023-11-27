@@ -63,15 +63,16 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<Item> searchItems(Long id, ItemSearchDto searchItem) {
-        LOGGER.trace("searchItems({}, {})", id, searchItem);
+    public List<Item> searchItems(Long id, ItemSearchDto searchItem, ItemOrderType orderType) {
+        LOGGER.trace("searchItems({}, {}, {})", id, searchItem, orderType);
         return digitalStorageRepository.searchItems(
             id,
             (searchItem != null) ? searchItem.productName() : null,
             (searchItem != null) ? searchItem.brand() : null,
             (searchItem != null) ? searchItem.expireDateStart() : null,
             (searchItem != null) ? searchItem.expireDateEnd() : null,
-            (searchItem != null) ? searchItem.fillLevel() : null
+            (searchItem != null) ? searchItem.fillLevel() : null,
+            (orderType != null) ? orderType.name() : null
         );
     }
 
