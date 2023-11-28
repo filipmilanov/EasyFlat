@@ -3,8 +3,6 @@ import {HttpClient} from "@angular/common/http";
 import {ItemDto} from "../dtos/item";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
-import {Message} from "../dtos/message";
-
 
 @Injectable({
   providedIn: 'root'
@@ -31,5 +29,10 @@ export class ItemService {
   createItem(item: ItemDto): Observable<ItemDto> {
     console.log('Create message with title ' + item.itemId);
     return this.http.post<ItemDto>(this.baseUri, item);
+  }
+
+  updateItem(item: ItemDto): Observable<ItemDto> {
+    console.log('Update item with ID ' + item.itemId);
+    return this.http.put<ItemDto>(this.baseUri + '/' + item.itemId, item);
   }
 }
