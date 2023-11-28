@@ -1,4 +1,5 @@
 import {DigitalStorageDto} from "./digitalStorageDto";
+import {IngredientDto} from "./ingredientDto";
 
 export class ItemDto {
   itemId?: number;
@@ -16,6 +17,6 @@ export class ItemDto {
   alwaysInStock: boolean;
   minimumQuantity?: number;
   addToFiance: boolean;
-  ingredients?: [string];
+  ingredients?: [IngredientDto];
   digitalStorage?: DigitalStorageDto;
 }

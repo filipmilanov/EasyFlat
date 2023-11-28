@@ -23,7 +23,7 @@ export class ItemDetailComponent implements OnInit {
     priceInCent: 0,
     alwaysInStock: false,
     addToFiance: false,
-    ingredients: [""],
+    ingredients: [{}],
   }
 
   constructor(

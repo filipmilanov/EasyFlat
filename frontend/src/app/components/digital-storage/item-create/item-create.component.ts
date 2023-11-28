@@ -57,9 +57,9 @@ export class ItemCreateComponent implements OnInit{
       return
     }
     if (this.item.ingredients === undefined) {
-      this.item.ingredients = [ingredient];
+      this.item.ingredients = [{name: ingredient}];
     } else {
-      this.item.ingredients.push(ingredient);
+      this.item.ingredients.push({name: ingredient});
     }
   }
 
