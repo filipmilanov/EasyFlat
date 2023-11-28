@@ -14,11 +14,19 @@ public class IngredientValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    public void checkIngredientForCreate(IngredientDto ingredientDto) throws ConflictException {
+    private void checkIngredientForCreate(IngredientDto ingredientDto) throws ConflictException {
         LOGGER.trace("checkIngredientForCreate({})", ingredientDto);
 
         if (ingredientDto.ingredientId() != null) {
             throw new ConflictException("Conflict with other data", List.of("The Id of an ingredient must be null"));
+        }
+    }
+
+    public void checkIngredientListForCreate(List<IngredientDto> ingredientDtoList) throws ConflictException {
+        LOGGER.trace("checkIngredientListForCreate({})", ingredientDtoList);
+
+        for (IngredientDto ingredientDto : ingredientDtoList) {
+            checkIngredientForCreate(ingredientDto);
         }
     }
 }
