@@ -49,9 +49,9 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public List<Ingredient> findByNames(List<String> names) {
+    public List<Ingredient> findByTitle(List<String> names) {
         LOGGER.trace("findByNames({})", names);
 
-        return ingredientRepository.findByNames(names);
+        return ingredientRepository.findAllByTitleIsIn(names);
     }
 }

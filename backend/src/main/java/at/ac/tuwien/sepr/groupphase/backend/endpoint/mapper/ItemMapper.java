@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import org.mapstruct.Context;
@@ -11,7 +10,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper
+@Mapper(uses = {IngredientMapper.class, DigitalStorageMapper.class})
 public abstract class ItemMapper {
 
     @Mapping(target = "storage", source = "digitalStorage")
@@ -25,17 +24,8 @@ public abstract class ItemMapper {
                                                          @Context List<Ingredient> ingredientList);
 
     @Mapping(target = "digitalStorage", source = "storage")
-    @Mapping(target = "ingredientsIdList", source = "ingredientList")
+    @Mapping(target = "ingredients", source = "ingredientList")
     @Mapping(target = "alwaysInStock", expression = "java( item.alwaysInStock() )")
     @Mapping(target = "minimumQuantity", expression = "java( item.getMinimumQuantity() )")
     public abstract ItemDto entityToDto(Item item);
-
-
-    Long digitalStorageToId(DigitalStorage storage) {
-        return storage.getStorId();
-    }
-
-    List<Long> ingredientListToIdList(List<Ingredient> ingredientList) {
-        return ingredientList.stream().map(Ingredient::getIngrId).toList();
-    }
 }

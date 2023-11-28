@@ -22,7 +22,7 @@ public record ItemDto(
     Long minimumQuantity,
     String boughtAt,
     DigitalStorageDto digitalStorage,
-    List<IngredientDto> ingredientsIdList
+    List<IngredientDto> ingredients
 ) {
     public ItemDto withAlwaysInStock(Boolean alwaysInStock) {
         return new ItemDto(
@@ -41,7 +41,7 @@ public record ItemDto(
             minimumQuantity,
             boughtAt,
             digitalStorage,
-            ingredientsIdList
+            ingredients
         );
     }
 
@@ -63,7 +63,7 @@ public record ItemDto(
             + ", minimumQuantity=" + minimumQuantity
             + ", boughtAt='" + boughtAt + '\''
             + ", digitalStorage=" + digitalStorage
-            + ", ingredientsIdList=" + ingredientsIdList
+            + ", ingredients=" + ingredients
             + '}';
     }
 }

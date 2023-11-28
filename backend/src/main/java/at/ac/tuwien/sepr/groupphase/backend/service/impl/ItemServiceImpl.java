@@ -59,13 +59,53 @@ public class ItemServiceImpl implements ItemService {
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         itemValidator.checkItemForCreate(itemDto, digitalStorageList);
 
-        List<Ingredient> ingredientList = ingredientService.findByNames(
-            itemDto.ingredientsIdList().stream()
+        List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
+
+        Item item;
+        if (itemDto.alwaysInStock()) {
+            item = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList);
+        } else {
+            item = itemMapper.dtoToEntity(itemDto, ingredientList);
+        }
+        Item createdItem = itemRepository.save(item);
+        createdItem.setIngredientList(ingredientList);
+        return createdItem;
+    }
+
+
+
+    @Override
+    public Item update(ItemDto itemDto) throws ConflictException {
+        LOGGER.trace("update({})", itemDto);
+
+        Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.digitalStorage().storId());
+        if (digitalStorage.isEmpty()) {
+            throw new ConflictException("Digital Storage does not exists");
+        }
+
+        itemValidator.checkItemForUpdate(itemDto, digitalStorage.get());
+        List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
+
+        Item item = itemMapper.dtoToEntity(itemDto, ingredientList);
+
+        return itemRepository.save(item);
+    }
+
+    @Override
+    public void delete(Long id) {
+        LOGGER.trace("delete({})", id);
+
+        itemRepository.deleteById(id);
+    }
+
+    private List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException {
+        List<Ingredient> ingredientList = ingredientService.findByTitle(
+            ingredientDtoList.stream()
                 .map(IngredientDto::name)
                 .toList()
         );
 
-        List<IngredientDto> missingIngredients = itemDto.ingredientsIdList().stream()
+        List<IngredientDto> missingIngredients = ingredientDtoList.stream()
             .filter(ingredientDto ->
                 ingredientList.stream()
                     .noneMatch(ingredient ->
@@ -77,40 +117,6 @@ public class ItemServiceImpl implements ItemService {
             List<Ingredient> createdIngredients = ingredientService.createAll(missingIngredients);
             ingredientList.addAll(createdIngredients);
         }
-
-        Item item;
-        if (itemDto.alwaysInStock()) {
-            item = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList);
-        } else {
-            item = itemMapper.dtoToEntity(itemDto, ingredientList);
-        }
-        return itemRepository.save(item);
-
-    }
-
-    @Override
-    public Item update(ItemDto itemDto) throws ConflictException {
-        LOGGER.trace("update({})", itemDto);
-
-        Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.digitalStorage().storId());
-        if (digitalStorage.isEmpty()) {
-            throw new ConflictException("Digital Storage does not exists");
-        }
-        itemValidator.checkItemForUpdate(itemDto, digitalStorage.get());
-        List<Ingredient> ingredientList = ingredientService.findAllByIds( // TODO: 2021-05-04 check if this is correct
-            itemDto.ingredientsIdList().stream()
-                .map(IngredientDto::ingredientId)
-                .toList()
-        );
-        Item item = itemMapper.dtoToEntity(itemDto, ingredientList);
-
-        return itemRepository.save(item);
-    }
-
-    @Override
-    public void delete(Long id) {
-        LOGGER.trace("delete({})", id);
-
-        itemRepository.deleteById(id);
+        return ingredientList;
     }
 }

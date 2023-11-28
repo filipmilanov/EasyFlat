@@ -32,5 +32,5 @@ public interface IngredientService {
      * @param names a list of names
      * @return a list of all ingredients with a given name
      */
-    List<Ingredient> findByNames(List<String> names);
+    List<Ingredient> findByTitle(List<String> names);
 }
