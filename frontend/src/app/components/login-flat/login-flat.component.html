@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shared Flat</title>
+  <style>
+    /* Basic styling for the forms */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column; /* Added to align elements vertically */
+      height: 100vh;
+      background-color: #FFFFFF;
+    }
+    .title {
+      text-align: center;
+      margin-bottom: 20px; /* Adjust the margin as needed */
+    }
+    .form-container {
+      width: 300px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin: 20px;
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="submit"] {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-sizing: border-box;
+    }
+    input[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<form class="form" [formGroup]="loginForm" (ngSubmit)="loginWG()" >
+<h1 class="title">Welcome to Shared Flat</h1>
+
+<div class="form-container">
+  <h2>Login to Shared Flat</h2>
+  <form id="login-form">
+    <input type="text" id="flatName" placeholder="Flat name" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="submit"> Login </button>
+    <button (click)="navigateToCreate()">Create Flat</button>
+  </form>
+</div>
+
+</form>
+</body>
+</html>
+

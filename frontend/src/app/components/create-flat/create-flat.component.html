@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shared Flat</title>
+  <style>
+    /* Basic styling for the forms */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column; /* Added to align elements vertically */
+      height: 100vh;
+      background-color: #FFFFFF;
+    }
+    .title {
+      text-align: center;
+      margin-bottom: 20px; /* Adjust the margin as needed */
+    }
+    .form-container {
+      width: 300px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin: 20px;
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="submit"] {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-sizing: border-box;
+    }
+    input[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 class="title">Welcome to Shared Flat</h1>
+
+<div class="form-container">
+  <h2>Create Shared Flat</h2>
+  <form class="form" [formGroup]="createForm" (ngSubmit)="createWG()" >
+
+    <!-- Flat Name Input -->
+    <div class="form-group">
+      <label for="flat-name">Flat Name</label>
+      <input type="text" name="flatName" id="flat-name" class="form-control"
+             aria-describedby="flatNameHelp" placeholder="Enter Flat Name" required>
+      <div *ngIf="submitted && createForm.controls.name.errors" class="error">
+        <small class="form-text text-warning" *ngIf="createForm.controls.name.errors?.required">Flat name is
+          required!
+        </small>
+      </div>
+    </div>
+
+    <!-- Password Input -->
+    <div class="form-group">
+      <label for="flat-password">Password</label>
+      <input type="password" name="flatPassword" id="flat-password" class="form-control"
+             aria-describedby="flatPasswordHelp" placeholder="Enter Password" required>
+      <div *ngIf="submitted && createForm.controls.password.errors" class="error">
+        <small class="form-text text-warning" *ngIf="createForm.controls.password.errors?.required">Password is
+          required!
+        </small>
+      </div>
+    </div>
+
+    <button type="submit">Create Flat</button>
+  </form>
+</div>
+</body>
+</html>
+

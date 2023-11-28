@@ -11,7 +11,7 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const whiteList = ['/authentication', '/register', '/account'];
+    const whiteList = ['/authentication', '/register','/account','/wgLogin', '/wgCreate'];
 
     // Do not intercept authentication requests
     if (whiteList.find(whiteListedEndpoint => req.url.startsWith(this.globals.backendUri + whiteListedEndpoint))) {

@@ -14,6 +14,8 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
 import { RegisterComponent } from './components/register/register.component';
 import { AccountComponent } from './components/account/account.component';
+import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
+import { CreateFlatComponent } from './components/create-flat/create-flat.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +27,8 @@ import { AccountComponent } from './components/account/account.component';
     MessageComponent,
     RegisterComponent,
     AccountComponent,
+    LoginFlatComponent,
+    CreateFlatComponent,
   ],
   imports: [
     BrowserModule,
