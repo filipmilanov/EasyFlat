@@ -16,7 +16,7 @@
         </div>
 
         <div class="card-body">
-          <form class="form" [formGroup]="accountForm" (ngSubmit)="onSubmit()">
+          <form class="form" [formGroup]="accountForm" (ngSubmit)="update()">
 
             <div class="form-group">
               <div>
@@ -45,6 +45,17 @@
               </div>
               <div *ngIf="submitted && accountForm.get('email').errors?.required" class="error">
                 <small class="form-text text-warning">Your email is required!</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">New password</label>
+              <input type="password" name="password" formControlName="password" class="form-control" id="password"
+                     placeholder="New password">
+              <div *ngIf="submitted && accountForm.controls.password.errors" class="error">
+                <small class="form-text text-warning" *ngIf="accountForm.controls.password.errors?.minlength">Your password
+                  must be at least 8 characters long!
+                </small>
               </div>
             </div>
 

@@ -123,4 +123,19 @@ public class CustomUserDetailService implements UserService {
         ApplicationUser user = userRepository.findUserByEmail(email);
         return userMapper.entityToUserDetailDto(user);
     }
+
+    @Override
+    public UserDetailDto update(UserDetailDto userDetailDto) {
+        if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
+            ApplicationUser user = userRepository.findUserByEmail(userDetailDto.getEmail());
+            user.setFirstName(userDetailDto.getFirstName());
+            user.setLastName(userDetailDto.getLastName());
+            user.setEmail(userDetailDto.getEmail());
+            if(userDetailDto.getPassword().length() >= 8)
+                user.setPassword(passwordEncoder.encode(userDetailDto.getPassword()));
+            ApplicationUser returnUser = userRepository.save(user);
+            return userMapper.entityToUserDetailDto(returnUser);
+        }
+        throw new BadCredentialsException("User with this email doesn't exists");
+    }
 }

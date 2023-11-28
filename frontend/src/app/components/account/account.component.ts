@@ -20,7 +20,7 @@ export class AccountComponent implements OnInit {
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
+      password: ['', [Validators.minLength(8)]]
     });
   }
 
@@ -45,8 +45,39 @@ export class AccountComponent implements OnInit {
     );
   }
 
-  onSubmit(): void {
+  update(): void {
     this.submitted = true;
+    const formValue = this.accountForm.value;
+    const password = formValue.password;
+
+    if (password === '' || this.accountForm.get('password').untouched) {
+      delete formValue.password;
+    }
+
+    if (this.accountForm.valid) {
+      const userDetail: UserDetail = new UserDetail(this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,
+        this.accountForm.controls.email.value, this.accountForm.controls.password.value);
+      console.log(userDetail)
+      this.authService.update(userDetail).subscribe({
+        next: () => {
+          console.log('Successfully updated user: ' + userDetail.email);
+        },
+        error: error => {
+          console.log('Could not update due to:');
+          console.log(error);
+          this.error = true;
+          if (typeof error.error === 'object') {
+            this.errorMessage = error.error.error;
+          } else {
+            this.errorMessage = error.error;
+          }
+        }
+      });
+    } else {
+      console.log('Invalid input');
+    }
+
+    console.log(formValue)
   }
 
   vanishError() {

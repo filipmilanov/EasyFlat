@@ -43,6 +43,10 @@ export class AuthService {
     return this.httpClient.get<UserDetail>(this.authBaseUri, { headers });
   }
 
+  update(user: UserDetail): Observable<UserDetail> {
+    return this.httpClient.put<UserDetail>(this.authBaseUri, user);
+  }
+
 
   /**
    * Check if a valid JWT token is saved in the localStorage

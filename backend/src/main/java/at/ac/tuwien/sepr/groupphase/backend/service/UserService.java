@@ -42,4 +42,6 @@ public interface UserService extends UserDetailsService {
     String register(UserDetailDto userDetailDto);
 
     UserDetailDto getUser(String authToken);
+
+    UserDetailDto update(UserDetailDto userDetailDto);
 }
