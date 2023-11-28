@@ -33,6 +33,7 @@ export class StorageService {
     if (searchParameters.fillLevel) {
       params = params.append('fillLevel', searchParameters.fillLevel);
     }
+
     console.log(searchParameters)
     return this.httpClient.get<StorageItemList[]>(this.storageBaseUri + '/' + id, {params});
   }
@@ -44,11 +45,11 @@ export class StorageService {
   findAll(titleSearch: string, limit: number): Observable<DigitalStorageDto[]> {
     console.log(titleSearch);
     let params = new HttpParams();
-    params.append('titleSearch', titleSearch);
-    params.append('limit', limit);
+    params = params.append('title', titleSearch);
+    params = params.append('limit', limit);
     return this.httpClient.get<DigitalStorageDto[]>(
       this.storageBaseUri,
-      {params: params}
+      {params}
     );
   }
 }
