@@ -37,7 +37,7 @@ export class StorageService {
       console.log(searchParameters)
       params = params.append('alwaysInStock', searchParameters.alwaysInStock);
     }
-
+    params = params.append('orderType', searchParameters.orderBy);
     return this.httpClient.get<StorageItemList[]>(this.storageBaseUri + '/' + id, {params});
   }
 

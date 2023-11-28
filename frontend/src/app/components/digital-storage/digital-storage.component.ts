@@ -1,7 +1,8 @@
 import {Component} from '@angular/core';
 import {StorageService} from "../../services/storage.service";
 import {ItemSearchDto, StorageItemList} from "../../dtos/storageItemList";
-import {OrderType} from "../../dtos/OrderType";
+import {OrderType} from "../../dtos/orderType";
+
 
 
 @Component({
@@ -53,6 +54,5 @@ export class DigitalStorageComponent {
     )
   }
 
-
-  protected readonly OrderType = OrderType;
+    protected readonly OrderType = OrderType;
 }

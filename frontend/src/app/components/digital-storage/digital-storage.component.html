@@ -73,7 +73,8 @@
            autocomplete="off"
            [checked]="searchParameters.orderBy === OrderType.PRODUCT_NAME"
            [(ngModel)]="searchParameters.orderBy"
-           [value]="OrderType.PRODUCT_NAME">
+           [value]="OrderType.PRODUCT_NAME"
+           (change) = "loadStorage()">
     <label class="btn btn-outline-primary"
            for="orderName">
       Name
@@ -84,9 +85,10 @@
            name="orderType"
            id="orderQuantity"
            autocomplete="off"
-           [checked]="searchParameters.orderBy === OrderType.CURRENT_QUANTITY"
+           [checked]="searchParameters.orderBy === OrderType.QUANTITY_CURRENT"
            [(ngModel)]="searchParameters.orderBy"
-           [value]="OrderType.CURRENT_QUANTITY">
+           [value]="OrderType.QUANTITY_CURRENT"
+           (change) = "loadStorage()">
     <label class="btn btn-outline-primary"
            for="orderQuantity">
       Quantity
@@ -97,9 +99,10 @@
            name="orderType"
            id="orderExpirationDate"
            autocomplete="off"
-           [checked]="searchParameters.orderBy === OrderType.EXPIRATION_DATE"
+           [checked]="searchParameters.orderBy === OrderType.EXPIRE_DATE"
            [(ngModel)]="searchParameters.orderBy"
-           [value]="OrderType.EXPIRATION_DATE">
+           [value]="OrderType.EXPIRE_DATE"
+           (change) = "loadStorage()">
     <label class="btn btn-outline-primary"
            for="orderExpirationDate">
       Expiration Date
@@ -118,13 +121,6 @@
                      [expirationDate]="item.expireDate"></app-item-card>
     </div>
   </div>
-  <!--  EXAMPLE ITEM -->
-  <app-item-card
-    title="Test"
-    [quantity]="100"
-    [maxQuantity]="200"
-    expirationDate="12.12.2023">
-  </app-item-card>
 </div>
 
 <div class="container ">

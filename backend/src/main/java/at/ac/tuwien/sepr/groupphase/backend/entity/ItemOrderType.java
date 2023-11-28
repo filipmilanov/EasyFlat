@@ -2,13 +2,18 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 public enum ItemOrderType {
 
-    NAME("product_name"),
-    DATE("expire_date"),
-    QUANTITY("quantity_current");
+    PRODUCT_NAME("productName"),
+    EXPIRE_DATE("expireDate"),
+    QUANTITY_CURRENT("quantityCurrent");
+
 
     final String columnName;
 
     ItemOrderType(String columnName) {
         this.columnName = columnName;
+    }
+
+    public String getColumnName() {
+        return columnName;
     }
 }

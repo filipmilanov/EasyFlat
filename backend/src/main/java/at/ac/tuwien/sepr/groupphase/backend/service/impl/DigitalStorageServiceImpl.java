@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,8 +59,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     public List<Item> findAllItemsOfStorage(Long id) {
         Optional<DigitalStorage> optionalStorage = digitalStorageRepository.findById(id);
         if (optionalStorage.isPresent()) {
-            List<Item> allItems = optionalStorage.get().getItemList();
-            return allItems;
+            return optionalStorage.get().getItemList();
         } else {
             return Collections.emptyList();
         }
@@ -72,27 +72,59 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<Item> searchItems(Long id, ItemSearchDto searchItem, ItemOrderType orderType) {
-        LOGGER.trace("searchItems({}, {}, {})", id, searchItem, orderType);
+    public List<Item> searchItems(Long id, ItemSearchDto searchItem) {
+        LOGGER.trace("searchItems({}, {})", id, searchItem);
         Class alwaysInStock = null;
-        if (searchItem.alwaysInStock()) {
-            alwaysInStock = AlwaysInStockItem.class;
-        } else {
+        if (searchItem.alwaysInStock() == null || !searchItem.alwaysInStock()) {
             alwaysInStock = Item.class;
+        } else {
+            alwaysInStock = AlwaysInStockItem.class;
         }
 
 
-        return digitalStorageRepository.searchItems(
+        List<Item> allItems = digitalStorageRepository.searchItems(
             id,
             (searchItem != null) ? searchItem.productName() : null,
             (searchItem != null) ? searchItem.brand() : null,
             (searchItem != null) ? searchItem.expireDateStart() : null,
             (searchItem != null) ? searchItem.expireDateEnd() : null,
             (searchItem != null) ? searchItem.fillLevel() : null,
-            (orderType != null) ? orderType.name() : null,
             alwaysInStock
-
         );
+        return allItems.stream().sorted(itemComparator(searchItem)).toList();
+    }
+
+    private static Comparator<Item> itemComparator(ItemSearchDto searchItem) {
+        return (item1, item2) -> {
+            if (searchItem.orderType() == null) {
+                return 0;
+            }
+            if (searchItem.orderType() == ItemOrderType.EXPIRE_DATE) {
+                if (item1.getExpireDate() == null) {
+                    return -1;
+                }
+                if (item2.getExpireDate() == null) {
+                    return 1;
+                }
+                return item1.getExpireDate().compareTo(item2.getExpireDate());
+            } else if (searchItem.orderType() == ItemOrderType.QUANTITY_CURRENT) {
+                if (item1.getQuantityCurrent() == null) {
+                    return -1;
+                }
+                if (item2.getQuantityCurrent() == null) {
+                    return 1;
+                }
+                return item1.getQuantityCurrent().compareTo(item2.getQuantityCurrent());
+            } else {
+                if (item1.getProductName() == null) {
+                    return -1;
+                }
+                if (item2.getProductName() == null) {
+                    return 1;
+                }
+                return item2.getProductName().compareTo(item1.getProductName());
+            }
+        };
     }
 
     @Override

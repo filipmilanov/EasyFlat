@@ -99,6 +99,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException {
+        if (ingredientDtoList == null) {
+            return List.of();
+        }
         List<Ingredient> ingredientList = ingredientService.findByTitle(
             ingredientDtoList.stream()
                 .map(IngredientDto::name)
