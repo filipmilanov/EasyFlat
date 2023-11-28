@@ -73,7 +73,8 @@
            autocomplete="off"
            [checked]="searchParameters.orderBy === OrderType.PRODUCT_NAME"
            [(ngModel)]="searchParameters.orderBy"
-           [value]="OrderType.PRODUCT_NAME">
+           [value]="OrderType.PRODUCT_NAME"
+           (change) = "loadStorage()">
     <label class="btn btn-outline-primary"
            for="orderName">
       Name
@@ -86,7 +87,8 @@
            autocomplete="off"
            [checked]="searchParameters.orderBy === OrderType.QUANTITY_CURRENT"
            [(ngModel)]="searchParameters.orderBy"
-           [value]="OrderType.QUANTITY_CURRENT">
+           [value]="OrderType.QUANTITY_CURRENT"
+           (change) = "loadStorage()">
     <label class="btn btn-outline-primary"
            for="orderQuantity">
       Quantity
@@ -99,7 +101,8 @@
            autocomplete="off"
            [checked]="searchParameters.orderBy === OrderType.EXPIRE_DATE"
            [(ngModel)]="searchParameters.orderBy"
-           [value]="OrderType.EXPIRE_DATE">
+           [value]="OrderType.EXPIRE_DATE"
+           (change) = "loadStorage()">
     <label class="btn btn-outline-primary"
            for="orderExpirationDate">
       Expiration Date
