@@ -57,7 +57,7 @@ export class ItemCardComponent {
   onSave(value: string, mode: number) {
     const quantity = parseInt(value);
 
-    if (isNaN(quantity)) {
+    if (isNaN(quantity) || quantity < 0) {
       console.error('Invalid input. Please enter a valid number.');
       return;
     }
