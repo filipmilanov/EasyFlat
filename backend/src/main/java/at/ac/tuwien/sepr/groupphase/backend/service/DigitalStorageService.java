@@ -53,11 +53,11 @@ public interface DigitalStorageService {
      * Search for all Items of a DigitalStorage stored in the database filtered by search parameters.
      *
      * @param id            an ID of a DigitalStorage
-     * @param itemSearchDto search parameters
+     * @param searchItem search parameters
      * @param orderType     defines how to order
      * @return a List of filtered items
      */
-    List<Item> searchItems(Long id, ItemSearchDto itemSearchDto, ItemOrderType orderType);
+    List<Item> searchItems(Long id, ItemSearchDto searchItem, ItemOrderType orderType);
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.

@@ -4,15 +4,13 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
-import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +74,13 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     @Override
     public List<Item> searchItems(Long id, ItemSearchDto searchItem, ItemOrderType orderType) {
         LOGGER.trace("searchItems({}, {}, {})", id, searchItem, orderType);
+        Class alwaysInStock = null;
+        if (searchItem.alwaysInStock()) {
+            alwaysInStock = AlwaysInStockItem.class;
+        } else {
+            alwaysInStock = Item.class;
+        }
+
         return digitalStorageRepository.searchItems(
             id,
             (searchItem != null) ? searchItem.productName() : null,
@@ -83,7 +88,9 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             (searchItem != null) ? searchItem.expireDateStart() : null,
             (searchItem != null) ? searchItem.expireDateEnd() : null,
             (searchItem != null) ? searchItem.fillLevel() : null,
-            (orderType != null) ? orderType.name() : null
+            (orderType != null) ? orderType.name() : null,
+            alwaysInStock
+
         );
     }
 

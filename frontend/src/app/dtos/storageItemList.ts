@@ -16,6 +16,7 @@ export class StorageItemList {
 
 export class ItemSearchDto {
   itemId?: string;
+  alwaysInStock:boolean;
   productName?:string;
   brand?:string;
   fillLevel?:number;

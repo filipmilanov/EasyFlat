@@ -129,7 +129,7 @@
   <h1 class="display-4">Always in Stock</h1>
   <div style="width: 100%; height: 100%; border: 1px black solid"></div>
   <div class="row row-cols-4">
-    <div class="col" *ngFor="let item of items">
+    <div class="col" *ngFor="let item of itemsAIS">
       <app-item-card [title]="item.productName" [quantity]="item.quantityCurrent" [maxQuantity]="item.quantityTotal"
                      [expirationDate]="item.expireDate"></app-item-card>
     </div>

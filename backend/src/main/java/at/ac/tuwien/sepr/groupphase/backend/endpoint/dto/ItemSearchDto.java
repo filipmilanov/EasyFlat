@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public record ItemSearchDto(
     Long itemId,
+    boolean alwaysInStock,
     String productName,
     String brand,
     Long fillLevel,

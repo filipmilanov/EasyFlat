@@ -12,7 +12,8 @@ import {OrderType} from "../../dtos/OrderType";
 
 export class DigitalStorageComponent {
   items: StorageItemList[] = [];
-  searchParameters: ItemSearchDto = {orderBy: OrderType.PRODUCT_NAME};
+  itemsAIS: StorageItemList[] = [];
+  searchParameters: ItemSearchDto = {alwaysInStock: false, orderBy: OrderType.PRODUCT_NAME};
 
 
   constructor(private storageService: StorageService) {
@@ -24,12 +25,26 @@ export class DigitalStorageComponent {
   }
 
   public loadStorage() {
-    console.log(this.searchParameters)
+
     this.storageService.getItems("1",this.searchParameters).subscribe({
 
         next: res => {
           console.log(this.searchParameters)
+          console.log(res);
           this.items = res;
+        },
+        error: err => {
+          console.error("Error loading storage:", err);
+        }
+      }
+    )
+    this.searchParameters.alwaysInStock = true;
+    this.storageService.getItems("1",this.searchParameters).subscribe({
+
+        next: res => {
+          console.log(this.searchParameters)
+          console.log(res);
+          this.itemsAIS = res;
         },
         error: err => {
           console.error("Error loading storage:", err);

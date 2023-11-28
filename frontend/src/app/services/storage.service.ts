@@ -17,6 +17,7 @@ export class StorageService {
   }
 
   getItems(id: string, searchParameters: ItemSearchDto): Observable<StorageItemList[]> {
+
     let params = new HttpParams();
     if (searchParameters.productName) {
       params = params.append('productName', searchParameters.productName);
@@ -33,7 +34,11 @@ export class StorageService {
     if (searchParameters.fillLevel) {
       params = params.append('fillLevel', searchParameters.fillLevel);
     }
-    console.log(searchParameters)
+    if (searchParameters.alwaysInStock != null) {
+      console.log(searchParameters)
+      params = params.append('alwaysInStock', searchParameters.alwaysInStock);
+    }
+
     return this.httpClient.get<StorageItemList[]>(this.storageBaseUri + '/' + id, {params});
   }
 
