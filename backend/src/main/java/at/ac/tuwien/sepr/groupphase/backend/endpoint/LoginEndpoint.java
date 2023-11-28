@@ -5,7 +5,9 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,5 +43,12 @@ public class LoginEndpoint {
     public UserDetailDto update(@RequestBody UserDetailDto userDetailDto)
     {
         return userService.update(userDetailDto);
+    }
+
+    @PermitAll
+    @DeleteMapping("/{email}")
+    public UserDetailDto delete(@PathVariable String email)
+    {
+        return userService.delete(email);
     }
 }

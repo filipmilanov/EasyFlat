@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { UserDetail } from '../../dtos/auth-request';
+import {Observable} from "rxjs";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-account',
@@ -15,7 +17,7 @@ export class AccountComponent implements OnInit {
   error = false;
   errorMessage = '';
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService) {
+  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router) {
     this.accountForm = this.formBuilder.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
@@ -31,12 +33,10 @@ export class AccountComponent implements OnInit {
         this.user = user;
         console.log('User :', this.user);
 
-        // Update form controls with fetched user data
         this.accountForm.patchValue({
           firstName: this.user.firstName,
           lastName: this.user.lastName,
           email: this.user.email
-          // Password won't be prefilled for security reasons
         });
       },
       (error) => {
@@ -82,6 +82,21 @@ export class AccountComponent implements OnInit {
 
   vanishError() {
     this.error = false;
+  }
+
+  delete() {
+    if(confirm("Are you sure you want to delete your account?")) {
+      this.authService.delete(this.user).subscribe({
+        next: (deletedUser: UserDetail) => {
+          console.log('User deleted:', deletedUser);
+          this.authService.logoutUser();
+          this.router.navigate(['']);
+        },
+        error: error => {
+          console.error(error.message, error);
+        }
+      });
+    }
   }
 }
 

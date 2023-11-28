@@ -44,4 +44,6 @@ public interface UserService extends UserDetailsService {
     UserDetailDto getUser(String authToken);
 
     UserDetailDto update(UserDetailDto userDetailDto);
+
+    UserDetailDto delete(String email);
 }

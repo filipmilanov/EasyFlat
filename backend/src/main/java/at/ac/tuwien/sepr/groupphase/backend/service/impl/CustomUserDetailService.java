@@ -138,4 +138,14 @@ public class CustomUserDetailService implements UserService {
         }
         throw new BadCredentialsException("User with this email doesn't exists");
     }
+
+    @Override
+    public UserDetailDto delete(String email) {
+        if (userRepository.findUserByEmail(email) != null) {
+            ApplicationUser deletedUser = userRepository.findUserByEmail(email);
+            userRepository.delete(deletedUser);
+            return userMapper.entityToUserDetailDto(deletedUser);
+        }
+        throw new BadCredentialsException("User with this email doesn't exists");
+    }
 }

@@ -47,6 +47,10 @@ export class AuthService {
     return this.httpClient.put<UserDetail>(this.authBaseUri, user);
   }
 
+  delete(user: UserDetail): Observable<UserDetail> {
+    return this.httpClient.delete<UserDetail>(this.authBaseUri + '/' + user.email)
+  }
+
 
   /**
    * Check if a valid JWT token is saved in the localStorage
