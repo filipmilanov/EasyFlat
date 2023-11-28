@@ -25,7 +25,7 @@ export class DigitalStorageComponent {
   }
 
   public loadStorage() {
-
+    this.searchParameters.alwaysInStock = false;
     this.storageService.getItems("1",this.searchParameters).subscribe({
 
         next: res => {
