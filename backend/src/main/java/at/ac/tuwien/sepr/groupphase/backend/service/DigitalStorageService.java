@@ -53,11 +53,10 @@ public interface DigitalStorageService {
      * Search for all Items of a DigitalStorage stored in the database filtered by search parameters.
      *
      * @param id            an ID of a DigitalStorage
-     * @param searchItem search parameters
-     * @param orderType     defines how to order
+     * @param itemSearchDto search parameters
      * @return a List of filtered items
      */
-    List<Item> searchItems(Long id, ItemSearchDto searchItem, ItemOrderType orderType);
+    List<Item> searchItems(Long id, ItemSearchDto itemSearchDto);
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.
@@ -82,4 +81,13 @@ public interface DigitalStorageService {
      */
     void remove(Long id);
 
+    /**
+     * Updates currentQuantity of the item with specified digitalStorage and itemId in db.
+     *
+     * @param storageId existing ID of a storage
+     * @param itemId    existing ID of an item
+     * @param quantity  the new quantity of the specified item
+     * @return an updated object of type {@link Item}
+     */
+    Item updateItemQuantity(long storageId, long itemId, long quantity);
 }

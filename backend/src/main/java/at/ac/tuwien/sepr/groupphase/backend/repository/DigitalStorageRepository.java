@@ -15,6 +15,12 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
 
     List<DigitalStorage> findByTitleContaining(String title);
 
+    @Query("UPDATE Item i "
+        + "SET i.quantityCurrent = :quantity "
+        + "WHERE i.itemId = :itemId "
+        + "AND i.digitalStorage.storId = :storageId")
+    Item updateItemQuantity(@Param("storageId") long storageId, @Param("itemId") long itemId, @Param("quantity") long quantity);
+
     @Query("SELECT i FROM Item i WHERE i.digitalStorage.storId = :storageId AND "
         + "(:title IS NULL OR LOWER(i.productName) LIKE LOWER(CONCAT('%', :title, '%'))) AND "
         + "(:brand IS NULL OR LOWER(i.brand) LIKE LOWER(CONCAT('%', :brand, '%'))) AND "
@@ -25,14 +31,12 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
         + "(:fillLevel = 'full' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.9) OR "
         + "(:fillLevel = 'nearly_empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.1 AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.9) OR "
         + "(:fillLevel = 'empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.1)) AND "
-        + "(:alwaysInStock IS NULL OR TYPE(i) = :alwaysInStock) "
-        + "ORDER BY :orderType")
+        + "(:alwaysInStock IS NULL OR TYPE(i) = :alwaysInStock) ")
     List<Item> searchItems(@Param("storageId") Long storageId,
                            @Param("title") String title,
                            @Param("brand") String brand,
                            @Param("expireDateStart") LocalDate expireDateStart,
                            @Param("expireDateEnd") LocalDate expireDateEnd,
                            @Param("fillLevel") String fillLevel,
-                           @Param("orderType") String orderType,
                            @Param("alwaysInStock") Class alwaysInStock);
 }

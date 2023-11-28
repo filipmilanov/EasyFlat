@@ -1,4 +1,4 @@
-import {OrderType} from "./OrderType";
+import {OrderType} from "./orderType";
 
 export class StorageItemList {
   itemId?: string;

@@ -121,7 +121,7 @@ class StorageEndpointTest {
         String endpointUrl = BASE_URI + "/" + storageId;
 
 
-        ItemSearchDto itemSearchDto = new ItemSearchDto(null, false, null, null, null, null, null);
+        ItemSearchDto itemSearchDto = new ItemSearchDto(null, false, null, null, null, null, null, null);
 
         MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
                 .contentType(MediaType.APPLICATION_JSON)
