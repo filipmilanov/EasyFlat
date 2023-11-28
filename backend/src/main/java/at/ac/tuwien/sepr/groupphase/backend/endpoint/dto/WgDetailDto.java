@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
 
-public class WGDetailDto {
+public class WgDetailDto {
     @NotNull(message = "Name must not be null")
     private String name;
 
@@ -35,7 +35,7 @@ public class WGDetailDto {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        WGDetailDto that = (WGDetailDto) o;
+        WgDetailDto that = (WgDetailDto) o;
         return Objects.equals(name, that.getName()) && Objects.equals(password, that.getPassword());
     }
 
@@ -46,10 +46,10 @@ public class WGDetailDto {
 
     @Override
     public String toString() {
-        return "WGDetailDto{" +
-            "name='" + name + '\'' +
-            ", password='" + password + '\'' +
-            '}';
+        return "WgDetailDto{"
+            + "name='" + name + '\''
+            + ", password='" + password + '\''
+            + '}';
     }
 
 }

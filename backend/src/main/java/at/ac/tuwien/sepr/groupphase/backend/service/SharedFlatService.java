@@ -1,8 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WGDetailDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 
 public interface SharedFlatService {
-    WGDetailDto create(WGDetailDto sharedFlat);
+    WgDetailDto create(WgDetailDto sharedFlat);
 }

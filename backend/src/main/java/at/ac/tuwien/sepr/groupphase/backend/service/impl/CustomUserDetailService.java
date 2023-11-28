@@ -117,8 +117,7 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public UserDetailDto getUser(String authToken)
-    {
+    public UserDetailDto getUser(String authToken) {
         String email = jwtTokenizer.getEmailFromToken(authToken);
         ApplicationUser user = userRepository.findUserByEmail(email);
         return userMapper.entityToUserDetailDto(user);
@@ -131,8 +130,9 @@ public class CustomUserDetailService implements UserService {
             user.setFirstName(userDetailDto.getFirstName());
             user.setLastName(userDetailDto.getLastName());
             user.setEmail(userDetailDto.getEmail());
-            if(userDetailDto.getPassword().length() >= 8)
+            if (userDetailDto.getPassword().length() >= 8) {
                 user.setPassword(passwordEncoder.encode(userDetailDto.getPassword()));
+            }
             ApplicationUser returnUser = userRepository.save(user);
             return userMapper.entityToUserDetailDto(returnUser);
         }

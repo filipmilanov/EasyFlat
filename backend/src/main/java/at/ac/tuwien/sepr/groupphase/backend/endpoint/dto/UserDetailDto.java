@@ -61,8 +61,8 @@ public class UserDetailDto {
             return false;
         }
         UserDetailDto that = (UserDetailDto) o;
-        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) &&
-            Objects.equals(email, that.email) && Objects.equals(password, that.password);
+        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName)
+            && Objects.equals(email, that.email) && Objects.equals(password, that.password);
     }
 
     @Override
@@ -72,11 +72,11 @@ public class UserDetailDto {
 
     @Override
     public String toString() {
-        return "UserDetailDto{" +
-            "firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", email='" + email + '\'' +
-            ", password='" + password + '\'' +
-            '}';
+        return "UserDetailDto{"
+            + "firstName='" + firstName + '\''
+            + ", lastName='" + lastName + '\''
+            + ", email='" + email + '\''
+            + ", password='" + password + '\''
+            + '}';
     }
 }

@@ -33,22 +33,19 @@ public class LoginEndpoint {
 
     @PermitAll
     @GetMapping
-    public UserDetailDto getUser(@RequestHeader("Authorization") String authToken)
-    {
+    public UserDetailDto getUser(@RequestHeader("Authorization") String authToken) {
         return userService.getUser(authToken);
     }
 
     @PermitAll
     @PutMapping
-    public UserDetailDto update(@RequestBody UserDetailDto userDetailDto)
-    {
+    public UserDetailDto update(@RequestBody UserDetailDto userDetailDto) {
         return userService.update(userDetailDto);
     }
 
     @PermitAll
     @DeleteMapping("/{email}")
-    public UserDetailDto delete(@PathVariable String email)
-    {
+    public UserDetailDto delete(@PathVariable String email) {
         return userService.delete(email);
     }
 }
