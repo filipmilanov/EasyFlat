@@ -2,6 +2,7 @@ import {Component, ElementRef, HostListener, Input} from '@angular/core';
 import {DigitalStorageComponent} from "../digital-storage.component";
 import {StorageService} from "../../../services/storage.service";
 import {ItemService} from "../../../services/item.service";
+import {ItemDto} from "../../../dtos/item";
 
 @Component({
   selector: 'app-item-card',
@@ -61,7 +62,7 @@ export class ItemCardComponent {
       return;
     }
 
-    let item;
+    let item : ItemDto;
     this.itemService.getById(this.id).subscribe({
       next: res => {
         item = res;
@@ -81,7 +82,7 @@ export class ItemCardComponent {
 
       this.customModalOpen1 = false;
     }
-    this.storageService.updateItemQuantity('1', value, quantityCurrent);
-    this.storageService.getItems('1', null);
+    this.storageService.updateItemQuantity(item.digitalStorage.digitalStorageId + '', value, quantityCurrent);
+    this.storageService.getItems(item.digitalStorage.digitalStorageId + '', null);
   }
 }
