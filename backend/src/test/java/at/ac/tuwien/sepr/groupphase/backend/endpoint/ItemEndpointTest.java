@@ -3,6 +3,8 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
@@ -69,6 +71,14 @@ class ItemEndpointTest {
             .title("Test")
             .storId(1L)
             .build();
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 2")
+                .build()
+        );
 
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
@@ -83,7 +93,7 @@ class ItemEndpointTest {
             .priceInCent(1234L)
             .boughtAt("Hofer")
             .digitalStorage(digitalStorageDto)
-            .ingredientsIdList(List.of(1L, 2L))
+            .ingredients(ingredientDtoList)
             .build();
 
         String body = objectMapper.writeValueAsString(itemDto);
@@ -117,7 +127,6 @@ class ItemEndpointTest {
                 ItemDto::description,
                 ItemDto::priceInCent,
                 ItemDto::digitalStorage,
-                ItemDto::ingredientsIdList,
                 ItemDto::boughtAt
             )
             .containsExactly(
@@ -132,9 +141,17 @@ class ItemEndpointTest {
                 itemDto.description(),
                 itemDto.priceInCent(),
                 itemDto.digitalStorage(),
-                itemDto.ingredientsIdList(),
                 itemDto.boughtAt()
             );
+        assertThat(
+            item.ingredients().stream()
+                .map(IngredientDto::name)
+                .toList()
+        ).isEqualTo(
+            itemDto.ingredients().stream()
+                .map(IngredientDto::name)
+                .toList()
+        );
     }
 
     @Test
@@ -145,6 +162,14 @@ class ItemEndpointTest {
             .title("Test")
             .storId(1L)
             .build();
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 2")
+                .build()
+        );
 
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("2314")
@@ -157,7 +182,7 @@ class ItemEndpointTest {
             .description("")
             .priceInCent(-1234L)
             .digitalStorage(digitalStorageDto)
-            .ingredientsIdList(List.of(1L, 2L))
+            .ingredients(ingredientDtoList)
             .boughtAt("Hofer")
             .build();
 
@@ -191,6 +216,14 @@ class ItemEndpointTest {
             .title("Test")
             .storId(-909L)
             .build();
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 2")
+                .build()
+        );
 
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
@@ -204,7 +237,7 @@ class ItemEndpointTest {
             .description("This is valid description")
             .priceInCent(1234L)
             .digitalStorage(digitalStorageDto)
-            .ingredientsIdList(List.of(-1L, -2L))
+            .ingredients(ingredientDtoList)
             .boughtAt("Hofer")
             .build();
 

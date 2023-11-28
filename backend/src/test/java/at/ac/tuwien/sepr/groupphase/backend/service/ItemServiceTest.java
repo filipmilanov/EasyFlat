@@ -2,6 +2,8 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
@@ -36,6 +38,14 @@ class ItemServiceTest {
             .title("Test")
             .storId(1L)
             .build();
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 3")
+                .build()
+        );
 
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
@@ -49,7 +59,7 @@ class ItemServiceTest {
             .description("This is valid description")
             .priceInCent(1234L)
             .digitalStorage(digitalStorageDto)
-            .ingredientsIdList(List.of(1L, 2L))
+            .ingredients(ingredientDtoList)
             .build();
 
         // when
@@ -87,9 +97,9 @@ class ItemServiceTest {
             );
         assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
         assertThat(actual.getIngredientList().stream()
-            .map(Ingredient::getIngrId)
+            .map(Ingredient::getTitle)
             .toList()
-        ).isEqualTo(itemDto.ingredientsIdList());
+        ).isEqualTo(itemDto.ingredients().stream().map(IngredientDto::name).toList());
     }
 
     @Test
@@ -100,6 +110,14 @@ class ItemServiceTest {
             .title("Test")
             .storId(1L)
             .build();
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 3")
+                .build()
+        );
 
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
@@ -113,7 +131,7 @@ class ItemServiceTest {
             .description("This is valid description")
             .priceInCent(1234L)
             .digitalStorage(digitalStorageDto)
-            .ingredientsIdList(List.of(1L, 2L))
+            .ingredients(ingredientDtoList)
             .alwaysInStock(true)
             .minimumQuantity(10L)
             .boughtAt("Hofer")
@@ -160,9 +178,9 @@ class ItemServiceTest {
             );
         assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
         assertThat(actual.getIngredientList().stream()
-            .map(Ingredient::getIngrId)
+            .map(Ingredient::getTitle)
             .toList()
-        ).isEqualTo(itemDto.ingredientsIdList());
+        ).isEqualTo(itemDto.ingredients().stream().map(IngredientDto::name).toList());
     }
 
     @Test
@@ -173,6 +191,14 @@ class ItemServiceTest {
             .title("Test")
             .storId(1L)
             .build();
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 3")
+                .build()
+        );
 
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("2314")
@@ -185,7 +211,7 @@ class ItemServiceTest {
             .description("")
             .priceInCent(-1234L)
             .digitalStorage(digitalStorageDto)
-            .ingredientsIdList(List.of(1L, 2L))
+            .ingredients(ingredientDtoList)
             .boughtAt("Hofer")
             .build();
 
@@ -207,6 +233,14 @@ class ItemServiceTest {
             .title("Test")
             .storId(1L)
             .build();
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 3")
+                .build()
+        );
 
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
@@ -220,7 +254,7 @@ class ItemServiceTest {
             .description("This is valid description")
             .priceInCent(1234L)
             .digitalStorage(digitalStorageDto)
-            .ingredientsIdList(List.of(1L, 2L))
+            .ingredients(ingredientDtoList)
             .alwaysInStock(true)
             .boughtAt("Hofer")
             .build();
@@ -240,6 +274,14 @@ class ItemServiceTest {
             .title("Test")
             .storId(-999L)
             .build();
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Ingredient 3")
+                .build()
+        );
 
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
@@ -253,7 +295,7 @@ class ItemServiceTest {
             .description("This is valid description")
             .priceInCent(1234L)
             .digitalStorage(digitalStorageDto)
-            .ingredientsIdList(List.of(-1L, -2L))
+            .ingredients(ingredientDtoList)
             .build();
 
         // when + then
