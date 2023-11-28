@@ -25,7 +25,7 @@ export class CreateFlatComponent implements OnInit{
   createWG(): void{
     this.submitted = true;
     if (this.createForm.valid) {
-      const sharedFlat : SharedFlat = new SharedFlat(this.createForm.controls.flatName.value, this.createForm.controls.password.value)
+      const sharedFlat : SharedFlat = new SharedFlat(this.createForm.controls.name.value, this.createForm.controls.password.value)
       console.log(sharedFlat);
       this.sharedFlatService.createWG(sharedFlat).subscribe({
         next: () => {
@@ -51,4 +51,7 @@ export class CreateFlatComponent implements OnInit{
   }
 
 
+  vanishError() {
+    this.error = false;
+  }
 }

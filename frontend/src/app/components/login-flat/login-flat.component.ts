@@ -60,4 +60,7 @@ export class LoginFlatComponent implements OnInit{
   }
 
 
+  vanishError() {
+    this.error = false;
+  }
 }
