@@ -35,4 +35,16 @@ export class ItemService {
     console.log('Update item with ID ' + item.itemId);
     return this.http.put<ItemDto>(this.baseUri + '/' + item.itemId, item);
   }
+
+  /**
+   * Delete an item from the system.
+   *
+   * @param itemId the id of the item that should be deleted
+   * @return an Observable for the deleted item
+   */
+  deleteItem(itemId: number): Observable<ItemDto> {
+    console.log('Delete item with ID ' + itemId);
+    return this.http.delete<ItemDto>(this.baseUri + '/' + itemId);
+  }
+
 }

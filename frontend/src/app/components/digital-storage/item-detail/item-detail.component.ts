@@ -58,4 +58,19 @@ export class ItemDetailComponent implements OnInit {
     return "€ " + (this.item.priceInCent / 100).toFixed(2).toString();
   }
 
+  public delete() {
+    this.service.deleteItem(this.item.itemId).subscribe({
+      next: data => {
+        this.router.navigate(['/digital-storage']);
+        this.notification.success(`Item ${this.item.itemId} was successfully deleted`);
+      },
+      error: error => {
+        console.error(`Item could not be deleted: ${error.error.message}`);
+        this.router.navigate(['/digital-storage']);
+        this.notification.error(error.error.message);
+        this.notification.error(`Item ${this.item.itemId} could not be deleted`);
+      }
+    });
+  }
+
 }
