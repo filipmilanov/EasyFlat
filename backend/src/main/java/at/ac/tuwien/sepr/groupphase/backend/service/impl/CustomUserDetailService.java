@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WGLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
@@ -83,5 +82,4 @@ public class CustomUserDetailService implements UserService {
         }
         throw new BadCredentialsException("Username or password is incorrect or account is locked");
     }
-
 }
