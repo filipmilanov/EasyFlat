@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -57,8 +58,25 @@ public class ItemServiceImpl implements ItemService {
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         itemValidator.checkItemForCreate(itemDto, digitalStorageList);
-        List<Ingredient> ingredientList = ingredientService.findAllByIds(itemDto.ingredientsIdList());
 
+        List<Ingredient> ingredientList = ingredientService.findByNames(
+            itemDto.ingredientsIdList().stream()
+                .map(IngredientDto::name)
+                .toList()
+        );
+
+        List<IngredientDto> missingIngredients = itemDto.ingredientsIdList().stream()
+            .filter(ingredientDto ->
+                ingredientList.stream()
+                    .noneMatch(ingredient ->
+                        ingredient.getTitle().equals(ingredientDto.name())
+                    )
+            ).toList();
+
+        if (!missingIngredients.isEmpty()) {
+            List<Ingredient> createdIngredients = ingredientService.createAll(missingIngredients);
+            ingredientList.addAll(createdIngredients);
+        }
 
         Item item;
         if (itemDto.alwaysInStock()) {
@@ -79,7 +97,11 @@ public class ItemServiceImpl implements ItemService {
             throw new ConflictException("Digital Storage does not exists");
         }
         itemValidator.checkItemForUpdate(itemDto, digitalStorage.get());
-        List<Ingredient> ingredientList = ingredientService.findAllByIds(itemDto.ingredientsIdList());
+        List<Ingredient> ingredientList = ingredientService.findAllByIds( // TODO: 2021-05-04 check if this is correct
+            itemDto.ingredientsIdList().stream()
+                .map(IngredientDto::ingredientId)
+                .toList()
+        );
         Item item = itemMapper.dtoToEntity(itemDto, ingredientList);
 
         return itemRepository.save(item);
