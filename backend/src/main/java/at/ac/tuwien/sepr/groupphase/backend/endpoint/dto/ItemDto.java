@@ -22,7 +22,7 @@ public record ItemDto(
     Long minimumQuantity,
     String boughtAt,
     DigitalStorageDto digitalStorage,
-    List<Long> ingredientsIdList
+    List<IngredientDto> ingredientsIdList
 ) {
     public ItemDto withAlwaysInStock(Boolean alwaysInStock) {
         return new ItemDto(
