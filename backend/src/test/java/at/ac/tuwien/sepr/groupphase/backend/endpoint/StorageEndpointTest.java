@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
@@ -25,6 +26,8 @@ import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -109,4 +112,35 @@ class StorageEndpointTest {
             }
         );
     }
+
+
+    @Test
+    public void givenStorageIdAndSearchParametersWhenGetItemsThenItemsRetrieved() throws Exception {
+        // Given
+        Long storageId = 1L;
+        String endpointUrl = BASE_URI + "/" + storageId;
+
+
+        ItemSearchDto itemSearchDto = new ItemSearchDto(null, false, null, null, null, null, null);
+
+        MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES))
+                .param("alwaysInStock", String.valueOf(itemSearchDto.alwaysInStock()))
+                .param("productName", itemSearchDto.productName())
+                .param("brand", itemSearchDto.brand())
+                .param("fillLevel", itemSearchDto.fillLevel())
+                .param("expireDateStart", itemSearchDto.expireDateStart() != null ? itemSearchDto.expireDateStart().toString() : null)
+                .param("expireDateEnd", itemSearchDto.expireDateEnd() != null ? itemSearchDto.expireDateEnd().toString() : null))
+            .andDo(print())
+            .andReturn();
+
+        // Assertions
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus()),
+            () -> assertNotNull(mvcResult.getResponse())
+
+        );
+    }
+
 }
