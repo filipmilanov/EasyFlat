@@ -21,7 +21,7 @@ public record ItemDto(
     Boolean alwaysInStock,
     Long minimumQuantity,
     String boughtAt,
-    Long storageId,
+    DigitalStorageDto digitalStorage,
     List<Long> ingredientsIdList
 ) {
     public ItemDto withAlwaysInStock(Boolean alwaysInStock) {
@@ -40,10 +40,30 @@ public record ItemDto(
             alwaysInStock,
             minimumQuantity,
             boughtAt,
-            storageId,
+            digitalStorage,
             ingredientsIdList
         );
     }
 
-
+    @Override
+    public String toString() {
+        return "ItemDto{"
+            + "itemId=" + itemId
+            + ", ean='" + ean + '\''
+            + ", generalName='" + generalName + '\''
+            + ", productName='" + productName + '\''
+            + ", brand='" + brand + '\''
+            + ", quantityCurrent=" + quantityCurrent
+            + ", quantityTotal=" + quantityTotal
+            + ", unit='" + unit + '\''
+            + ", expireDate=" + expireDate
+            + ", description='" + description + '\''
+            + ", priceInCent=" + priceInCent
+            + ", alwaysInStock=" + alwaysInStock
+            + ", minimumQuantity=" + minimumQuantity
+            + ", boughtAt='" + boughtAt + '\''
+            + ", digitalStorage=" + digitalStorage
+            + ", ingredientsIdList=" + ingredientsIdList
+            + '}';
+    }
 }

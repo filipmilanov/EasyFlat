@@ -1,5 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
@@ -30,6 +32,11 @@ class ItemServiceTest {
     @Test
     void givenValidItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException {
         // given
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test")
+            .storId(1L)
+            .build();
+
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
             .generalName("Test")
@@ -41,7 +48,7 @@ class ItemServiceTest {
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
-            .storageId(1L)
+            .digitalStorage(digitalStorageDto)
             .ingredientsIdList(List.of(1L, 2L))
             .build();
 
@@ -78,7 +85,7 @@ class ItemServiceTest {
                 itemDto.description(),
                 itemDto.priceInCent()
             );
-        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.storageId());
+        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getIngrId)
             .toList()
@@ -88,6 +95,12 @@ class ItemServiceTest {
     @Test
     void givenValidAlwaysInStockItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException {
         // given
+
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test")
+            .storId(1L)
+            .build();
+
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
             .generalName("Test")
@@ -99,7 +112,7 @@ class ItemServiceTest {
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
-            .storageId(1L)
+            .digitalStorage(digitalStorageDto)
             .ingredientsIdList(List.of(1L, 2L))
             .alwaysInStock(true)
             .minimumQuantity(10L)
@@ -145,7 +158,7 @@ class ItemServiceTest {
                 itemDto.minimumQuantity(),
                 itemDto.boughtAt()
             );
-        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.storageId());
+        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getIngrId)
             .toList()
@@ -155,6 +168,12 @@ class ItemServiceTest {
     @Test
     void givenInvalidItemWhenCreateThenValidationExceptionIsThrown() {
         // given
+
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test")
+            .storId(1L)
+            .build();
+
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("2314")
             .generalName("")
@@ -165,7 +184,7 @@ class ItemServiceTest {
             .unit("")
             .description("")
             .priceInCent(-1234L)
-            .storageId(1L)
+            .digitalStorage(digitalStorageDto)
             .ingredientsIdList(List.of(1L, 2L))
             .boughtAt("Hofer")
             .build();
@@ -184,6 +203,11 @@ class ItemServiceTest {
     @Test
     void givenInvalidAlwaysInStockItemWhenCreateThenValidationExceptionIsThrown() {
         // given
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test")
+            .storId(1L)
+            .build();
+
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
             .generalName("Test")
@@ -195,7 +219,7 @@ class ItemServiceTest {
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
-            .storageId(1L)
+            .digitalStorage(digitalStorageDto)
             .ingredientsIdList(List.of(1L, 2L))
             .alwaysInStock(true)
             .boughtAt("Hofer")
@@ -212,6 +236,11 @@ class ItemServiceTest {
     @Test
     void givenItemWithInvalidStorageWhenCreateThenConflictExceptionIsThrown() {
         // given
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test")
+            .storId(-999L)
+            .build();
+
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
             .generalName("Test")
@@ -223,7 +252,7 @@ class ItemServiceTest {
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
-            .storageId(-999L)
+            .digitalStorage(digitalStorageDto)
             .ingredientsIdList(List.of(-1L, -2L))
             .build();
 

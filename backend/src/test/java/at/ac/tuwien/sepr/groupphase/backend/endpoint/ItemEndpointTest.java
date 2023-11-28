@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
@@ -63,6 +65,11 @@ class ItemEndpointTest {
     @Test
     public void givenItemWhenCreateThenItemIsCreated() throws Exception {
         // given
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test")
+            .storId(1L)
+            .build();
+
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
             .generalName("Test")
@@ -75,7 +82,7 @@ class ItemEndpointTest {
             .description("This is valid description")
             .priceInCent(1234L)
             .boughtAt("Hofer")
-            .storageId(1L)
+            .digitalStorage(digitalStorageDto)
             .ingredientsIdList(List.of(1L, 2L))
             .build();
 
@@ -109,7 +116,7 @@ class ItemEndpointTest {
                 ItemDto::expireDate,
                 ItemDto::description,
                 ItemDto::priceInCent,
-                ItemDto::storageId,
+                ItemDto::digitalStorage,
                 ItemDto::ingredientsIdList,
                 ItemDto::boughtAt
             )
@@ -124,7 +131,7 @@ class ItemEndpointTest {
                 itemDto.expireDate(),
                 itemDto.description(),
                 itemDto.priceInCent(),
-                itemDto.storageId(),
+                itemDto.digitalStorage(),
                 itemDto.ingredientsIdList(),
                 itemDto.boughtAt()
             );
@@ -133,6 +140,12 @@ class ItemEndpointTest {
     @Test
     public void givenInvalidStorageWhenCreateThenValidationException() throws Exception {
         // given
+
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test")
+            .storId(1L)
+            .build();
+
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("2314")
             .generalName("")
@@ -143,7 +156,7 @@ class ItemEndpointTest {
             .unit("")
             .description("")
             .priceInCent(-1234L)
-            .storageId(1L)
+            .digitalStorage(digitalStorageDto)
             .ingredientsIdList(List.of(1L, 2L))
             .boughtAt("Hofer")
             .build();
@@ -174,6 +187,11 @@ class ItemEndpointTest {
     @Test
     public void givenInvalidStorageWhenCreateThenConflictException() throws Exception {
         // given
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test")
+            .storId(-909L)
+            .build();
+
         ItemDto itemDto = ItemDtoBuilder.builder()
             .ean("0123456789123")
             .generalName("Test")
@@ -185,7 +203,7 @@ class ItemEndpointTest {
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
-            .storageId(-1L)
+            .digitalStorage(digitalStorageDto)
             .ingredientsIdList(List.of(-1L, -2L))
             .boughtAt("Hofer")
             .build();

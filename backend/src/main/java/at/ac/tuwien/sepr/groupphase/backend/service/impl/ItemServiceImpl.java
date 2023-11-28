@@ -54,19 +54,17 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.alwaysInStock() == null) {
             itemDto = itemDto.withAlwaysInStock(false);
         }
-        Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.storageId());
-        if (digitalStorage.isEmpty()) {
-            throw new ConflictException("Cannot process given entity", List.of("Digital Storage does not exists"));
-        }
-        itemValidator.checkItemForCreate(itemDto, digitalStorage.get());
+
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
+        itemValidator.checkItemForCreate(itemDto, digitalStorageList);
         List<Ingredient> ingredientList = ingredientService.findAllByIds(itemDto.ingredientsIdList());
 
 
         Item item;
         if (itemDto.alwaysInStock()) {
-            item = itemMapper.dtoToAlwaysInStock(itemDto, digitalStorage.get(), ingredientList);
+            item = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList);
         } else {
-            item = itemMapper.dtoToEntity(itemDto, digitalStorage.get(), ingredientList);
+            item = itemMapper.dtoToEntity(itemDto, ingredientList);
         }
         return itemRepository.save(item);
 
@@ -76,13 +74,13 @@ public class ItemServiceImpl implements ItemService {
     public Item update(ItemDto itemDto) throws ConflictException {
         LOGGER.trace("update({})", itemDto);
 
-        Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.storageId());
+        Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.digitalStorage().storId());
         if (digitalStorage.isEmpty()) {
             throw new ConflictException("Digital Storage does not exists");
         }
         itemValidator.checkItemForUpdate(itemDto, digitalStorage.get());
         List<Ingredient> ingredientList = ingredientService.findAllByIds(itemDto.ingredientsIdList());
-        Item item = itemMapper.dtoToEntity(itemDto, digitalStorage.get(), ingredientList);
+        Item item = itemMapper.dtoToEntity(itemDto, ingredientList);
 
         return itemRepository.save(item);
     }

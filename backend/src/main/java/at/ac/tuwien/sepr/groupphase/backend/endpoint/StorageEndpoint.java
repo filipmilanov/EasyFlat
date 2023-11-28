@@ -38,7 +38,7 @@ public class StorageEndpoint {
         this.digitalStorageMapper = digitalStorageMapper;
     }
 
-    @Secured("ROLE_USER")
+    @PermitAll
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<DigitalStorageDto> findAll(DigitalStorageSearchDto digitalStorageDto) {

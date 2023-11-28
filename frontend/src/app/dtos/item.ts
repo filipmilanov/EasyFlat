@@ -1,3 +1,5 @@
+import {DigitalStorageDto} from "./digitalStorageDto";
+
 export class ItemDto {
   itemId?: number;
   ean?: string;
@@ -15,5 +17,5 @@ export class ItemDto {
   minimumQuantity?: number;
   addToFiance: boolean;
   ingredients?: [string];
-  storageId?: number;
+  digitalStorage?: DigitalStorageDto;
 }
