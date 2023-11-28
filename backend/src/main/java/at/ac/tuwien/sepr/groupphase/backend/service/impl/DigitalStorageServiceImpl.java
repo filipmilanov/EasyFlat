@@ -81,6 +81,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             alwaysInStock = Item.class;
         }
 
+
         return digitalStorageRepository.searchItems(
             id,
             (searchItem != null) ? searchItem.productName() : null,

@@ -7,7 +7,7 @@ public record ItemSearchDto(
     boolean alwaysInStock,
     String productName,
     String brand,
-    Long fillLevel,
+    String fillLevel,
     LocalDate expireDateStart,
     LocalDate expireDateEnd
 

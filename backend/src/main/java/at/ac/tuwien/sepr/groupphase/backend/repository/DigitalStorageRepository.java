@@ -27,7 +27,10 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
         + "(:expireDateStart IS NULL OR "
         + "(i.expireDate >= :expireDateStart AND "
         + "(:expireDateEnd IS NULL OR i.expireDate <= :expireDateEnd))) AND "
-        + "(:fillLevel IS NULL OR i.quantityCurrent = :fillLevel) AND "
+        + "(:fillLevel IS NULL OR "
+        + "(:fillLevel = 'full' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.9) OR "
+        + "(:fillLevel = 'nearly_empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.1 AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.9) OR "
+        + "(:fillLevel = 'empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.1)) AND "
         + "(:alwaysInStock IS NULL OR TYPE(i) = :alwaysInStock) "
         + "ORDER BY :orderType")
     List<Item> searchItems(@Param("storageId") Long storageId,
@@ -35,7 +38,7 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
                            @Param("brand") String brand,
                            @Param("expireDateStart") LocalDate expireDateStart,
                            @Param("expireDateEnd") LocalDate expireDateEnd,
-                           @Param("fillLevel") Long fillLevel,
+                           @Param("fillLevel") String fillLevel,
                            @Param("orderType") String orderType,
                            @Param("alwaysInStock") Class alwaysInStock);
 }

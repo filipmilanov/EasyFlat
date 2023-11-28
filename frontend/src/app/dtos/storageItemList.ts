@@ -19,7 +19,7 @@ export class ItemSearchDto {
   alwaysInStock:boolean;
   productName?:string;
   brand?:string;
-  fillLevel?:number;
+  fillLevel?:string;
   expireDateStart?:string;
   expireDateEnd?:string;
   orderBy: OrderType;

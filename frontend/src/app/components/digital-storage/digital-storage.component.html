@@ -51,12 +51,14 @@
       Fill level
     </label>
     <select id="searchBradsnd" name="searchBrand"
-            class="form-select"
+            class="form-select" [(ngModel)] = "searchParameters.fillLevel"
+            (change) = "loadStorage()"
     >
       <option></option>
       <option value="full">full</option>
-      <option value="nearly empty">nearly empty</option>
+      <option value="nearly_empty">nearly empty</option>
       <option value="empty">empty</option>
+
     </select>
   </div>
 
