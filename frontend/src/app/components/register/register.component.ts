@@ -1,15 +1,15 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { AuthRequest } from '../../dtos/auth-request';
+import {AuthRequest, UserDetail} from '../../dtos/auth-request';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit{
   registerForm: UntypedFormGroup;
   submitted = false;
   error = false;
@@ -17,6 +17,8 @@ export class RegisterComponent {
 
   constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private router: Router) {
     this.registerForm = this.formBuilder.group({
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]]
     });
@@ -25,11 +27,12 @@ export class RegisterComponent {
   registerUser() {
     this.submitted = true;
     if (this.registerForm.valid) {
-      const authRequest: AuthRequest = new AuthRequest(this.registerForm.controls.email.value, this.registerForm.controls.password.value);
-      console.log(authRequest)
-      this.authService.registerUser(authRequest).subscribe({
+      const userDetail: UserDetail = new UserDetail(this.registerForm.controls.firstName.value,this.registerForm.controls.lastName.value,
+        this.registerForm.controls.email.value, this.registerForm.controls.password.value);
+      console.log(userDetail)
+      this.authService.registerUser(userDetail).subscribe({
         next: () => {
-          console.log('Successfully registered user: ' + authRequest.email);
+          console.log('Successfully registered user: ' + userDetail.email);
           this.router.navigate(['']);
         },
         error: error => {
@@ -50,5 +53,8 @@ export class RegisterComponent {
 
   vanishError() {
     this.error = false;
+  }
+
+  ngOnInit(): void {
   }
 }

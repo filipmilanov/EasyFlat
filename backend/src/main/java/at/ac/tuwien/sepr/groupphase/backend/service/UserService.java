@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,7 +39,7 @@ public interface UserService extends UserDetailsService {
      */
     String login(UserLoginDto userLoginDto);
 
-    String register(UserLoginDto userLoginDto);
+    String register(UserDetailDto userDetailDto);
 
-    UserLoginDto getUser(String authToken);
+    UserDetailDto getUser(String authToken);
 }

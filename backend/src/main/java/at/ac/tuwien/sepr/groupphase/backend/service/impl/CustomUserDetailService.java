@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
@@ -88,20 +89,22 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public String register(UserLoginDto userLoginDto) {
+    public String register(UserDetailDto userDetailDto) {
         LOGGER.debug("Registering a new user");
 
-        if (userRepository.findUserByEmail(userLoginDto.getEmail()) != null) {
+        if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
             throw new BadCredentialsException("User with this email already exists");
         }
 
         ApplicationUser newUser = new ApplicationUser();
-        newUser.setEmail(userLoginDto.getEmail());
-        newUser.setPassword(passwordEncoder.encode(userLoginDto.getPassword()));
+        newUser.setFirstName(userDetailDto.getFirstName());
+        newUser.setLastName(userDetailDto.getLastName());
+        newUser.setEmail(userDetailDto.getEmail());
+        newUser.setPassword(passwordEncoder.encode(userDetailDto.getPassword()));
         newUser.setAdmin(false);
         userRepository.save(newUser);
 
-        UserDetails userDetails = loadUserByUsername(userLoginDto.getEmail());
+        UserDetails userDetails = loadUserByUsername(userDetailDto.getEmail());
         if (userDetails != null) {
             List<String> roles = userDetails.getAuthorities()
                 .stream()
@@ -114,10 +117,10 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public UserLoginDto getUser(String authToken)
+    public UserDetailDto getUser(String authToken)
     {
         String email = jwtTokenizer.getEmailFromToken(authToken);
         ApplicationUser user = userRepository.findUserByEmail(email);
-        return userMapper.mapToUserLoginDto(user);
+        return userMapper.entityToUserDetailDto(user);
     }
 }

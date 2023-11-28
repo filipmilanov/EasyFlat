@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
@@ -29,7 +30,7 @@ public class LoginEndpoint {
 
     @PermitAll
     @GetMapping
-    public UserLoginDto getUser(@RequestHeader("Authorization") String authToken)
+    public UserDetailDto getUser(@RequestHeader("Authorization") String authToken)
     {
         return userService.getUser(authToken);
     }

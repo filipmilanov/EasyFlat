@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AuthRequest} from '../dtos/auth-request';
+import {AuthRequest, UserDetail} from '../dtos/auth-request';
 import {Observable} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {tap} from 'rxjs/operators';
@@ -28,19 +28,19 @@ export class AuthService {
       );
   }
 
-  registerUser(authRequest: AuthRequest): Observable<string> {
-    return this.httpClient.post(this.globals.backendUri + '/register', authRequest, { responseType: 'text' })
+  registerUser(userDetail: UserDetail): Observable<string> {
+    return this.httpClient.post(this.globals.backendUri + '/register', userDetail, { responseType: 'text' })
       .pipe(
         tap((authResponse: string) => this.setToken(authResponse))
       );
   }
 
-  getUser(authToken: string): Observable<AuthRequest> {
+  getUser(authToken: string): Observable<UserDetail> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${authToken}`
     });
 
-    return this.httpClient.get<AuthRequest>(this.authBaseUri, { headers });
+    return this.httpClient.get<UserDetail>(this.authBaseUri, { headers });
   }
 
 

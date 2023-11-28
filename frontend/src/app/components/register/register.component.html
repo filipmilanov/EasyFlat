@@ -19,6 +19,28 @@
           <form class="form" [formGroup]="registerForm" (ngSubmit)="registerUser()" >
 
             <div class="form-group">
+              <label for="firstName">First name</label>
+              <input type="text" name="firstName" formControlName="firstName" class="form-control" id="firstName"
+                     aria-describedby="firstNameHelp" placeholder="Enter First name">
+              <div *ngIf="submitted && registerForm.controls.firstName.errors" class="error">
+                <small class="form-text text-warning" *ngIf="registerForm.controls.firstName.errors?.required">Your first name is
+                  required!
+                </small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Last name</label>
+              <input type="text" name="lastName" formControlName="lastName" class="form-control" id="lastName"
+                     aria-describedby="lastNameHelp" placeholder="Enter Last name">
+              <div *ngIf="submitted && registerForm.controls.lastName.errors" class="error">
+                <small class="form-text text-warning" *ngIf="registerForm.controls.lastName.errors?.required">Your last name is
+                  required!
+                </small>
+              </div>
+            </div>
+
+            <div class="form-group">
               <label for="inputEmail">Email</label>
               <input type="text" name="email" formControlName="email" class="form-control" id="inputEmail"
                      aria-describedby="emailHelp" placeholder="Enter Email">
