@@ -58,8 +58,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     public List<Item> findAllItemsOfStorage(Long id) {
         Optional<DigitalStorage> optionalStorage = digitalStorageRepository.findById(id);
         if (optionalStorage.isPresent()) {
-            List<Item> allItems = optionalStorage.get().getItemList();
-            return allItems;
+            return optionalStorage.get().getItemList();
         } else {
             return Collections.emptyList();
         }
@@ -114,12 +113,5 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     @Override
     public void remove(Long id) {
 
-    }
-
-    @Override
-    public Item updateItemQuantity(long storageId, long itemId, long quantity) {
-        LOGGER.trace("updateItemQuantity({}, {}, {})", storageId, itemId, quantity);
-
-        return digitalStorageRepository.updateItemQuantity(storageId, itemId, quantity);
     }
 }

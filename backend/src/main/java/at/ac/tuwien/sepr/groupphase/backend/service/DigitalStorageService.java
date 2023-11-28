@@ -82,13 +82,4 @@ public interface DigitalStorageService {
      */
     void remove(Long id);
 
-    /**
-     * Updates currentQuantity of the item with specified digitalStorage and itemId in db.
-     *
-     * @param storageId existing ID of a storage
-     * @param itemId existing ID of an item
-     * @param quantity the new quantity of the specified item
-     * @return an updated object of type {@link Item}
-     */
-    Item updateItemQuantity(long storageId, long itemId, long quantity);
 }
