@@ -3,6 +3,7 @@ import {DigitalStorageComponent} from "../digital-storage.component";
 import {StorageService} from "../../../services/storage.service";
 import {ItemService} from "../../../services/item.service";
 import {ItemDto} from "../../../dtos/item";
+import {ItemSearchDto} from "../../../dtos/storageItemList";
 
 @Component({
   selector: 'app-item-card',
@@ -11,7 +12,7 @@ import {ItemDto} from "../../../dtos/item";
 })
 
 export class ItemCardComponent {
-  @Input() id: number;
+  @Input() id: string;
   @Input() title: string;
   @Input() quantity: number;
   @Input() maxQuantity: number;
@@ -62,27 +63,32 @@ export class ItemCardComponent {
       return;
     }
 
-    let item : ItemDto;
-    this.itemService.getById(this.id).subscribe({
+    let item: ItemDto;
+    this.itemService.getById(parseInt(this.id)).subscribe({
       next: res => {
         item = res;
+
+        let quantityCurrent: number;
+        if (mode == 0) { // Subtract
+          quantityCurrent = item.quantityCurrent - parseInt(value);
+
+          this.customModalOpen = false;
+        } else { // mode == 1, Add
+          quantityCurrent = item.quantityCurrent + parseInt(value);
+
+          this.customModalOpen1 = false;
+        }
+
+        item.quantityCurrent = quantityCurrent;
+        console.log(item)
+        this.itemService.updateItem(item);
+        this.storageService.getItems(item.digitalStorage.digitalStorageId + '', new ItemSearchDto())
       },
       error: err => {
         console.error("Error finding item:", err);
       }
     });
 
-    let quantityCurrent;
-    if (mode == 0) { // Subtract
-      quantityCurrent = item.quantityCurrent - parseInt(value);
-
-      this.customModalOpen = false;
-    } else { // mode == 1, Add
-      quantityCurrent = item.quantityCurrent + parseInt(value);
-
-      this.customModalOpen1 = false;
-    }
-    this.storageService.updateItemQuantity(item.digitalStorage.digitalStorageId + '', value, quantityCurrent);
-    this.storageService.getItems(item.digitalStorage.digitalStorageId + '', null);
   }
+
 }
