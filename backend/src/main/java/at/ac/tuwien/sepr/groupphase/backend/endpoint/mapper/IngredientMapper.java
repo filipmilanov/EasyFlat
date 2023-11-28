@@ -15,4 +15,10 @@ public abstract class IngredientMapper {
     @Mapping(target = "ingrId", source = "ingredientId")
     @Mapping(target = "title", source = "name")
     public abstract Ingredient ingredientDtoToIngredient(IngredientDto ingredientDto);
+
+    public abstract List<IngredientDto> entityListToDtoList(List<Ingredient> ingredients);
+
+    @Mapping(target = "ingredientId", source = "ingrId")
+    @Mapping(target = "name", source = "title")
+    public abstract IngredientDto ingredientToIngredientDto(Ingredient ingredient);
 }
