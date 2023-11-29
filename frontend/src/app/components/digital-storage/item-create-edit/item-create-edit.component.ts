@@ -128,7 +128,7 @@ export class ItemCreateEditComponent implements OnInit{
         },
         error: error => {
           console.error(`Error creating item ${error}`);
-          this.notification.error(`Item could not be ${this.modeActionFinished} and was not added to storage.`, "Error");
+          this.notification.error(`Item could not be ${this.modeActionFinished}.`, "Error");
         }
       });
     }
