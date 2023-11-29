@@ -9,6 +9,7 @@
     <ul class="navbar-nav mr-auto">
       <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/message" routerLinkActive="active">Message</a>
       <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/account" routerLinkActive="active">Account</a>
+      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/wgLogin" routerLinkActive="active">Shared Flat</a>
     </ul>
     <ul class="navbar-nav mr-5">
       <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/login" routerLinkActive="active">Login</a>

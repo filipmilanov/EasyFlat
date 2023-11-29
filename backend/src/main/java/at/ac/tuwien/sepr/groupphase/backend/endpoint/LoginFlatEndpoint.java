@@ -26,7 +26,7 @@ public class LoginFlatEndpoint {
 
     @PermitAll
     @PostMapping
-    public WgDetailDto loginWG(@RequestBody WgDetailDto wgDetailDto) {
+    public WgDetailDto loginWg(@RequestBody WgDetailDto wgDetailDto) {
         return sharedFlatService.login(wgDetailDto);
     }
 }

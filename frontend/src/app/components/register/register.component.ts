@@ -33,7 +33,7 @@ export class RegisterComponent implements OnInit{
       this.authService.registerUser(userDetail).subscribe({
         next: () => {
           console.log('Successfully registered user: ' + userDetail.email);
-          this.router.navigate(['/wgLogin']);
+          this.router.navigate(['']);
         },
         error: error => {
           console.log('Could not register due to:');
