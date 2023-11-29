@@ -25,9 +25,27 @@ export class LoginFlatComponent implements OnInit{
   loginWG(): void {
     this.submitted = true;
     if (this.loginForm.valid) {
-      const sharedFlat : SharedFlat = new SharedFlat(this.loginForm.controls.name.value, this.loginForm.controls.password.value)
-      this.authenticateWG(sharedFlat);
-      console.log(sharedFlat);
+      const sharedFlat: SharedFlat = new SharedFlat(
+        this.loginForm.controls.name.value,
+        this.loginForm.controls.password.value
+      );
+      console.log('Try to authenticate shared flat: ' + sharedFlat.name);
+      this.sharedFlatService.loginWG(sharedFlat).subscribe(
+        () => {
+          console.log('You have successfully logged in!');
+          this.router.navigate(['']); // Navigate on successful login
+        },
+        (error) => {
+          console.log('Could not log in due to:');
+          console.log(error);
+          this.error = true;
+          if (error) {
+            this.errorMessage = 'Invalid credentials. Could not log in.';
+            // Navigate to /wgLogin
+            this.router.navigate(['/wgLogin']);
+          }
+        }
+      );
     } else {
       console.log('Invalid input');
     }

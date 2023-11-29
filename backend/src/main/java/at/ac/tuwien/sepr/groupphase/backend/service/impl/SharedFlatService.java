@@ -47,7 +47,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         SharedFlat existingSharedFlat = sharedFlatRepository.findByName(name);
 
         if (existingSharedFlat != null) {
-            // Compare the raw password with the stored encoded password
+            //Compare the raw password with the stored encoded password
             boolean passwordMatches = passwordEncoder.matches(rawPassword, existingSharedFlat.getPassword());
 
             if (passwordMatches) {
@@ -58,6 +58,11 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         } else {
             throw new IllegalStateException("Invalid credentials. Could not log in.");
         }
+    }
+
+    @Override
+    public void deleteByName(String name) {
+        sharedFlatRepository.deleteByName(name);
     }
 
 

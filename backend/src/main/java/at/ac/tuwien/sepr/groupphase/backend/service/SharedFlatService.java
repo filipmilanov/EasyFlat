@@ -8,4 +8,5 @@ public interface SharedFlatService {
 
     WgDetailDto loginWg(WgDetailDto wgDetailDto);
 
+    void deleteByName(String name);
 }

@@ -22,7 +22,7 @@ export class SharedFlatService {
     return this.httpClient.post<SharedFlat>(this.createFlatBaseUri, sharedFlat);
   }
 
-  delete() {
-
-  }
+  // deleteSharedFlatByName(name: string): Observable<SharedFlat> {
+  //   return this.httpClient.delete(`${this.backendUrl}/entities/${name}`);
+  // }
 }
