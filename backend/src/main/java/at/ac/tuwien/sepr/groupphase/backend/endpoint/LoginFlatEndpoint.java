@@ -33,9 +33,5 @@ public class LoginFlatEndpoint {
         return sharedFlatService.loginWg(wgDetailDto);
     }
 
-    @DeleteMapping("/entities/{name}")
-    public ResponseEntity<String> deleteEntityByName(@PathVariable String name) {
-        sharedFlatService.deleteByName(name);
-        return ResponseEntity.ok("Deleted entity with name: " + name);
-    }
+
 }
