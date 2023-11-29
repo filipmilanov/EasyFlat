@@ -18,21 +18,18 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final SharedFlatRepository sharedFlatRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenizer jwtTokenizer;
     private final SharedFlatMapper sharedFlatMapper;
 
     @Autowired
-    public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder, JwtTokenizer jwtTokenizer,
-                             SharedFlatMapper sharedFlatMapper) {
+    public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder, SharedFlatMapper sharedFlatMapper) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtTokenizer = jwtTokenizer;
         this.sharedFlatMapper = sharedFlatMapper;
     }
 
 
     @Override
-    public WgDetailDto create(WgDetailDto sharedFlat) {
+    public WgDetailDto create(SharedFlat sharedFlat) {
         LOGGER.debug("Create a new shared flat");
         SharedFlat newSharedFlat = new SharedFlat();
         newSharedFlat.setName(sharedFlat.getName());
@@ -42,13 +39,26 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     }
 
     @Override
-    public WgDetailDto login(WgDetailDto wgDetailDto) {
-        String flatName = wgDetailDto.getName();
-        String password = wgDetailDto.getPassword();
-        SharedFlat newSharedFlat = new SharedFlat();
-        newSharedFlat.setName(flatName);
-        newSharedFlat.setPassword(password);
-        sharedFlatRepository.findByNameAndPassword(flatName, password);
-        return sharedFlatMapper.entityToWgDetailDto(newSharedFlat);
+    public WgDetailDto loginWg(WgDetailDto wgDetailDto) {
+        String name = wgDetailDto.getName();
+        String rawPassword = wgDetailDto.getPassword();
+
+        // Fetch the stored SharedFlat by name from the database
+        SharedFlat existingSharedFlat = sharedFlatRepository.findByName(name);
+
+        if (existingSharedFlat != null) {
+            // Compare the raw password with the stored encoded password
+            boolean passwordMatches = passwordEncoder.matches(rawPassword, existingSharedFlat.getPassword());
+
+            if (passwordMatches) {
+                return sharedFlatMapper.entityToWgDetailDto(existingSharedFlat);
+            } else {
+                throw new IllegalStateException("Invalid credentials. Could not log in.");
+            }
+        } else {
+            throw new IllegalStateException("Invalid credentials. Could not log in.");
+        }
     }
+
+
 }

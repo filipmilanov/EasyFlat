@@ -21,4 +21,8 @@ export class SharedFlatService {
   createWG(sharedFlat: SharedFlat): Observable<SharedFlat>{
     return this.httpClient.post<SharedFlat>(this.createFlatBaseUri, sharedFlat);
   }
+
+  delete() {
+
+  }
 }

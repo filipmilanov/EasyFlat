@@ -3,6 +3,7 @@ import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {SharedFlatService} from "../../services/sharedFlat.service";
 import {SharedFlat} from "../../dtos/sharedFlat";
+import {UserDetail} from "../../dtos/auth-request";
 
 @Component({
   selector: 'app-login-flat',
@@ -39,17 +40,16 @@ export class LoginFlatComponent implements OnInit{
     console.log('Try to authenticate shared flat: ' + sharedFlat.name);
     this.sharedFlatService.loginWG(sharedFlat).subscribe({
       next: () => {
-        console.log('Successfully logged in user: ' + sharedFlat.name);
         this.router.navigate(['']);
       },
-      error: error => {
+      error: (error) => {
         console.log('Could not log in due to:');
         console.log(error);
         this.error = true;
-        if (typeof error.error === 'object') {
-          this.errorMessage = error.error.error;
-        } else {
-          this.errorMessage = error.error;
+        if (error) {
+          this.errorMessage = 'Invalid credentials. Could not log in.';
+          // Navigate to /wgLogin
+          this.router.navigate(['/wgLogin']);
         }
       }
     });

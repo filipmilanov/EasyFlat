@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService;
 import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class SharedFlatEndpoint {
 
     @PermitAll
     @PostMapping
-    public WgDetailDto create(@RequestBody WgDetailDto wgDetailDto) {
+    public WgDetailDto create(@RequestBody SharedFlat wgDetailDto) {
         return sharedFlatService.create(wgDetailDto);
     }
 }

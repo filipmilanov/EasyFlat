@@ -19,7 +19,7 @@
           <form class="form" [formGroup]="loginForm" (ngSubmit)="loginWG()" >
 
             <div class="form-group">
-              <label for="name">First name</label>
+              <label for="name">Flat name</label>
               <input type="text" name="name" formControlName="name" class="form-control" id="name"
                      aria-describedby="nameHelp" placeholder="Enter Flat name">
               <div *ngIf="submitted && loginForm.controls.name.errors" class="error">
@@ -45,9 +45,8 @@
               </div>
             </div>
 
-            <button type="submit" class="btn btn-success float-right">Login</button>
-            <button (click)="navigateToCreate()" class="btn btn-success float-right">Create Flat</button>
-
+            <button style="margin-right: 10px;" type="submit" class="btn btn-success float-right">Login</button>
+            <button style="margin-right: 10px;" (click)="navigateToCreate()" class="btn btn-success float-right">Create Flat</button>
 
           </form>
         </div>
