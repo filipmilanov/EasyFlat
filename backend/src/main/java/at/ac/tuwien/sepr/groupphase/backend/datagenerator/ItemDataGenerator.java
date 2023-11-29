@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +16,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Profile({"generateData"})
-@Component
+@Profile({"generateData", "test"})
+@Component("ItemDataGenerator")
+@DependsOn({"CleanDatabase", "StorageDataGenerator", "IngredientsDataGenerator"})
 public class ItemDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 5;
@@ -28,7 +30,7 @@ public class ItemDataGenerator {
 
     @PostConstruct
     private void generateDigitalStorages() {
-        LOGGER.debug("generating {} message entries", NUMBER_OF_ENTITIES_TO_GENERATE);
+        LOGGER.debug("generating {} Items ", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             Item item = new Item();
             item.setGeneralName("Item" + (i + 1));
