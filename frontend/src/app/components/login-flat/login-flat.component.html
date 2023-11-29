@@ -22,7 +22,7 @@
               <label for="name">First name</label>
               <input type="text" name="name" formControlName="name" class="form-control" id="name"
                      aria-describedby="nameHelp" placeholder="Enter Flat name">
-              <div *ngIf="submitted && loginForm.controls.firstName.errors" class="error">
+              <div *ngIf="submitted && loginForm.controls.name.errors" class="error">
                 <small class="form-text text-warning" *ngIf="loginForm.controls.name.errors?.required">Flat name is
                   required!
                 </small>

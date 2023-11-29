@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SharedFlatRepository extends JpaRepository<SharedFlat, Long> {
-
+    SharedFlat findByNameAndPassword(String name, String password);
 }

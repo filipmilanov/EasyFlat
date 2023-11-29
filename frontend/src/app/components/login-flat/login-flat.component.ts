@@ -24,7 +24,7 @@ export class LoginFlatComponent implements OnInit{
   loginWG(): void {
     this.submitted = true;
     if (this.loginForm.valid) {
-      const sharedFlat : SharedFlat = new SharedFlat(this.loginForm.controls.flatName.value, this.loginForm.controls.password.value)
+      const sharedFlat : SharedFlat = new SharedFlat(this.loginForm.controls.name.value, this.loginForm.controls.password.value)
       this.authenticateWG(sharedFlat);
       console.log(sharedFlat);
     } else {

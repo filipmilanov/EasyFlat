@@ -40,4 +40,15 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         sharedFlatRepository.save(newSharedFlat);
         return sharedFlatMapper.entityToWgDetailDto(newSharedFlat);
     }
+
+    @Override
+    public WgDetailDto login(WgDetailDto wgDetailDto) {
+        String flatName = wgDetailDto.getName();
+        String password = wgDetailDto.getPassword();
+        SharedFlat newSharedFlat = new SharedFlat();
+        newSharedFlat.setName(flatName);
+        newSharedFlat.setPassword(password);
+        sharedFlatRepository.findByNameAndPassword(flatName, password);
+        return sharedFlatMapper.entityToWgDetailDto(newSharedFlat);
+    }
 }
