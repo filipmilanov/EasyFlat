@@ -127,7 +127,8 @@ export class ItemCreateEditComponent implements OnInit{
           this.router.navigate(['/digital-storage']);
         },
         error: error => {
-          console.error(`Error creating item ${error}`);
+          console.error(`Error item was not ${this.modeActionFinished}: ${error}`);
+          console.error(error);
           this.notification.error(`Item could not be ${this.modeActionFinished}.`, "Error");
         }
       });
