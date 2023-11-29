@@ -33,7 +33,7 @@ export class ItemService {
 
   updateItem(item: ItemDto): Observable<ItemDto> {
     console.log('Update item with ID ' + item.itemId);
-    return this.http.put<ItemDto>(this.baseUri + '/' + item.itemId, item);
+    return this.http.put<ItemDto>(this.baseUri, item);
   }
 
   /**
