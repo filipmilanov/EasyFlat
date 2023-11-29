@@ -15,10 +15,10 @@ export enum ItemCreateEditMode {
 
 @Component({
   selector: 'app-item-create-edit',
-  templateUrl: './item-create.component.html',
-  styleUrls: ['./item-create.component.scss']
+  templateUrl: './item-create-edit.component.html',
+  styleUrls: ['./item-create-edit.component.scss']
 })
-export class ItemCreateComponent implements OnInit{
+export class ItemCreateEditComponent implements OnInit{
 
   mode: ItemCreateEditMode = ItemCreateEditMode.create;
   item: ItemDto = {
