@@ -27,7 +27,7 @@ export class ItemService {
    * @param item to persist
    */
   createItem(item: ItemDto): Observable<ItemDto> {
-    console.log('Create message with title ' + item.itemId);
+    console.log('Create item with content ' + item);
     return this.http.post<ItemDto>(this.baseUri, item);
   }
 
