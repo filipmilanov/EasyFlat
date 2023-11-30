@@ -4,7 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +25,7 @@ class DigitalStorageServiceTest {
     private DigitalStorageService service;
 
     @Test
-    void givenValidStorageWhenCreateThenStorageIsPersistedAndHasId() throws ConflictException, ValidationException {
+    void givenValidStorageWhenCreateThenStorageIsPersistedAndHasId() throws ConflictException {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("MyTestStorage")
@@ -50,6 +50,6 @@ class DigitalStorageServiceTest {
             .build();
 
         // when + then
-        assertThrows(ValidationException.class, () -> service.create(digitalStorageDto));
+        assertThrows(ConstraintViolationException.class, () -> service.create(digitalStorageDto));
     }
 }

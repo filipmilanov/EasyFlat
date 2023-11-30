@@ -66,8 +66,6 @@ public class ItemValidator {
 
         if (itemDto.alwaysInStock() == null) {
             errors.add("There is no AlwaysInStock defined");
-        } else if (itemDto.alwaysInStock() && itemDto.minimumQuantity() == null) {
-            errors.add("There is no MinimumQuantity defined");
         }
 
         if (!errors.isEmpty()) {
