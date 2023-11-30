@@ -39,7 +39,7 @@ public abstract class ErrorListException extends Exception {
      */
     @Override
     public String getMessage() {
-        return "%s : %s."
+        return "%s : [%s.]"
             .formatted(messageSummary, String.join(", ", errors));
     }
 
