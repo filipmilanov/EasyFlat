@@ -22,7 +22,7 @@ public class IngredientValidator {
         }
     }
 
-    public void checkIngredientListForCreate(List<IngredientDto> ingredientDtoList) throws ConflictException {
+    public void validateListForCreate(List<IngredientDto> ingredientDtoList) throws ConflictException {
         LOGGER.trace("checkIngredientListForCreate({})", ingredientDtoList);
 
         for (IngredientDto ingredientDto : ingredientDtoList) {

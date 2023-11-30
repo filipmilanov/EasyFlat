@@ -42,7 +42,7 @@ public class IngredientServiceImpl implements IngredientService {
     public List<Ingredient> createAll(List<IngredientDto> ingredientDtoList) throws ConflictException {
         LOGGER.trace("createAll({})", ingredientDtoList);
 
-        ingredientValidator.checkIngredientListForCreate(ingredientDtoList);
+        ingredientValidator.validateListForCreate(ingredientDtoList);
 
         List<Ingredient> ingredientList = ingredientMapper.dtoListToEntityList(ingredientDtoList);
         return ingredientRepository.saveAll(ingredientList);
