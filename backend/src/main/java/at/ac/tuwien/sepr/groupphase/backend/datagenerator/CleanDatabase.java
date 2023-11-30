@@ -30,7 +30,12 @@ public class CleanDatabase {
     private void cleanDatabase() {
         LOGGER.debug("cleaning database");
         itemRepository.deleteAll();
+        itemRepository.resetSequence();
+
         ingredientRepository.deleteAll();
+        ingredientRepository.resetSequence();
+
         digitalStorageRepository.deleteAll();
+        digitalStorageRepository.resetSequence();
     }
 }

@@ -3,11 +3,14 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,6 +143,32 @@ class StorageEndpointTest {
             () -> assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus()),
             () -> assertNotNull(mvcResult.getResponse())
 
+        );
+    }
+
+    @Test
+    @Disabled("This test does not make sense, if we do not have a working test suite (and its not finished yet)")
+    public void givenStorageIdAndSearchParametersAndOrderTypeWhenGetItemsThenItemsRetrievedInCorrectOrder(ItemOrderType orderType) throws Exception {
+        // Given
+        Long storageId = 1L;
+        String endpointUrl = BASE_URI + "/" + storageId;
+
+
+        ItemSearchDto itemSearchDto = ItemSearchDtoBuilder.builder()
+            .orderType(orderType)
+            .build();
+
+        MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES))
+                .param("orderType", itemSearchDto.orderType().name()))
+            .andDo(print())
+            .andReturn();
+
+        // Assertions
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus()),
+            () -> assertNotNull(mvcResult.getResponse())
         );
     }
 

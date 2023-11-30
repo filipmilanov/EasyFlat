@@ -2,7 +2,9 @@ package at.ac.tuwien.sepr.groupphase.backend.repository;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,6 +14,11 @@ import java.util.List;
 
 @Repository
 public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, Long> {
+
+    @Modifying
+    @Transactional
+    @Query(value = "ALTER SEQUENCE digital_storage_seq RESTART WITH 1", nativeQuery = true)
+    void resetSequence();
 
     List<DigitalStorage> findByTitleContaining(String title);
 

@@ -17,7 +17,7 @@ import java.util.Objects;
 public class DigitalStorage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long storId;
 
     @Column
