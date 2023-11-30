@@ -9,7 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
-import jakarta.validation.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ class ItemServiceTest {
     private ItemService service;
 
     @Test
-    void givenValidItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException {
+    void givenValidItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
@@ -103,7 +103,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenValidAlwaysInStockItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException {
+    void givenValidAlwaysInStockItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException {
         // given
 
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
@@ -227,7 +227,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenInvalidAlwaysInStockItemWhenCreateThenValidationExceptionIsThrown() {
+    void givenInvalidAlwaysInStockItemWhenCreateThenConflictExceptionIsThrown() {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
@@ -260,7 +260,7 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.create(itemDto)).getMessage();
+        String message = assertThrows(ConflictException.class, () -> service.create(itemDto)).getMessage();
         assertThat(message)
             .contains(
                 "minimum quantity"

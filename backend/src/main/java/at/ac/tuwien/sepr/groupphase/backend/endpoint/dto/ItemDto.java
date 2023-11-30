@@ -47,12 +47,6 @@ public record ItemDto(
         return this.quantityCurrent < this.quantityTotal;
     }
 
-    @AssertTrue(message = "The minimum quantity cannot be empty")
-    private boolean minimumQuantityNotEmpty() {
-        return this.alwaysInStock && this.minimumQuantity != null;
-    }
-
-
     public ItemDto withAlwaysInStock(Boolean alwaysInStock) {
         return new ItemDto(
             itemId,

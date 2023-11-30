@@ -203,8 +203,8 @@ class ItemEndpointTest {
             () -> {
                 String content = response.getContentAsString();
                 ;
-                String[] errors = content.split("ConstraintViolationImpl");
-                assertEquals(7 + 1, errors.length);
+                String[] errors = content.split(",");
+                assertEquals(7, errors.length);
             }
         );
     }
