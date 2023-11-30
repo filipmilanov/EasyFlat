@@ -4,9 +4,9 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 
 public interface SharedFlatService {
-    WgDetailDto create(SharedFlat sharedFlat);
+    WgDetailDto create(SharedFlat sharedFlat) throws Exception;
 
-    WgDetailDto loginWg(WgDetailDto wgDetailDto);
+    WgDetailDto loginWg(SharedFlat wgDetailDto);
 
     void deleteByName(String name);
 }

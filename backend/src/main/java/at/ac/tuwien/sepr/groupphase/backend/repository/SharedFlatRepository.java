@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SharedFlatRepository extends JpaRepository<SharedFlat, Long> {
-    SharedFlat findByName(String name);
+    SharedFlat findFirstByName(String name);
 
     void deleteByName(String name);
 }

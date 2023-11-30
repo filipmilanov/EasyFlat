@@ -27,7 +27,7 @@ public class SharedFlatEndpoint {
 
     @PermitAll
     @PostMapping
-    public WgDetailDto create(@RequestBody SharedFlat wgDetailDto) {
+    public WgDetailDto create(@RequestBody SharedFlat wgDetailDto) throws Exception {
         return sharedFlatService.create(wgDetailDto);
     }
 }

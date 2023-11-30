@@ -4,7 +4,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
-import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +27,16 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     }
 
 
-    @Override
-    public WgDetailDto create(SharedFlat sharedFlat) {
+    public WgDetailDto create(SharedFlat sharedFlat) throws Exception {
         LOGGER.debug("Create a new shared flat");
+
+        // Check if a shared flat with the same name already exists
+        SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(sharedFlat.getName());
+        if (existingSharedFlat != null) {
+            // If a shared flat with the same name exists, return a message to the frontend
+            throw new Exception("This name already exists!");
+        }
+
         SharedFlat newSharedFlat = new SharedFlat();
         newSharedFlat.setName(sharedFlat.getName());
         newSharedFlat.setPassword(passwordEncoder.encode(sharedFlat.getPassword()));
@@ -39,12 +45,12 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     }
 
     @Override
-    public WgDetailDto loginWg(WgDetailDto wgDetailDto) {
+    public WgDetailDto loginWg(SharedFlat wgDetailDto) {
         String name = wgDetailDto.getName();
         String rawPassword = wgDetailDto.getPassword();
 
         // Fetch the stored SharedFlat by name from the database
-        SharedFlat existingSharedFlat = sharedFlatRepository.findByName(name);
+        SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(name);
 
         if (existingSharedFlat != null) {
             //Compare the raw password with the stored encoded password
