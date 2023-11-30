@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 import java.util.Objects;
@@ -21,7 +20,6 @@ public class DigitalStorage {
     private Long storId;
 
     @Column
-    @NotEmpty(message = "The title cannot be empty")
     private String title;
 
     @OneToMany(mappedBy = "digitalStorage", fetch = FetchType.EAGER)
