@@ -72,23 +72,29 @@ public class ItemServiceImpl implements ItemService {
         return createdItem;
     }
 
-
-
     @Override
     public Item update(ItemDto itemDto) throws ConflictException {
         LOGGER.trace("update({})", itemDto);
 
-        Optional<DigitalStorage> digitalStorage = digitalStorageService.findById(itemDto.digitalStorage().storId());
-        if (digitalStorage.isEmpty()) {
-            throw new ConflictException("Digital Storage does not exists");
+        if (itemDto.alwaysInStock() == null) {
+            itemDto = itemDto.withAlwaysInStock(false);
         }
 
-        itemValidator.checkItemForUpdate(itemDto, digitalStorage.get());
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
+        itemValidator.checkItemForUpdate(itemDto, digitalStorageList);
+
         List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
 
-        Item item = itemMapper.dtoToEntity(itemDto, ingredientList);
+        Item item;
+        if (itemDto.alwaysInStock()) {
+            item = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList);
+        } else {
+            item = itemMapper.dtoToEntity(itemDto, ingredientList);
+        }
 
-        return itemRepository.save(item);
+        Item updatedItem = itemRepository.save(item);
+        updatedItem.setIngredientList(ingredientList);
+        return updatedItem;
     }
 
     @Override

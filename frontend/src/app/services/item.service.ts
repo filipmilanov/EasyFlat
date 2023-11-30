@@ -27,12 +27,24 @@ export class ItemService {
    * @param item to persist
    */
   createItem(item: ItemDto): Observable<ItemDto> {
-    console.log('Create message with title ' + item.itemId);
+    console.log('Create item with content ' + item);
     return this.http.post<ItemDto>(this.baseUri, item);
   }
 
   updateItem(item: ItemDto): Observable<ItemDto> {
     console.log('Update item with ID ' + item.itemId);
-    return this.http.put<ItemDto>(this.baseUri + '/' + item.itemId, item);
+    return this.http.put<ItemDto>(this.baseUri, item);
   }
+
+  /**
+   * Delete an item from the system.
+   *
+   * @param itemId the id of the item that should be deleted
+   * @return an Observable for the deleted item
+   */
+  deleteItem(itemId: number): Observable<ItemDto> {
+    console.log('Delete item with ID ' + itemId);
+    return this.http.delete<ItemDto>(this.baseUri + '/' + itemId);
+  }
+
 }

@@ -14,7 +14,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
 import {DigitalStorageComponent} from './components/digital-storage/digital-storage.component';
 import {ItemCardComponent} from './components/digital-storage/item-card/item-card.component';
-import {ItemCreateComponent} from './components/digital-storage/item-create/item-create.component';
+import {ItemCreateEditComponent} from './components/digital-storage/item-create-edit/item-create-edit.component';
 import {ItemDetailComponent} from './components/digital-storage/item-detail/item-detail.component';
 import {ToastrModule} from "ngx-toastr";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -30,7 +30,7 @@ import {AutocompleteComponent} from './components/utils/autocomplete/autocomplet
     MessageComponent,
     DigitalStorageComponent,
     ItemCardComponent,
-    ItemCreateComponent,
+    ItemCreateEditComponent,
     ItemDetailComponent,
     AutocompleteComponent,
   ],

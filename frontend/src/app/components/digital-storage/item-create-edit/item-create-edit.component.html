@@ -8,10 +8,10 @@
 
 
 <div class="container">
-  <h1 class="display-4">Product</h1>
+  <h1 class="display-4">{{ heading }}</h1>
   <div style="width: 100%; height: 100%; border: 1px black solid"></div>
 
-  <form #form="ngForm" [class.was-validated]="form.submitted" (submit)="submit(form)">
+    <form #form="ngForm" [class.was-validated]="form.submitted" (submit)="onSubmit(form)">
 
     <div class="row row-cols-1">
       <div class="row p-2">
@@ -177,7 +177,9 @@
         </div>
       </div>
 
-      <div class="row p-2">
+      <div class="row p-2"
+           *ngIf="modeIsCreate"
+      >
         <label for="addToFinance"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
@@ -256,7 +258,7 @@
             class="btn btn-primary float-end"
             [disabled]="!form.valid"
     >
-      Create
+      {{ submitButtonText }}
     </button>
 
   </form>
