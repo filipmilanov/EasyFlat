@@ -1,9 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +23,24 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     private final PasswordEncoder passwordEncoder;
     private final SharedFlatMapper sharedFlatMapper;
 
+    private final UserRepository userRepository;
+
+    private final JwtTokenizer jwtTokenizer;
+
     @Autowired
-    public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder, SharedFlatMapper sharedFlatMapper) {
+    public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder, SharedFlatMapper sharedFlatMapper, JwtTokenizer jwtTokenizer, UserRepository userRepository) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.sharedFlatMapper = sharedFlatMapper;
+        this.jwtTokenizer = jwtTokenizer;
+        this.userRepository = userRepository;
     }
 
 
-    public WgDetailDto create(SharedFlat sharedFlat) throws Exception {
+    public WgDetailDto create(SharedFlat sharedFlat, String authToken) throws Exception {
         LOGGER.debug("Create a new shared flat");
+        String userEmail = jwtTokenizer.getEmailFromToken(authToken);
+        ApplicationUser user = userRepository.findUserByEmail(userEmail);
 
         // Check if a shared flat with the same name already exists
         SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(sharedFlat.getName());
@@ -41,22 +53,30 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         newSharedFlat.setName(sharedFlat.getName());
         newSharedFlat.setPassword(passwordEncoder.encode(sharedFlat.getPassword()));
         sharedFlatRepository.save(newSharedFlat);
+        user.setSharedFlat(newSharedFlat);
+        user.setAdmin(true);
+        userRepository.save(user);
         return sharedFlatMapper.entityToWgDetailDto(newSharedFlat);
     }
 
     @Override
-    public WgDetailDto loginWg(SharedFlat wgDetailDto) {
+    public WgDetailDto loginWg(SharedFlat wgDetailDto, String authToken) {
         String name = wgDetailDto.getName();
         String rawPassword = wgDetailDto.getPassword();
+        String userEmail = jwtTokenizer.getEmailFromToken(authToken);
+        ApplicationUser user = userRepository.findUserByEmail(userEmail);
 
-        // Fetch the stored SharedFlat by name from the database
         SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(name);
 
+
         if (existingSharedFlat != null) {
-            //Compare the raw password with the stored encoded password
             boolean passwordMatches = passwordEncoder.matches(rawPassword, existingSharedFlat.getPassword());
 
             if (passwordMatches) {
+                if (userEmail != null){
+                    user.setSharedFlat(existingSharedFlat);
+                    userRepository.save(user);
+                }
                 return sharedFlatMapper.entityToWgDetailDto(existingSharedFlat);
             } else {
                 throw new IllegalStateException("Invalid credentials. Could not log in.");

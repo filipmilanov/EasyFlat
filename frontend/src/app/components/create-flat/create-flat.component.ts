@@ -3,6 +3,7 @@ import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {SharedFlatService} from "../../services/sharedFlat.service";
 import {Router} from "@angular/router";
 import {SharedFlat} from "../../dtos/sharedFlat";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-create-flat',
@@ -15,7 +16,8 @@ export class CreateFlatComponent implements OnInit{
   error = false;
   errorMessage = '';
 
-  constructor(private formBuilder: UntypedFormBuilder, private sharedFlatService: SharedFlatService, private router: Router) {
+
+  constructor(private formBuilder: UntypedFormBuilder, private sharedFlatService: SharedFlatService,private authService: AuthService, private router: Router) {
     this.createForm = this.formBuilder.group({
       name: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8)]]
@@ -27,7 +29,7 @@ export class CreateFlatComponent implements OnInit{
     if (this.createForm.valid) {
       const sharedFlat : SharedFlat = new SharedFlat(this.createForm.controls.name.value, this.createForm.controls.password.value)
       console.log(sharedFlat);
-      this.sharedFlatService.createWG(sharedFlat).subscribe({
+      this.sharedFlatService.createWG(sharedFlat, this.authService.getToken()).subscribe({
         next: () => {
           console.log('Successfully created shared flat: ' + sharedFlat.name);
           this.router.navigate(['']);

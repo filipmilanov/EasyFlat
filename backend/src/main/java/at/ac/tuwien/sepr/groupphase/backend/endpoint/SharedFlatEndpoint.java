@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +28,7 @@ public class SharedFlatEndpoint {
 
     @PermitAll
     @PostMapping
-    public WgDetailDto create(@RequestBody SharedFlat wgDetailDto) throws Exception {
-        return sharedFlatService.create(wgDetailDto);
+    public WgDetailDto create(@RequestHeader("Authorization") String authToken, @RequestBody SharedFlat wgDetailDto) throws Exception {
+        return sharedFlatService.create(wgDetailDto, authToken);
     }
 }
