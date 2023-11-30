@@ -7,11 +7,13 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
+import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,13 +31,15 @@ public class ItemServiceImpl implements ItemService {
     private final IngredientService ingredientService;
     private final ItemMapper itemMapper;
     private final ItemValidator itemValidator;
+    private final Validator validator;
 
-    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService, IngredientService ingredientService, ItemMapper itemMapper, ItemValidator itemValidator) {
+    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService, IngredientService ingredientService, ItemMapper itemMapper, ItemValidator itemValidator, Validator validator) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
         this.itemMapper = itemMapper;
         this.itemValidator = itemValidator;
+        this.validator = validator;
     }
 
     @Override
@@ -49,7 +53,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item create(ItemDto itemDto) throws ConflictException {
+    public Item create(ItemDto itemDto) throws ConflictException, ValidationException {
         LOGGER.trace("create({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
@@ -57,7 +61,8 @@ public class ItemServiceImpl implements ItemService {
         }
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
-        itemValidator.checkItemForCreate(itemDto, digitalStorageList);
+
+        itemValidator.validateForCreate(itemDto, digitalStorageList);
 
         List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
 
@@ -67,6 +72,7 @@ public class ItemServiceImpl implements ItemService {
         } else {
             item = itemMapper.dtoToEntity(itemDto, ingredientList);
         }
+
         Item createdItem = itemRepository.save(item);
         createdItem.setIngredientList(ingredientList);
         return createdItem;

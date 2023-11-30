@@ -3,6 +3,9 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -11,14 +14,36 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Component
 public class ItemValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private final Validator validator;
 
-    public void checkItemForCreate(ItemDto itemDto,
+    public ItemValidator(Validator validator) {
+        this.validator = validator;
+    }
+
+    public void validateForCreate(ItemDto itemDto, List<DigitalStorage> digitalStorageList) throws ConflictException, ValidationException {
+        LOGGER.trace("validateForCreate({})", itemDto);
+
+        checkValidationForCreate(itemDto);
+        checkConflictForCreate(itemDto, digitalStorageList);
+    }
+
+    private void checkValidationForCreate(ItemDto itemDto) throws ValidationException {
+        LOGGER.trace("checkValidationForCreate({})", itemDto);
+
+        Set<ConstraintViolation<ItemDto>> validationViolations = validator.validate(itemDto);
+        if (!validationViolations.isEmpty()) {
+            throw new ValidationException("The data is not valid", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+        }
+    }
+
+    private void checkConflictForCreate(ItemDto itemDto,
                                    List<DigitalStorage> digitalStorageList) throws ConflictException {
         LOGGER.trace("checkItemForCreate({}, {})", itemDto, digitalStorageList);
 

@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public interface ItemService {
      * @param item a storage without ID
      * @return an object of type {@link Item} which is persisted and has an ID
      */
-    Item create(ItemDto item) throws ConflictException;
+    Item create(ItemDto item) throws ConflictException, ValidationException;
 
     /**
      * Validates and Updates a new {@link Item} in the db.

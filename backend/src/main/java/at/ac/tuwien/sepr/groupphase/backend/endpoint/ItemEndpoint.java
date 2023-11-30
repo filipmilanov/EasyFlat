@@ -39,7 +39,7 @@ public class ItemEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException {
+    public ItemDto create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException, at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException {
         LOGGER.info("create({})", itemDto);
         return itemMapper.entityToDto(
             itemService.create(itemDto)
