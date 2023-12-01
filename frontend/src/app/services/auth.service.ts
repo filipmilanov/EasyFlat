@@ -5,6 +5,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {tap} from 'rxjs/operators';
 import {jwtDecode} from 'jwt-decode';
 import {Globals} from '../global/globals';
+import {SharedFlat} from "../dtos/sharedFlat";
 
 @Injectable({
   providedIn: 'root'
@@ -100,4 +101,10 @@ export class AuthService {
     return date;
   }
 
+  signOut(flatName: string, authToken: string): Observable<string>{
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${authToken}`
+    });
+    return this.httpClient.put<string>(this.authBaseUri + "/signOut", flatName, {headers});
+  }
 }

@@ -48,4 +48,10 @@ public class LoginEndpoint {
     public UserDetailDto delete(@PathVariable String email) {
         return userService.delete(email);
     }
+
+    @PermitAll
+    @PutMapping("/signOut")
+    public UserDetailDto signOut(@RequestHeader("Authorization") String authToken, @RequestBody String flatName) {
+        return userService.signOut(flatName, authToken);
+    }
 }

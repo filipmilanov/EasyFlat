@@ -22,6 +22,7 @@ export class AccountComponent implements OnInit {
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
+      flatName: ['', [Validators.required]],
       password: ['', [Validators.minLength(8)]]
     });
   }
@@ -36,7 +37,8 @@ export class AccountComponent implements OnInit {
         this.accountForm.patchValue({
           firstName: this.user.firstName,
           lastName: this.user.lastName,
-          email: this.user.email
+          email: this.user.email,
+          flatName: this.user.flatName
         });
       },
       (error) => {
@@ -56,7 +58,7 @@ export class AccountComponent implements OnInit {
 
     if (this.accountForm.valid) {
       const userDetail: UserDetail = new UserDetail(this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,
-        this.accountForm.controls.email.value, this.accountForm.controls.password.value);
+        this.accountForm.controls.email.value, null , this.accountForm.controls.password.value);
       console.log(userDetail)
       this.authService.update(userDetail).subscribe({
         next: () => {
@@ -98,5 +100,25 @@ export class AccountComponent implements OnInit {
       });
     }
   }
+
+  signOut() {
+    this.authService.signOut(this.user.flatName, this.authService.getToken()).subscribe({
+      next: () => {
+        console.log('User signed out from flat: ' + this.user.flatName);
+        this.router.navigate(['']);
+      },
+      error: error => {
+        console.log('Could not register due to:');
+        console.log(error);
+        this.error = true;
+        if (typeof error.error === 'object') {
+          this.errorMessage = error.error.error;
+        } else {
+          this.errorMessage = error.error;
+        }
+      }
+    });
+  }
+
 }
 

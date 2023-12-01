@@ -17,6 +17,8 @@ public class UserDetailDto {
     @Email
     private String email;
 
+    private String flatName;
+
     @NotNull(message = "Password must not be null")
     private String password;
 
@@ -42,6 +44,14 @@ public class UserDetailDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getFlatName() {
+        return flatName;
+    }
+
+    public void setFlatName(String flatName) {
+        this.flatName = flatName;
     }
 
     public String getPassword() {
@@ -76,6 +86,7 @@ public class UserDetailDto {
             + "firstName='" + firstName + '\''
             + ", lastName='" + lastName + '\''
             + ", email='" + email + '\''
+            + ", flatName='" + flatName + '\''
             + ", password='" + password + '\''
             + '}';
     }

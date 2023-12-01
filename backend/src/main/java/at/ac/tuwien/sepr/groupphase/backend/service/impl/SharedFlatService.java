@@ -39,19 +39,16 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
 
     public WgDetailDto create(SharedFlat sharedFlat, String authToken) throws Exception {
         LOGGER.debug("Create a new shared flat");
-        String userEmail = jwtTokenizer.getEmailFromToken(authToken);
-        ApplicationUser user = userRepository.findUserByEmail(userEmail);
-
-        // Check if a shared flat with the same name already exists
         SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(sharedFlat.getName());
         if (existingSharedFlat != null) {
-            // If a shared flat with the same name exists, return a message to the frontend
             throw new Exception("This name already exists!");
         }
 
         SharedFlat newSharedFlat = new SharedFlat();
         newSharedFlat.setName(sharedFlat.getName());
         newSharedFlat.setPassword(passwordEncoder.encode(sharedFlat.getPassword()));
+        String userEmail = jwtTokenizer.getEmailFromToken(authToken);
+        ApplicationUser user = userRepository.findUserByEmail(userEmail);
         sharedFlatRepository.save(newSharedFlat);
         user.setSharedFlat(newSharedFlat);
         user.setAdmin(true);
@@ -73,7 +70,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
             boolean passwordMatches = passwordEncoder.matches(rawPassword, existingSharedFlat.getPassword());
 
             if (passwordMatches) {
-                if (userEmail != null){
+                if (userEmail != null) {
                     user.setSharedFlat(existingSharedFlat);
                     userRepository.save(user);
                 }

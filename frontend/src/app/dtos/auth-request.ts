@@ -9,6 +9,7 @@ export class UserDetail {
     public firstName: string,
     public lastName: string,
     public email: string,
+    public flatName: string,
     public password: string
   ) {}
 }

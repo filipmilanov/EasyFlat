@@ -9,4 +9,6 @@ public interface SharedFlatRepository extends JpaRepository<SharedFlat, Long> {
     SharedFlat findFirstByName(String name);
 
     void deleteByName(String name);
+
+    Integer findFlatIdByName(String name);
 }

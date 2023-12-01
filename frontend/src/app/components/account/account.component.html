@@ -49,6 +49,16 @@
             </div>
 
             <div class="form-group">
+              <div>
+                <label for="name">Flat name</label>
+                <input type="text" name="name" formControlName="name" class="form-control" id="name">
+              </div>
+              <div *ngIf="submitted && accountForm.get('flatName').errors?.required" class="error">
+                <small class="form-text text-warning">Your flat name is required!</small>
+              </div>
+            </div>
+
+            <div class="form-group">
               <label for="password">New password</label>
               <input type="password" name="password" formControlName="password" class="form-control" id="password"
                      placeholder="New password">
@@ -58,8 +68,9 @@
                 </small>
               </div>
             </div>
-            <button type="submit" class="btn btn-success float-right">Save Changes</button>
-            <button type="button" (click)="delete()" class="btn btn-danger float-right">Delete Account</button>
+            <button style="margin-right: 10px;" type="submit" class="btn btn-success float-right">Save Changes</button>
+            <button style="margin-right: 10px;" type="button" (click)="delete()" class="btn btn-danger float-right">Delete Account</button>
+            <button style="margin-right: 10px;" type="button" (click)="signOut()" class="btn btn-danger float-right">Sign Out from Flat</button>
           </form>
         </div>
       </div>
