@@ -25,6 +25,34 @@ class DigitalStorageServiceTest {
     private DigitalStorageService service;
 
     @Test
+    void givenDigitalStorageIdWhenFindByIdThenDigitalStorageIsReturned() {
+        // given
+        Long id = 1L;
+
+
+        // when
+        Optional<DigitalStorage> actual = service.findById(id);
+
+        // then
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getStorId()).isEqualTo(id);
+    }
+
+    @Test
+    void givenInvalidDigitalStorageIdWhenFindByIdThenNothingIsReturned() {
+        // given
+        Long id = -1L;
+
+        // when
+        Optional<DigitalStorage> actual = service.findById(id);
+
+        // then
+        assertTrue(actual.isEmpty());
+    }
+
+
+
+    @Test
     void givenValidStorageWhenCreateThenStorageIsPersistedAndHasId() throws ConflictException, ValidationException {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
