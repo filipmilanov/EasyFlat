@@ -12,7 +12,7 @@ import java.util.List;
 public class ValidationException extends ErrorListException {
 
     /**
-     * Creates a new Object of Type {@link ValidationException}
+     * Creates a new Object of Type {@link ValidationException}.
      *
      * @param messageSummary a short description of the error
      * @param errors         a List of all error messages

@@ -43,13 +43,13 @@ public record ItemDto(
     List<IngredientDto> ingredients
 ) {
     @AssertTrue(message = "The current quantity cannot be larger then the total")
-    private boolean quantityCurrentLessThenTotal() {
+    private boolean isQuantityCurrentLessThenTotal() {
         return this.quantityCurrent < this.quantityTotal;
     }
 
     @AssertTrue(message = "The minimum quantity cannot be empty")
-    private boolean minimumQuantityNotEmpty() {
-        return this.alwaysInStock && this.minimumQuantity != null;
+    private boolean isMinimumQuantityNotEmpty() {
+        return this.alwaysInStock == null || !this.alwaysInStock || this.minimumQuantity != null;
     }
 
 
