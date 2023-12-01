@@ -31,13 +31,12 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
     @Query("SELECT i FROM Item i WHERE i.digitalStorage.storId = :storageId AND "
         + "(:title IS NULL OR LOWER(i.productName) LIKE LOWER(CONCAT('%', :title, '%'))) AND "
         + "(:brand IS NULL OR LOWER(i.brand) LIKE LOWER(CONCAT('%', :brand, '%'))) AND "
-        + "(:expireDateStart IS NULL OR "
-        + "(i.expireDate >= :expireDateStart AND "
-        + "(:expireDateEnd IS NULL OR i.expireDate <= :expireDateEnd))) AND "
+        + "(:expireDateStart IS NULL OR  i.expireDate >= :expireDateStart) AND "
+        + "(:expireDateEnd IS NULL OR (i.expireDate <= :expireDateEnd)) AND "
         + "(:fillLevel IS NULL OR "
-        + "(:fillLevel = 'full' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.9) OR "
-        + "(:fillLevel = 'nearly_empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.1 AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.9) OR "
-        + "(:fillLevel = 'empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.1)) AND "
+        + "(:fillLevel = 'full' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.4) OR "
+        + "(:fillLevel = 'nearly_empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.2 AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.4) OR "
+        + "(:fillLevel = 'empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.2)) AND "
         + "(:alwaysInStock IS NULL OR TYPE(i) = :alwaysInStock) ")
     List<Item> searchItems(@Param("storageId") Long storageId,
                            @Param("title") String title,
