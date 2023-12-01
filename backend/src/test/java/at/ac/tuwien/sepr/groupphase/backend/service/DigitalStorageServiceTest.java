@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,6 +51,14 @@ class DigitalStorageServiceTest {
         assertTrue(actual.isEmpty());
     }
 
+    @Test
+    void givenNothingWhenFindAllThenAllDigitalStoragesAreReturned() {
+        // when
+        List<DigitalStorage> actual = service.findAll(null);
+
+        // then
+        assertThat(actual).hasSizeGreaterThanOrEqualTo(5);
+    }
 
 
     @Test
