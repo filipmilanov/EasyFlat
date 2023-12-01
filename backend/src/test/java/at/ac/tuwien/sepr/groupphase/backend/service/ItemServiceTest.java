@@ -32,6 +32,31 @@ class ItemServiceTest {
     private ItemService service;
 
     @Test
+    void givenItemIdWhenFindByIdThenItemIsReturned() {
+        // given
+        Long id = 1L;
+
+        // when
+        Optional<Item> actual = service.findById(id);
+
+        // then
+        assertTrue(actual.isPresent());
+        Assertions.assertThat(actual.get().getItemId()).isEqualTo(id);
+    }
+
+    @Test
+    void givenInvalidItemIdWhenFindByIdThenNoItem() {
+        // given
+        Long id = -1L;
+
+        // when
+        Optional<Item> actual = service.findById(id);
+
+        // then
+        assertTrue(actual.isEmpty());
+    }
+
+    @Test
     void givenValidItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
