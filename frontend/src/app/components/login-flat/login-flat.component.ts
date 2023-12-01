@@ -12,6 +12,7 @@ import {AuthService} from "../../services/auth.service";
   styleUrls: ['./login-flat.component.scss']
 })
 export class LoginFlatComponent implements OnInit{
+  sharedFlat: SharedFlat
   loginForm: UntypedFormGroup;
   submitted = false;
   error = false;
@@ -20,7 +21,7 @@ export class LoginFlatComponent implements OnInit{
 
   constructor(private formBuilder: UntypedFormBuilder, private sharedFlatService: SharedFlatService,private authService: AuthService, private router: Router) {
     this.loginForm = this.formBuilder.group({
-      name: ['', [Validators.required]],
+      flatName: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8)]]
     });
   }
@@ -82,5 +83,18 @@ export class LoginFlatComponent implements OnInit{
 
   vanishError() {
     this.error = false;
+  }
+
+  delete() {
+    this.authService.signOut(this.sharedFlat.name, this.authService.getToken()).subscribe({
+      next: () => {
+        console.log('Flat deleted:', this.sharedFlat.name);
+        this.sharedFlatService.delete(this.sharedFlat);
+        this.router.navigate(['']);
+      },
+      error: error => {
+        console.error(error.message, error);
+      }
+    });
   }
 }

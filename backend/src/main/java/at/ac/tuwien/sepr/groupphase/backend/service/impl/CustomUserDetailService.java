@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
@@ -157,15 +158,20 @@ public class CustomUserDetailService implements UserService {
     @Override
     public UserDetailDto signOut(String flatName, String authToken) {
         String userEmail = jwtTokenizer.getEmailFromToken(authToken);
-        int flatId = userRepository.findFlatIdByEmail(userEmail);
-        int actualId = sharedFlatRepository.findFlatIdByName(flatName);
-        if (flatId == actualId) {
-            ApplicationUser user = userRepository.findUserByEmail(userEmail);
-            user.setSharedFlat(null);
-            userRepository.save(user);
-            return userMapper.entityToUserDetailDto(user);
+        ApplicationUser user = userRepository.findUserByEmail(userEmail);
+        SharedFlat userFlat = user.getSharedFlat();
+        if (userFlat == null) {
+            throw new BadCredentialsException("");
         }
-        throw new BadCredentialsException("User is not signed in that shared flat");
+
+        if (userFlat.getName().equals(flatName)) {
+            user.setSharedFlat(null);
+            ApplicationUser updatedUser = userRepository.save(user);
+
+            return userMapper.entityToUserDetailDto(updatedUser);
+        }
+        throw new BadCredentialsException("");
 
     }
+
 }

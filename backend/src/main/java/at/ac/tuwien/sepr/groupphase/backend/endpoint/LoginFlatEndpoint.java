@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService;
@@ -33,6 +34,12 @@ public class LoginFlatEndpoint {
     @PostMapping
     public WgDetailDto loginWg(@RequestHeader("Authorization") String authToken, @RequestBody SharedFlat wgDetailDto) {
         return sharedFlatService.loginWg(wgDetailDto, authToken);
+    }
+
+    @PermitAll
+    @DeleteMapping("/{name}")
+    public WgDetailDto delete(@PathVariable String name) {
+        return sharedFlatService.delete(name);
     }
 
 

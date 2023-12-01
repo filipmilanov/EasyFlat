@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 
@@ -8,5 +9,5 @@ public interface SharedFlatService {
 
     WgDetailDto loginWg(SharedFlat wgDetailDto, String authToken);
 
-    void deleteByName(String name);
+    WgDetailDto delete(String name);
 }

@@ -102,7 +102,7 @@ export class AccountComponent implements OnInit {
   }
 
   signOut() {
-    this.authService.signOut(this.user.flatName, this.authService.getToken()).subscribe({
+    this.authService.signOut(this.accountForm.controls.flatName.value, this.authService.getToken()).subscribe({
       next: () => {
         console.log('User signed out from flat: ' + this.user.flatName);
         this.router.navigate(['']);

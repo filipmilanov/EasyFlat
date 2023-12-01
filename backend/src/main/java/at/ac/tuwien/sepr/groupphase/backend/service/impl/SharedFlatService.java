@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -84,8 +85,18 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     }
 
     @Override
-    public void deleteByName(String name) {
-        sharedFlatRepository.deleteByName(name);
+    public WgDetailDto delete(String name) {
+        SharedFlat flat = sharedFlatRepository.findFlatByName(name);
+        boolean exist = userRepository.existsBySharedFlat(flat);
+        if (flat == null) {
+            throw new BadCredentialsException("There is no flat with this name");
+        }
+        if (!exist) {
+            SharedFlat deletedFlat = sharedFlatRepository.findFirstByName(name);
+            sharedFlatRepository.deleteByName(name);
+            return sharedFlatMapper.entityToWgDetailDto(deletedFlat);
+        }
+        throw new BadCredentialsException("Flat is not empty");
     }
 
 
