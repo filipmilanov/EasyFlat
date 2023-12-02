@@ -5,7 +5,6 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {tap} from 'rxjs/operators';
 import {jwtDecode} from 'jwt-decode';
 import {Globals} from '../global/globals';
-import {SharedFlat} from "../dtos/sharedFlat";
 
 @Injectable({
   providedIn: 'root'

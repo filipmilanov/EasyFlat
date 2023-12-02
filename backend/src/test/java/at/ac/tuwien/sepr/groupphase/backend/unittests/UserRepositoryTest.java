@@ -80,7 +80,6 @@ public class UserRepositoryTest implements TestData {
         user.setPassword("password");
         user.setAdmin(false);
         ApplicationUser savedUser = userRepository.save(user);
-
         String newEmail = "john.new@example.com";
         savedUser.setEmail(newEmail);
         ApplicationUser updatedUser = userRepository.save(savedUser);
