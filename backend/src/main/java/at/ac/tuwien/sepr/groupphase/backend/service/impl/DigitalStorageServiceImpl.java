@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
@@ -20,8 +21,12 @@ import org.springframework.stereotype.Service;
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
 
 @Service
 
@@ -75,7 +80,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<Item> searchItems(Long id, ItemSearchDto searchItem) {
+    public List<ItemListDto> searchItems(Long id, ItemSearchDto searchItem) {
         LOGGER.trace("searchItems({}, {})", id, searchItem);
         Class alwaysInStock = null;
         if (searchItem.alwaysInStock() == null || !searchItem.alwaysInStock()) {
@@ -94,7 +99,24 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             (searchItem != null) ? searchItem.fillLevel() : null,
             alwaysInStock
         );
-        return allItems.stream().sorted(itemComparator(searchItem)).toList();
+
+        Map<String, Long[]> items = new HashMap<>();
+        for (Item item : allItems) {
+            long currentQ = 0;
+            if (items.get(item.getGeneralName()) != null) {
+                currentQ = items.get(item.getGeneralName())[0];
+            }
+            Long[] quantityStorId = new Long[2];
+            quantityStorId[0] = currentQ + item.getQuantityCurrent();
+            quantityStorId[1] = item.getStorage().getStorId();
+            items.put(item.getGeneralName(), quantityStorId);
+        }
+        List<ItemListDto> toRet = new LinkedList<>();
+        for (Map.Entry<String, Long[]> item : items.entrySet()) {
+            toRet.add(new ItemListDto().setGeneralName(item.getKey()).setQuantityCurrent(item.getValue()[0]).setStorId(item.getValue()[1]));
+        }
+
+        return toRet;
     }
 
     private static Comparator<Item> itemComparator(ItemSearchDto searchItem) {
@@ -156,5 +178,10 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         LOGGER.trace("updateItemQuantity({}, {}, {})", storageId, itemId, quantity);
 
         return digitalStorageRepository.updateItemQuantity(storageId, itemId, quantity);
+    }
+
+    @Override
+    public List<Item> getItemWithGeneralName(String name, Long storId) {
+        return digitalStorageRepository.getItemWithGeneralName(storId, name);
     }
 }

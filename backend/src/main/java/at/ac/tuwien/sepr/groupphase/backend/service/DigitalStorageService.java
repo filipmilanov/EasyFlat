@@ -2,12 +2,14 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +59,7 @@ public interface DigitalStorageService {
      * @param itemSearchDto search parameters
      * @return a List of filtered items
      */
-    List<Item> searchItems(Long id, ItemSearchDto itemSearchDto);
+    List<ItemListDto> searchItems(Long id, ItemSearchDto itemSearchDto);
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.
@@ -91,4 +93,7 @@ public interface DigitalStorageService {
      * @return an updated object of type {@link Item}
      */
     Item updateItemQuantity(long storageId, long itemId, long quantity);
+
+
+    List<Item> getItemWithGeneralName(String name, Long storId);
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,4 +46,13 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
                            @Param("expireDateEnd") LocalDate expireDateEnd,
                            @Param("fillLevel") String fillLevel,
                            @Param("alwaysInStock") Class alwaysInStock);
+
+
+    @Query("SELECT i FROM Item i WHERE i.digitalStorage.storId = :storId AND "
+        + ":generalName = i.generalName")
+    List<Item> getItemWithGeneralName(@Param("storId") Long storId,
+                                      @Param("generalName") String generalName);
 }
+
+
+

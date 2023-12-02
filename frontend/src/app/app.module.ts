@@ -19,6 +19,7 @@ import {ItemDetailComponent} from './components/digital-storage/item-detail/item
 import {ToastrModule} from "ngx-toastr";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AutocompleteComponent} from './components/utils/autocomplete/autocomplete.component';
+import { ItemDetailListComponent } from './components/digital-storage/item-detail-list/item-detail-list.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import {AutocompleteComponent} from './components/utils/autocomplete/autocomplet
     ItemCreateEditComponent,
     ItemDetailComponent,
     AutocompleteComponent,
+    ItemDetailListComponent,
   ],
   imports: [
     BrowserModule,

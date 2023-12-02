@@ -4,59 +4,37 @@ import java.time.LocalDate;
 
 public class ItemListDto {
 
-    private Long itemId;
-    private String productName;
-    private String brand;
+    private String generalName;
     private Long quantityCurrent;
-    private Long quantityTotal;
-    private LocalDate expireDate;
+
+    private Long storId;
 
 
-    public LocalDate getExpireDate() {
-        return expireDate;
+    public ItemListDto setGeneralName(String generalName) {
+        this.generalName = generalName;
+        return this;
     }
 
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setItemId(Long itemId) {
-        this.itemId = itemId;
-    }
-
-    public void setExpireDate(LocalDate expireDate) {
-        this.expireDate = expireDate;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public void setQuantityCurrent(Long quantityCurrent) {
+    public ItemListDto setQuantityCurrent(Long quantityCurrent) {
         this.quantityCurrent = quantityCurrent;
-    }
-
-    public void setQuantityTotal(Long quantityTotal) {
-        this.quantityTotal = quantityTotal;
-    }
-
-    public Long getItemId() {
-        return itemId;
+        return this;
     }
 
     public Long getQuantityCurrent() {
         return quantityCurrent;
     }
 
-    public Long getQuantityTotal() {
-        return quantityTotal;
+    public String getGeneralName() {
+        return generalName;
     }
 
-    public String getProductName() {
-        return productName;
+    public ItemListDto setStorId(Long storId) {
+        this.storId = storId;
+        return this;
+    }
+
+    public Long getStorId() {
+        return storId;
     }
 }
+

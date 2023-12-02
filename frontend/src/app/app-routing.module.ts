@@ -8,16 +8,21 @@ import {
     ItemCreateEditMode
 } from "./components/digital-storage/item-create-edit/item-create-edit.component";
 import {ItemDetailComponent} from "./components/digital-storage/item-detail/item-detail.component";
+import {ItemDetailListComponent} from "./components/digital-storage/item-detail-list/item-detail-list.component";
+import {StorageItemListDto} from "./dtos/storageItemList";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'digital-storage', children: [
+  {path: 'digital-storage/:id', children: [
       {path: '', component: DigitalStorageComponent},
       {path: 'item', children: [
           {path: 'create', component: ItemCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
-          {path: ':id/edit', component: ItemCreateEditComponent, data: {mode: ItemCreateEditMode.edit}},
-          {path: ':id/detail', component: ItemDetailComponent}
+          {path: ':name/list', children:[
+            {path: '', component: ItemDetailListComponent },
+            {path: ':id/detail', component: ItemDetailComponent},
+              {path: ':id/edit', component: ItemCreateEditComponent, data: {mode: ItemCreateEditMode.edit}},
+            ]}
         ]}
   ]}
 ];

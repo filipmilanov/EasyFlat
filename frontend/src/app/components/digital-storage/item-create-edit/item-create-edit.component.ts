@@ -89,14 +89,14 @@ export class ItemCreateEditComponent implements OnInit{
             },
             error: error => {
               console.error(`Item could not be retrieved from the backend: ${error}`);
-              this.router.navigate(['/digital-storage']);
+              this.router.navigate(['/digital-storage/1']);
               this.notification.error('Item could not be retrieved', "Error");
             }
           })
         },
         error: error => {
           console.error(`Item could not be retrieved using the ID from the URL: ${error}`);
-          this.router.navigate(['/digital-storage']);
+          this.router.navigate(['/digital-storage/1']);
           this.notification.error('No item provided for editing', "Error");
         }
       })
@@ -124,7 +124,7 @@ export class ItemCreateEditComponent implements OnInit{
       observable.subscribe({
         next: data => {
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
-          this.router.navigate(['/digital-storage']);
+          this.router.navigate(['/digital-storage/1']);
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}: ${error}`);

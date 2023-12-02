@@ -25,3 +25,8 @@ export class ItemSearchDto {
   orderBy: OrderType;
 }
 
+export class StorageItemListDto {
+  generalName?:string;
+  quantityCurrent:number;
+  storId:string;
+}

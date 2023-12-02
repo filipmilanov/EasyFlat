@@ -51,8 +51,8 @@
       Fill level
     </label>
     <select id="searchBradsnd" name="searchBrand"
-            class="form-select" [(ngModel)] = "searchParameters.fillLevel"
-            (change) = "loadStorage()"
+            class="form-select" [(ngModel)]="searchParameters.fillLevel"
+            (change)="loadStorage()"
     >
       <option></option>
       <option value="full">High quantity</option>
@@ -74,7 +74,7 @@
            [checked]="searchParameters.orderBy === OrderType.PRODUCT_NAME"
            [(ngModel)]="searchParameters.orderBy"
            [value]="OrderType.PRODUCT_NAME"
-           (change) = "loadStorage()">
+           (change)="loadStorage()">
     <label class="btn btn-outline-primary"
            for="orderName">
       Name
@@ -88,7 +88,7 @@
            [checked]="searchParameters.orderBy === OrderType.QUANTITY_CURRENT"
            [(ngModel)]="searchParameters.orderBy"
            [value]="OrderType.QUANTITY_CURRENT"
-           (change) = "loadStorage()">
+           (change)="loadStorage()">
     <label class="btn btn-outline-primary"
            for="orderQuantity">
       Quantity
@@ -102,7 +102,7 @@
            [checked]="searchParameters.orderBy === OrderType.EXPIRE_DATE"
            [(ngModel)]="searchParameters.orderBy"
            [value]="OrderType.EXPIRE_DATE"
-           (change) = "loadStorage()">
+           (change)="loadStorage()">
     <label class="btn btn-outline-primary"
            for="orderExpirationDate">
       Expiration Date
@@ -118,10 +118,10 @@
   <div class="row row-cols-4">
     <div class="col" *ngFor="let item of items">
       <a style="text-decoration: none"
-         [routerLink]="['item', item.itemId, 'detail']"
+         [routerLink]="['item', item.generalName ,'list']"
          aria-label="Show item details">
-      <app-item-card [id] = "item.itemId" [title]="item.productName" [quantity]="item.quantityCurrent" [maxQuantity]="item.quantityTotal"
-                     [expirationDate]="item.expireDate"></app-item-card>
+        <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent"
+        ></app-item-card>
       </a>
     </div>
   </div>
@@ -133,10 +133,10 @@
   <div class="row row-cols-4">
     <div class="col" *ngFor="let item of itemsAIS">
       <a style="text-decoration: none"
-         [routerLink]="['item', item.itemId, 'detail']"
+         [routerLink]="['item', item.generalName, 'list']"
          aria-label="Show item details">
-      <app-item-card [id] = "item.itemId" [title]="item.productName" [quantity]="item.quantityCurrent" [maxQuantity]="item.quantityTotal"
-                     [expirationDate]="item.expireDate"></app-item-card>
+        <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent"
+        ></app-item-card>
       </a>
     </div>
   </div>

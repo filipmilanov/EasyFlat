@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
-import {ItemSearchDto, StorageItemList} from "../dtos/storageItemList";
+import {ItemSearchDto, StorageItemList, StorageItemListDto} from "../dtos/storageItemList";
 import {DigitalStorageDto} from "../dtos/digitalStorageDto";
 import {ItemDto} from "../dtos/item";
 
@@ -16,7 +16,7 @@ export class StorageService {
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
 
-  getItems(id: string, searchParameters: ItemSearchDto): Observable<StorageItemList[]> {
+  getItems(id: string, searchParameters: ItemSearchDto): Observable<StorageItemListDto[]> {
     let params = new HttpParams();
     if (searchParameters.productName) {
       params = params.append('productName', searchParameters.productName);
@@ -38,7 +38,7 @@ export class StorageService {
       params = params.append('alwaysInStock', searchParameters.alwaysInStock);
     }
     params = params.append('orderType', searchParameters.orderBy);
-    return this.httpClient.get<StorageItemList[]>(this.storageBaseUri + '/' + id, {params});
+    return this.httpClient.get<StorageItemListDto[]>(this.storageBaseUri + '/' + id, {params});
   }
 
   updateItemQuantity(storageId: string, value: string, item: ItemDto) {
@@ -54,5 +54,17 @@ export class StorageService {
       this.storageBaseUri,
       {params}
     );
+  }
+
+  getItemsWithGenaralName(generalName:string, storId:string): Observable<StorageItemListDto[]> {
+    let params = new HttpParams();
+
+
+    if (storId) {
+      params = params.append('storId', storId);
+    }
+
+
+    return this.httpClient.get<StorageItemListDto[]>(this.storageBaseUri +  '/info/' +  generalName , {params});
   }
 }

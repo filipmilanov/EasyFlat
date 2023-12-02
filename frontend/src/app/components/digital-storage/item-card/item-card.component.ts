@@ -15,8 +15,8 @@ export class ItemCardComponent {
   @Input() id: string;
   @Input() title: string;
   @Input() quantity: number;
-  @Input() maxQuantity: number;
-  @Input() expirationDate: string;
+
+
 
   customModalOpen: boolean = false;
   customModalOpen1: boolean = false;
@@ -24,12 +24,12 @@ export class ItemCardComponent {
   constructor(private el: ElementRef, private digitalStorage: DigitalStorageComponent, private storageService: StorageService,
               private itemService: ItemService) {}
 
-  getCardColor(): string {
-    const ratio = this.quantity / this.maxQuantity;
-    if (ratio < 0.2) return 'bg-danger'; // Low quantity
-    if (ratio < 0.4) return 'bg-warning'; // Medium quantity
-    return 'bg-primary'; // High quantity
-  }
+  // getCardColor(): string {
+  //   const ratio = this.quantity / this.maxQuantity;
+  //   if (ratio < 0.2) return 'bg-danger'; // Low quantity
+  //   if (ratio < 0.4) return 'bg-warning'; // Medium quantity
+  //   return 'bg-primary'; // High quantity
+  // }
 
   // Method to open/close the custom modal
   toggleCustomModal() {

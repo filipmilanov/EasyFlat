@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {StorageService} from "../../services/storage.service";
-import {ItemSearchDto, StorageItemList} from "../../dtos/storageItemList";
+import {ItemSearchDto, StorageItemList, StorageItemListDto} from "../../dtos/storageItemList";
 import {OrderType} from "../../dtos/orderType";
 
 
@@ -12,8 +12,8 @@ import {OrderType} from "../../dtos/orderType";
 })
 
 export class DigitalStorageComponent {
-  items: StorageItemList[] = [];
-  itemsAIS: StorageItemList[] = [];
+  items: StorageItemListDto[] = [];
+  itemsAIS: StorageItemListDto[] = [];
   searchParameters: ItemSearchDto = {alwaysInStock: false, orderBy: OrderType.PRODUCT_NAME};
 
 
