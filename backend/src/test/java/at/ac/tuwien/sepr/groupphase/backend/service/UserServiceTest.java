@@ -1,10 +1,9 @@
-package at.ac.tuwien.sepr.groupphase.backend.servicetests;
+package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
-import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +35,16 @@ public class UserServiceTest implements TestData {
         UserDetailDto userDetailDto = new UserDetailDto();
         userDetailDto.setFirstName("John");
         userDetailDto.setLastName("Doe");
-        userDetailDto.setEmail("john@example.com");
+        userDetailDto.setEmail("john.doe@example.com");
         userDetailDto.setPassword("password");
 
         String authToken = userService.register(userDetailDto);
 
-        ApplicationUser registeredUser = userRepository.findUserByEmail("john@example.com");
+        ApplicationUser registeredUser = userRepository.findUserByEmail("john.doe@example.com");
         assertNotNull(registeredUser);
         assertEquals("John", registeredUser.getFirstName());
         assertEquals("Doe", registeredUser.getLastName());
-        assertEquals("john@example.com", registeredUser.getEmail());
+        assertEquals("john.doe@example.com", registeredUser.getEmail());
         assertEquals(passwordEncoder.matches("password",registeredUser.getPassword()),true );
         assertNotNull(authToken);
     }
