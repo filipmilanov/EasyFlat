@@ -12,5 +12,6 @@ public interface SharedFlatRepository extends JpaRepository<SharedFlat, Long> {
 
     SharedFlat findFlatByName(String flatName);
 
+
     Integer findFlatIdByName(String flatName);
 }

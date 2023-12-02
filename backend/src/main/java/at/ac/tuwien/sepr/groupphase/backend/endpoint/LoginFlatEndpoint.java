@@ -37,9 +37,9 @@ public class LoginFlatEndpoint {
     }
 
     @PermitAll
-    @DeleteMapping("/{name}")
-    public WgDetailDto delete(@PathVariable String name) {
-        return sharedFlatService.delete(name);
+    @DeleteMapping("/{email}")
+    public WgDetailDto delete(@PathVariable String email) {
+        return sharedFlatService.delete(email);
     }
 
 

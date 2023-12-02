@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,19 +86,32 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     }
 
     @Override
-    public WgDetailDto delete(String name) {
-        SharedFlat flat = sharedFlatRepository.findFlatByName(name);
-        boolean exist = userRepository.existsBySharedFlat(flat);
-        if (flat == null) {
-            throw new BadCredentialsException("There is no flat with this name");
+    @Transactional
+    public WgDetailDto delete(String email) {
+        ApplicationUser user = userRepository.findUserByEmail(email);
+        if (!user.getAdmin()) {
+            throw new BadCredentialsException("User is not admin, so he can not delete the flat");
+        } else {
+            SharedFlat flat = user.getSharedFlat();
+            if (flat == null) {
+                throw new BadCredentialsException("You can not delete flat where you do not live");
+            }
+            user.setSharedFlat(null);
+            user.setAdmin(false);
+            userRepository.save(user);
+            boolean exist = userRepository.existsBySharedFlat(flat);
+
+            if (!exist) {
+                String deletedFlatName = flat.getName();
+                sharedFlatRepository.deleteByName(deletedFlatName);
+                return sharedFlatMapper.entityToWgDetailDto(flat);
+            } else {
+                user.setSharedFlat(flat);
+                user.setAdmin(true);
+                userRepository.save(user);
+                throw new BadCredentialsException("Flat is not empty");
+            }
         }
-        if (!exist) {
-            SharedFlat deletedFlat = sharedFlatRepository.findFirstByName(name);
-            sharedFlatRepository.deleteByName(name);
-            return sharedFlatMapper.entityToWgDetailDto(deletedFlat);
-        }
-        throw new BadCredentialsException("Flat is not empty");
+
     }
-
-
 }

@@ -9,5 +9,5 @@ public interface SharedFlatService {
 
     WgDetailDto loginWg(SharedFlat wgDetailDto, String authToken);
 
-    WgDetailDto delete(String name);
+    WgDetailDto delete(String email);
 }

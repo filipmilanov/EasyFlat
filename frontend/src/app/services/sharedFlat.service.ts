@@ -31,7 +31,9 @@ export class SharedFlatService {
   }
 
 
-  delete(sharedFlat: SharedFlat): Observable<SharedFlat> {
-    return this.httpClient.delete<SharedFlat>(this.sharedFlatBaseUri + "/" + sharedFlat.name);
+  delete(user: UserDetail): Observable<SharedFlat> {
+    return this.httpClient.delete<SharedFlat>(this.sharedFlatBaseUri + '/' + user.email);
   }
+
+
 }

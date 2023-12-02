@@ -12,7 +12,7 @@ import {AuthService} from "../../services/auth.service";
   styleUrls: ['./login-flat.component.scss']
 })
 export class LoginFlatComponent implements OnInit{
-  sharedFlat: SharedFlat
+  user: UserDetail
   loginForm: UntypedFormGroup;
   submitted = false;
   error = false;
@@ -29,7 +29,7 @@ export class LoginFlatComponent implements OnInit{
     this.submitted = true;
     if (this.loginForm.valid) {
       const sharedFlat: SharedFlat = new SharedFlat(
-        this.loginForm.controls.name.value,
+        this.loginForm.controls.flatName.value,
         this.loginForm.controls.password.value
       );
       console.log('Try to authenticate shared flat: ' + sharedFlat.name);
@@ -55,7 +55,17 @@ export class LoginFlatComponent implements OnInit{
   }
 
   ngOnInit(): void {
+    this.authService.getUser(this.authService.getToken()).subscribe(
+      (user) => {
+        this.user = user;
+        console.log('User :', this.user);
+      },
+      (error) => {
+        console.error('Error fetching user:', error);
+      }
+    );
   }
+
 
   // private authenticateWG(sharedFlat: SharedFlat) {
   //   console.log('Try to authenticate shared flat: ' + sharedFlat.name);
@@ -85,16 +95,17 @@ export class LoginFlatComponent implements OnInit{
     this.error = false;
   }
 
-  delete() {
-    this.authService.signOut(this.sharedFlat.name, this.authService.getToken()).subscribe({
-      next: () => {
-        console.log('Flat deleted:', this.sharedFlat.name);
-        this.sharedFlatService.delete(this.sharedFlat);
-        this.router.navigate(['']);
-      },
-      error: error => {
-        console.error(error.message, error);
+    delete() {
+      if (confirm("Are you sure you want to delete the shared flat?")) {
+        this.sharedFlatService.delete(this.user).subscribe({
+          next: (deletedFlat: SharedFlat) => {
+            console.log('Shared flat deleted from user :', deletedFlat);
+            this.router.navigate(['']);
+          },
+          error: error => {
+            console.error(error.message, error);
+          }
+        });
       }
-    });
-  }
+    }
 }
