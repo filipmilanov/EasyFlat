@@ -10,6 +10,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class ItemDetailListComponent implements OnInit {
   item: StorageItemListDto;
+  itemGeneralName:string;
   items: StorageItem[];
 
 
@@ -24,8 +25,10 @@ export class ItemDetailListComponent implements OnInit {
     this.route.params.subscribe({
       next: params => {
         const storId = params.id;
-        const itemName = params.name;
-        this.storageService.getItemsWithGenaralName(itemName,storId).subscribe({
+        this.itemGeneralName = params.name;
+
+
+        this.storageService.getItemsWithGenaralName(this.itemGeneralName,storId).subscribe({
             next: res => {
               this.items = res;
             },
