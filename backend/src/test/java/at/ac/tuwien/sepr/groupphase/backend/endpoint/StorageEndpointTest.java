@@ -123,7 +123,7 @@ class StorageEndpointTest {
         Long storageId = 1L;
         String endpointUrl = BASE_URI + "/" + storageId;
 
-
+        // when
         ItemSearchDto itemSearchDto = new ItemSearchDto(null, false, null, null, null, null, null, null);
 
         MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
@@ -138,11 +138,10 @@ class StorageEndpointTest {
             .andDo(print())
             .andReturn();
 
-        // Assertions
+        // Then
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus()),
             () -> assertNotNull(mvcResult.getResponse())
-
         );
     }
 
