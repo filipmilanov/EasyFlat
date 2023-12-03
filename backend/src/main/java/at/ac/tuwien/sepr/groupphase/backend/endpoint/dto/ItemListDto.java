@@ -10,6 +10,8 @@ public record ItemListDto(
     @NotEmpty
     Long quantityCurrent,
     @NotEmpty
-    Long storId
+    Long storId,
+    @NotEmpty
+    String unit
 ) {
 }

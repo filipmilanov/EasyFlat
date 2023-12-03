@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ItemSearchDto, StorageItemList, StorageItemListDto} from "../../../dtos/storageItemList";
+import {ItemSearchDto, StorageItem, StorageItemListDto} from "../../../dtos/storageItem";
 import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
 
@@ -10,7 +10,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class ItemDetailListComponent implements OnInit {
   item: StorageItemListDto;
-  items: StorageItemList[];
+  items: StorageItem[];
 
 
   constructor(private storageService: StorageService, private router: Router,

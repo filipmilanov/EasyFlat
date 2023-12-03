@@ -101,7 +101,9 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         );
 
         Map<String, Long[]> items = new HashMap<>();
+        Map<String, String> itemUnits = new HashMap<>();
         for (Item item : allItems) {
+            itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit());
             long currentQ = 0;
             if (items.get(item.getGeneralName()) != null) {
                 currentQ = items.get(item.getGeneralName())[0];
@@ -113,7 +115,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
         List<ItemListDto> toRet = new LinkedList<>();
         for (Map.Entry<String, Long[]> item : items.entrySet()) {
-            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[1]));
+            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[1], itemUnits.get(item.getKey())));
         }
 
         return toRet;

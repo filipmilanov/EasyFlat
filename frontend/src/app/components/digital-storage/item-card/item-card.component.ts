@@ -3,7 +3,7 @@ import {DigitalStorageComponent} from "../digital-storage.component";
 import {StorageService} from "../../../services/storage.service";
 import {ItemService} from "../../../services/item.service";
 import {ItemDto} from "../../../dtos/item";
-import {ItemSearchDto} from "../../../dtos/storageItemList";
+import {ItemSearchDto} from "../../../dtos/storageItem";
 
 @Component({
   selector: 'app-item-card',
@@ -15,6 +15,7 @@ export class ItemCardComponent {
   @Input() id: string;
   @Input() title: string;
   @Input() quantity: number;
+  @Input() unit:string;
 
 
 

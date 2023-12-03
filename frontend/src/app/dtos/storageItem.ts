@@ -1,6 +1,6 @@
 import {OrderType} from "./orderType";
 
-export class StorageItemList {
+export class StorageItem {
   itemId?: string;
   ean?:string;
   generalName?:string;
@@ -29,4 +29,5 @@ export class StorageItemListDto {
   generalName?:string;
   quantityCurrent:number;
   storId:string;
+  unit:string;
 }

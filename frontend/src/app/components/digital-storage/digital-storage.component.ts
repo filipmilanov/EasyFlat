@@ -1,8 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {StorageService} from "../../services/storage.service";
-import {ItemSearchDto, StorageItemList, StorageItemListDto} from "../../dtos/storageItemList";
+import {ItemSearchDto, StorageItem, StorageItemListDto} from "../../dtos/storageItem";
 import {OrderType} from "../../dtos/orderType";
-
+import {ToastrService} from "ngx-toastr";
 
 
 @Component({
@@ -11,13 +11,14 @@ import {OrderType} from "../../dtos/orderType";
   styleUrls: ['./digital-storage.component.scss']
 })
 
-export class DigitalStorageComponent {
+export class DigitalStorageComponent implements OnInit {
   items: StorageItemListDto[] = [];
   itemsAIS: StorageItemListDto[] = [];
   searchParameters: ItemSearchDto = {alwaysInStock: false, orderBy: OrderType.PRODUCT_NAME};
 
 
-  constructor(private storageService: StorageService) {
+  constructor(private storageService: StorageService,
+              private notification: ToastrService,) {
 
   }
 
@@ -27,32 +28,31 @@ export class DigitalStorageComponent {
 
   public loadStorage() {
     this.searchParameters.alwaysInStock = false;
-    this.storageService.getItems("1",this.searchParameters).subscribe({
+    this.storageService.getItems("1", this.searchParameters).subscribe({
 
         next: res => {
-          console.log(this.searchParameters)
-          console.log(res);
           this.items = res;
         },
         error: err => {
           console.error("Error loading storage:", err);
+          this.notification.error("Error loading storage");
         }
       }
     )
     this.searchParameters.alwaysInStock = true;
-    this.storageService.getItems("1",this.searchParameters).subscribe({
+    this.storageService.getItems("1", this.searchParameters).subscribe({
 
         next: res => {
-          console.log(this.searchParameters)
-          console.log(res);
+
           this.itemsAIS = res;
         },
         error: err => {
           console.error("Error loading storage:", err);
+          this.notification.error("Error loading storage");
         }
       }
     )
   }
 
-    protected readonly OrderType = OrderType;
+  protected readonly OrderType = OrderType;
 }

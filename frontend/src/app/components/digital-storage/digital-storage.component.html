@@ -120,7 +120,7 @@
       <a style="text-decoration: none"
          [routerLink]="['item', item.generalName ,'list']"
          aria-label="Show item details">
-        <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent"
+        <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent" [unit]="item.unit"
         ></app-item-card>
       </a>
     </div>
@@ -135,7 +135,7 @@
       <a style="text-decoration: none"
          [routerLink]="['item', item.generalName, 'list']"
          aria-label="Show item details">
-        <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent"
+        <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent" [unit]="item.unit"
         ></app-item-card>
       </a>
     </div>

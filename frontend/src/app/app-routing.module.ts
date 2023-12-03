@@ -9,7 +9,7 @@ import {
 } from "./components/digital-storage/item-create-edit/item-create-edit.component";
 import {ItemDetailComponent} from "./components/digital-storage/item-detail/item-detail.component";
 import {ItemDetailListComponent} from "./components/digital-storage/item-detail-list/item-detail-list.component";
-import {StorageItemListDto} from "./dtos/storageItemList";
+import {StorageItemListDto} from "./dtos/storageItem";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},

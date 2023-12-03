@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
-import {ItemSearchDto, StorageItemList, StorageItemListDto} from "../dtos/storageItemList";
+import {ItemSearchDto, StorageItem, StorageItemListDto} from "../dtos/storageItem";
 import {DigitalStorageDto} from "../dtos/digitalStorageDto";
 import {ItemDto} from "../dtos/item";
 
@@ -56,7 +56,7 @@ export class StorageService {
     );
   }
 
-  getItemsWithGenaralName(generalName:string, storId:string): Observable<StorageItemListDto[]> {
+  getItemsWithGenaralName(generalName:string, storId:string): Observable<StorageItem[]> {
     let params = new HttpParams();
 
 
@@ -65,6 +65,6 @@ export class StorageService {
     }
 
 
-    return this.httpClient.get<StorageItemListDto[]>(this.storageBaseUri +  '/info/' +  generalName , {params});
+    return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName , {params});
   }
 }
