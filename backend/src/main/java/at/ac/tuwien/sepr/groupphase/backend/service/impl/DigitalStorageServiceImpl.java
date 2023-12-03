@@ -113,7 +113,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
         List<ItemListDto> toRet = new LinkedList<>();
         for (Map.Entry<String, Long[]> item : items.entrySet()) {
-            toRet.add(new ItemListDto().setGeneralName(item.getKey()).setQuantityCurrent(item.getValue()[0]).setStorId(item.getValue()[1]));
+            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[1]));
         }
 
         return toRet;
