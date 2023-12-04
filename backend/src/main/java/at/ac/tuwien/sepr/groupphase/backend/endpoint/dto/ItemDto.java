@@ -22,6 +22,7 @@ public record ItemDto(
     String generalName,
     @NotEmpty(message = "The product name cannot be empty")
     String productName,
+    @NotEmpty(message = "The brand name cannot be empty")
     String brand,
     @NotNull(message = "The actual quantity cannot be empty")
     @Min(value = 0, message = "The actual quantity must be positive")
@@ -40,7 +41,7 @@ public record ItemDto(
     @Min(value = 0, message = "The minimum quantity must be positive")
     Long minimumQuantity,
     String boughtAt,
-    @NotNull(message = "A Item need to be linked to a storage")
+    @NotNull(message = "An item needs to be linked to a storage")
     DigitalStorageDto digitalStorage,
     List<IngredientDto> ingredients,
     List<ItemStats> itemStats
