@@ -39,7 +39,10 @@ public class ItemServiceImpl implements ItemService {
     private final ItemStatsRepository itemStatsRepository;
     private final Validator validator;
 
-    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService, IngredientService ingredientService, ItemMapper itemMapper, ItemValidator itemValidator, Validator validator, ItemStatsRepository itemStatsRepository) {
+    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService,
+                           IngredientService ingredientService, ItemMapper itemMapper,
+                           ItemValidator itemValidator, Validator validator,
+                           ItemStatsRepository itemStatsRepository) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
@@ -72,11 +75,11 @@ public class ItemServiceImpl implements ItemService {
 
         List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
 
-        List<ItemStats> itemStats = new ArrayList<>();
         ItemStats curr = new ItemStats();
         curr.setDateOfPurchase(LocalDate.now());
         curr.setAmountSpendOn(itemDto.priceInCent());
         curr.setItemStatId(itemDto.itemId());
+        List<ItemStats> itemStats = new ArrayList<>();
         itemStats.add(curr);
         itemStatsRepository.save(curr);
 
