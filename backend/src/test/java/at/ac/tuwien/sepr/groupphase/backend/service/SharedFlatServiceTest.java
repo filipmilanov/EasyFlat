@@ -1,4 +1,4 @@
-package at.ac.tuwien.sepr.groupphase.backend.integrationtest;
+package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
@@ -27,6 +27,24 @@ class SharedFlatServiceTest {
         WgDetailDto wgDetailDto = new WgDetailDto();
         wgDetailDto.setName("name");
         wgDetailDto.setPassword("password");
+
+        when(sharedFlatService.create(any(SharedFlat.class), any(String.class)))
+            .thenReturn(wgDetailDto);
+
+        WgDetailDto result = sharedFlatService.create(sharedFlat, authToken);
+
+        assertEquals(wgDetailDto, result);
+    }
+
+    @Test
+    void testCreateNewSharedFlat_Failure() throws Exception {
+        String authToken = "someAuthToken";
+        SharedFlat sharedFlat = new SharedFlat();
+        sharedFlat.setName("name");
+        sharedFlat.setPassword("password");
+        WgDetailDto wgDetailDto = new WgDetailDto();
+        wgDetailDto.setName("flatName");
+        wgDetailDto.setPassword("flatPassword");
 
         when(sharedFlatService.create(any(SharedFlat.class), any(String.class)))
             .thenReturn(wgDetailDto);

@@ -43,7 +43,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         LOGGER.debug("Create a new shared flat");
         SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(sharedFlat.getName());
         if (existingSharedFlat != null) {
-            throw new Exception("This name already exists!");
+            throw new Exception("A flat with this name already exists.");
         }
 
         SharedFlat newSharedFlat = new SharedFlat();
