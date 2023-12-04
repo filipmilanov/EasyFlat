@@ -4,8 +4,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
-import jakarta.xml.bind.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -39,7 +39,7 @@ public class ItemEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException, at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException {
+    public ItemDto create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException {
         LOGGER.info("create({})", itemDto);
         return itemMapper.entityToDto(
             itemService.create(itemDto)
@@ -57,7 +57,7 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping("{id}")
-    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto) throws ConflictException {
+    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto) throws ValidationException, ConflictException {
         LOGGER.info("update({},{})", id, itemDto);
         return itemMapper.entityToDto(
             itemService.update(itemDto.withId(id))

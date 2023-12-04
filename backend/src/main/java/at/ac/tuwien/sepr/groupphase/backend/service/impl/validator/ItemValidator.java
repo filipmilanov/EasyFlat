@@ -75,9 +75,25 @@ public class ItemValidator {
         }
     }
 
-    public void checkItemForUpdate(ItemDto itemDto,
+    public void validateForUpdate(ItemDto itemDto, List<DigitalStorage> digitalStorageList) throws ConflictException, ValidationException {
+        LOGGER.trace("validateForUpdate({})", itemDto);
+
+        checkValidationForUpdate(itemDto);
+        checkConflictForUpdate(itemDto, digitalStorageList);
+    }
+
+    private void checkValidationForUpdate(ItemDto itemDto) throws ValidationException {
+        LOGGER.trace("checkValidationForUpdate({})", itemDto);
+
+        Set<ConstraintViolation<ItemDto>> validationViolations = validator.validate(itemDto);
+        if (!validationViolations.isEmpty()) {
+            throw new ValidationException("The data is not valid", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+        }
+    }
+
+    public void checkConflictForUpdate(ItemDto itemDto,
                                    List<DigitalStorage> digitalStorageList) throws ConflictException {
-        LOGGER.trace("checkItemForUpdate({}, {})", itemDto, digitalStorageList);
+        LOGGER.trace("checkConflictForUpdate({}, {})", itemDto, digitalStorageList);
 
         List<String> errors = new ArrayList<>();
         if (itemDto.itemId() == null) {
@@ -98,6 +114,8 @@ public class ItemValidator {
 
         if (itemDto.alwaysInStock() == null) {
             errors.add("There is no AlwaysInStock defined");
+        } else if (itemDto.alwaysInStock() && itemDto.minimumQuantity() == null) {
+            errors.add("There is no MinimumQuantity defined");
         }
 
         if (!errors.isEmpty()) {
