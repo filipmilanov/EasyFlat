@@ -31,9 +31,15 @@ export class ItemService {
     return this.http.post<ItemDto>(this.baseUri, item);
   }
 
+  /**
+   * Update an item in the system.
+   *
+   * @param item the data for the item that should be updated
+   * @return an Observable for the updated item
+   */
   updateItem(item: ItemDto): Observable<ItemDto> {
     console.log('Update item with ID ' + item.itemId);
-    return this.http.put<ItemDto>(this.baseUri, item);
+    return this.http.put<ItemDto>(`${this.baseUri}/${item.itemId}`, item);
   }
 
   /**
