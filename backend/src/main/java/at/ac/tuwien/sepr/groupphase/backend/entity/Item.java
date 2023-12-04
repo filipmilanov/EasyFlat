@@ -82,7 +82,7 @@ public class Item {
 
     @AssertTrue(message = "The current quantity cannot be larger then the total")
     private boolean quantityCurrentLessThenTotal() {
-        return this.quantityCurrent < this.quantityTotal;
+        return this.quantityCurrent <= this.quantityTotal;
     }
 
     public Long getItemId() {

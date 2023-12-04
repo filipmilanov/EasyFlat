@@ -48,7 +48,7 @@ public record ItemDto(
     private boolean isQuantityCurrentLessThenTotal() {
         return this.quantityCurrent == null
             || this.quantityTotal == null
-            || this.quantityCurrent < this.quantityTotal;
+            || this.quantityCurrent <= this.quantityTotal;
     }
 
     @AssertTrue(message = "The minimum quantity cannot be empty")
