@@ -10,8 +10,12 @@ public record ItemListDto(
     @NotEmpty
     Long quantityCurrent,
     @NotEmpty
+    Long quantityTotal,
+    @NotEmpty
     Long storId,
     @NotEmpty
     String unit
+
+
 ) {
 }
