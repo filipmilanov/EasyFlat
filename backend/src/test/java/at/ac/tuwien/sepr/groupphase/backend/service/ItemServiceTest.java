@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -331,4 +333,252 @@ class ItemServiceTest {
                 "not exists"
             );
     }
+
+    @Test
+    void givenValidItemWhenUpdateSingleAttributeThenItemIsUpdated() throws ValidationException, ConflictException {
+        // given:
+        String updatedGeneralName = "General Name Updated";
+
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test Storage")
+            .storId(1L)
+            .build();
+
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Test Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Test Ingredient 2")
+                .build()
+        );
+
+        ItemDto itemDto = ItemDtoBuilder.builder()
+            .ean("0123456789123")
+            .generalName("TestGeneral")
+            .productName("TestProduct")
+            .brand("TestBrand")
+            .quantityCurrent(100L)
+            .quantityTotal(200L)
+            .unit("g")
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .build();
+
+        Item createdItem = service.create(itemDto);
+
+        ItemDto updatedItemDto = ItemDtoBuilder.builder()
+            .itemId(createdItem.getItemId())
+            .ean("0123456789123")
+            .generalName(updatedGeneralName)
+            .productName("TestProduct")
+            .brand("TestBrand")
+            .quantityCurrent(100L)
+            .quantityTotal(200L)
+            .unit("g")
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .build();
+
+        // when:
+        service.update(updatedItemDto);
+
+        // then:
+        Optional<Item> updatedItem = service.findById(createdItem.getItemId());
+
+        assertAll(
+            () -> assertTrue(updatedItem.isPresent()),
+            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getGeneralName()))
+        );
+    }
+
+    @Test
+    void givenInvalidItemWhenUpdateSingleAttributeThenValidationExceptionIsThrown() throws ValidationException, ConflictException {
+        // given:
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test Storage")
+            .storId(1L)
+            .build();
+
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Test Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Test Ingredient 2")
+                .build()
+        );
+
+        ItemDto itemDto = ItemDtoBuilder.builder()
+            .ean("0123456789123")
+            .generalName("TestGeneral")
+            .productName("TestProduct")
+            .brand("TestBrand")
+            .quantityCurrent(100L)
+            .quantityTotal(200L)
+            .unit("g")
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .build();
+
+        Item createdItem = service.create(itemDto);
+
+        ItemDto updatedItemDto = ItemDtoBuilder.builder()
+            .itemId(createdItem.getItemId())
+            .ean("0123456789123")
+            .generalName("TestGeneral")
+            .productName("TestProduct")
+            .brand("TestBrand")
+            .quantityCurrent(-100L)
+            .quantityTotal(200L)
+            .unit("g")
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .build();
+
+        // when + then
+        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto)).getMessage();
+        assertThat(message)
+            .contains(
+                "The actual quantity must be positive"
+            );
+    }
+
+    @Test
+    void givenValidItemWhenUpdateMultipleAttributesThenItemIsUpdated() throws ValidationException, ConflictException {
+        // given:
+        String updatedGeneralName = "General Name Updated";
+        Long updatedCurrentAmount = 150L;
+
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test Storage")
+            .storId(1L)
+            .build();
+
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Test Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Test Ingredient 2")
+                .build()
+        );
+
+        ItemDto itemDto = ItemDtoBuilder.builder()
+            .ean("0123456789123")
+            .generalName("TestGeneral")
+            .productName("TestProduct")
+            .brand("TestBrand")
+            .quantityCurrent(100L)
+            .quantityTotal(200L)
+            .unit("g")
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .build();
+
+        Item createdItem = service.create(itemDto);
+
+        ItemDto updatedItemDto = ItemDtoBuilder.builder()
+            .itemId(createdItem.getItemId())
+            .ean("0123456789123")
+            .generalName(updatedGeneralName)
+            .productName("TestProduct")
+            .brand("TestBrand")
+            .quantityCurrent(updatedCurrentAmount)
+            .quantityTotal(200L)
+            .unit("g")
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .build();
+
+        // when:
+        service.update(updatedItemDto);
+
+        // then:
+        Optional<Item> updatedItem = service.findById(createdItem.getItemId());
+
+        assertAll(
+            () -> assertTrue(updatedItem.isPresent()),
+            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getGeneralName())),
+            () -> updatedItem.ifPresent(item -> assertEquals(updatedCurrentAmount, updatedItem.get().getQuantityCurrent()))
+        );
+    }
+
+    @Test
+    void givenInvalidItemWhenUpdateMultipleAttributesThenValidationExceptionIsThrown() throws ValidationException, ConflictException {
+        // given:
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test Storage")
+            .storId(1L)
+            .build();
+
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Test Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Test Ingredient 2")
+                .build()
+        );
+
+        ItemDto itemDto = ItemDtoBuilder.builder()
+            .ean("0123456789123")
+            .generalName("TestGeneral")
+            .productName("TestProduct")
+            .brand("TestBrand")
+            .quantityCurrent(100L)
+            .quantityTotal(200L)
+            .unit("g")
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .build();
+
+        Item createdItem = service.create(itemDto);
+
+        ItemDto updatedItemDto = ItemDtoBuilder.builder()
+            .itemId(createdItem.getItemId())
+            .ean("0123456789123")
+            .generalName("TestGeneral")
+            .productName("TestProduct")
+            .brand(null)
+            .quantityCurrent(100L)
+            .quantityTotal(200L)
+            .unit("g")
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(null)
+            .ingredients(ingredientDtoList)
+            .build();
+
+        // when + then
+        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto)).getMessage();
+        assertThat(message)
+            .contains(
+                "The brand cannot be empty",
+                "A Item need to be linked to a storage"
+            );
+    }
+
 }
