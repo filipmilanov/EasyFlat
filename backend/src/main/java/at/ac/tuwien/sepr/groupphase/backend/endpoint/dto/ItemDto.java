@@ -34,6 +34,7 @@ public record ItemDto(
     LocalDate expireDate,
     @NotEmpty(message = "The description is necessary")
     String description,
+    @Min(value = 0, message = "The price must be positive")
     Long priceInCent,
     Boolean alwaysInStock,
     @Min(value = 0, message = "The minimum quantity must be positive")
