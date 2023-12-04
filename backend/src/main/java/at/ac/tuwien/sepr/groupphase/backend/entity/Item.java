@@ -43,7 +43,6 @@ public class Item {
     private String productName;
 
     @Column
-    @NotEmpty(message = "The brand cannot be empty")
     private String brand;
 
     @Column
@@ -63,7 +62,6 @@ public class Item {
     private LocalDate expireDate;
 
     @Column
-    @NotEmpty(message = "The description is necessary")
     private String description;
 
     @Column
