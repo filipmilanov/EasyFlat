@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -40,7 +41,8 @@ public record ItemDto(
     String boughtAt,
     @NotNull(message = "A Item need to be linked to a storage")
     DigitalStorageDto digitalStorage,
-    List<IngredientDto> ingredients
+    List<IngredientDto> ingredients,
+    List<ItemStats> itemStats
 ) {
     @AssertTrue(message = "The current quantity cannot be larger then the total")
     private boolean isQuantityCurrentLessThenTotal() {
@@ -70,7 +72,8 @@ public record ItemDto(
             minimumQuantity,
             boughtAt,
             digitalStorage,
-            ingredients
+            ingredients,
+            itemStats
         );
     }
 

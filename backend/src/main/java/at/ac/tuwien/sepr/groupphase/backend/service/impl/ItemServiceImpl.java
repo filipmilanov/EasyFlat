@@ -6,9 +6,11 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ItemStatsRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
@@ -19,6 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,14 +36,16 @@ public class ItemServiceImpl implements ItemService {
     private final IngredientService ingredientService;
     private final ItemMapper itemMapper;
     private final ItemValidator itemValidator;
+    private final ItemStatsRepository itemStatsRepository;
     private final Validator validator;
 
-    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService, IngredientService ingredientService, ItemMapper itemMapper, ItemValidator itemValidator, Validator validator) {
+    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService, IngredientService ingredientService, ItemMapper itemMapper, ItemValidator itemValidator, Validator validator, ItemStatsRepository itemStatsRepository) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
         this.itemMapper = itemMapper;
         this.itemValidator = itemValidator;
+        this.itemStatsRepository = itemStatsRepository;
         this.validator = validator;
     }
 
@@ -61,18 +68,24 @@ public class ItemServiceImpl implements ItemService {
         }
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
-
         itemValidator.validateForCreate(itemDto, digitalStorageList);
 
         List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
 
+        List<ItemStats> itemStats = new ArrayList<>();
+        ItemStats curr = new ItemStats();
+        curr.setDateOfPurchase(LocalDate.now());
+        curr.setAmountSpendOn(itemDto.priceInCent());
+        curr.setItemStatId(itemDto.itemId());
+        itemStats.add(curr);
+        itemStatsRepository.save(curr);
+
         Item item;
         if (itemDto.alwaysInStock()) {
-            item = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList);
+            item = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null);
         } else {
-            item = itemMapper.dtoToEntity(itemDto, ingredientList);
+            item = itemMapper.dtoToEntity(itemDto, ingredientList, null);
         }
-
         Item createdItem = itemRepository.save(item);
         createdItem.setIngredientList(ingredientList);
         return createdItem;
@@ -93,9 +106,9 @@ public class ItemServiceImpl implements ItemService {
 
         Item item;
         if (itemDto.alwaysInStock()) {
-            item = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList);
+            item = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null);
         } else {
-            item = itemMapper.dtoToEntity(itemDto, ingredientList);
+            item = itemMapper.dtoToEntity(itemDto, ingredientList, null);
         }
 
         Item updatedItem = itemRepository.save(item);

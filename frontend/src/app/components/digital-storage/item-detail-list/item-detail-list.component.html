@@ -7,13 +7,63 @@
       <th scope="col">Name</th>
       <th scope="col">Expire Date</th>
       <th scope="col">Quantity</th>
+      <th scope="col">Details</th>
+      <th scope="col"></th>
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let item1 of items" class="center-td" [routerLink]="[item1.itemId,'detail']">
+    <tr *ngFor="let item1 of items" class="center-td" >
       <td>{{ item1.productName }}</td>
       <td>{{ item1.expireDate | date:'short' }}</td>
       <td>{{ item1.quantityCurrent }}</td>
+      <td>
+        <button type="button" class="btn text-bg-dark custom-btn me-2" [routerLink]="[item1.itemId,'detail']" (click)="toggleCustomModal()">
+          info
+        </button>
+      </td>
+      <td>
+        <div style="position: relative; display: inline-block; z-index: 1;">
+          <!-- Button Triggering Custom Modal -->
+          <button type="button" class="btn text-bg-dark custom-btn me-2" (click)="toggleCustomModal()">
+            -
+          </button>
+
+          <!-- Custom Modal with Text Input -->
+          <div *ngIf="customModalOpen" class="custom-modal"
+               style="position: absolute; background-color: white; padding: 10px; border: 1px solid #ccc; width: 100px;">
+            <div class="row">
+              <div class="col">
+                Subtract Quantity:
+                <input type="number" class="form-control" min=0  [max]="item1.quantityCurrent" #item1.quantityCurrent>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-primary btn-sm" style="width: 100%" (click)="onSave(item1.itemId, item1.quantityCurrent + '', 0)">✓</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="position: relative; display: inline-block; z-index: 1;">
+          <!-- Button Triggering Custom Modal -->
+          <button type="button" class="btn text-bg-dark custom-btn" (click)="toggleCustomModal1()">
+            +
+          </button>
+
+          <!-- Custom Modal with Text Input -->
+          <div *ngIf="customModalOpen1" class="custom-modal"
+               style="position: absolute; background-color: white; padding: 10px; border: 1px solid #ccc; width: 100px;">
+            <div class="row">
+              <div class="col">
+                Add Quantity:
+                <input type="number" class="form-control" min=0 #quantityInput>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-primary btn-sm" style="width: 100%" (click)="onSave(item1.itemId, item1.quantityCurrent + '', 1)">✓</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </td>
     </tr>
     </tbody>
   </table>
