@@ -23,6 +23,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -581,4 +582,45 @@ class ItemServiceTest {
             );
     }
 
+    @Test
+    void givenValidItemWhenDeleteThenItemIsDeleted() throws ValidationException, ConflictException {
+        // given:
+        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+            .title("Test Storage")
+            .storId(1L)
+            .build();
+
+        List<IngredientDto> ingredientDtoList = List.of(
+            IngredientDtoBuilder.builder()
+                .name("Test Ingredient 1")
+                .build(),
+            IngredientDtoBuilder.builder()
+                .name("Test Ingredient 2")
+                .build()
+        );
+
+        ItemDto itemDto = ItemDtoBuilder.builder()
+            .ean("0123456789123")
+            .generalName("TestGeneral")
+            .productName("TestProduct")
+            .brand("TestBrand")
+            .quantityCurrent(100L)
+            .quantityTotal(200L)
+            .unit("g")
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .build();
+
+        Item createdItem = service.create(itemDto);
+
+        // when:
+        service.delete(createdItem.getItemId());
+
+        // then:
+        Optional<Item> deletedItem = service.findById(createdItem.getItemId());
+        assertFalse(deletedItem.isPresent());
+    }
 }
