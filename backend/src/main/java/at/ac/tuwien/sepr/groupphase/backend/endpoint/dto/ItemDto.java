@@ -22,17 +22,17 @@ public record ItemDto(
     String generalName,
     @NotEmpty(message = "The product name cannot be empty")
     String productName,
-    @NotEmpty(message = "The brand cannot be empty")
     String brand,
+    @NotNull(message = "The actual quantity cannot be empty")
     @Min(value = 0, message = "The actual quantity must be positive")
     Long quantityCurrent,
+    @NotNull(message = "The total quantity cannot be empty")
     @Min(value = 0, message = "The total quantity must be positive")
     Long quantityTotal,
     @NotEmpty(message = "The unit cannot be empty")
     String unit,
     @FutureOrPresent(message = "You cannot store products which are over the expire date")
     LocalDate expireDate,
-    @NotEmpty(message = "The description is necessary")
     String description,
     @Min(value = 0, message = "The price must be positive")
     Long priceInCent,
@@ -47,7 +47,9 @@ public record ItemDto(
 ) {
     @AssertTrue(message = "The current quantity cannot be larger then the total")
     private boolean isQuantityCurrentLessThenTotal() {
-        return this.quantityCurrent < this.quantityTotal;
+        return this.quantityCurrent == null
+            || this.quantityTotal == null
+            || this.quantityCurrent <= this.quantityTotal;
     }
 
     @AssertTrue(message = "The minimum quantity cannot be empty")
