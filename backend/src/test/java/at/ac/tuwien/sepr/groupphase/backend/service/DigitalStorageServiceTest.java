@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -90,6 +91,14 @@ class DigitalStorageServiceTest {
         assertThrows(ValidationException.class, () -> service.create(digitalStorageDto));
     }
 
+    @Test
+    void givenInvalidStorageWhenSearchItemsThenValidationExceptionIsThrown() {
+        // given
+        Long iD= -1111L;
+        ItemSearchDto searchParams = new ItemSearchDto(null,null,null, null,null);
 
+        // when + then
+        assertThrows(ValidationException.class, () -> service.searchItems(iD,searchParams));
+    }
 
 }
