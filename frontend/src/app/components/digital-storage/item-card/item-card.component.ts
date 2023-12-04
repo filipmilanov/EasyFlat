@@ -15,6 +15,7 @@ export class ItemCardComponent {
   @Input() id: string;
   @Input() title: string;
   @Input() quantity: number;
+  @Input() quantityTotal:number;
   @Input() unit:string;
 
 

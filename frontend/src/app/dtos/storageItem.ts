@@ -25,6 +25,7 @@ export class ItemSearchDto {
 export class StorageItemListDto {
   generalName?:string;
   quantityCurrent:number;
+  quantityTotal:number;
   storId:string;
   unit:string;
 }
