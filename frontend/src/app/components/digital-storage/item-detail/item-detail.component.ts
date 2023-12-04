@@ -45,14 +45,14 @@ export class ItemDetailComponent implements OnInit {
           },
           error: error => {
             console.error(`Item could not be retrieved from the backend: ${error.error.message}`);
-            this.router.navigate(['/digital-storage']);
+            this.router.navigate(['/digital-storage/1']);
             this.notification.error('Item could not be retrieved', "Error");
           }
         })
       },
       error: error => {
         console.error(`Item could not be retrieved using the ID from the URL: ${error.error.message}`);
-        this.router.navigate(['/digital-storage']);
+        this.router.navigate(['/digital-storage/1']);
         this.notification.error('Item could not be retrieved using ID from URL', "Error");
       }
     });
@@ -65,12 +65,12 @@ export class ItemDetailComponent implements OnInit {
   public delete() {
     this.service.deleteItem(this.item.itemId).subscribe({
       next: data => {
-        this.router.navigate(['/digital-storage']);
+        this.router.navigate(['/digital-storage/1']);
         this.notification.success(`Item ${this.item.itemId} was successfully deleted`, "Success");
       },
       error: error => {
         console.error(`Item could not be deleted: ${error.error.message}`);
-        this.router.navigate(['/digital-storage']);
+        this.router.navigate(['/digital-storage/1']);
         this.notification.error(error.error.message);
         this.notification.error(`Item ${this.item.itemId} could not be deleted`, "Error");
       }
