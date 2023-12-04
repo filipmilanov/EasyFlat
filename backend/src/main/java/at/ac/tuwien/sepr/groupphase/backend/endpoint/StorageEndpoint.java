@@ -61,7 +61,7 @@ public class StorageEndpoint {
     @PermitAll
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemListDto> getStorageItems(@PathVariable Long id, ItemSearchDto itemSearchDto) {
+    public List<ItemListDto> getStorageItems(@PathVariable Long id, ItemSearchDto itemSearchDto) throws ValidationException {
         LOGGER.info("getStorageItems({}, {})", id, itemSearchDto);
         return digitalStorageService.searchItems(id, itemSearchDto);
     }

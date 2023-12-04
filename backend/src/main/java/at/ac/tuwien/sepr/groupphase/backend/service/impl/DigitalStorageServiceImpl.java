@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
@@ -80,8 +81,9 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<ItemListDto> searchItems(Long id, ItemSearchDto searchItem) {
+    public List<ItemListDto> searchItems(Long id, ItemSearchDto searchItem) throws ValidationException {
         LOGGER.trace("searchItems({}, {})", id, searchItem);
+        digitalStorageValidator.validateForSearchItems(id, searchItem);
         Class alwaysInStock = null;
         if (searchItem.alwaysInStock() == null || !searchItem.alwaysInStock()) {
             alwaysInStock = Item.class;

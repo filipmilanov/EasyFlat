@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.validation.ConstraintViolation;
@@ -30,6 +31,14 @@ public class DigitalStorageValidator {
         checkDigitalStorageForCreate(digitalStorageDto);
     }
 
+    public void validateForSearchItems(Long id, ItemSearchDto itemSearchDto) throws ValidationException {
+        LOGGER.trace("validateForSearchItems({})", itemSearchDto);
+        Set<ConstraintViolation<ItemSearchDto>> validationViolations = validator.validate(itemSearchDto);
+        if (!validationViolations.isEmpty()) {
+            throw new ValidationException("Search Data is not valid", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+        }
+    }
+
     private void checkForDataValidation(DigitalStorageDto digitalStorageDto) throws ValidationException {
         LOGGER.trace("checkForDataValidation({})", digitalStorageDto);
 
@@ -46,6 +55,7 @@ public class DigitalStorageValidator {
             throw new ConflictException("Conflict with other data", List.of("The Id must be null"));
         }
     }
+
 
 
 }
