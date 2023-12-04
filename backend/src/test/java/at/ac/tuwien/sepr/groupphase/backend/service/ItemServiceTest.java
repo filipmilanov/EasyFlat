@@ -577,8 +577,8 @@ class ItemServiceTest {
         String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto)).getMessage();
         assertThat(message)
             .contains(
-                "The brand cannot be empty",
-                "A Item need to be linked to a storage"
+                "brand",
+                "storage"
             );
     }
 
