@@ -54,6 +54,27 @@ public record ItemDto(
         return this.alwaysInStock == null || !this.alwaysInStock || this.minimumQuantity != null;
     }
 
+    public ItemDto withId(long newId) {
+        return new ItemDto(
+            newId,
+            ean,
+            generalName,
+            productName,
+            brand,
+            quantityCurrent,
+            quantityTotal,
+            unit,
+            expireDate,
+            description,
+            priceInCent,
+            alwaysInStock,
+            minimumQuantity,
+            boughtAt,
+            digitalStorage,
+            ingredients,
+            itemStats
+        );
+    }
 
     public ItemDto withAlwaysInStock(Boolean alwaysInStock) {
         return new ItemDto(
@@ -76,7 +97,6 @@ public record ItemDto(
             itemStats
         );
     }
-
 
     @Override
     public String toString() {
