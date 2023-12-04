@@ -10,10 +10,7 @@ public record ItemSearchDto(
     Long itemId,
     Boolean alwaysInStock,
     String productName,
-    String brand,
     String fillLevel,
-    LocalDate expireDateStart,
-    LocalDate expireDateEnd,
     ItemOrderType orderType
 
 ) {

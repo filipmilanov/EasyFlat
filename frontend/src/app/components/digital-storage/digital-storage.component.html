@@ -10,47 +10,12 @@
            (change)="loadStorage()"
     >
   </div>
-  <div class="flex-grow-1">
-    <label for="searchBrand" class="col-form-label">
-      Brand
-    </label>
-    <input type="text" id="searchBrand" name="searchBrand"
-           class="form-control" [(ngModel)]="searchParameters.brand"
-           (change)="loadStorage()"
-    >
-  </div>
 
   <div class="ms-1">
-    <label for="ExpirationDateStart" class="col-form-label">
-      Expiration Date start
-    </label>
-
-    <input type="date" id="ExpirationDateStart" name="expirationDateStart"
-           pattern="\d{4}-\d{2}-\d{2}"
-           placeholder="yyyy-mm-dd"
-           class="form-control"
-           [(ngModel)]="searchParameters.expireDateStart"
-           (change)="loadStorage()"
-    >
-  </div>
-  <div class="ms-1">
-    <label for="ExpirationDateEnd" class="col-form-label">
-      Expiration Date end
-    </label>
-
-    <input type="date" id="ExpirationDateEnd" name="expirationDateEnd"
-           pattern="\d{4}-\d{2}-\d{2}"
-           placeholder="yyyy-mm-dd"
-           class="form-control"
-           [(ngModel)]="searchParameters.expireDateEnd"
-           (change)="loadStorage()"
-    >
-  </div>
-  <div class="ms-1">
-    <label for="searchBrand" class="col-form-label">
+    <label for="fillLevel" class="col-form-label">
       Fill level
     </label>
-    <select id="searchBradsnd" name="searchBrand"
+    <select id="fillLevel" name="fillLevel"
             class="form-select" [(ngModel)]="searchParameters.fillLevel"
             (change)="loadStorage()"
     >

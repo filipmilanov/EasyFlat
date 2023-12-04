@@ -124,17 +124,13 @@ class StorageEndpointTest {
         String endpointUrl = BASE_URI + "/" + storageId;
 
         // when
-        ItemSearchDto itemSearchDto = new ItemSearchDto(null, false, null, null, null, null, null, null);
+        ItemSearchDto itemSearchDto = new ItemSearchDto(null, false, null, null,null);
 
         MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES))
                 .param("alwaysInStock", String.valueOf(itemSearchDto.alwaysInStock()))
-                .param("productName", itemSearchDto.productName())
-                .param("brand", itemSearchDto.brand())
-                .param("fillLevel", itemSearchDto.fillLevel())
-                .param("expireDateStart", itemSearchDto.expireDateStart() != null ? itemSearchDto.expireDateStart().toString() : null)
-                .param("expireDateEnd", itemSearchDto.expireDateEnd() != null ? itemSearchDto.expireDateEnd().toString() : null))
+                .param("productName", itemSearchDto.productName()))
             .andDo(print())
             .andReturn();
 

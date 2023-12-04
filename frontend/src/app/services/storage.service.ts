@@ -21,15 +21,6 @@ export class StorageService {
     if (searchParameters.productName) {
       params = params.append('productName', searchParameters.productName);
     }
-    if (searchParameters.brand) {
-      params = params.append('brand', searchParameters.brand);
-    }
-    if (searchParameters.expireDateStart) {
-      params = params.append('expireDateStart', searchParameters.expireDateStart);
-    }
-    if (searchParameters.expireDateEnd) {
-      params = params.append('expireDateEnd', searchParameters.expireDateEnd);
-    }
     if (searchParameters.fillLevel) {
       params = params.append('fillLevel', searchParameters.fillLevel);
     }

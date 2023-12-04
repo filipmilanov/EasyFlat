@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ItemSearchDto, StorageItem, StorageItemListDto} from "../../../dtos/storageItem";
+import {StorageItem, StorageItemListDto} from "../../../dtos/storageItem";
 import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
 
@@ -10,7 +10,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class ItemDetailListComponent implements OnInit {
   item: StorageItemListDto;
-  itemGeneralName:string;
+  itemGeneralName: string;
   items: StorageItem[];
 
 
@@ -28,17 +28,17 @@ export class ItemDetailListComponent implements OnInit {
         this.itemGeneralName = params.name;
 
 
-        this.storageService.getItemsWithGenaralName(this.itemGeneralName,storId).subscribe({
-            next: res => {
-              this.items = res;
-            },
-            error: err => {
-              console.error("Error finding items:", err);
-            }
+        this.storageService.getItemsWithGenaralName(this.itemGeneralName, storId).subscribe({
+          next: res => {
+            this.items = res;
+          },
+          error: err => {
+            console.error("Error finding items:", err);
+          }
         });
       },
       error: error => {
-
+        console.error("Error fetching parameters:", error);
       }
     });
 

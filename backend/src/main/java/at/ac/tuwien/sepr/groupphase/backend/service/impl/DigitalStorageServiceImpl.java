@@ -93,9 +93,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         List<Item> allItems = digitalStorageRepository.searchItems(
             id,
             (searchItem.productName() != null) ? searchItem.productName() : null,
-            (searchItem.brand() != null) ? searchItem.brand() : null,
-            (searchItem.expireDateStart() != null) ? searchItem.expireDateStart() : null,
-            (searchItem.expireDateEnd() != null) ? searchItem.expireDateEnd() : null,
             (searchItem.fillLevel() != null) ? searchItem.fillLevel() : null,
             alwaysInStock
         );
