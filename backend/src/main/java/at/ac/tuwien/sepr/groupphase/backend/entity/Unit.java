@@ -21,8 +21,12 @@ public class Unit {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Unit unit1 = (Unit) o;
         return Objects.equals(unit, unit1.unit);
     }
