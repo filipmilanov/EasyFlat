@@ -1,8 +1,7 @@
 <div class="container ">
   <h1 class="display-4">Scan the product</h1>
   <div style="width: 100%; height: 100%; border: 1px black solid"></div>
-  <div class="row row-cols-4">
-
+    <div class="row row-cols-4">
   </div>
 </div>
 
@@ -29,21 +28,7 @@
                  [(ngModel)]="item.ean">
         </div>
       </div>
-      <div class="row p-2">
-        <label for="productName"
-               class="col-form-label text-muted col-md-2 col-lg-4"
-        >
-          Product Name
-        </label>
-        <div class="col-md-10 col-lg-8">
-          <input type="text"
-                 class="form-control"
-                 id="productName"
-                 name="productName"
-                 placeholder="Product Name"
-                 [(ngModel)]="item.productName">
-        </div>
-      </div>
+
       <div class="row p-2">
         <label for="generalName"
                class="col-form-label text-muted col-md-2 col-lg-4"
@@ -57,6 +42,22 @@
                  name="generalName"
                  placeholder="General Name"
                  [(ngModel)]="item.generalName">
+        </div>
+      </div>
+
+      <div class="row p-2">
+        <label for="productName"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Product Name
+        </label>
+        <div class="col-md-10 col-lg-8">
+          <input type="text"
+                 class="form-control"
+                 id="productName"
+                 name="productName"
+                 placeholder="Product Name"
+                 [(ngModel)]="item.productName">
         </div>
       </div>
 
@@ -227,7 +228,7 @@
       </div>
 
       <div class="row p-2">
-        <label for="broughtAt"
+        <label for="boughtAt"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
           Brought At
@@ -235,8 +236,8 @@
         <div class="col-md-10 col-lg-8">
           <input type="text"
                  class="form-control"
-                 id="broughtAt"
-                 name="broughtAt"
+                 id="boughtAt"
+                 name="boughtAt"
                  placeholder="Bought At"
                  [(ngModel)]="item.boughtAt">
         </div>
