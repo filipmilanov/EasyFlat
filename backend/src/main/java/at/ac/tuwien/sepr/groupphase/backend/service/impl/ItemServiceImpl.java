@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemStatsRepository;
@@ -15,6 +16,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,6 +64,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public Item create(ItemDto itemDto) throws ConflictException, ValidationException {
         LOGGER.trace("create({})", itemDto);
 
@@ -95,6 +97,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public Item update(ItemDto itemDto) throws ConflictException, ValidationException {
         LOGGER.trace("update({})", itemDto);
 
@@ -103,6 +106,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
+        Item presistedItem = this.findById(itemDto.itemId()).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         itemValidator.validateForUpdate(itemDto, digitalStorageList);
 
         List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
@@ -112,6 +116,11 @@ public class ItemServiceImpl implements ItemService {
             item = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null);
         } else {
             item = itemMapper.dtoToEntity(itemDto, ingredientList, null);
+        }
+
+        // necessary because JPA cannot convert an Entity to another Entity
+        if (item.alwaysInStock() != presistedItem.alwaysInStock()) {
+            this.delete(itemDto.itemId());
         }
 
         Item updatedItem = itemRepository.save(item);
