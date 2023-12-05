@@ -15,7 +15,7 @@
     <tr *ngFor="let item1 of items" class="center-td" >
       <td>{{ item1.productName }}</td>
       <td>{{ item1.expireDate | date:'short' }}</td>
-      <td>{{ item1.quantityCurrent }}</td>
+      <td>{{ item1.quantityCurrent }}/{{item1.quantityTotal}} {{item1.unit}}</td>
       <td>
         <button type="button" class="btn text-bg-dark custom-btn me-2" [routerLink]="[item1.itemId,'detail']" (click)="toggleCustomModal()">
           info
