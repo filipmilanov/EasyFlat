@@ -14,7 +14,7 @@
     <tbody>
     <tr *ngFor="let item of items" class="center-td" >
       <td>{{ item.productName }}</td>
-      <td>{{ item.expireDate | date:'short' }}</td>
+      <td>{{ item.expireDate | date:'dd/MM/yy, h:mm a' }}</td>
       <td>{{ item.quantityCurrent }}/{{item.quantityTotal}} {{item.unit}}</td>
       <td>
         <div style="position: relative; display: inline-block; z-index: 1;">
