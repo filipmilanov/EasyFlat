@@ -12,6 +12,14 @@ import {LoginComponent} from './components/login/login.component';
 import {MessageComponent} from './components/message/message.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
+import {DigitalStorageComponent} from './components/digital-storage/digital-storage.component';
+import {ItemCardComponent} from './components/digital-storage/item-card/item-card.component';
+import {ItemCreateEditComponent} from './components/digital-storage/item-create-edit/item-create-edit.component';
+import {ItemDetailComponent} from './components/digital-storage/item-detail/item-detail.component';
+import {ToastrModule} from "ngx-toastr";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {AutocompleteComponent} from './components/utils/autocomplete/autocomplete.component';
+import { ItemDetailListComponent } from './components/digital-storage/item-detail-list/item-detail-list.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +29,12 @@ import {httpInterceptorProviders} from './interceptors';
     HomeComponent,
     LoginComponent,
     MessageComponent,
+    DigitalStorageComponent,
+    ItemCardComponent,
+    ItemCreateEditComponent,
+    ItemDetailComponent,
+    AutocompleteComponent,
+    ItemDetailListComponent,
   ],
   imports: [
     BrowserModule,
@@ -29,9 +43,12 @@ import {httpInterceptorProviders} from './interceptors';
     HttpClientModule,
     NgbModule,
     FormsModule,
+    ToastrModule.forRoot(),
+    BrowserAnimationsModule,
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
 })
+
 export class AppModule {
 }
