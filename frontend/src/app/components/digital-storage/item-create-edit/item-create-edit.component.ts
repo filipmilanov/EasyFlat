@@ -105,13 +105,13 @@ export class ItemCreateEditComponent implements OnInit{
 
   public onSubmit(form: NgForm): void {
     this.item.priceInCent = this.priceInEuro * 100;
-    this.item.quantityCurrent = this.item.quantityTotal;
     console.log('is form valid?', form.valid, this.item);
 
     if (form.valid) {
       let observable: Observable<ItemDto>;
       switch (this.mode) {
         case ItemCreateEditMode.create:
+          this.item.quantityCurrent = this.item.quantityTotal;
           observable = this.itemService.createItem(this.item);
           break;
         case ItemCreateEditMode.edit:
