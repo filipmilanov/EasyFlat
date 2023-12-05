@@ -91,7 +91,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             alwaysInStock = AlwaysInStockItem.class;
         }
 
-
         List<Item> allItems = digitalStorageRepository.searchItems(
             id,
             (searchItem.productName() != null) ? searchItem.productName() : null,
@@ -99,28 +98,8 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             alwaysInStock
         );
 
-        Map<String, Long[]> items = new HashMap<>();
-        Map<String, String> itemUnits = new HashMap<>();
-        for (Item item : allItems) {
-            itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit());
-            long currentQ = 0;
-            long totalQ = 0;
-            if (items.get(item.getGeneralName()) != null) {
-                currentQ = items.get(item.getGeneralName())[0];
-                totalQ = items.get(item.getGeneralName())[2];
-            }
-            Long[] quantityStorId = new Long[3];
-            quantityStorId[0] = currentQ + item.getQuantityCurrent();
-            quantityStorId[1] = item.getStorage().getStorId();
-            quantityStorId[2] = totalQ + item.getQuantityTotal();
-            items.put(item.getGeneralName(), quantityStorId);
-        }
-        List<ItemListDto> toRet = new LinkedList<>();
-        for (Map.Entry<String, Long[]> item : items.entrySet()) {
-            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1], itemUnits.get(item.getKey())));
-        }
 
-        return toRet;
+        return prepareListItemsForStorage(allItems);
     }
 
     private static Comparator<Item> itemComparator(ItemSearchDto searchItem) {
@@ -187,5 +166,29 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     @Override
     public List<Item> getItemWithGeneralName(String name, Long storId) {
         return digitalStorageRepository.getItemWithGeneralName(storId, name);
+    }
+
+    private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) {
+        Map<String, Long[]> items = new HashMap<>();
+        Map<String, String> itemUnits = new HashMap<>();
+        for (Item item : allItems) {
+            itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit());
+            long currentQ = 0;
+            long totalQ = 0;
+            if (items.get(item.getGeneralName()) != null) {
+                currentQ = items.get(item.getGeneralName())[0];
+                totalQ = items.get(item.getGeneralName())[2];
+            }
+            Long[] quantityStorId = new Long[3];
+            quantityStorId[0] = currentQ + item.getQuantityCurrent();
+            quantityStorId[1] = item.getStorage().getStorId();
+            quantityStorId[2] = totalQ + item.getQuantityTotal();
+            items.put(item.getGeneralName(), quantityStorId);
+        }
+        List<ItemListDto> toRet = new LinkedList<>();
+        for (Map.Entry<String, Long[]> item : items.entrySet()) {
+            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1], itemUnits.get(item.getKey())));
+        }
+        return toRet;
     }
 }

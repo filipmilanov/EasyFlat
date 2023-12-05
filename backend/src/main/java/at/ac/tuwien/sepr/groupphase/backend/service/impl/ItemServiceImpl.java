@@ -95,7 +95,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item update(ItemDto itemDto) throws ConflictException {
+    public Item update(ItemDto itemDto) throws ConflictException, ValidationException {
         LOGGER.trace("update({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
@@ -103,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
-        itemValidator.checkItemForUpdate(itemDto, digitalStorageList);
+        itemValidator.validateForUpdate(itemDto, digitalStorageList);
 
         List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
 

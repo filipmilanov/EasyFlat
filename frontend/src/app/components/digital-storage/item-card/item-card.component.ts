@@ -26,27 +26,13 @@ export class ItemCardComponent {
   constructor(private el: ElementRef, private digitalStorage: DigitalStorageComponent, private storageService: StorageService,
               private itemService: ItemService) {}
 
-  // getCardColor(): string {
-  //   const ratio = this.quantity / this.maxQuantity;
-  //   if (ratio < 0.2) return 'bg-danger'; // Low quantity
-  //   if (ratio < 0.4) return 'bg-warning'; // Medium quantity
-  //   return 'bg-primary'; // High quantity
-  // }
-
-  // Method to open/close the custom modal
-  toggleCustomModal() {
-    this.customModalOpen = !this.customModalOpen;
-    if (this.customModalOpen == true) {
-      this.customModalOpen1 = false;
-    }
+  getCardColor(): string {
+    const ratio = this.quantity / this.quantityTotal;
+    if (ratio < 0.2) return 'bg-danger'; // Low quantity
+    if (ratio < 0.4) return 'bg-warning'; // Medium quantity
+    return 'bg-primary'; // High quantity
   }
 
-  toggleCustomModal1() {
-    this.customModalOpen1 = !this.customModalOpen1;
-    if (this.customModalOpen1 == true) {
-      this.customModalOpen = false;
-    }
-  }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
