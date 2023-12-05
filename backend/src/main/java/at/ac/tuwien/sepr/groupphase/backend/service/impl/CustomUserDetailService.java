@@ -1,8 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
@@ -20,20 +24,26 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CustomUserDetailService implements UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final UserRepository userRepository;
+    private final SharedFlatRepository sharedFlatRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenizer jwtTokenizer;
+    private final UserMapper userMapper;
 
     @Autowired
-    public CustomUserDetailService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenizer jwtTokenizer) {
+    public CustomUserDetailService(UserRepository userRepository, SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder, JwtTokenizer jwtTokenizer,
+                                   UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenizer = jwtTokenizer;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -82,4 +92,86 @@ public class CustomUserDetailService implements UserService {
         }
         throw new BadCredentialsException("Username or password is incorrect or account is locked");
     }
+
+    @Override
+    public String register(UserDetailDto userDetailDto) {
+        LOGGER.debug("Registering a new user");
+
+        if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
+            throw new BadCredentialsException("User with this email already exists");
+        }
+
+        ApplicationUser newUser = new ApplicationUser();
+        newUser.setFirstName(userDetailDto.getFirstName());
+        newUser.setLastName(userDetailDto.getLastName());
+        newUser.setEmail(userDetailDto.getEmail());
+        newUser.setPassword(passwordEncoder.encode(userDetailDto.getPassword()));
+        newUser.setAdmin(false);
+        userRepository.save(newUser);
+
+        UserDetails userDetails = loadUserByUsername(userDetailDto.getEmail());
+        if (userDetails != null) {
+            List<String> roles = userDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+            return jwtTokenizer.getAuthToken(userDetails.getUsername(), roles);
+        }
+
+        throw new BadCredentialsException("Failed to register the user");
+    }
+
+    @Override
+    public UserDetailDto getUser(String authToken) {
+        String email = jwtTokenizer.getEmailFromToken(authToken);
+        ApplicationUser user = userRepository.findUserByEmail(email);
+        return userMapper.entityToUserDetailDto(user);
+    }
+
+    @Override
+    public UserDetailDto update(UserDetailDto userDetailDto) {
+        if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
+            ApplicationUser user = userRepository.findUserByEmail(userDetailDto.getEmail());
+            user.setFirstName(userDetailDto.getFirstName());
+            user.setLastName(userDetailDto.getLastName());
+            user.setEmail(userDetailDto.getEmail());
+            user.setSharedFlat(user.getSharedFlat());
+            if (userDetailDto.getPassword().length() >= 8) {
+                user.setPassword(passwordEncoder.encode(userDetailDto.getPassword()));
+            }
+            ApplicationUser returnUser = userRepository.save(user);
+            return userMapper.entityToUserDetailDto(returnUser);
+        }
+        throw new BadCredentialsException("User with this email doesn't exists");
+    }
+
+    @Override
+    public UserDetailDto delete(String email) {
+        if (userRepository.findUserByEmail(email) != null) {
+            ApplicationUser deletedUser = userRepository.findUserByEmail(email);
+            userRepository.delete(deletedUser);
+            return userMapper.entityToUserDetailDto(deletedUser);
+        }
+        throw new BadCredentialsException("User with this email doesn't exists");
+    }
+
+    @Override
+    public UserDetailDto signOut(String flatName, String authToken) {
+        String userEmail = jwtTokenizer.getEmailFromToken(authToken);
+        ApplicationUser user = userRepository.findUserByEmail(userEmail);
+        SharedFlat userFlat = user.getSharedFlat();
+        if (userFlat == null) {
+            throw new BadCredentialsException("");
+        }
+
+        if (userFlat.getName().equals(flatName)) {
+            user.setSharedFlat(null);
+            ApplicationUser updatedUser = userRepository.save(user);
+
+            return userMapper.entityToUserDetailDto(updatedUser);
+        }
+        throw new BadCredentialsException("");
+
+    }
+
 }

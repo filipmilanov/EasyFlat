@@ -1,0 +1,56 @@
+<div *ngIf="error" class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>Authentication problems!</strong> {{ errorMessage }}
+  <button type="button" (click)="vanishError()" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="pt-5">
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <span class="anchor" id="formRegister"></span>
+
+      <div class="card rounded-0">
+        <div class="card-header">
+          <h3 class="mb-0">Create Shared Flat</h3>
+        </div>
+
+        <div class="card-body">
+          <form class="form" [formGroup]="createForm" (ngSubmit)="createWG()" >
+
+            <div class="form-group">
+              <label for="name">Flat name</label>
+              <input type="text" name="name" formControlName="name" class="form-control" id="name"
+                     aria-describedby="nameHelp" placeholder="Enter flat name">
+              <div *ngIf="submitted && createForm.controls.name.errors" class="error">
+                <small class="form-text text-warning" *ngIf="createForm.controls.name.errors?.required">Your first name is
+                  required!
+                </small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" name="password" formControlName="password" class="form-control" id="password"
+                     placeholder="Password">
+              <div *ngIf="submitted && createForm.controls.password.errors" class="error">
+                <small class="form-text text-warning" *ngIf="createForm.controls.password.errors?.required">Your password
+                  is
+                  required!
+                </small>
+                <small class="form-text text-warning" *ngIf="createForm.controls.password.errors?.minlength">Your password
+                  must be at least 8 characters long!
+                </small>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-success float-right">Create</button>
+
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
