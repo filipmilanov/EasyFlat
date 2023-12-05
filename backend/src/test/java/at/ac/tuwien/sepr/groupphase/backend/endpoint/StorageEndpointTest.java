@@ -10,7 +10,6 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.Arrays;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
@@ -124,7 +125,7 @@ class StorageEndpointTest {
         String endpointUrl = BASE_URI + "/" + storageId;
 
         // when
-        ItemSearchDto itemSearchDto = new ItemSearchDto(null, false, null, null,null);
+        ItemSearchDto itemSearchDto = new ItemSearchDto(null, false, null, null, null);
 
         MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -142,28 +143,71 @@ class StorageEndpointTest {
     }
 
     @Test
-    @Disabled("This test does not make sense, if we do not have a working test suite (and its not finished yet)")
-    public void givenStorageIdAndSearchParametersAndOrderTypeWhenGetItemsThenItemsRetrievedInCorrectOrder(ItemOrderType orderType) throws Exception {
+    public void givenStorageIdAndOrderTypeNameWhenGetItemsThenItemsRetrievedInCorrectOrder() throws Exception {
         // Given
         Long storageId = 1L;
         String endpointUrl = BASE_URI + "/" + storageId;
 
 
         ItemSearchDto itemSearchDto = ItemSearchDtoBuilder.builder()
-            .orderType(orderType)
+            .alwaysInStock(false)
+            .orderType(ItemOrderType.PRODUCT_NAME)
             .build();
 
         MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES))
-                .param("orderType", itemSearchDto.orderType().name()))
+                .param("alwaysInStock", String.valueOf(itemSearchDto.alwaysInStock()))
+                .param("orderType", itemSearchDto.orderType().toString()))
             .andDo(print())
             .andReturn();
 
         // Assertions
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus()),
-            () -> assertNotNull(mvcResult.getResponse())
+            () -> assertNotNull(mvcResult.getResponse()),
+            () -> assertThat(mvcResult.getResponse()
+                .getContentAsString()
+                .substring(1, mvcResult.getResponse().getContentAsString().length() - 1)
+                .split("\\{\"generalName\"")
+            ).isSorted()
+        );
+    }
+
+    @Test
+    public void givenStorageIdAndOrderTypeQuantityWhenGetItemsThenItemsRetrievedInCorrectOrder() throws Exception {
+        // Given
+        Long storageId = 1L;
+        String endpointUrl = BASE_URI + "/" + storageId;
+
+
+        ItemSearchDto itemSearchDto = ItemSearchDtoBuilder.builder()
+            .alwaysInStock(false)
+            .orderType(ItemOrderType.QUANTITY_CURRENT)
+            .build();
+
+        MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES))
+                .param("alwaysInStock", String.valueOf(itemSearchDto.alwaysInStock()))
+                .param("orderType", itemSearchDto.orderType().toString()))
+            .andDo(print())
+            .andReturn();
+
+        // Assertions
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus()),
+            () -> assertNotNull(mvcResult.getResponse()),
+            () -> assertThat(Arrays.stream(mvcResult.getResponse()
+                    .getContentAsString()
+                    .substring(1, mvcResult.getResponse().getContentAsString().length() - 1)
+                    .split("\\{\"generalName\""))
+                .filter(s -> !s.isEmpty())
+                .map((s) -> {
+                    return Integer.parseInt(s.substring(s.indexOf("\"quantityCurrent\"") + 18, s.indexOf(",\"quantityTotal\"")));
+                })
+                .toArray(Integer[]::new)
+            ).isSorted()
         );
     }
 
