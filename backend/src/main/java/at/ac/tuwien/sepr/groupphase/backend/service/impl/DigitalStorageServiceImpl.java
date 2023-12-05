@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -98,42 +97,33 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             alwaysInStock
         );
 
-
-        return prepareListItemsForStorage(allItems);
-    }
-
-    private static Comparator<Item> itemComparator(ItemSearchDto searchItem) {
-        return (item1, item2) -> {
+        List<ItemListDto> groupedItems = prepareListItemsForStorage(allItems);
+        return groupedItems.stream().sorted((g1, g2) -> {
             if (searchItem.orderType() == null) {
                 return 0;
             }
-            if (searchItem.orderType() == ItemOrderType.EXPIRE_DATE) {
-                if (item1.getExpireDate() == null) {
+            if (searchItem.orderType() == ItemOrderType.QUANTITY_CURRENT) {
+                if (g1.quantityCurrent() == null) {
                     return -1;
                 }
-                if (item2.getExpireDate() == null) {
+                if (g2.quantityCurrent() == null) {
                     return 1;
                 }
-                return item1.getExpireDate().compareTo(item2.getExpireDate());
-            } else if (searchItem.orderType() == ItemOrderType.QUANTITY_CURRENT) {
-                if (item1.getQuantityCurrent() == null) {
+                return g1.quantityCurrent().compareTo(g2.quantityCurrent());
+            } else if (searchItem.orderType() == ItemOrderType.PRODUCT_NAME) {
+                if (g1.generalName() == null) {
+                    return 1;
+                }
+                if (g2.generalName() == null) {
                     return -1;
                 }
-                if (item2.getQuantityCurrent() == null) {
-                    return 1;
-                }
-                return item1.getQuantityCurrent().compareTo(item2.getQuantityCurrent());
+                return g1.generalName().compareTo(g2.generalName());
             } else {
-                if (item1.getProductName() == null) {
-                    return -1;
-                }
-                if (item2.getProductName() == null) {
-                    return 1;
-                }
-                return item2.getProductName().compareTo(item1.getProductName());
+                return 0;
             }
-        };
+        }).toList();
     }
+
 
     @Override
     public DigitalStorage create(DigitalStorageDto storageDto) throws ConflictException, at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException {
@@ -191,4 +181,5 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
         return toRet;
     }
+
 }
