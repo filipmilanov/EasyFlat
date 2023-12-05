@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {mapToCanActivate, RouterModule, Routes} from '@angular/router';
 import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
 import {DigitalStorageComponent} from "./components/digital-storage/digital-storage.component";
@@ -30,7 +30,7 @@ const routes: Routes = [
               {path: ':id/edit', component: ItemCreateEditComponent, data: {mode: ItemCreateEditMode.edit}},
             ]}
         ]}
-  ]}
+  ]},
   {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'account', component: AccountComponent},
