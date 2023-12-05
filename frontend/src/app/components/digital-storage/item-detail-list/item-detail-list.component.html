@@ -7,26 +7,23 @@
       <th scope="col">Name</th>
       <th scope="col">Expire Date</th>
       <th scope="col">Quantity</th>
-      <th scope="col">Details</th>
       <th scope="col">Change quantity</th>
+      <th scope="col">Actions</th>
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let item1 of items" class="center-td" >
-      <td>{{ item1.productName }}</td>
-      <td>{{ item1.expireDate | date:'short' }}</td>
-      <td>{{ item1.quantityCurrent }}/{{item1.quantityTotal}} {{item1.unit}}</td>
-      <td>
-        <button type="button" class="btn text-bg-dark custom-btn me-2" [routerLink]="[item1.itemId,'detail']" (click)="toggleCustomModal()">
-          info
-        </button>
-      </td>
+    <tr *ngFor="let item of items" class="center-td" >
+      <td>{{ item.productName }}</td>
+      <td>{{ item.expireDate | date:'short' }}</td>
+      <td>{{ item.quantityCurrent }}/{{item.quantityTotal}} {{item.unit}}</td>
       <td>
         <div style="position: relative; display: inline-block; z-index: 1;">
-          <!-- Button Triggering Custom Modal -->
-          <button type="button" class="btn text-bg-dark custom-btn me-2" (click)="toggleCustomModal()">
+          <!-- Link Triggering Custom Modal -->
+          <a class="btn btn-sm btn-danger me-2"
+             (click)="toggleCustomModal()"
+             aria-label="Decrement item">
             -
-          </button>
+          </a>
 
           <!-- Custom Modal with Text Input -->
           <div *ngIf="customModalOpen" class="custom-modal"
@@ -34,20 +31,22 @@
             <div class="row">
               <div class="col">
                 Subtract Quantity:
-                <input type="number" class="form-control" min=0  [max]="item1.quantityCurrent" #quantityInput>
+                <input type="number" class="form-control" min=0  [max]="item.quantityCurrent" #quantityInput>
               </div>
               <div class="col">
-                <button type="button" class="btn btn-primary btn-sm" style="width: 100%" (click)="onSave(item1.itemId, quantityInput.value, 0)">✓</button>
+                <button type="button" class="btn btn-sm btn-primary" style="width: 100%" (click)="onSave(item.itemId, quantityInput.value, 0)">✓</button>
               </div>
             </div>
           </div>
         </div>
 
         <div style="position: relative; display: inline-block; z-index: 1;">
-          <!-- Button Triggering Custom Modal -->
-          <button type="button" class="btn text-bg-dark custom-btn" (click)="toggleCustomModal1()">
+          <!-- Link Triggering Custom Modal -->
+          <a class="btn btn-sm btn-success"
+             (click)="toggleCustomModal1()"
+             aria-label="Increment item">
             +
-          </button>
+          </a>
 
           <!-- Custom Modal with Text Input -->
           <div *ngIf="customModalOpen1" class="custom-modal"
@@ -58,10 +57,33 @@
                 <input type="number" class="form-control" min=0 #quantityInput>
               </div>
               <div class="col">
-                <button type="button" class="btn btn-primary btn-sm" style="width: 100%" (click)="onSave(item1.itemId, quantityInput.value + '', 1)">✓</button>
+                <a class="btn btn-sm btn-primary" style="width: 100%" (click)="onSave(item.itemId, quantityInput.value + '', 1)">✓</a>
               </div>
             </div>
           </div>
+        </div>
+      </td>
+
+      <td>
+        <div class="btn-group">
+          <a class="btn btn-sm btn-primary"
+             [routerLink]="[item.itemId, 'detail']"
+             aria-label="Show item details">
+            <i class="bi bi-info-lg"></i>
+            Details
+          </a>
+          <a class="btn btn-sm btn-warning"
+             [routerLink]="[item.itemId, 'edit']"
+             aria-label="Edit item">
+            <i class="bi bi-pencil"></i>
+            Edit
+          </a>
+          <a class="btn btn-sm btn-danger"
+             (click)="delete(parseInt(item.itemId))"
+             aria-label="Delete item">
+            <i class="bi bi-trash"></i>
+            Delete
+          </a>
         </div>
       </td>
     </tr>

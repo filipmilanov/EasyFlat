@@ -4,6 +4,7 @@ import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ItemDto} from "../../../dtos/item";
 import {ItemService} from "../../../services/item.service";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-item-detail-list',
@@ -11,7 +12,6 @@ import {ItemService} from "../../../services/item.service";
   styleUrls: ['./item-detail-list.component.scss']
 })
 export class ItemDetailListComponent implements OnInit {
-  item: StorageItemListDto;
   itemGeneralName: string;
   items: StorageItem[];
 
@@ -19,8 +19,8 @@ export class ItemDetailListComponent implements OnInit {
   customModalOpen1: boolean = false;
 
   constructor(private storageService: StorageService, private router: Router,
-              private route: ActivatedRoute, private itemService: ItemService, private el: ElementRef) {
-
+              private route: ActivatedRoute, private itemService: ItemService, private el: ElementRef,
+              private notification: ToastrService) {
   }
 
   ngOnInit() {
@@ -126,4 +126,21 @@ export class ItemDetailListComponent implements OnInit {
     });
 
   }
+
+  public delete(itemId: number) {
+    this.itemService.deleteItem(itemId).subscribe({
+      next: data => {
+        this.router.navigate(['/digital-storage/1']);
+        this.notification.success(`Item ${this.items[itemId]} was successfully deleted`, "Success");
+      },
+      error: error => {
+        console.error(`Item could not be deleted: ${error.error.message}`);
+        this.router.navigate(['/digital-storage/1']);
+        this.notification.error(error.error.message);
+        this.notification.error(`Item ${this.items[itemId]} could not be deleted`, "Error");
+      }
+    });
+  }
+
+  protected readonly parseInt = parseInt;
 }
