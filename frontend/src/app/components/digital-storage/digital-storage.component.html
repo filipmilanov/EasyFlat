@@ -19,7 +19,7 @@
             class="form-select" [(ngModel)]="searchParameters.fillLevel"
             (change)="loadStorage()"
     >
-      <option></option>
+      <option value="" selected>Any</option>
       <option value="full">High quantity</option>
       <option value="nearly_empty">Medium quantity</option>
       <option value="empty">Low quantity</option>
