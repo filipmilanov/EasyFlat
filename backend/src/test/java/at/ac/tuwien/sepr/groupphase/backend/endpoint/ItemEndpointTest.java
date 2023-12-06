@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
@@ -10,7 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,11 +54,18 @@ class ItemEndpointTest {
     @Autowired
     private SecurityProperties securityProperties;
 
+    @Autowired
+    private TestDataGenerator testDataGenerator;
+
     private final String BASE_URI = "/api/v1/item";
 
+    @BeforeEach
+    private void cleanUp() {
+        testDataGenerator.cleanUp();
+    }
 
     @Test
-    @Disabled("This test is not working because of it depends on previous tests")
+//    @Disabled("This test is not working because of it depends on previous tests")
     public void givenItemWhenCreateThenItemIsCreated() throws Exception {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()

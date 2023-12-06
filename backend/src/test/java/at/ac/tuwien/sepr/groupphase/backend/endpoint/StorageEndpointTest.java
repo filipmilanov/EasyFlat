@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
@@ -10,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +63,15 @@ class StorageEndpointTest {
     private SecurityProperties securityProperties;
 
 
+    @Autowired
+    private TestDataGenerator testDataGenerator;
+
     private final String BASE_URI = "/api/v1/storage";
 
+    @BeforeEach
+    private void cleanUp() {
+        testDataGenerator.cleanUp();
+    }
 
     @Test
     public void givenStorageWhenCreateThenStorageCreated() throws Exception {

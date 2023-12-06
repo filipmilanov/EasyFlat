@@ -24,7 +24,7 @@ public class IngredientsDataGenerator {
     }
 
     @PostConstruct
-    private void generateDigitalStorages() {
+    public void generateDigitalStorages() {
         LOGGER.debug("generating {} Ingredients", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
 
