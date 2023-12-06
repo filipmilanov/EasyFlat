@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,6 +27,9 @@ public class SharedFlat {
     private Set<ApplicationUser> users = new HashSet<>();
     @OneToMany
     private List<Expense> expenses = new ArrayList<>();
+
+    @OneToOne
+    private DigitalStorage digitalStorage;
 
     public SharedFlat() {
     }
