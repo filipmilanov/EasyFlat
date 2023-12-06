@@ -25,7 +25,7 @@ public class SharedFlat {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sharedFlat")
     private Set<ApplicationUser> users = new HashSet<>();
 
-    @OneToOne
+    @OneToOne(mappedBy = "sharedFlat")
     private DigitalStorage digitalStorage;
 
     public SharedFlat() {
@@ -69,6 +69,9 @@ public class SharedFlat {
 
     public void setDigitalStorage(DigitalStorage digitalStorage) {
         this.digitalStorage = digitalStorage;
+        if (digitalStorage != null) {
+            digitalStorage.setSharedFlat(this);
+        }
     }
 
     @Override

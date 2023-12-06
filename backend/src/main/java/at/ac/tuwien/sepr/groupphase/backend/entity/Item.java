@@ -19,6 +19,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -75,10 +76,10 @@ public class Item {
     private DigitalStorage digitalStorage;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Ingredient> ingredientList;
+    private List<Ingredient> ingredientList = new ArrayList<>();
 
     @OneToMany
-    private List<ItemStats> itemStats;
+    private List<ItemStats> itemStats = new ArrayList<>();
 
     @AssertTrue(message = "The current quantity cannot be larger then the total")
     private boolean quantityCurrentLessThenTotal() {
@@ -187,6 +188,11 @@ public class Item {
 
     public void setStorage(DigitalStorage digitalStorage) {
         this.digitalStorage = digitalStorage;
+        if (digitalStorage.getItemList() == null) {
+            List<Item> itemList = digitalStorage.getItemList();
+            itemList.add(this);
+            digitalStorage.setItemList(itemList);
+        }
     }
 
     public List<Ingredient> getIngredientList() {
