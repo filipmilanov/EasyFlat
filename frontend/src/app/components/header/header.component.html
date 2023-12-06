@@ -23,6 +23,11 @@
         <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/cookbook" routerLinkActive="active">Cookbook</a>
       </li>
     </ul>
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/cooking" routerLinkActive="active">Cooking</a>
+      </li>
+    </ul>
     <ul class="navbar-nav mr-5">
       <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/login" routerLinkActive="active">Login</a>
       <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/register" routerLinkActive="active">Register</a>

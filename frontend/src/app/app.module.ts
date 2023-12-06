@@ -33,6 +33,8 @@ import { RecipeDetailComponent } from './components/cooking/recipe-detail/recipe
 import { CookbookCreateComponent } from './components/cookbook/cookbook-create/cookbook-create.component';
 import { CookbookDetailComponent } from './components/cookbook/cookbook-detail/cookbook-detail.component';
 import { CookbookModalComponent } from './components/cookbook/cookbook-modal/cookbook-modal.component';
+import { CookingComponent } from './components/cooking/cooking.component';
+import { RecipeCardComponent } from './components/cooking/recipe-card/recipe-card.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +62,8 @@ import { CookbookModalComponent } from './components/cookbook/cookbook-modal/coo
     CookbookCreateComponent,
     CookbookDetailComponent,
     CookbookModalComponent,
+    CookingComponent,
+    RecipeCardComponent,
   ],
   imports: [
     BrowserModule,
