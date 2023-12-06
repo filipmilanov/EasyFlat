@@ -1,5 +1,5 @@
 import {Component, ElementRef, HostListener, OnInit} from '@angular/core';
-import {ItemSearchDto, StorageItem, StorageItemListDto} from "../../../dtos/storageItem";
+import {StorageItem} from "../../../dtos/storageItem";
 import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ItemDto} from "../../../dtos/item";
@@ -99,7 +99,6 @@ export class ItemDetailListComponent implements OnInit {
     }
 
     let currId: string;
-    let currItem: ItemDto;
     for (let i = 0; i < this.items.length; i++) {
       currId = this.items[i].itemId;
       if (id == currId) {
