@@ -14,10 +14,8 @@ import {ToastrService} from "ngx-toastr";
 export class ItemDetailListComponent implements OnInit {
   itemGeneralName: string;
   items: StorageItem[];
-  hashMap = new Map<string, boolean[]>();
-
-  customModalOpen: boolean = false;
-  customModalOpen1: boolean = false;
+  storId: string;
+  hashMap= new Map<string, boolean[]>();
 
   constructor(private storageService: StorageService, private router: Router,
               private route: ActivatedRoute, private itemService: ItemService, private el: ElementRef,
@@ -25,15 +23,12 @@ export class ItemDetailListComponent implements OnInit {
   }
 
   ngOnInit() {
-
-
     this.route.params.subscribe({
       next: params => {
-        const storId = params.id;
+        this.storId = params.id;
         this.itemGeneralName = params.name;
 
-
-        this.storageService.getItemsWithGenaralName(this.itemGeneralName, storId).subscribe({
+        this.storageService.getItemsWithGenaralName(this.itemGeneralName, this.storId).subscribe({
           next: res => {
             this.items = res;
 
@@ -51,7 +46,6 @@ export class ItemDetailListComponent implements OnInit {
         console.error("Error fetching parameters:", error);
       }
     });
-
   }
 
   checkModal(id: string, mode: number): boolean {
@@ -72,10 +66,6 @@ export class ItemDetailListComponent implements OnInit {
         this.hashMap.set(key, [false, false]);
       }
     });
-    //this.customModalOpen = !this.customModalOpen;
-    //if (this.customModalOpen == true) {
-    //  this.customModalOpen1 = false;
-    //}
   }
 
   toggleCustomModal1(id: string) {
@@ -88,10 +78,6 @@ export class ItemDetailListComponent implements OnInit {
         this.hashMap.set(key, [false, false]);
       }
     });
-    //this.customModalOpen1 = !this.customModalOpen1;
-    //if (this.customModalOpen1 == true) {
-    //  this.customModalOpen = false;
-    //}
   }
 
   @HostListener('document:click', ['$event'])
@@ -101,8 +87,6 @@ export class ItemDetailListComponent implements OnInit {
       this.hashMap.forEach((value, key) => {
         this.hashMap.set(key, [false, false]);
       });
-      //this.customModalOpen = false;
-      //this.customModalOpen1 = false;
     }
   }
 
@@ -134,47 +118,90 @@ export class ItemDetailListComponent implements OnInit {
           quantityCurrent = item.quantityCurrent - parseInt(value);
 
           this.hashMap.get(id)[0] = false;
-          //this.customModalOpen = false;
         } else { // mode == 1, Add
           quantityCurrent = item.quantityCurrent + parseInt(value);
-
           this.hashMap.get(id)[1] = false;
-          //this.customModalOpen1 = false;
         }
 
-        item.quantityCurrent = quantityCurrent;
-        console.log(item)
-        this.itemService.updateItem(item).subscribe({
-          next: res => {
-            let currId: string;
-            for (let i = 0; i < this.items.length; i++) {
-              currId = this.items[i].itemId;
-              if (id == currId) {
-                this.items[i].quantityCurrent = res.quantityCurrent;
-                break;
+        if (quantityCurrent < 1) {
+          console.log(item)
+          this.itemService.deleteItem(parseInt(id)).subscribe({
+            next: data => {
+              this.notification.success(`Item ${id} was successfully deleted`, "Success");
+
+              if (this.items.length == 1) {
+                this.router.navigate([`/digital-storage/${this.storId}`]);
+              } else {
+
+                let j = 0;
+                let arr: StorageItem[] = new Array<StorageItem>(this.items.length - 1);
+                for (let i = 0; i < this.items.length; i++) {
+                  currId = this.items[i].itemId;
+                  if (id != currId) {
+                    arr[j] = this.items[i];
+                    j++;
+                  }
+                }
+                this.items = arr;
+              }
+
+            },
+            error: error => {
+              console.error(`Item could not be deleted: ${error.error.message}`);
+              this.notification.error(error.error.message);
+              this.notification.error(`Item ${id} could not be deleted`, "Error");
+            }
+          });
+        } else {
+          item.quantityCurrent = quantityCurrent;
+          console.log(item)
+          this.itemService.updateItem(item).subscribe({
+            next: res => {
+              let currId: string;
+              for (let i = 0; i < this.items.length; i++) {
+                currId = this.items[i].itemId;
+                if (id == currId) {
+                  this.items[i].quantityCurrent = res.quantityCurrent;
+                  break;
+                }
               }
             }
-          }
-        });
+          });
+        }
+
       },
       error: err => {
         console.error("Error finding item:", err);
       }
     });
-
   }
 
   public delete(itemId: number) {
     this.itemService.deleteItem(itemId).subscribe({
       next: data => {
-        this.router.navigate(['/digital-storage/1']);
-        this.notification.success(`Item ${this.items[itemId]} was successfully deleted`, "Success");
+        this.notification.success(`Item ${itemId} was successfully deleted`, "Success");
+
+        if (this.items.length == 1) {
+          this.router.navigate([`/digital-storage/${this.storId}`]);
+        } else {
+          let j = 0;
+          let arr: StorageItem[] = new Array<StorageItem>(this.items.length - 1);
+          let currId: string;
+          for (let i = 0; i < this.items.length; i++) {
+            currId = this.items[i].itemId;
+            if (itemId != parseInt(currId)) {
+              arr[j] = this.items[i];
+              j++;
+            }
+          }
+          this.items = arr;
+        }
+
       },
       error: error => {
         console.error(`Item could not be deleted: ${error.error.message}`);
-        this.router.navigate(['/digital-storage/1']);
         this.notification.error(error.error.message);
-        this.notification.error(`Item ${this.items[itemId]} could not be deleted`, "Error");
+        this.notification.error(`Item ${itemId} could not be deleted`, "Error");
       }
     });
   }
