@@ -4,22 +4,24 @@
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
-
+<div class="jumbotron mt-5 text-center">
 <div class="pt-5">
   <div class="row">
     <div class="col-md-6 mx-auto">
       <span class="anchor" id="formRegister"></span>
+      <h1 class="display-4">Join a shared flat!</h1>
+      <hr class="my-4">
 
       <div class="card rounded-0">
         <div class="card-header">
-          <h3 class="mb-0">Login Shared Flat</h3>
+          <h3 class="mb-0"></h3>
         </div>
 
         <div class="card-body">
           <form class="form" [formGroup]="loginForm" (ngSubmit)="loginWG()" >
 
             <div class="form-group">
-              <label for="name">Flat name</label>
+              <h5><label for="name">Flat name</label></h5>
               <input type="text" name="name" formControlName="flatName" class="form-control" id="name"
                      aria-describedby="nameHelp" placeholder="Enter Flat name">
               <div *ngIf="submitted && loginForm.controls.flatName.errors" class="error">
@@ -31,7 +33,7 @@
 
 
             <div class="form-group">
-              <label for="password">Password</label>
+              <h5><label for="password">Password</label></h5>
               <input type="password" name="password" formControlName="password" class="form-control" id="password"
                      placeholder="Password">
               <div *ngIf="submitted && loginForm.controls.password.errors" class="error">
@@ -45,10 +47,7 @@
               </div>
             </div>
 
-            <button style="margin-right: 10px;" type="submit" class="btn btn-success float-right">Login</button>
-            <button style="margin-right: 10px;" (click)="navigateToCreate()" class="btn btn-success float-right">Create Flat</button>
-            <button style="margin-right: 10px;" type="button" (click)="delete()" class="btn btn-danger float-right">Delete Flat</button>
-
+            <button  type="submit" class="btn btn-success float-right">Login</button>
           </form>
         </div>
 
@@ -57,5 +56,5 @@
     </div>
   </div>
 </div>
-
+</div>
 

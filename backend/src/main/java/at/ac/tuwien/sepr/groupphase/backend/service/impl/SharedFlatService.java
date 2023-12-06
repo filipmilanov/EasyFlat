@@ -74,6 +74,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
             if (passwordMatches) {
                 if (userEmail != null) {
                     user.setSharedFlat(existingSharedFlat);
+                    user.setAdmin(false);
                     userRepository.save(user);
                 }
                 return sharedFlatMapper.entityToWgDetailDto(existingSharedFlat);
@@ -102,8 +103,8 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
             boolean exist = userRepository.existsBySharedFlat(flat);
 
             if (!exist) {
-                String deletedFlatName = flat.getName();
-                sharedFlatRepository.deleteByName(deletedFlatName);
+                Long deletedFlatId = flat.getId();
+                sharedFlatRepository.deleteById(deletedFlatId);
                 return sharedFlatMapper.entityToWgDetailDto(flat);
             } else {
                 user.setSharedFlat(flat);

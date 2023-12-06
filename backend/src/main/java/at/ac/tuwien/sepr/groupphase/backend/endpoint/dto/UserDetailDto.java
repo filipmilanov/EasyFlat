@@ -22,6 +22,8 @@ public class UserDetailDto {
     @NotNull(message = "Password must not be null")
     private String password;
 
+    private boolean admin;
+
     public String getFirstName() {
         return firstName;
     }
@@ -62,6 +64,14 @@ public class UserDetailDto {
         this.password = password;
     }
 
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -71,13 +81,17 @@ public class UserDetailDto {
             return false;
         }
         UserDetailDto that = (UserDetailDto) o;
-        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName)
-            && Objects.equals(email, that.email) && Objects.equals(password, that.password);
+        return Objects.equals(firstName, that.firstName)
+            && Objects.equals(lastName, that.lastName)
+            && Objects.equals(email, that.email)
+            && Objects.equals(flatName, that.flatName)
+            && Objects.equals(password, that.password)
+            && Objects.equals(admin, that.admin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, email, password);
+        return Objects.hash(firstName, lastName, email, flatName, password, admin);
     }
 
     @Override
@@ -88,6 +102,7 @@ public class UserDetailDto {
             + ", email='" + email + '\''
             + ", flatName='" + flatName + '\''
             + ", password='" + password + '\''
+            + ", admin=" + admin
             + '}';
     }
 }

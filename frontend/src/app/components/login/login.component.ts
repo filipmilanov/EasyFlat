@@ -39,6 +39,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
+
   /**
    * Send authentication data to the authService. If the authentication was successfully, the user will be forwarded to the message page
    *
@@ -46,10 +47,11 @@ export class LoginComponent implements OnInit {
    */
   authenticateUser(authRequest: AuthRequest) {
     console.log('Try to authenticate user: ' + authRequest.email);
+
     this.authService.loginUser(authRequest).subscribe({
       next: () => {
         console.log('Successfully logged in user: ' + authRequest.email);
-        this.router.navigate(['']);
+           this.router.navigate(['']);
       },
       error: error => {
         console.log('Could not log in due to:');

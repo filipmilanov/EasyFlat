@@ -1,3 +1,5 @@
+import {SharedFlat} from "./sharedFlat";
+
 export class AuthRequest {
   constructor(
     public email: string,
@@ -10,6 +12,7 @@ export class UserDetail {
     public lastName: string,
     public email: string,
     public flatName: string,
-    public password: string
+    public password: string,
+    public admin: boolean
   ) {}
 }

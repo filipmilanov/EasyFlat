@@ -166,8 +166,12 @@ public class CustomUserDetailService implements UserService {
 
         if (userFlat.getName().equals(flatName)) {
             user.setSharedFlat(null);
+            user.setAdmin(false);
             ApplicationUser updatedUser = userRepository.save(user);
-
+            boolean exist = userRepository.existsBySharedFlat(userFlat);
+            if (!exist) {
+                sharedFlatRepository.deleteById(userFlat.getId());
+            }
             return userMapper.entityToUserDetailDto(updatedUser);
         }
         throw new BadCredentialsException("");

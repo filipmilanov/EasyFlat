@@ -32,7 +32,7 @@ export class CreateFlatComponent implements OnInit{
       this.sharedFlatService.createWG(sharedFlat, this.authService.getToken()).subscribe({
         next: () => {
           console.log('Successfully created shared flat: ' + sharedFlat.name);
-          this.router.navigate(['']);
+          this.router.navigate(['/account']);
         },
         error: error => {
           console.log('Could not register due to:');

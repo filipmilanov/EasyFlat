@@ -36,7 +36,7 @@ export class LoginFlatComponent implements OnInit{
       this.sharedFlatService.loginWG(sharedFlat, this.authService.getToken()).subscribe(
         () => {
           console.log('You have successfully logged in!');
-          this.router.navigate(['']); // Navigate on successful login
+          this.router.navigate(['/account']); // Navigate on successful login
         },
         (error) => {
           console.log('Could not log in due to:');
@@ -95,17 +95,5 @@ export class LoginFlatComponent implements OnInit{
     this.error = false;
   }
 
-    delete() {
-      if (confirm("Are you sure you want to delete the shared flat?")) {
-        this.sharedFlatService.delete(this.user).subscribe({
-          next: (deletedFlat: SharedFlat) => {
-            console.log('Shared flat deleted from user :', deletedFlat);
-            this.router.navigate(['']);
-          },
-          error: error => {
-            console.error(error.message, error);
-          }
-        });
-      }
-    }
+
 }

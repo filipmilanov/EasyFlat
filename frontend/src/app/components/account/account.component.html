@@ -47,17 +47,6 @@
                 <small class="form-text text-warning">Your email is required!</small>
               </div>
             </div>
-
-            <div class="form-group">
-              <div>
-                <label for="name">Flat name</label>
-                <input type="text" name="name" formControlName="flatName" class="form-control" id="name">
-              </div>
-              <div *ngIf="submitted && accountForm.get('flatName').errors?.required" class="error">
-                <small class="form-text text-warning">Your flat name is required!</small>
-              </div>
-            </div>
-
             <div class="form-group">
               <label for="password">New password</label>
               <input type="password" name="password" formControlName="password" class="form-control" id="password"
@@ -70,7 +59,36 @@
             </div>
             <button style="margin-right: 10px;" type="submit" class="btn btn-success float-right">Save Changes</button>
             <button style="margin-right: 10px;" type="button" (click)="delete()" class="btn btn-danger float-right">Delete Account</button>
-            <button style="margin-right: 10px;" type="button" (click)="signOut()" class="btn btn-danger float-right">Sign Out from Flat</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+<div class="pt-5">
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <span class="anchor" id="formRegister"></span>
+
+      <div class="card rounded-0">
+        <div class="card-header">
+          <h3 class="mb-0">Shared Flat Details</h3>
+        </div>
+
+        <div class="card-body">
+          <form class="form" [formGroup]="accountForm" (ngSubmit)="update()">
+            <div class="form-group">
+              <div>
+                <label for="name">Flat name</label>
+                <input type="text" name="name" formControlName="flatName" class="form-control" id="name">
+              </div>
+              <div *ngIf="submitted && accountForm.get('name').errors?.required" class="error">
+                <small class="form-text text-warning">Your flat name is required!</small>
+              </div>
+            </div>
+            <button style="margin-right: 10px;" type="button" (click)="signOut()" class="btn btn-danger float-right">Sign Out</button>
+            <button *ngIf="user.admin" style="margin-right: 10px;" type="button" (click)="deleteFlat()" class="btn btn-danger float-right">Delete Flat</button>
           </form>
         </div>
       </div>

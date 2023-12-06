@@ -4,6 +4,8 @@ import { AuthService } from '../../services/auth.service';
 import { UserDetail } from '../../dtos/auth-request';
 import {Observable} from "rxjs";
 import {Router} from "@angular/router";
+import {SharedFlat} from "../../dtos/sharedFlat";
+import {SharedFlatService} from "../../services/sharedFlat.service";
 
 @Component({
   selector: 'app-account',
@@ -17,13 +19,14 @@ export class AccountComponent implements OnInit {
   error = false;
   errorMessage = '';
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(private formBuilder: FormBuilder, private authService: AuthService, private sharedFlatService: SharedFlatService ,private router: Router) {
     this.accountForm = this.formBuilder.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       flatName: ['', [Validators.required]],
-      password: ['', [Validators.minLength(8)]]
+      password: ['', [Validators.minLength(8)]],
+      admin: ['']
     });
   }
 
@@ -38,7 +41,8 @@ export class AccountComponent implements OnInit {
           firstName: this.user.firstName,
           lastName: this.user.lastName,
           email: this.user.email,
-          flatName: this.user.flatName
+          flatName: this.user.flatName,
+          admin:this.user.admin
         });
       },
       (error) => {
@@ -58,7 +62,7 @@ export class AccountComponent implements OnInit {
 
     if (this.accountForm.valid) {
       const userDetail: UserDetail = new UserDetail(this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,
-        this.accountForm.controls.email.value, null , this.accountForm.controls.password.value);
+        this.accountForm.controls.email.value, null , this.accountForm.controls.password.value,this.accountForm.controls.admin.value);
       console.log(userDetail)
       this.authService.update(userDetail).subscribe({
         next: () => {
@@ -120,5 +124,18 @@ export class AccountComponent implements OnInit {
     });
   }
 
+  deleteFlat() {
+    if (confirm("Are you sure you want to delete the shared flat?")) {
+      this.sharedFlatService.delete(this.user).subscribe({
+        next: (deletedFlat: SharedFlat) => {
+          console.log('Shared flat deleted from user :', deletedFlat);
+          this.router.navigate(['']);
+        },
+        error: error => {
+          console.error(error.message, error);
+        }
+      });
+    }
+  }
 }
 

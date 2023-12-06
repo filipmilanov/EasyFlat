@@ -27,11 +27,23 @@
     </div>
   </div>
 
-  <div *ngIf="authService.isLoggedIn()">
-    <p>Check out the latest message from the SE PR group phase.</p>
-    <p class="lead">
-      <a class="btn btn-primary btn-lg" routerLink="/message" role="button">Message</a>
-    </p>
+  <div *ngIf="authService.isLoggedIn()&&!isLoggedWg()">
+    <div class="form-group">
+      <h3>Join or Create a Shared Flat</h3>
+      <div class="button-group">
+        <p class="lead">
+          <a class="btn btn-primary btn-lg" routerLink="/wgLogin" role="button">Join</a>
+        </p>
+        <p class="lead">
+          <a class="btn btn-primary btn-lg" routerLink="/wgCreate" role="button">Create</a>
+        </p>
+      </div>
+    </div>
   </div>
+  <div *ngIf="authService.isLoggedIn()&&isLoggedWg()">
+    <h2>Welcome to our beloved flat {{user.flatName}}</h2>
+  </div>
+
+
 </div>
 

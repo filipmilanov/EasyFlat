@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
-import {Subscription} from "rxjs";
+import {Observable, Subscription} from "rxjs";
+import {UserDetail} from "../../dtos/auth-request";
 
 @Component({
   selector: 'app-home',
@@ -10,12 +11,15 @@ import {Subscription} from "rxjs";
 export class HomeComponent implements OnInit {
   userSubscription;
 
+  user: UserDetail;
+
   constructor(public authService: AuthService) { }
 
   ngOnInit() {
     this.authService.getUser(this.authService.getToken())
       .subscribe(
         (user) => {
+          this.user = user;
           console.log(user); // Handle the received user data here
         },
         (error) => {
@@ -24,4 +28,7 @@ export class HomeComponent implements OnInit {
       );
   }
 
+  isLoggedWg(): boolean{
+    return this.user.flatName != null;
+  }
 }
