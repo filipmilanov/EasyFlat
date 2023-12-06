@@ -37,6 +37,9 @@ public class SharedFlat {
     @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
     private Cookbook cookbook;
 
+    @OneToOne
+    private DigitalStorage digitalStorage;
+
     public SharedFlat() {
     }
 
