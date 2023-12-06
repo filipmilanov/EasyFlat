@@ -114,46 +114,30 @@ export class ItemDetailListComponent implements OnInit {
         item = res;
 
         let quantityCurrent: number;
+        let quantityTotal: number;
         if (mode == 0) { // Subtract
           quantityCurrent = item.quantityCurrent - parseInt(value);
+          quantityTotal = item.quantityTotal;
 
           this.hashMap.get(id)[0] = false;
         } else { // mode == 1, Add
           quantityCurrent = item.quantityCurrent + parseInt(value);
+          if (quantityCurrent > item.quantityTotal) {
+            quantityTotal = quantityCurrent;
+          } else {
+            quantityTotal = item.quantityTotal;
+          }
+
           this.hashMap.get(id)[1] = false;
         }
 
         if (quantityCurrent < 1) {
           console.log(item)
-          this.itemService.deleteItem(parseInt(id)).subscribe({
-            next: data => {
-              this.notification.success(`Item ${id} was successfully deleted`, "Success");
+          this.delete(parseInt(id));
 
-              if (this.items.length == 1) {
-                this.router.navigate([`/digital-storage/${this.storId}`]);
-              } else {
-
-                let j = 0;
-                let arr: StorageItem[] = new Array<StorageItem>(this.items.length - 1);
-                for (let i = 0; i < this.items.length; i++) {
-                  currId = this.items[i].itemId;
-                  if (id != currId) {
-                    arr[j] = this.items[i];
-                    j++;
-                  }
-                }
-                this.items = arr;
-              }
-
-            },
-            error: error => {
-              console.error(`Item could not be deleted: ${error.error.message}`);
-              this.notification.error(error.error.message);
-              this.notification.error(`Item ${id} could not be deleted`, "Error");
-            }
-          });
         } else {
           item.quantityCurrent = quantityCurrent;
+          item.quantityTotal = quantityTotal;
           console.log(item)
           this.itemService.updateItem(item).subscribe({
             next: res => {
@@ -162,6 +146,7 @@ export class ItemDetailListComponent implements OnInit {
                 currId = this.items[i].itemId;
                 if (id == currId) {
                   this.items[i].quantityCurrent = res.quantityCurrent;
+                  this.items[i].quantityTotal = res.quantityTotal;
                   break;
                 }
               }
