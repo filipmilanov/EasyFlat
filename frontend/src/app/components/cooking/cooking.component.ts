@@ -30,4 +30,10 @@ export class CookingComponent {
       }
     ];
   }
+
+
+  reloadRecipes() {
+
+
+  }
 }
