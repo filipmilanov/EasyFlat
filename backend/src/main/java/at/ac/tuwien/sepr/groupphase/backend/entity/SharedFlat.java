@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -23,6 +24,9 @@ public class SharedFlat {
     private String password;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sharedFlat")
     private Set<ApplicationUser> users = new HashSet<>();
+
+    @OneToOne
+    private DigitalStorage digitalStorage;
 
     public SharedFlat() {
     }

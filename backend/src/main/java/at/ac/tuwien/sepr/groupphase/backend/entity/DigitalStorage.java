@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 import java.util.List;
 import java.util.Objects;
@@ -21,6 +22,9 @@ public class DigitalStorage {
 
     @Column
     private String title;
+
+    @OneToOne(mappedBy = "digitalStorage")
+    private SharedFlat sharedFlat;
 
     @OneToMany(mappedBy = "digitalStorage", fetch = FetchType.EAGER)
     @JsonIgnore
@@ -49,6 +53,14 @@ public class DigitalStorage {
 
     public void setItemList(List<Item> itemList) {
         this.itemList = itemList;
+    }
+
+    public SharedFlat getSharedFlat() {
+        return sharedFlat;
+    }
+
+    public void setSharedFlat(SharedFlat sharedFlat) {
+        this.sharedFlat = sharedFlat;
     }
 
     @Override
