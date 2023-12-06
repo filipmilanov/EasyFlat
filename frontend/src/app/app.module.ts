@@ -19,12 +19,11 @@ import {ItemDetailComponent} from './components/digital-storage/item-detail/item
 import {ToastrModule} from "ngx-toastr";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AutocompleteComponent} from './components/utils/autocomplete/autocomplete.component';
-import {ItemDetailListComponent} from './components/digital-storage/item-detail-list/item-detail-list.component';
-import {RegisterComponent} from './components/register/register.component';
-import {AccountComponent} from './components/account/account.component';
+import { ItemDetailListComponent } from './components/digital-storage/item-detail-list/item-detail-list.component';
+import { RegisterComponent } from './components/register/register.component';
+import { AccountComponent } from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
-import {CreateFlatComponent} from './components/create-flat/create-flat.component';
-import {ZXingScannerModule} from "@zxing/ngx-scanner";
+import { CreateFlatComponent } from './components/create-flat/create-flat.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +53,6 @@ import {ZXingScannerModule} from "@zxing/ngx-scanner";
     FormsModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
-    ZXingScannerModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
