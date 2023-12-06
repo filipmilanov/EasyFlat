@@ -36,7 +36,7 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
         + "(:fillLevel = 'full' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.4) OR "
         + "(:fillLevel = 'nearly_empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.2 AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.4) OR "
         + "(:fillLevel = 'empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.2)) AND "
-        + "(:alwaysInStock IS NULL OR TYPE(i) = :alwaysInStock)")
+        + "(:alwaysInStock IS NULL OR TYPE(i) = :alwaysInStock) ")
     List<Item> searchItems(@Param("storageId") Long storageId,
                            @Param("title") String title,
                            @Param("fillLevel") String fillLevel,
