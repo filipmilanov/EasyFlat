@@ -7,16 +7,21 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -31,6 +36,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -42,10 +49,22 @@ class ItemServiceTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @MockBean
+    private CustomUserDetailService customUserDetailService;
+
+    private ApplicationUser applicationUser;
+
     @BeforeEach
     public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
+
+        applicationUser = userRepository.findById(1L).orElseThrow();
+        when(customUserDetailService.getUser(any(String.class))).thenReturn(applicationUser);
     }
+
 
     @Test
     void givenItemIdWhenFindByIdThenItemIsReturned() {
@@ -73,7 +92,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenValidItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException {
+    void givenValidItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, AuthenticationException {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
@@ -104,7 +123,7 @@ class ItemServiceTest {
             .build();
 
         // when
-        Item actual = service.create(itemDto);
+        Item actual = service.create(itemDto, "Bearer test");
 
         // then
         Optional<Item> persisted = service.findById(actual.getItemId());
@@ -144,7 +163,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenValidAlwaysInStockItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException {
+    void givenValidAlwaysInStockItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, AuthenticationException {
         // given
 
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
@@ -179,7 +198,7 @@ class ItemServiceTest {
             .build();
 
         // when
-        Item actual = service.create(itemDto);
+        Item actual = service.create(itemDto, "Bearer test");
 
         // then
         Optional<Item> persisted = service.findById(actual.getItemId());
@@ -257,7 +276,7 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.create(itemDto)).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.create(itemDto, "Bearer Token")).getMessage();
         assertThat(message)
             .contains(
                 "EAN",
@@ -301,7 +320,7 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.create(itemDto)).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.create(itemDto, "Bearer Token")).getMessage();
         assertThat(message)
             .contains(
                 "minimum quantity"
@@ -309,7 +328,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenItemWithInvalidStorageWhenCreateThenConflictExceptionIsThrown() {
+    void givenItemWithInvalidStorageWhenCreateThenAuthenticationExceptionIsThrown() {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
@@ -340,16 +359,15 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ConflictException.class, () -> service.create(itemDto)).getMessage();
+        String message = assertThrows(AuthenticationException.class, () -> service.create(itemDto, "Bearer Token")).getMessage();
         assertThat(message)
             .contains(
-                "Storage",
-                "not exists"
+                "digital storage"
             );
     }
 
     @Test
-    void givenValidItemWhenUpdateSingleAttributeThenItemIsUpdated() throws ValidationException, ConflictException {
+    void givenValidItemWhenUpdateSingleAttributeThenItemIsUpdated() throws ValidationException, ConflictException, AuthenticationException {
         // given:
         String updatedGeneralName = "General Name Updated";
 
@@ -382,7 +400,7 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto);
+        Item createdItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
             .itemId(createdItem.getItemId())
@@ -413,7 +431,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenInvalidItemWhenUpdateSingleAttributeThenValidationExceptionIsThrown() throws ValidationException, ConflictException {
+    void givenInvalidItemWhenUpdateSingleAttributeThenValidationExceptionIsThrown() throws ValidationException, ConflictException, AuthenticationException {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
@@ -444,7 +462,7 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto);
+        Item createdItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
             .itemId(createdItem.getItemId())
@@ -471,7 +489,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenValidItemWhenUpdateMultipleAttributesThenItemIsUpdated() throws ValidationException, ConflictException {
+    void givenValidItemWhenUpdateMultipleAttributesThenItemIsUpdated() throws ValidationException, ConflictException, AuthenticationException {
         // given:
         String updatedGeneralName = "General Name Updated";
         Long updatedCurrentAmount = 150L;
@@ -505,7 +523,7 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto);
+        Item createdItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
             .itemId(createdItem.getItemId())
@@ -537,7 +555,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenInvalidItemWhenUpdateMultipleAttributesThenValidationExceptionIsThrown() throws ValidationException, ConflictException {
+    void givenInvalidItemWhenUpdateMultipleAttributesThenValidationExceptionIsThrown() throws ValidationException, ConflictException, AuthenticationException {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
@@ -568,7 +586,7 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto);
+        Item createdItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
             .itemId(createdItem.getItemId())
@@ -596,7 +614,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenValidItemWhenDeleteThenItemIsDeleted() throws ValidationException, ConflictException {
+    void givenValidItemWhenDeleteThenItemIsDeleted() throws ValidationException, ConflictException, AuthenticationException {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
@@ -627,7 +645,7 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto);
+        Item createdItem = service.create(itemDto, "Bearer test");
 
         // when:
         service.delete(createdItem.getItemId());
