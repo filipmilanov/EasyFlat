@@ -14,6 +14,7 @@ import {ToastrService} from "ngx-toastr";
 export class ItemDetailListComponent implements OnInit {
   itemGeneralName: string;
   items: StorageItem[];
+  hashMap = new Map<string, boolean[]>();
 
   customModalOpen: boolean = false;
   customModalOpen1: boolean = false;
@@ -35,6 +36,11 @@ export class ItemDetailListComponent implements OnInit {
         this.storageService.getItemsWithGenaralName(this.itemGeneralName, storId).subscribe({
           next: res => {
             this.items = res;
+
+            for (let i = 0; i < this.items.length; i++) {
+              let modalArr: boolean[] = [false, false];
+              this.hashMap.set(this.items[i].itemId, modalArr)
+            }
           },
           error: err => {
             console.error("Error finding items:", err);
@@ -48,26 +54,55 @@ export class ItemDetailListComponent implements OnInit {
 
   }
 
-  toggleCustomModal() {
-    this.customModalOpen = !this.customModalOpen;
-    if (this.customModalOpen == true) {
-      this.customModalOpen1 = false;
+  checkModal(id: string, mode: number): boolean {
+    if (mode == 0) {
+      return this.hashMap.get(id)[0];
+    } else {
+      return this.hashMap.get(id)[1];
     }
   }
 
-  toggleCustomModal1() {
-    this.customModalOpen1 = !this.customModalOpen1;
-    if (this.customModalOpen1 == true) {
-      this.customModalOpen = false;
+  toggleCustomModal(id: string) {
+    this.hashMap.get(id)[0] = !this.hashMap.get(id)[0];
+    if (this.hashMap.get(id)[0] == true) {
+      this.hashMap.get(id)[1] = false;
     }
+    this.hashMap.forEach((value, key) => {
+      if (key != id) {
+        this.hashMap.set(key, [false, false]);
+      }
+    });
+    //this.customModalOpen = !this.customModalOpen;
+    //if (this.customModalOpen == true) {
+    //  this.customModalOpen1 = false;
+    //}
+  }
+
+  toggleCustomModal1(id: string) {
+    this.hashMap.get(id)[1] = !this.hashMap.get(id)[1];
+    if (this.hashMap.get(id)[1] == true) {
+      this.hashMap.get(id)[0] = false;
+    }
+    this.hashMap.forEach((value, key) => {
+      if (key != id) {
+        this.hashMap.set(key, [false, false]);
+      }
+    });
+    //this.customModalOpen1 = !this.customModalOpen1;
+    //if (this.customModalOpen1 == true) {
+    //  this.customModalOpen = false;
+    //}
   }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     // Check if the clicked element is outside the card
     if (!this.el.nativeElement.contains(event.target)) {
-      this.customModalOpen = false;
-      this.customModalOpen1 = false;
+      this.hashMap.forEach((value, key) => {
+        this.hashMap.set(key, [false, false]);
+      });
+      //this.customModalOpen = false;
+      //this.customModalOpen1 = false;
     }
   }
 
@@ -98,11 +133,13 @@ export class ItemDetailListComponent implements OnInit {
         if (mode == 0) { // Subtract
           quantityCurrent = item.quantityCurrent - parseInt(value);
 
-          this.customModalOpen = false;
+          this.hashMap.get(id)[0] = false;
+          //this.customModalOpen = false;
         } else { // mode == 1, Add
           quantityCurrent = item.quantityCurrent + parseInt(value);
 
-          this.customModalOpen1 = false;
+          this.hashMap.get(id)[1] = false;
+          //this.customModalOpen1 = false;
         }
 
         item.quantityCurrent = quantityCurrent;
