@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.exceptionhandler;
 
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -57,6 +58,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleConflict(ConflictException ex, WebRequest request) {
         LOGGER.warn(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT, request);
+    }
+
+    /**
+     * Handles AuthenticationException and sends a METHOD_NOT_ALLOWED status.
+     */
+    @ExceptionHandler(value = {AuthenticationException.class})
+    protected ResponseEntity<Object> handleAuthentication(AuthenticationException ex, WebRequest request) {
+        LOGGER.warn(ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.METHOD_NOT_ALLOWED, request);
     }
 
     /**

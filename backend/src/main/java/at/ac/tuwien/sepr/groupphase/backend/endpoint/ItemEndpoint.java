@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,10 +41,10 @@ public class ItemEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException {
+    public ItemDto create(@RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("create({})", itemDto);
         return itemMapper.entityToDto(
-            itemService.create(itemDto)
+            itemService.create(itemDto, jwt)
         );
     }
 

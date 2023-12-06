@@ -3,10 +3,12 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -17,7 +19,6 @@ import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -38,19 +40,16 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final ItemValidator itemValidator;
     private final ItemStatsRepository itemStatsRepository;
-    private final Validator validator;
+    private final CustomUserDetailService customUserDetailService;
 
-    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService,
-                           IngredientService ingredientService, ItemMapper itemMapper,
-                           ItemValidator itemValidator, Validator validator,
-                           ItemStatsRepository itemStatsRepository) {
+    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService, IngredientService ingredientService, ItemMapper itemMapper, ItemValidator itemValidator, ItemStatsRepository itemStatsRepository, CustomUserDetailService customUserDetailService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
         this.itemMapper = itemMapper;
         this.itemValidator = itemValidator;
         this.itemStatsRepository = itemStatsRepository;
-        this.validator = validator;
+        this.customUserDetailService = customUserDetailService;
     }
 
     @Override
@@ -65,11 +64,16 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item create(ItemDto itemDto) throws ConflictException, ValidationException {
+    public Item create(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("create({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
             itemDto = itemDto.withAlwaysInStock(false);
+        }
+
+        ApplicationUser user = customUserDetailService.getUser(jwt);
+        if (!Objects.equals(user.getSharedFlat().getDigitalStorage().getStorId(), itemDto.digitalStorage().storId())) {
+            throw new AuthenticationException("Authentication Issue", List.of("The given digital storage does not belong to the user's shared flat!"));
         }
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);

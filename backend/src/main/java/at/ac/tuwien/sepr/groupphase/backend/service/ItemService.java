@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -24,9 +25,10 @@ public interface ItemService {
      * Validates and Creates a new {@link Item} in the db.
      *
      * @param item a storage without ID
+     * @param jwt  a valid JWT of a user
      * @return an object of type {@link Item} which is persisted and has an ID
      */
-    Item create(ItemDto item) throws ConflictException, ValidationException;
+    Item create(ItemDto item, String jwt) throws ConflictException, ValidationException, AuthenticationException;
 
     /**
      * Validates and Updates a new {@link Item} in the db.
