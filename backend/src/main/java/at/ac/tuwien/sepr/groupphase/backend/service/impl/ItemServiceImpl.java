@@ -51,7 +51,7 @@ public class ItemServiceImpl implements ItemService {
                            ItemMapper itemMapper,
                            ItemValidator itemValidator,
                            ItemStatsRepository itemStatsRepository,
-                           CustomUserDetailService customUserDetailService
+                           CustomUserDetailService customUserDetailService,
                            UnitService unitService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
