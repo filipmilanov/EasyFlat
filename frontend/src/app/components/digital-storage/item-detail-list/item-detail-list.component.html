@@ -17,21 +17,20 @@
       <td>{{ item.expireDate | date:'dd/MM/yy, h:mm a' }}</td>
       <td>{{ item.quantityCurrent }}/{{item.quantityTotal}} {{item.unit}}</td>
       <td>
-        <div style="position: relative; display: inline-block; z-index: 1;">
+        <div style="position: relative; display: inline-block;">
           <!-- Link Triggering Custom Modal -->
-          <a class="btn btn-sm btn-danger me-2"
-             (click)="toggleCustomModal()"
+          <a class="btn btn-sm btn-danger me-2" style="z-index: 0"
+             (click)="toggleCustomModal(item.itemId)"
              aria-label="Decrement item">
             -
           </a>
 
           <!-- Custom Modal with Text Input -->
-          <div *ngIf="customModalOpen" class="custom-modal"
-               style="position: absolute; background-color: white; padding: 10px; border: 1px solid #ccc; width: 100px;">
+          <div *ngIf="checkModal(item.itemId, 0)" class="custom-modal">
             <div class="row">
               <div class="col">
                 Subtract Quantity:
-                <input type="number" class="form-control" min=0  [max]="item.quantityCurrent" #quantityInput>
+                <input type="number" class="form-control" min=1  [max]="item.quantityCurrent" #quantityInput>
               </div>
               <div class="col">
                 <button type="button" class="btn btn-sm btn-primary" style="width: 100%" (click)="onSave(item.itemId, quantityInput.value, 0)">✓</button>
@@ -40,21 +39,20 @@
           </div>
         </div>
 
-        <div style="position: relative; display: inline-block; z-index: 1;">
+        <div style="position: relative; display: inline-block;">
           <!-- Link Triggering Custom Modal -->
-          <a class="btn btn-sm btn-success"
-             (click)="toggleCustomModal1()"
+          <a class="btn btn-sm btn-success" style="z-index: 0"
+             (click)="toggleCustomModal1(item.itemId)"
              aria-label="Increment item">
             +
           </a>
 
           <!-- Custom Modal with Text Input -->
-          <div *ngIf="customModalOpen1" class="custom-modal"
-               style="position: absolute; background-color: white; padding: 10px; border: 1px solid #ccc; width: 100px;">
+          <div *ngIf="checkModal(item.itemId, 1)" class="custom-modal">
             <div class="row">
               <div class="col">
                 Add Quantity:
-                <input type="number" class="form-control" min=0 #quantityInput>
+                <input type="number" class="form-control" min=1 #quantityInput>
               </div>
               <div class="col">
                 <a class="btn btn-sm btn-primary" style="width: 100%" (click)="onSave(item.itemId, quantityInput.value + '', 1)">✓</a>
