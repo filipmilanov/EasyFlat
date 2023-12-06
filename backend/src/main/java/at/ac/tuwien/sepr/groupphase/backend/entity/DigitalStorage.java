@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,12 +24,12 @@ public class DigitalStorage {
     @Column
     private String title;
 
-    @OneToOne(mappedBy = "digitalStorage")
+    @OneToOne
     private SharedFlat sharedFlat;
 
     @OneToMany(mappedBy = "digitalStorage", fetch = FetchType.EAGER)
     @JsonIgnore
-    private List<Item> itemList;
+    private List<Item> itemList = new ArrayList<>();
 
 
     public Long getStorId() {
