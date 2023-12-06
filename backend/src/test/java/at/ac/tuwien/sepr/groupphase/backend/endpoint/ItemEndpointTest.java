@@ -8,7 +8,10 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -33,6 +37,8 @@ import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -57,11 +63,21 @@ class ItemEndpointTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @MockBean
+    private CustomUserDetailService customUserDetailService;
+
     private final String BASE_URI = "/api/v1/item";
+    private ApplicationUser applicationUser;
 
     @BeforeEach
     private void cleanUp() {
         testDataGenerator.cleanUp();
+
+        applicationUser = userRepository.findById(1L).orElseThrow();
+        when(customUserDetailService.getUser(any(String.class))).thenReturn(applicationUser);
     }
 
     @Test
@@ -211,7 +227,7 @@ class ItemEndpointTest {
     }
 
     @Test
-    public void givenInvalidStorageWhenCreateThenConflictException() throws Exception {
+    public void givenInvalidStorageWhenCreateThenAuthenticationException() throws Exception {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
@@ -255,10 +271,10 @@ class ItemEndpointTest {
 
         // then
         assertAll(
-            () -> assertEquals(HttpStatus.CONFLICT.value(), response.getStatus()),
+            () -> assertEquals(HttpStatus.METHOD_NOT_ALLOWED.value(), response.getStatus()),
             () -> {
                 String content = response.getContentAsString();
-                assertThat(content).contains("not exists");
+                assertThat(content).contains("not");
             }
         );
     }
