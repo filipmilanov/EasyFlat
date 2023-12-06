@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class CustomUserDetailService implements UserService {
@@ -122,10 +121,9 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public UserDetailDto getUser(String authToken) {
+    public ApplicationUser getUser(String authToken) {
         String email = jwtTokenizer.getEmailFromToken(authToken);
-        ApplicationUser user = userRepository.findUserByEmail(email);
-        return userMapper.entityToUserDetailDto(user);
+        return userRepository.findUserByEmail(email);
     }
 
     @Override
