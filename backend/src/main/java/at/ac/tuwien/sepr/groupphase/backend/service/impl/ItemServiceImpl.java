@@ -3,11 +3,13 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -27,6 +29,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -39,12 +42,16 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final ItemValidator itemValidator;
     private final ItemStatsRepository itemStatsRepository;
+    private final CustomUserDetailService customUserDetailService;
     private final UnitService unitService;
 
-    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService,
-                           IngredientService ingredientService, ItemMapper itemMapper,
+    public ItemServiceImpl(ItemRepository itemRepository,
+                           DigitalStorageService digitalStorageService,
+                           IngredientService ingredientService,
+                           ItemMapper itemMapper,
                            ItemValidator itemValidator,
                            ItemStatsRepository itemStatsRepository,
+                           CustomUserDetailService customUserDetailService
                            UnitService unitService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
@@ -52,6 +59,7 @@ public class ItemServiceImpl implements ItemService {
         this.itemMapper = itemMapper;
         this.itemValidator = itemValidator;
         this.itemStatsRepository = itemStatsRepository;
+        this.customUserDetailService = customUserDetailService;
         this.unitService = unitService;
     }
 
@@ -67,11 +75,16 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item create(ItemDto itemDto) throws ConflictException, ValidationException {
+    public Item create(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("create({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
             itemDto = itemDto.withAlwaysInStock(false);
+        }
+
+        ApplicationUser user = customUserDetailService.getUser(jwt);
+        if (!Objects.equals(user.getSharedFlat().getDigitalStorage().getStorId(), itemDto.digitalStorage().storId())) {
+            throw new AuthenticationException("Authentication Issue", List.of("The given digital storage does not belong to the user's shared flat!"));
         }
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
