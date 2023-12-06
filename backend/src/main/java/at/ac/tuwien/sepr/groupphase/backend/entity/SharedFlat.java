@@ -77,8 +77,12 @@ public class SharedFlat {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         SharedFlat that = (SharedFlat) o;
         return Objects.equals(id, that.id);
     }

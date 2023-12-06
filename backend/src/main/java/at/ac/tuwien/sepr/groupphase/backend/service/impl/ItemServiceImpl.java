@@ -42,7 +42,13 @@ public class ItemServiceImpl implements ItemService {
     private final ItemStatsRepository itemStatsRepository;
     private final CustomUserDetailService customUserDetailService;
 
-    public ItemServiceImpl(ItemRepository itemRepository, DigitalStorageService digitalStorageService, IngredientService ingredientService, ItemMapper itemMapper, ItemValidator itemValidator, ItemStatsRepository itemStatsRepository, CustomUserDetailService customUserDetailService) {
+    public ItemServiceImpl(ItemRepository itemRepository,
+                           DigitalStorageService digitalStorageService,
+                           IngredientService ingredientService,
+                           ItemMapper itemMapper,
+                           ItemValidator itemValidator,
+                           ItemStatsRepository itemStatsRepository,
+                           CustomUserDetailService customUserDetailService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
