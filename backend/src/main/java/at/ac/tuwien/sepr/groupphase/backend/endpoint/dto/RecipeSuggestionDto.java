@@ -4,16 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.NotEmpty;
 
+import java.util.List;
+
 @RecordBuilder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record RecipeDto(
+public record RecipeSuggestionDto(
     Long id,
-    @NotEmpty(message = "The title cannot be empty")
+    @NotEmpty
     String title,
-    String description,
-    
-    String image
-
-) {
+    int servings,
+    int readyInMinutes,
+    List<RecipeIngredientDto> extendedIngredients,
+    String summary) {
 
 }
