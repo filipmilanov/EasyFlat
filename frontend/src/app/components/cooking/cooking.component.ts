@@ -11,6 +11,7 @@ import {RecipeSuggestion} from "../../dtos/recipeSuggestion";
 })
 export class CookingComponent implements OnInit {
   recipes: RecipeSuggestion[];
+  empty: boolean = true;
 
 
   constructor(private cookingService: CookingService,
@@ -20,7 +21,7 @@ export class CookingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-     this.addTestData();
+
   }
 
   reloadRecipes() {
@@ -28,6 +29,7 @@ export class CookingComponent implements OnInit {
 
       next: res => {
         this.recipes = res;
+        this.empty = false;
       },
       error: err => {
         console.error("Error loading recipes:", err);
@@ -37,7 +39,8 @@ export class CookingComponent implements OnInit {
 
   }
 
-  private addTestData() {
+  public addTestData() {
+    this.empty = false;
     this.recipes = [
       {
         recipeId: '1',
