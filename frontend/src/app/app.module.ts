@@ -26,6 +26,7 @@ import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import { CreateFlatComponent } from './components/create-flat/create-flat.component';
 import { CookingComponent } from './components/cooking/cooking.component';
 import { RecipeCardComponent } from './components/cooking/recipe-card/recipe-card.component';
+import {NgOptimizedImage} from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { RecipeCardComponent } from './components/cooking/recipe-card/recipe-car
     FormsModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
+    NgOptimizedImage,
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

@@ -2,6 +2,10 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.CookingEndPoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.RecipeDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.RecipeSuggestionDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
+import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +25,19 @@ public class CookingServiceImpl implements CookingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final RestTemplate restTemplate;
 
+    private final String apiKey = "3b683601a4f44cd38d367ab0a1db032d";
+    private final RecipeSuggestionRepository repository;
+
     private String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
 
-    public CookingServiceImpl(RestTemplate restTemplate) {
+    public CookingServiceImpl(RestTemplate restTemplate, RecipeSuggestionRepository repository) {
+        this.repository = repository;
         this.restTemplate = restTemplate;
     }
 
     @Override
-    public List<RecipeDto> getRecipeSuggestion() {
+    public List<RecipeSuggestionDto> getRecipeSuggestion() {
         List<String> testIngredients = new LinkedList<>();
         testIngredients.add("flour");
         testIngredients.add("sugar");
@@ -37,7 +45,7 @@ public class CookingServiceImpl implements CookingService {
 
 
         String requestString = apiUrl;
-        requestString += "?apiKey=3b683601a4f44cd38d367ab0a1db032d";
+        requestString += "?apiKey=" + apiKey;
         boolean isFirst = true;
         for (String ingredient : testIngredients) {
             if (isFirst) {
@@ -47,11 +55,26 @@ public class CookingServiceImpl implements CookingService {
                 requestString += ",+" + ingredient;
             }
         }
-        requestString += "&number=2";
+        requestString += "&number=1";
         ResponseEntity<List<RecipeDto>> exchange = restTemplate.exchange(requestString, HttpMethod.GET, null, new ParameterizedTypeReference<List<RecipeDto>>() {
         });
 
 
-        return exchange.getBody();
+        List<RecipeSuggestionDto> recipeSuggestions = new LinkedList<>();
+        if (exchange.getBody() != null) {
+            for (RecipeDto recipeDto : exchange.getBody()) {
+                String recipeId = String.valueOf(recipeDto.id());
+                String newReqString = "https://api.spoonacular.com/recipes/" + recipeId + "/information" + "?apiKey=" + apiKey + "&includeNutrition=false";
+
+                ResponseEntity<RecipeSuggestionDto> response = restTemplate.exchange(newReqString, HttpMethod.GET, null, new ParameterizedTypeReference<RecipeSuggestionDto>() {
+                });
+                if (response.getBody() != null) {
+                    recipeSuggestions.add(response.getBody());
+                }
+            }
+        }
+
+
+        return recipeSuggestions;
     }
 }
