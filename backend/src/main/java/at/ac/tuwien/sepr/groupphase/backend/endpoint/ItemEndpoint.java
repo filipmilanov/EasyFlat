@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/v1/item")
@@ -67,11 +66,11 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("{itemId}")
-    public Optional<ItemDto> findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public ItemDto findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("findById({})", itemId);
-        Optional<Item> item = itemService.findById(itemId, jwt);
+        Item item = itemService.findById(itemId, jwt);
 
-        return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToDto(currentItem)));
+        return itemMapper.entityToDto(item);
     }
 
     @Secured("ROLE_USER")
