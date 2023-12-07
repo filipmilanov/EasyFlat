@@ -1,5 +1,6 @@
 import {DigitalStorageDto} from "./digitalStorageDto";
 import {IngredientDto} from "./ingredientDto";
+import {ShoppingLabelDto} from "./shoppingLabel";
 import {Unit} from "./unit";
 
 export class ItemDto {
@@ -10,7 +11,7 @@ export class ItemDto {
   brand?: string;
   quantityCurrent?: number;
   quantityTotal?: number;
-  unit?: Unit;
+  unit?: string;
   expireDate?: Date;
   description?: string;
   boughtAt?: string;
@@ -26,4 +27,8 @@ export class ItemFieldSearchDto {
   generalName?: string;
   brand?: string;
   boughtAt?: string;
+}
+
+export class ShoppingItemDto extends ItemDto {
+  labels?: ShoppingLabelDto[];
 }
