@@ -18,6 +18,7 @@ import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import {CreateFlatComponent} from "./components/create-flat/create-flat.component";
 import computeOffsets from "@popperjs/core/lib/utils/computeOffsets";
 import {CookingComponent} from "./components/cooking/cooking.component";
+import {CookbookComponent} from "./components/cookbook/cookbook.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -39,6 +40,7 @@ const routes: Routes = [
   {path: 'wgLogin', component: LoginFlatComponent},
   {path: 'wgCreate', component: CreateFlatComponent},
   {path: 'cooking', component: CookingComponent},
+  {path: 'cookbook', component: CookbookComponent}
 ];
 
 @NgModule({

@@ -9,4 +9,6 @@ import java.util.List;
 public interface CookingService {
 
     List<RecipeSuggestionDto> getRecipeSuggestion(Long storId) throws ValidationException;
+
+    List<RecipeSuggestionDto> getCookbook() throws ValidationException;
 }
