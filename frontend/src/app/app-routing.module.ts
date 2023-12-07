@@ -16,6 +16,7 @@ import {RegisterComponent} from "./components/register/register.component";
 import {AccountComponent} from "./components/account/account.component";
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import {CreateFlatComponent} from "./components/create-flat/create-flat.component";
+import {ShoppingListComponent} from "./components/shopping-list/shopping-list.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -32,6 +33,9 @@ const routes: Routes = [
         ]}
   ]},
   {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
+  {path: 'shopping-list/:id', children: [
+      {path: '', component: ShoppingListComponent}
+    ]},
   {path: 'register', component: RegisterComponent},
   {path: 'account', component: AccountComponent},
   {path: 'wgLogin', component: LoginFlatComponent},

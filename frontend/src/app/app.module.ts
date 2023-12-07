@@ -24,6 +24,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { AccountComponent } from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import { CreateFlatComponent } from './components/create-flat/create-flat.component';
+import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { CreateFlatComponent } from './components/create-flat/create-flat.compon
     AccountComponent,
     LoginFlatComponent,
     CreateFlatComponent,
+    ShoppingListComponent,
   ],
   imports: [
     BrowserModule,
