@@ -9,15 +9,17 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import org.mapstruct.Context;
+import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
 
+@Mapper
 public abstract class RecipeMapper {
 
-    @Mapping(target = "ingredients", expression = "java( ingredients )")
-    public abstract RecipeSuggestion dtoToEntity(RecipeSuggestionDto recipeSuggestionDto,
-                                                 @Context List<RecipeIngredientDto> ingredients);
+    // @Mapping(target = "ingredients", expression = "java( ingredients )")
+    //  public abstract RecipeSuggestion dtoToEntity(RecipeSuggestionDto recipeSuggestionDto,
+    //                                           @Context List<RecipeIngredientDto> ingredients);*/
 
-    public abstract RecipeSuggestionDto entityToDto(RecipeSuggestion recipeSuggestion);
+    public abstract RecipeSuggestionDto entityToRecipeSuggestionDto(RecipeSuggestion recipeSuggestion);
 }

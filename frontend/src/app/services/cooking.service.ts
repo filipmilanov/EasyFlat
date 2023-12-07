@@ -19,4 +19,8 @@ export class CookingService {
     return this.httpClient.get<RecipeSuggestion[]>(this.baseUri)
   }
 
+  getCookbook(): Observable<RecipeSuggestion[]> {
+    return this.httpClient.get<RecipeSuggestion[]>(this.baseUri + '/cookbook');
+  }
+
 }

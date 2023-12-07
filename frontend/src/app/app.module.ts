@@ -27,6 +27,8 @@ import { CreateFlatComponent } from './components/create-flat/create-flat.compon
 import { CookingComponent } from './components/cooking/cooking.component';
 import { RecipeCardComponent } from './components/cooking/recipe-card/recipe-card.component';
 import {NgOptimizedImage} from "@angular/common";
+import { CookbookComponent } from './components/cookbook/cookbook.component';
+import { CookbookCardComponent } from './components/cookbook/cookbook-card/cookbook-card.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +50,8 @@ import {NgOptimizedImage} from "@angular/common";
     CreateFlatComponent,
     CookingComponent,
     RecipeCardComponent,
+    CookbookComponent,
+    CookbookCardComponent,
   ],
   imports: [
     BrowserModule,
