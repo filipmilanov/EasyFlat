@@ -36,7 +36,7 @@ public class CookingServiceImpl implements CookingService {
     private String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
 
-    public CookingServiceImpl(RestTemplate restTemplate, RecipeSuggestionRepository repository,DigitalStorageServiceImpl digitalStorageService) {
+    public CookingServiceImpl(RestTemplate restTemplate, RecipeSuggestionRepository repository, DigitalStorageServiceImpl digitalStorageService) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
@@ -45,12 +45,12 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public List<RecipeSuggestionDto> getRecipeSuggestion(Long storId) throws ValidationException {
 
-      List<ItemListDto> alwaysInStockItems=  digitalStorageService.searchItems(storId,new ItemSearchDto(null,true,null,null,null));
-      List<ItemListDto> notAlwaysInStockItems=  digitalStorageService.searchItems(storId,new ItemSearchDto(null,false,null,null,null));
+        List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(storId, new ItemSearchDto(null, true, null, null, null));
+        List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(storId, new ItemSearchDto(null, false, null, null, null));
 
-      List<ItemListDto> items = new LinkedList<>();
-      items.addAll(alwaysInStockItems);
-      items.addAll(notAlwaysInStockItems);
+        List<ItemListDto> items = new LinkedList<>();
+        items.addAll(alwaysInStockItems);
+        items.addAll(notAlwaysInStockItems);
 
         String requestString = getRequestString(items);
         ResponseEntity<List<RecipeDto>> exchange = restTemplate.exchange(requestString, HttpMethod.GET, null, new ParameterizedTypeReference<List<RecipeDto>>() {
@@ -77,7 +77,7 @@ public class CookingServiceImpl implements CookingService {
 
     private String getRequestString(List<ItemListDto> items) {
         List<String> ingredients = new LinkedList<>();
-        for(ItemListDto item : items){
+        for (ItemListDto item : items) {
             ingredients.add(item.generalName());
         }
 
