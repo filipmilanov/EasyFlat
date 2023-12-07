@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {Recipe} from "../../../dtos/recipe";
+import {RecipeSuggestion} from "../../../dtos/recipeSuggestion";
+
 
 @Component({
   selector: 'app-recipe-card',
@@ -8,6 +9,13 @@ import {Recipe} from "../../../dtos/recipe";
 })
 export class RecipeCardComponent {
 
-  @Input() recipe: Recipe;
+  @Input() recipe: RecipeSuggestion;
+
+  getTruncatedSummary(): string {
+    const maxLength = 100; // Adjust as needed
+    return this.recipe.summary.length > maxLength ?
+      this.recipe.summary.slice(0, maxLength) + '...' :
+      this.recipe.summary;
+  }
 
 }

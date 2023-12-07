@@ -1,23 +1,37 @@
-<div class="card mt-3" style="width: 18rem; height: 200px;">
+<div class="card mt-3" style="width: 20rem; height: 16rem">
   <div class="card-header text-black">
-    <div class="row row-cols-2">
-      <div class="col">
-        <h5 class="card-title">{{recipe.title}}</h5>
-      </div>
-      <div class="col d-flex justify-content-center align-items-center">
-        <button class="btn btn-success">Cook</button>
-      </div>
+    <div class="row">
+      <h5 class="card-title">{{recipe.title}}</h5>
     </div>
   </div>
   <!--  </div>-->
   <div class="card-body">
-    <div class="row">
-      <p class="card-text">
-
-        {{recipe.description}}
+    <div style="height: 6rem">
+      <p [innerHTML]= " getTruncatedSummary()">
 
       </p>
     </div>
-  </div>
+    <div class = "row" style="height: 2rem">
+      <div class="col-6  ">
+        <b>Servings: {{recipe.servings}}</b>
+      </div>
+      <div class="col-6  ">
+        <b>Time: {{recipe.readyInMinutes}}min.</b>
+      </div>
+    </div>
 
+    <div class="row justify-content-center ">
+
+
+      <div class="col-4 mb-2 ">
+        <button class="btn btn-outline-info ">Save</button>
+      </div>
+      <div class="col-4 mb-2 ">
+        <button class="btn btn-outline-secondary">Detail</button>
+      </div>
+      <div class="col-4 mb-2">
+        <button class="btn btn-success">Cook</button>
+      </div>
+    </div>
+  </div>
 </div>
