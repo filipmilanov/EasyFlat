@@ -1,20 +1,22 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-public class ShoppingLabel {
+@Entity
+public class ItemLabel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long shopLabelId;
 
     @Column
-    private String value;
+    private String labelValue;
 
     @Column
-    private String colour;
+    private String labelColour;
 
 }
