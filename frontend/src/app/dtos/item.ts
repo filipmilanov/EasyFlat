@@ -1,5 +1,6 @@
 import {DigitalStorageDto} from "./digitalStorageDto";
 import {IngredientDto} from "./ingredientDto";
+import {ShoppingLabelDto} from "./shoppingLabel";
 
 export class ItemDto {
   itemId?: number;
@@ -19,4 +20,8 @@ export class ItemDto {
   addToFiance: boolean;
   ingredients?: [IngredientDto];
   digitalStorage?: DigitalStorageDto;
+}
+
+export class ShoppingItemDto extends ItemDto {
+  labels?: ShoppingLabelDto[];
 }
