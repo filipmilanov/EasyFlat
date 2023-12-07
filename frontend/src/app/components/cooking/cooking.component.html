@@ -1,16 +1,40 @@
-
-<h1>Cooking</h1>
-
-
-<div class="container ">
-  <div style="width: 100%; height: 100%; border: 1px black solid"></div>
-  <div class="row row-cols-4">
-    <div class="col" *ngFor="let recipe of recipes">
-        <app-recipe-card [recipe]="recipe"
-        ></app-recipe-card>
+<ng-container *ngIf="empty; else recipesSection">
+  <div style="width: 100%; height: 100%; border: 1px black solid; background-color: indianred; padding: 1rem; color: white;">
+    <p>
+      <strong>Testing Feature Notice:</strong>
+      This section is for testing purposes. Before testing, ensure you've added real products to the Digital Storage (DS).
+      The results are limited to 1 to save API resources.
+    </p>
+  </div>
+  <div class="container-fluid d-flex align-items-center justify-content-center" style="height: 100vh;">
+    <div class="text-center">
+      <h1>Cooking</h1>
+      <div style="width: 100%; height: 1px; background-color: black; margin: 1rem 0;"></div>
+      <div class="row row-cols-4">
+        <div class="col" *ngFor="let recipe of recipes">
+          <app-recipe-card [recipe]="recipe"></app-recipe-card>
+        </div>
+      </div>
+      <button (click)="reloadRecipes()" *ngIf="empty" class="btn btn-primary btn-lg mt-3 py-2 px-4 rounded-pill">
+        Suggest New Recipe
+      </button>
     </div>
   </div>
-</div>
+</ng-container>
+
+<ng-template #recipesSection>
+  <!-- Displayed when empty is false -->
+  <h1 class="text-center">Cooking</h1>
+  <div class="container text-center mt-5">
+    <div style="width: 100%; height: 100%; border: 1px black solid"></div>
+    <div class="row row-cols-4">
+      <div class="col" *ngFor="let recipe of recipes" style="margin-right: 2rem">
+        <app-recipe-card [recipe]="recipe"></app-recipe-card>
+      </div>
+    </div>
+  </div>
+</ng-template>
 
 
-<button (click)="reloadRecipes()"> New Recipes </button>
+
+
