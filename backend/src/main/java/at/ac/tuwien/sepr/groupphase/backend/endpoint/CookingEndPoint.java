@@ -17,7 +17,6 @@ public class CookingEndPoint {
 
     private CookingService cookingService;
 
-
     public CookingEndPoint(CookingService cookingService) {
         this.cookingService = cookingService;
     }
@@ -26,5 +25,11 @@ public class CookingEndPoint {
     @GetMapping
     public List<RecipeSuggestionDto> getRecipeSuggestion() throws ValidationException {
         return cookingService.getRecipeSuggestion(1L);
+    }
+
+    @PermitAll
+    @GetMapping("/cookbook")
+    public List<RecipeSuggestionDto> getCookbook() throws ValidationException {
+        return cookingService.getCookbook();
     }
 }
