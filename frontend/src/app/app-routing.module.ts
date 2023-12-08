@@ -43,7 +43,8 @@ const routes: Routes = [
   {path: 'cooking', component: CookingComponent},
   {path: 'cookbook', children: [
       {path: '', component: CookbookComponent},
-      {path: 'create', component: CookbookCreateComponent, data: {mode: CookbookMode.create}}
+      {path: 'create', component: CookbookCreateComponent, data: {mode: CookbookMode.create}},
+      {path: 'edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}}
     ]}
 ];
 
