@@ -1,5 +1,6 @@
-package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
+package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.NotEmpty;
