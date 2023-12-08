@@ -44,19 +44,22 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final SharedFlatService sharedFlatService;
     private final Authenticator authenticator;
     private final ItemMapper itemMapper;
+    private CustomUserDetailService customUserDetailService;
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      DigitalStorageMapper digitalStorageMapper,
                                      DigitalStorageValidator digitalStorageValidator,
                                      SharedFlatService sharedFlatService,
-                                     ItemMapper itemMapper
-                                     Authenticator authenticator) {
+                                     ItemMapper itemMapper,
+                                     Authenticator authenticator,
+                                     CustomUserDetailService customUserDetailService) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
         this.itemMapper = itemMapper;
         this.sharedFlatService = sharedFlatService;
         this.authenticator = authenticator;
+        this.customUserDetailService = customUserDetailService;
     }
 
     @Override
@@ -70,10 +73,17 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto) {
+    public List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto, String jwt) throws AuthenticationException {
         LOGGER.trace("findAll({})", digitalStorageSearchDto);
-        return digitalStorageRepository.findByTitleContaining(
-            (digitalStorageSearchDto != null) ? digitalStorageSearchDto.title() : ""
+
+        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+        if (applicationUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exists"));
+        }
+
+        return digitalStorageRepository.findByTitleContainingAndSharedFlatIs(
+            (digitalStorageSearchDto != null) ? digitalStorageSearchDto.title() : "",
+            applicationUser.getSharedFlat()
         );
     }
 

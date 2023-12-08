@@ -43,11 +43,11 @@ public class StorageEndpoint {
     @PermitAll
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<DigitalStorageDto> findAll(DigitalStorageSearchDto digitalStorageDto) {
+    public List<DigitalStorageDto> findAll(DigitalStorageSearchDto digitalStorageDto, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("findAll({})", digitalStorageDto);
 
         return digitalStorageMapper.entityListToDtoList(
-            digitalStorageService.findAll(digitalStorageDto)
+            digitalStorageService.findAll(digitalStorageDto, jwt)
         );
     }
 

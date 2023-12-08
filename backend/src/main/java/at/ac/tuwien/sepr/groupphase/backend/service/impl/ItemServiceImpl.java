@@ -90,7 +90,7 @@ public class ItemServiceImpl implements ItemService {
             itemDto = itemDto.withAlwaysInStock(false);
         }
 
-        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
         List<Unit> unitList = unitService.findAll();
         itemValidator.validateForCreate(itemDto, digitalStorageList, unitList);
 
@@ -137,14 +137,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item update(ItemDto itemDto) throws ConflictException, ValidationException {
+    public Item update(ItemDto itemDto) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("update({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
             itemDto = itemDto.withAlwaysInStock(false);
         }
 
-        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, "NO JWT");
         Item presistedItem = this.findById(itemDto.itemId()).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         List<Unit> unitList = unitService.findAll();
 
