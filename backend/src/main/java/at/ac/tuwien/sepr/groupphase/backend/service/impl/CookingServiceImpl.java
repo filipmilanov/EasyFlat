@@ -14,6 +14,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepositor
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -83,19 +84,21 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
+    @Cacheable("addresses")
     public RecipeDetailDto getRecipeDetails(Long recipeId) {
         String reqString = "https://api.spoonacular.com/recipes/" + recipeId + "/information" + "?apiKey=" + apiKey + "&includeNutrition=false";
         ResponseEntity<RecipeDetailDto> response = restTemplate.exchange(reqString, HttpMethod.GET, null, new ParameterizedTypeReference<RecipeDetailDto>() {
         });
 
-        String stepsReqString = "https://api.spoonacular.com/recipes/" + recipeId + "/analyzedInstructions" + "?apiKey=" + apiKey;
-        ResponseEntity<CookingSteps> responseSteps = restTemplate.exchange(stepsReqString, HttpMethod.GET, null, new ParameterizedTypeReference<CookingSteps>() {
+        String stepsReqString = "https://api.spoonacular.com/recipes/" + recipeId + "/analyzedInstructions" + "?apiKey=" + apiKey + "&stepBreakdown=true";
+        ResponseEntity<List<CookingSteps>> responseSteps = restTemplate.exchange(stepsReqString, HttpMethod.GET, null, new ParameterizedTypeReference<List<CookingSteps>>() {
         });
 
         RecipeDetailDto recipeDetailDto = response.getBody();
-
-        CookingSteps steps = responseSteps.getBody();
-
+        CookingSteps steps = null;
+        if (responseSteps.getBody() != null) {
+            steps = responseSteps.getBody().get(0);
+        }
         if (recipeDetailDto != null) {
             return new RecipeDetailDto(
                 recipeId,

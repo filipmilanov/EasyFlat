@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {RecipeSuggestion} from "../../../dtos/recipeSuggestion";
+import {RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 
 @Component({
   selector: 'app-cookbook-card',

@@ -1,10 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,5 +32,11 @@ public class CookingEndPoint {
     @GetMapping("/cookbook")
     public List<RecipeSuggestionDto> getCookbook() throws ValidationException {
         return cookingService.getCookbook();
+    }
+
+    @PermitAll
+    @GetMapping("/detail/{id}")
+    public RecipeDetailDto getRecipeDetail(@PathVariable Long id) {
+        return cookingService.getRecipeDetails(id);
     }
 }

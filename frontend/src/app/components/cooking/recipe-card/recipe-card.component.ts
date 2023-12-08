@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {RecipeSuggestion} from "../../../dtos/recipeSuggestion";
+import {RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 
 
 @Component({
@@ -17,5 +17,7 @@ export class RecipeCardComponent {
       this.recipe.summary.slice(0, maxLength) + '...' :
       this.recipe.summary;
   }
+
+
 
 }
