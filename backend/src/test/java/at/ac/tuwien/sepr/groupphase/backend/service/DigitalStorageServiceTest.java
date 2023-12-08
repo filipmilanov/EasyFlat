@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
@@ -90,12 +91,12 @@ class DigitalStorageServiceTest {
     }
 
     @Test
-    void givenNothingWhenFindAllThenAllDigitalStoragesAreReturned() {
+    void givenNothingWhenFindAllThenAllDigitalStoragesOfActiveUserAreReturned() throws AuthenticationException {
         // when
-        List<DigitalStorage> actual = service.findAll(null);
+        List<DigitalStorage> actual = service.findAll(null, "Bearer Token");
 
         // then
-        assertThat(actual).hasSizeGreaterThanOrEqualTo(5);
+        assertThat(actual).hasSizeGreaterThanOrEqualTo(1);
     }
 
 
