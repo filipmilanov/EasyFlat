@@ -243,7 +243,7 @@
           <span *ngFor="let ingredient of item.ingredients; let i = index"
                 class="p-2">
             <div class="border-bottom">
-              {{ingredient.name}}
+              {{ingredient.name}} {{ingredient.amount}} {{ingredient.unit}}
               <button type="button"
                       class="btn btn-light ms-2"
                       (click)="removeIngredient(i)">
