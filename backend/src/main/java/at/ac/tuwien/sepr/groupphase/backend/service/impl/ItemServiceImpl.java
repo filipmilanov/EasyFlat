@@ -17,6 +17,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ItemStatsRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.Authenticator.Authenticator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -40,7 +41,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final ItemValidator itemValidator;
     private final ItemStatsRepository itemStatsRepository;
-    private final CustomUserDetailService customUserDetailService;
+    private final Authenticator authenticator;
+    private final SharedFlatService sharedFlatService;
 
     public ItemServiceImpl(ItemRepository itemRepository,
                            DigitalStorageService digitalStorageService,
@@ -48,14 +50,16 @@ public class ItemServiceImpl implements ItemService {
                            ItemMapper itemMapper,
                            ItemValidator itemValidator,
                            ItemStatsRepository itemStatsRepository,
-                           CustomUserDetailService customUserDetailService) {
+                           Authenticator authenticator,
+                           SharedFlatService sharedFlatService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
         this.itemMapper = itemMapper;
         this.itemValidator = itemValidator;
         this.itemStatsRepository = itemStatsRepository;
-        this.customUserDetailService = customUserDetailService;
+        this.authenticator = authenticator;
+        this.sharedFlatService = sharedFlatService;
     }
 
     @Override
@@ -77,13 +81,27 @@ public class ItemServiceImpl implements ItemService {
             itemDto = itemDto.withAlwaysInStock(false);
         }
 
-        ApplicationUser user = customUserDetailService.getUser(jwt);
-        if (!Objects.equals(user.getSharedFlat().getDigitalStorage().getStorId(), itemDto.digitalStorage().storId())) {
-            throw new AuthenticationException("Authentication Issue", List.of("The given digital storage does not belong to the user's shared flat!"));
-        }
-
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         itemValidator.validateForCreate(itemDto, digitalStorageList);
+
+        ItemDto finalItemDto = itemDto;
+        DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
+            .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
+
+        List<Long> allowedUser = sharedFlatService.findById(
+                matchingDigitalStorage.getSharedFlat().getId(),
+                jwt
+            ).getUsers().stream()
+            .map(ApplicationUser::getId)
+            .toList();
+        authenticator.authenticateUser(
+            jwt,
+            allowedUser,
+            "The given digital storage does not belong to the user's shared flat!"
+        );
+
 
         List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
 
