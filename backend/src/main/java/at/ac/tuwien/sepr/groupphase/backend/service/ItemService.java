@@ -17,9 +17,10 @@ public interface ItemService {
      * Search for an item in the database with given ID.
      *
      * @param id a valid ID
+     * @param jwt a valid JWT of a user
      * @return if the id exists in the DB, an Optional of a persisted Item with given ID, an empty optional otherwise
      */
-    Optional<Item> findById(Long id);
+    Optional<Item> findById(Long id, String jwt) throws AuthenticationException;
 
     /**
      * Validates and Creates a new {@link Item} in the db.

@@ -62,14 +62,26 @@ public class ItemServiceImpl implements ItemService {
         this.sharedFlatService = sharedFlatService;
     }
 
-    @Override
-    public Optional<Item> findById(Long id) {
+    @Override // TODO: it should not return a Optional, it should throw a NotFoundException, if there is non
+    public Optional<Item> findById(Long id, String jwt) throws AuthenticationException {
         LOGGER.trace("findById({})", id);
         if (id == null) {
             return Optional.empty();
         }
 
-        return itemRepository.findById(id);
+        Optional<Item> item = itemRepository.findById(id);
+
+        if (item.isEmpty()) {
+            return item;
+        }
+
+        List<Long> allowedUser = item.get().getStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
+        authenticator.authenticateUser(
+            jwt,
+            allowedUser,
+            "The given item does not belong to the user's shared flat!"
+        );
+        return item;
     }
 
     @Override
@@ -134,7 +146,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, "NO JWT");
-        Item presistedItem = this.findById(itemDto.itemId()).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        Item presistedItem = this.findById(itemDto.itemId(), "NO JWT").orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         itemValidator.validateForUpdate(itemDto, digitalStorageList);
 
         List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
