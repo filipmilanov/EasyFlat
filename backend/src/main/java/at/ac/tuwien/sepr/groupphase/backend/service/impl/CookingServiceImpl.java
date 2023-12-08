@@ -1,21 +1,19 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.CookingEndPoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.RecipeDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.RecipeSuggestionDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookingSteps;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeIngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
-import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +59,7 @@ public class CookingServiceImpl implements CookingService {
         items.addAll(alwaysInStockItems);
         items.addAll(notAlwaysInStockItems);
 
-        String requestString = getRequestString(items);
+        String requestString = getRequestStringForRecipeSearch(items);
         ResponseEntity<List<RecipeDto>> exchange = restTemplate.exchange(requestString, HttpMethod.GET, null, new ParameterizedTypeReference<List<RecipeDto>>() {
         });
 
@@ -85,6 +83,34 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
+    public RecipeDetailDto getRecipeDetails(Long recipeId) {
+        String reqString = "https://api.spoonacular.com/recipes/" + recipeId + "/information" + "?apiKey=" + apiKey + "&includeNutrition=false";
+        ResponseEntity<RecipeDetailDto> response = restTemplate.exchange(reqString, HttpMethod.GET, null, new ParameterizedTypeReference<RecipeDetailDto>() {
+        });
+
+        String stepsReqString = "https://api.spoonacular.com/recipes/" + recipeId + "/analyzedInstructions" + "?apiKey=" + apiKey;
+        ResponseEntity<CookingSteps> responseSteps = restTemplate.exchange(stepsReqString, HttpMethod.GET, null, new ParameterizedTypeReference<CookingSteps>() {
+        });
+
+        RecipeDetailDto recipeDetailDto = response.getBody();
+
+        CookingSteps steps = responseSteps.getBody();
+
+        if (recipeDetailDto != null) {
+            return new RecipeDetailDto(
+                recipeId,
+                recipeDetailDto.title(),
+                recipeDetailDto.servings(),
+                recipeDetailDto.readyInMinutes(),
+                recipeDetailDto.extendedIngredients(),
+                recipeDetailDto.summary(),
+                steps
+            );
+        }
+        return null;
+    }
+
+    @Override
     public List<RecipeSuggestionDto> getCookbook() throws ValidationException {
         List<RecipeSuggestionDto> recipesDto = new LinkedList<>();
         List<RecipeSuggestion> recipes = repository.findAll();
@@ -94,7 +120,7 @@ public class CookingServiceImpl implements CookingService {
         return recipesDto;
     }
 
-    private String getRequestString(List<ItemListDto> items) {
+    private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
         List<String> ingredients = new LinkedList<>();
         for (ItemListDto item : items) {
             ingredients.add(item.generalName());
@@ -113,5 +139,9 @@ public class CookingServiceImpl implements CookingService {
         }
         requestString += "&number=1";
         return requestString;
+    }
+
+    private String getRequestStringForDetails(String recipeId) {
+        return "https://api.spoonacular.com/recipes/" + recipeId + "/analyzedInstructions" + "?apiKey=" + apiKey;
     }
 }
