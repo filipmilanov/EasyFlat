@@ -15,7 +15,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.Authenticator.Authenticator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authenticator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,11 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final SharedFlatService sharedFlatService;
     private final Authenticator authenticator;
 
-    public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository, DigitalStorageMapper digitalStorageMapper, DigitalStorageValidator digitalStorageValidator, SharedFlatService sharedFlatService, Authenticator authenticator) {
+    public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
+                                     DigitalStorageMapper digitalStorageMapper,
+                                     DigitalStorageValidator digitalStorageValidator,
+                                     SharedFlatService sharedFlatService,
+                                     Authenticator authenticator) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;

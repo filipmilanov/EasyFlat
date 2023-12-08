@@ -1,4 +1,4 @@
-package at.ac.tuwien.sepr.groupphase.backend.service.impl.Authenticator;
+package at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
