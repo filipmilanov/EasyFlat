@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -65,9 +66,10 @@ public interface DigitalStorageService {
      * Validates and Creates a new {@link DigitalStorage} in the db.
      *
      * @param storageDto a storage without ID
+     * @param jwt        a valid jwt
      * @return an object of type {@link DigitalStorage} which is persisted and has an ID
      */
-    DigitalStorage create(DigitalStorageDto storageDto) throws ConflictException, ValidationException;
+    DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthenticationException;
 
     /**
      * Validates and Updates a new {@link DigitalStorage} in the db.
