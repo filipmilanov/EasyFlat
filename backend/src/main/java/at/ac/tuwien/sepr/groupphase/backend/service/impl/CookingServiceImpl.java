@@ -80,13 +80,6 @@ public class CookingServiceImpl implements CookingService {
             }
         }
 
-        List<RecipeSuggestion> entities = new LinkedList<>();
-
-        for (RecipeSuggestionDto recipeSuggestionDto : recipeSuggestions) {
-            RecipeSuggestion toAdd = recipeMapper.dtoToEntity(recipeSuggestionDto, recipeIngredientMapper.dtoListToEntityList(recipeSuggestionDto.extendedIngredients()));
-            repository.save(toAdd);
-        }
-
 
         return recipeSuggestions;
     }
