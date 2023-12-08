@@ -1,22 +1,23 @@
 import {RecipeIngredient} from "./recipeIngredient";
+import {CookingSteps} from "./CookingSteps";
 
 export class RecipeSuggestion {
-  recipeId: string;
+  id: string;
   title: string;
   summary:string;
   servings:number;
   readyInMinutes:number;
-  ingredients: RecipeIngredient[]
+  extendedIngredients: RecipeIngredient[]
 
 }
 
 
 export class RecipeDetailDto {
-  recipeId: string;
+  id: string;
   title: string;
   summary:string;
   servings:number;
   readyInMinutes:number;
-  ingredients: RecipeIngredient[]
-
+  extendedIngredients: RecipeIngredient[]
+  steps:CookingSteps;
 }
