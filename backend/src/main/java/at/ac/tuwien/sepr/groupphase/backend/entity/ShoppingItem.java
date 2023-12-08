@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
@@ -72,9 +73,19 @@ public class ShoppingItem {
     @OneToMany
     private List<ItemStats> itemStats;
 
-    @Column
     @ManyToMany(fetch = FetchType.EAGER)
     private List<ItemLabel> labels;
+
+    @ManyToOne
+    private ShoppingList shoppingList;
+
+    public ShoppingList getShoppingList() {
+        return shoppingList;
+    }
+
+    public void setShoppingList(ShoppingList shoppingList) {
+        this.shoppingList = shoppingList;
+    }
 
     @AssertTrue(message = "The current quantity cannot be larger then the total")
     private boolean quantityCurrentLessThenTotal() {

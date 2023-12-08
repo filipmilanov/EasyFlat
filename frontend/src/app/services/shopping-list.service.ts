@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {ItemDto, ShoppingItemDto} from "../dtos/item";
 import {Observable} from "rxjs";
+import {ShoppingList} from "../dtos/shoppingList";
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,10 @@ export class ShoppingListService {
   }
 
   getItemsWithShopId(shopId: string):Observable<ShoppingItemDto[]> {
-    return this.http.get<ShoppingItemDto[]>(this.baseUri + "/list/" + shopId);
+    return this.http.get<ShoppingItemDto[]>(this.baseUri + "/list-items/" + shopId);
+  }
+
+  getShoppingListById(shoppingListId: string): Observable<ShoppingList> {
+    return this.http.get<ShoppingList>(this.baseUri + '/list/' + shoppingListId);
   }
 }

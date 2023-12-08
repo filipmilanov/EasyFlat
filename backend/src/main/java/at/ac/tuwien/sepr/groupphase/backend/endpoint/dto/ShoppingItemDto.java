@@ -39,6 +39,7 @@ public record ShoppingItemDto(
     DigitalStorageDto digitalStorage,
     List<IngredientDto> ingredients,
     List<ItemStats> itemStats,
-    List<ItemLabelDto> labels
+    List<ItemLabelDto> labels,
+    ShoppingListDto shoppingList
 ) {
 }

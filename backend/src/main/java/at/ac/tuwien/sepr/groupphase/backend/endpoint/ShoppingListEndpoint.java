@@ -2,9 +2,12 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
@@ -30,10 +33,12 @@ public class ShoppingListEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ShoppingListService shoppingService;
     private final ItemMapper itemMapper;
+    private final ShoppingListMapper shoppingListMapper;
 
-    public ShoppingListEndpoint(ShoppingListService shoppingService, ItemMapper mapper) {
+    public ShoppingListEndpoint(ShoppingListService shoppingService, ItemMapper mapper, ShoppingListMapper shoppingListMapper) {
         this.shoppingService = shoppingService;
         this.itemMapper = mapper;
+        this.shoppingListMapper = shoppingListMapper;
     }
 
     @Secured("ROLE_USER")
@@ -53,12 +58,12 @@ public class ShoppingListEndpoint {
         return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToShopping(currentItem)));
     }
 
-    @GetMapping("/list/{listId}")
-    public Optional<ShoppingItemDto> getItemsById(@PathVariable Long listId) {
-        LOGGER.info("getItemsById({})", listId);
-        Optional<ShoppingItem> item = shoppingService.getItemsById(listId);
+    @Secured("ROLE_USER")
+    @GetMapping("/list/{id}")
+    public Optional<ShoppingListDto> getShoppingListById(@PathVariable Long id) {
+        Optional<ShoppingList> ret = shoppingService.getShoppingListById(id);
 
-        return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToShopping(currentItem)));
+        return ret.flatMap(shoppingList -> Optional.ofNullable(shoppingListMapper.entityToDto(shoppingList)));
     }
 
 }
