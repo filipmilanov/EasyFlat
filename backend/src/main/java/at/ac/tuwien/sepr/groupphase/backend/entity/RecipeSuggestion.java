@@ -28,7 +28,7 @@ public class RecipeSuggestion {
 
     @Version Integer version;
     @OneToMany
-    private List<RecipeIngredient> ingredients;
+    private List<RecipeIngredient> extendedIngredients;
 
     private String summary;
 
@@ -38,5 +38,53 @@ public class RecipeSuggestion {
 
     public Long getId() {
         return id;
+    }
+
+    public void setExtendedIngredients(List<RecipeIngredient> extendedIngredients) {
+        this.extendedIngredients = extendedIngredients;
+    }
+
+    public Integer getReadyInMinutes() {
+        return readyInMinutes;
+    }
+
+    public Integer getServings() {
+        return servings;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public List<RecipeIngredient> getExtendedIngredients() {
+        return extendedIngredients;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setReadyInMinutes(Integer readyInMinutes) {
+        this.readyInMinutes = readyInMinutes;
+    }
+
+    public void setServings(Integer servings) {
+        this.servings = servings;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }

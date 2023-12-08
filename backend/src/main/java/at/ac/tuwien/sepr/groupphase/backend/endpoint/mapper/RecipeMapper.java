@@ -17,9 +17,9 @@ import java.util.List;
 @Mapper
 public abstract class RecipeMapper {
 
-    // @Mapping(target = "ingredients", expression = "java( ingredients )")
-    //  public abstract RecipeSuggestion dtoToEntity(RecipeSuggestionDto recipeSuggestionDto,
-    //                                           @Context List<RecipeIngredientDto> ingredients);*/
+    @Mapping(target = "extendedIngredients", expression = "java( ingredients )")
+    public abstract RecipeSuggestion dtoToEntity(RecipeSuggestionDto recipeSuggestionDto,
+                                                 @Context List<RecipeIngredient> ingredients);
 
     public abstract RecipeSuggestionDto entityToRecipeSuggestionDto(RecipeSuggestion recipeSuggestion);
 }

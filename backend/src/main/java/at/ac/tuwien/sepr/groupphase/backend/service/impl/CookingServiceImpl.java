@@ -1,16 +1,20 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.CookingEndPoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.RecipeDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.RecipeSuggestionDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeIngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -32,18 +36,19 @@ public class CookingServiceImpl implements CookingService {
 
     private final String apiKey = "3b683601a4f44cd38d367ab0a1db032d";
     private final RecipeSuggestionRepository repository;
-    private final RecipeMapper recipeMapper;
 
     private String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
+    private RecipeMapper recipeMapper;
 
-    @Autowired
-    public CookingServiceImpl(RestTemplate restTemplate, RecipeSuggestionRepository repository, DigitalStorageServiceImpl digitalStorageService,
-                              RecipeMapper recipeMapper) {
+    private RecipeIngredientMapper recipeIngredientMapper;
+
+    public CookingServiceImpl(RestTemplate restTemplate, RecipeSuggestionRepository repository, DigitalStorageServiceImpl digitalStorageService, RecipeMapper recipeMapper, RecipeIngredientMapper recipeIngredientMapper) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
         this.recipeMapper = recipeMapper;
+        this.recipeIngredientMapper = recipeIngredientMapper;
     }
 
     @Override
@@ -73,6 +78,13 @@ public class CookingServiceImpl implements CookingService {
                     recipeSuggestions.add(response.getBody());
                 }
             }
+        }
+
+        List<RecipeSuggestion> entities = new LinkedList<>();
+
+        for (RecipeSuggestionDto recipeSuggestionDto : recipeSuggestions) {
+            RecipeSuggestion toAdd = recipeMapper.dtoToEntity(recipeSuggestionDto, recipeIngredientMapper.dtoListToEntityList(recipeSuggestionDto.extendedIngredients()));
+            repository.save(toAdd);
         }
 
 
