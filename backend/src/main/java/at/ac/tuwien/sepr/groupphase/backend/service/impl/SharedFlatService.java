@@ -1,13 +1,15 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.Authenticator.Authenticator;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
 @Service
 public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService {
@@ -28,16 +31,33 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     private final UserRepository userRepository;
 
     private final JwtTokenizer jwtTokenizer;
+    private final Authenticator authenticator;
 
     @Autowired
-    public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder, SharedFlatMapper sharedFlatMapper, JwtTokenizer jwtTokenizer, UserRepository userRepository) {
+    public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder, SharedFlatMapper sharedFlatMapper, JwtTokenizer jwtTokenizer, UserRepository userRepository, Authenticator authenticator) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.sharedFlatMapper = sharedFlatMapper;
         this.jwtTokenizer = jwtTokenizer;
         this.userRepository = userRepository;
+        this.authenticator = authenticator;
     }
 
+    @Override
+    public SharedFlat findById(Long id, String jwt) throws AuthenticationException {
+        LOGGER.trace("findById({}, {})", id, jwt);
+
+        Optional<SharedFlat> sharedFlatOptional = sharedFlatRepository.findById(id);
+        SharedFlat sharedFlat = sharedFlatOptional.orElseThrow(() -> new NotFoundException("Shared flat not found"));
+
+        authenticator.authenticateUser(
+            jwt,
+            sharedFlat.getUsers().stream().map(ApplicationUser::getId).toList(),
+            "User does not have access to this shared flat"
+        );
+
+        return sharedFlat;
+    }
 
     public WgDetailDto create(SharedFlat sharedFlat, String authToken) throws Exception {
         LOGGER.debug("Create a new shared flat");

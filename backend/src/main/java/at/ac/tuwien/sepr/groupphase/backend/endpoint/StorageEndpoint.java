@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,10 +54,10 @@ public class StorageEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DigitalStorageDto create(@RequestBody DigitalStorageDto digitalStorageDto) throws ValidationException, ConflictException {
+    public DigitalStorageDto create(@RequestBody DigitalStorageDto digitalStorageDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("create({})", digitalStorageDto);
         return digitalStorageMapper.entityToDto(
-            digitalStorageService.create(digitalStorageDto)
+            digitalStorageService.create(digitalStorageDto, jwt)
         );
     }
 
