@@ -4,11 +4,14 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
@@ -24,20 +27,23 @@ import java.util.Optional;
 public class ShoppingListServiceImpl implements ShoppingListService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ShoppingRepository shoppingRepository;
+    private final ShoppingListRepository shoppingListRepository;
+    private final ShoppingListMapper shoppingListMapper;
     private final LabelService labelService;
     private final ItemMapper itemMapper;
 
-    public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, LabelService labelService, ItemMapper itemMapper) {
+    public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, LabelService labelService, ItemMapper itemMapper, ShoppingListRepository shoppingListRepository, ShoppingListMapper shoppingListMapper) {
         this.shoppingRepository = shoppingRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
+        this.shoppingListRepository = shoppingListRepository;
+        this.shoppingListMapper = shoppingListMapper;
     }
 
     @Override
     public ShoppingItem create(ShoppingItemDto itemDto) {
         List<ItemLabel> labels = findItemLabelsAndCreateNew(itemDto.labels());
-
-        ShoppingItem createdItem = shoppingRepository.save(itemMapper.dtoToShopping(itemDto, labels));
+        ShoppingItem createdItem = shoppingRepository.save(itemMapper.dtoToShopping(itemDto, labels, shoppingListMapper.dtoToEntity(itemDto.shoppingList())));
         createdItem.setLabels(labels);
         return createdItem;
     }
@@ -53,11 +59,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public Optional<ShoppingItem> getItemsById(Long listId) {
-        if (listId == null){
+    public Optional<ShoppingList> getShoppingListById(Long shopListId) {
+        if (shopListId == null) {
             return Optional.empty();
         }
-        return Optional.empty();
+
+        return shoppingListRepository.getByShopListId(shopListId);
     }
 
     private List<ItemLabel> findItemLabelsAndCreateNew(List<ItemLabelDto> labels) {

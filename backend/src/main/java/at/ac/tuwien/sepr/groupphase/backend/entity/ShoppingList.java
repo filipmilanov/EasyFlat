@@ -20,14 +20,19 @@ public class ShoppingList {
     @Column
     private String name;
 
-    @NotNull
-    private String name;
+    public Long getShopListId() {
+        return shopListId;
+    }
 
-    @OneToMany
-    private List<ShoppingItem> items;
+    public String getName() {
+        return name;
+    }
 
-    @NotNull
-    private Long quantity;
+    public void setShopListId(Long shopListId) {
+        this.shopListId = shopListId;
+    }
 
-
+    public void setName(String name) {
+        this.name = name;
+    }
 }

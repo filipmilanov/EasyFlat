@@ -79,6 +79,16 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.data.subscribe(data => {
       this.mode = data.mode;
+      this.route.params.subscribe(params => {
+        // Extract the 'id' parameter from the route
+        const shoppingListId = params['id'];
+        this.shoppingService.getShoppingListById(shoppingListId).subscribe({
+          next: res => {
+            this.item.shoppingList = res;
+          }
+        });
+
+      });
     });
 
     if (this.mode === ItemCreateEditMode.edit) {

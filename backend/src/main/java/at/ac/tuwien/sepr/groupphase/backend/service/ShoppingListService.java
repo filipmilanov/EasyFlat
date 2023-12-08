@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 
 import java.util.Optional;
 
@@ -10,5 +11,5 @@ public interface ShoppingListService {
 
     Optional<ShoppingItem> getById(Long itemId);
 
-    Optional<ShoppingItem> getItemsById(Long listId);
+    Optional<ShoppingList> getShoppingListById(Long id);
 }
