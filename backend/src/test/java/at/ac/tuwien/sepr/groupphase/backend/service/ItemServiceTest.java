@@ -328,7 +328,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenItemWithInvalidStorageWhenCreateThenAuthenticationExceptionIsThrown() {
+    void givenItemWithInvalidStorageWhenCreateThenConflictExceptionIsThrown() {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
@@ -359,10 +359,12 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(AuthenticationException.class, () -> service.create(itemDto, "Bearer Token")).getMessage();
+        String message = assertThrows(ConflictException.class, () -> service.create(itemDto, "Bearer Token")).getMessage();
+        assertThat(message).isNotEmpty();
         assertThat(message)
             .contains(
-                "digital storage"
+                "Digital Storage",
+                "not exists"
             );
     }
 

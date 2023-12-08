@@ -275,7 +275,7 @@ class ItemEndpointTest {
 
         // then
         assertAll(
-            () -> assertEquals(HttpStatus.METHOD_NOT_ALLOWED.value(), response.getStatus()),
+            () -> assertEquals(HttpStatus.CONFLICT.value(), response.getStatus()),
             () -> {
                 String content = response.getContentAsString();
                 assertThat(content).contains("not");

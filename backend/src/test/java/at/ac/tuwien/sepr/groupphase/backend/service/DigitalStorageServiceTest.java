@@ -4,13 +4,19 @@ import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -19,6 +25,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 
 @SpringBootTest
@@ -32,9 +40,26 @@ class DigitalStorageServiceTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
+    @MockBean
+    private CustomUserDetailService customUserDetailService;
+
+    @MockBean
+    private JwtTokenizer jwtTokenizer;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private SharedFlatService sharedFlatService;
+
+    private ApplicationUser applicationUser;
+
     @BeforeEach
     public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
+
+        applicationUser = userRepository.findById(1L).orElseThrow();
+        when(customUserDetailService.getUser(any(String.class))).thenReturn(applicationUser);
     }
 
 
@@ -74,15 +99,24 @@ class DigitalStorageServiceTest {
     }
 
 
+
     @Test
-    void givenValidStorageWhenCreateThenStorageIsPersistedAndHasId() throws ConflictException, ValidationException {
+    void givenValidStorageWhenCreateThenStorageIsPersistedAndHasId() throws Exception {
         // given
+        when(jwtTokenizer.getEmailFromToken(any(String.class))).thenReturn(applicationUser.getEmail());
+
+        SharedFlat sharedFlat = new SharedFlat();
+        sharedFlat.setName("TestWG");
+        sharedFlat.setPassword("1234");
+
+        WgDetailDto wgDetailDto = sharedFlatService.create(sharedFlat, "");
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("MyTestStorage")
+            .sharedFlat(wgDetailDto)
             .build();
 
         // when
-        DigitalStorage actual = service.create(digitalStorageDto);
+        DigitalStorage actual = service.create(digitalStorageDto, "");
 
         // then
         Optional<DigitalStorage> persisted = service.findById(actual.getStorId());
@@ -100,7 +134,7 @@ class DigitalStorageServiceTest {
             .build();
 
         // when + then
-        assertThrows(ValidationException.class, () -> service.create(digitalStorageDto));
+        assertThrows(ValidationException.class, () -> service.create(digitalStorageDto, "Bearer token"));
     }
 
     @Test
