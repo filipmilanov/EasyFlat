@@ -52,4 +52,13 @@ public class ShoppingListEndpoint {
 
         return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToShopping(currentItem)));
     }
+
+    @GetMapping("/list/{listId}")
+    public Optional<ShoppingItemDto> getItemsById(@PathVariable Long listId) {
+        LOGGER.info("getItemsById({})", listId);
+        Optional<ShoppingItem> item = shoppingService.getItemsById(listId);
+
+        return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToShopping(currentItem)));
+    }
+
 }

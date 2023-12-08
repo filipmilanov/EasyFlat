@@ -9,4 +9,6 @@ public interface ShoppingListService {
     ShoppingItem create(ShoppingItemDto itemDto);
 
     Optional<ShoppingItem> getById(Long itemId);
+
+    Optional<ShoppingItem> getItemsById(Long listId);
 }

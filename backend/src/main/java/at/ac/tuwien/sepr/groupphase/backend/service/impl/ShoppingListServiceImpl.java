@@ -52,6 +52,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return shoppingRepository.findById(itemId);
     }
 
+    @Override
+    public Optional<ShoppingItem> getItemsById(Long listId) {
+        if (listId == null){
+            return Optional.empty();
+        }
+        return Optional.empty();
+    }
+
     private List<ItemLabel> findItemLabelsAndCreateNew(List<ItemLabelDto> labels) {
         if (labels == null) {
             return List.of();

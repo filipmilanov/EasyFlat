@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -19,7 +20,14 @@ public class ShoppingList {
     @Column
     private String name;
 
+    @NotNull
+    private String name;
+
     @OneToMany
     private List<ShoppingItem> items;
+
+    @NotNull
+    private Long quantity;
+
 
 }

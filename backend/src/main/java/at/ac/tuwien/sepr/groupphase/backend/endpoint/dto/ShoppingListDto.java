@@ -6,11 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 public record ShoppingListDto(
     Long id,
 
-    @NotEmpty(message = "The title cannot be empty") String name,
-
-    ItemLabel[] labels,
-
-    Long quantity
+    @NotEmpty(message = "The title cannot be empty") String name
 ) {
 
 
