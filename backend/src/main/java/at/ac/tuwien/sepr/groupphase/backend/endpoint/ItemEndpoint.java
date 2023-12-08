@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFromApiDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -70,6 +71,13 @@ public class ItemEndpoint {
     public void delete(@PathVariable Long itemId) {
         LOGGER.info("delete({})", itemId);
         itemService.delete(itemId);
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/ean/{ean}")
+    public ItemFromApiDto findItemByEan(@PathVariable Long ean) {
+        LOGGER.info("findItemByEan({})", ean);
+        return itemService.findItemByEan(ean);
     }
 
 }
