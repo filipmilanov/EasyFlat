@@ -138,6 +138,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }).toList();
     }
 
+
     @Override
     public DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("create({})", storageDto);
