@@ -50,9 +50,9 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("{itemId}")
-    public Optional<ItemDto> findById(@PathVariable Long itemId) {
+    public Optional<ItemDto> findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("findById({})", itemId);
-        Optional<Item> item = itemService.findById(itemId);
+        Optional<Item> item = itemService.findById(itemId, jwt);
 
         return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToDto(currentItem)));
     }

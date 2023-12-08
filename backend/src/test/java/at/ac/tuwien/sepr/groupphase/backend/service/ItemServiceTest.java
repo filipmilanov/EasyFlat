@@ -67,12 +67,12 @@ class ItemServiceTest {
 
 
     @Test
-    void givenItemIdWhenFindByIdThenItemIsReturned() {
+    void givenItemIdWhenFindByIdThenItemIsReturned() throws AuthenticationException {
         // given
         Long id = 1L;
 
         // when
-        Optional<Item> actual = service.findById(id);
+        Optional<Item> actual = service.findById(id, "Bearer test");
 
         // then
         assertTrue(actual.isPresent());
@@ -80,12 +80,12 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenInvalidItemIdWhenFindByIdThenNoItem() {
+    void givenInvalidItemIdWhenFindByIdThenNoItem() throws AuthenticationException {
         // given
         Long id = -1L;
 
         // when
-        Optional<Item> actual = service.findById(id);
+        Optional<Item> actual = service.findById(id, "Bearer test");
 
         // then
         assertTrue(actual.isEmpty());
@@ -126,7 +126,7 @@ class ItemServiceTest {
         Item actual = service.create(itemDto, "Bearer test");
 
         // then
-        Optional<Item> persisted = service.findById(actual.getItemId());
+        Optional<Item> persisted = service.findById(actual.getItemId(), "Bearer token");
 
         assertTrue(persisted.isPresent());
         Assertions.assertThat(actual).isEqualTo(persisted.get());
@@ -201,7 +201,7 @@ class ItemServiceTest {
         Item actual = service.create(itemDto, "Bearer test");
 
         // then
-        Optional<Item> persisted = service.findById(actual.getItemId());
+        Optional<Item> persisted = service.findById(actual.getItemId(), "bearer token");
 
         assertTrue(persisted.isPresent());
         Assertions.assertThat(actual).isEqualTo(persisted.get());
@@ -424,7 +424,7 @@ class ItemServiceTest {
         service.update(updatedItemDto);
 
         // then:
-        Optional<Item> updatedItem = service.findById(createdItem.getItemId());
+        Optional<Item> updatedItem = service.findById(createdItem.getItemId(), "bearer token");
 
         assertAll(
             () -> assertTrue(updatedItem.isPresent()),
@@ -547,7 +547,7 @@ class ItemServiceTest {
         service.update(updatedItemDto);
 
         // then:
-        Optional<Item> updatedItem = service.findById(createdItem.getItemId());
+        Optional<Item> updatedItem = service.findById(createdItem.getItemId(), "bearer token");
 
         assertAll(
             () -> assertTrue(updatedItem.isPresent()),
@@ -653,7 +653,7 @@ class ItemServiceTest {
         service.delete(createdItem.getItemId());
 
         // then:
-        Optional<Item> deletedItem = service.findById(createdItem.getItemId());
+        Optional<Item> deletedItem = service.findById(createdItem.getItemId(), "bearer token");
         assertFalse(deletedItem.isPresent());
     }
 }
