@@ -25,6 +25,10 @@ import { AccountComponent } from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import { CreateFlatComponent } from './components/create-flat/create-flat.component';
 import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
+import {
+  ShoppingItemCreateEditComponent
+} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
+import {ColorPickerModule} from "ngx-color-picker";
 
 @NgModule({
   declarations: [
@@ -45,6 +49,7 @@ import { ShoppingListComponent } from './components/shopping-list/shopping-list.
     LoginFlatComponent,
     CreateFlatComponent,
     ShoppingListComponent,
+    ShoppingItemCreateEditComponent
   ],
   imports: [
     BrowserModule,
@@ -55,6 +60,7 @@ import { ShoppingListComponent } from './components/shopping-list/shopping-list.
     FormsModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
+    ColorPickerModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

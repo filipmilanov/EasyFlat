@@ -19,4 +19,31 @@ public class ItemLabel {
     @Column
     private String labelColour;
 
+
+    public Long getShopLabelId() {
+        return shopLabelId;
+    }
+
+    public String getLabelColour() {
+        return labelColour;
+    }
+
+    public String getLabelValue() {
+        return labelValue;
+    }
+
+    public ItemLabel setLabelColour(String labelColour) {
+        this.labelColour = labelColour;
+        return this;
+    }
+
+    public ItemLabel setLabelValue(String labelValue) {
+        this.labelValue = labelValue;
+        return this;
+    }
+
+    public ItemLabel setShopLabelId(Long shopLabelId) {
+        this.shopLabelId = shopLabelId;
+        return this;
+    }
 }

@@ -30,5 +30,5 @@ export class ItemFieldSearchDto {
 }
 
 export class ShoppingItemDto extends ItemDto {
-  labels?: ShoppingLabelDto[];
+  labels?: [ShoppingLabelDto];
 }
