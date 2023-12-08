@@ -25,9 +25,8 @@ import { AccountComponent } from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import { CreateFlatComponent } from './components/create-flat/create-flat.component';
 import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
-import {
-  ShoppingItemCreateEditComponent
-} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
+import { ShoppingListDetailComponent } from './components/shopping-list/shopping-list-detail/shopping-list-detail.component';
+import {ShoppingItemCreateEditComponent} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
 import {ColorPickerModule} from "ngx-color-picker";
 
 @NgModule({
@@ -49,6 +48,7 @@ import {ColorPickerModule} from "ngx-color-picker";
     LoginFlatComponent,
     CreateFlatComponent,
     ShoppingListComponent,
+    ShoppingListDetailComponent,
     ShoppingItemCreateEditComponent
   ],
   imports: [
