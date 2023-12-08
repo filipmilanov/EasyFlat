@@ -1,11 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.RecipeIngredientDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.RecipeSuggestionDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import org.mapstruct.Context;
