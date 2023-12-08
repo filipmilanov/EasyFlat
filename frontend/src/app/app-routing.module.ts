@@ -19,7 +19,7 @@ import {CreateFlatComponent} from "./components/create-flat/create-flat.componen
 import computeOffsets from "@popperjs/core/lib/utils/computeOffsets";
 import {CookingComponent} from "./components/cooking/cooking.component";
 import {CookbookComponent} from "./components/cookbook/cookbook.component";
-import {RecipeDetailComponent} from "./components/cooking/recipe-detail/recipe-detail.component";
+import {CookbookCreateComponent, CookbookMode} from "./components/cookbook/cookbook-create/cookbook-create.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -40,11 +40,11 @@ const routes: Routes = [
   {path: 'account', component: AccountComponent},
   {path: 'wgLogin', component: LoginFlatComponent},
   {path: 'wgCreate', component: CreateFlatComponent},
-  {path: 'cooking', children: [
-      {path: '' ,component: CookingComponent},
-      {path: ':id/detail', component: RecipeDetailComponent}
-    ]},
-  {path: 'cookbook', component: CookbookComponent}
+  {path: 'cooking', component: CookingComponent},
+  {path: 'cookbook', children: [
+      {path: '', component: CookbookComponent},
+      {path: 'create', component: CookbookCreateComponent, data: {mode: CookbookMode.create}}
+    ]}
 ];
 
 @NgModule({

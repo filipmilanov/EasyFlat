@@ -1,7 +1,7 @@
 export class RecipeIngredient {
 
-  id: number;
+  id?: number;
   name?: string;
-  unit: string;
-  amount:number;
+  unit?: string;
+  amount?:number;
 }

@@ -2,7 +2,7 @@ import {RecipeIngredient} from "./recipeIngredient";
 import {CookingSteps} from "./CookingSteps";
 
 export class RecipeSuggestion {
-  id: string;
+  id?: string;
   title: string;
   summary:string;
   servings:number;
