@@ -12,8 +12,8 @@ public record RecipeSuggestionDto(
     Long id,
     @NotEmpty
     String title,
-    int servings,
-    int readyInMinutes,
+    Integer servings,
+    Integer readyInMinutes,
     List<RecipeIngredientDto> extendedIngredients,
     String summary) {
 

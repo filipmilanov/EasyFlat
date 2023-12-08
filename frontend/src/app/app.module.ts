@@ -29,6 +29,7 @@ import { RecipeCardComponent } from './components/cooking/recipe-card/recipe-car
 import {NgOptimizedImage} from "@angular/common";
 import { CookbookComponent } from './components/cookbook/cookbook.component';
 import { CookbookCardComponent } from './components/cookbook/cookbook-card/cookbook-card.component';
+import { RecipeDetailComponent } from './components/cooking/recipe-detail/recipe-detail.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { CookbookCardComponent } from './components/cookbook/cookbook-card/cookb
     RecipeCardComponent,
     CookbookComponent,
     CookbookCardComponent,
+    RecipeDetailComponent,
   ],
   imports: [
     BrowserModule,
