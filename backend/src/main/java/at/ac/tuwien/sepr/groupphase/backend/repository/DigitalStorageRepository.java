@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.repository;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import java.util.List;
 @Repository
 public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, Long> {
 
-    List<DigitalStorage> findByTitleContaining(String title);
+    List<DigitalStorage> findByTitleContainingAndSharedFlatIs(String title, SharedFlat sharedFlat);
 
     @Query("UPDATE Item i "
         + "SET i.quantityCurrent = :quantity "

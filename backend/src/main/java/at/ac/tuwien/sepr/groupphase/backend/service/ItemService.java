@@ -36,7 +36,7 @@ public interface ItemService {
      * @param item a storage with existing ID
      * @return an object of type {@link Item} which is updated
      */
-    Item update(ItemDto item) throws ConflictException, ValidationException;
+    Item update(ItemDto item) throws ConflictException, ValidationException, AuthenticationException;
 
     /**
      * Removes an {@link Item} stored in the db.

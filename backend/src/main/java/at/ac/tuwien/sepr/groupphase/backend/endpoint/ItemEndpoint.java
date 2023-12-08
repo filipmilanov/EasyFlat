@@ -59,7 +59,7 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping("{id}")
-    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto) throws ValidationException, ConflictException {
+    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("update({},{})", id, itemDto);
         return itemMapper.entityToDto(
             itemService.update(itemDto.withId(id))

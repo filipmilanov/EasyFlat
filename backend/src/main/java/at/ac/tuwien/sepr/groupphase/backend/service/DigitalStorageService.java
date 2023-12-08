@@ -31,9 +31,10 @@ public interface DigitalStorageService {
      * Search for all Storages stored in the database which matches with the given search criteria.
      *
      * @param digitalStorageSearchDto search criteria
+     * @param jwt                     a valid jwt
      * @return a List of all persisted Storages
      */
-    List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto);
+    List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto, String jwt) throws AuthenticationException;
 
     /**
      * Search for all Items of a DigitalStorage stored in the database.
