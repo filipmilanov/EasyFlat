@@ -23,4 +23,8 @@ export class ShoppingListService {
   getById(id: string): Observable<ShoppingItemDto> {
     return this.http.get<ShoppingItemDto>(this.baseUri + '/' + id);
   }
+
+  getItemsWithShopId(shopId: string):Observable<ShoppingItemDto[]> {
+    return this.http.get<ShoppingItemDto[]>(this.baseUri + "/list/" + shopId);
+  }
 }

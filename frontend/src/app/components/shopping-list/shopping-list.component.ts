@@ -1,11 +1,9 @@
 import {Component, ElementRef, OnInit} from '@angular/core';
-import {ShoppingList} from "../../dtos/shoppingList";
 import {ToastrService} from "ngx-toastr";
-import {ShoppingListService} from "../../services/shoppingList.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ShoppingItemDto} from "../../dtos/item";
 import {ItemService} from "../../services/item.service";
-import {StorageService} from "../../services/storage.service";
+import {ShoppingListService} from "../../services/shopping-list.service";
 
 @Component({
   selector: 'app-shopping-list',
