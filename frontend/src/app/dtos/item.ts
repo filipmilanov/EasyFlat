@@ -23,5 +23,5 @@ export class ItemDto {
 }
 
 export class ShoppingItemDto extends ItemDto {
-  labels?: ShoppingLabelDto[];
+  labels?: [ShoppingLabelDto];
 }

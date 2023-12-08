@@ -1,4 +1,11 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-public record ItemLabelDto(Long id, String name) {
+import io.soabase.recordbuilder.core.RecordBuilder;
+
+@RecordBuilder
+public record ItemLabelDto(
+    Long labelId,
+    String labelValue,
+    String labelColour
+) {
 }
