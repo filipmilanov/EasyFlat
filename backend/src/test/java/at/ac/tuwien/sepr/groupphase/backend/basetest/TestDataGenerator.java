@@ -18,14 +18,22 @@ public class TestDataGenerator {
     private final CleanDatabase cleanDatabase;
     private final ApplicationUserDataGenerator applicationUserDataGenerator;
     private final SharedFlatDataGenerator sharedFlatDataGenerator;
+    private final ExpenseDataGenerator expenseDataGenerator;
 
-    public TestDataGenerator(StorageDataGenerator digitalStorageDataGenerator, IngredientsDataGenerator ingredientsDataGenerator, ItemDataGenerator itemDataGenerator, CleanDatabase cleanDatabase) {
+    public TestDataGenerator(StorageDataGenerator digitalStorageDataGenerator,
+                             IngredientsDataGenerator ingredientsDataGenerator,
+                             ItemDataGenerator itemDataGenerator,
+                             CleanDatabase cleanDatabase,
+                             ApplicationUserDataGenerator applicationUserDataGenerator,
+                             SharedFlatDataGenerator sharedFlatDataGenerator,
+                             ExpenseDataGenerator expenseDataGenerator) {
         this.digitalStorageDataGenerator = digitalStorageDataGenerator;
         this.ingredientsDataGenerator = ingredientsDataGenerator;
         this.itemDataGenerator = itemDataGenerator;
         this.cleanDatabase = cleanDatabase;
         this.applicationUserDataGenerator = applicationUserDataGenerator;
         this.sharedFlatDataGenerator = sharedFlatDataGenerator;
+        this.expenseDataGenerator = expenseDataGenerator;
     }
 
     public void cleanUp() {
@@ -35,6 +43,7 @@ public class TestDataGenerator {
         digitalStorageDataGenerator.generateDigitalStorages();
         ingredientsDataGenerator.generateIngredients();
         itemDataGenerator.generateItems();
+        expenseDataGenerator.generateExpenses();
     }
 
 
