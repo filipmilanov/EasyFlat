@@ -44,5 +44,5 @@ public interface ItemService {
      */
     void delete(Long id);
 
-    ItemFromApiDto findItemByEan(Long ean);
+    ItemFromApiDto findItemByEan(Long ean) throws ConflictException;
 }
