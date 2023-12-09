@@ -1,12 +1,14 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
+import java.util.List;
 
 //TODO: replace this class with a correct ApplicationUser Entity implementation
 @Entity(name = "application_user")
@@ -28,6 +30,8 @@ public class ApplicationUser {
     private Boolean admin;
     @ManyToOne
     private SharedFlat sharedFlat;
+    @OneToMany
+    private List<Expense> expense;
 
 
     public ApplicationUser() {
@@ -83,5 +87,17 @@ public class ApplicationUser {
 
     public SharedFlat getSharedFlat() {
         return sharedFlat;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<Expense> getExpense() {
+        return expense;
+    }
+
+    public void setExpense(List<Expense> expense) {
+        this.expense = expense;
     }
 }
