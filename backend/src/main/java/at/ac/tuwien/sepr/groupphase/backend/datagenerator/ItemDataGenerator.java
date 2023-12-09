@@ -29,7 +29,7 @@ public class ItemDataGenerator {
     }
 
     @PostConstruct
-    public void generateDigitalStorages() {
+    public void generateItems() {
         LOGGER.debug("generating {} Items ", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             Item item = new Item();
