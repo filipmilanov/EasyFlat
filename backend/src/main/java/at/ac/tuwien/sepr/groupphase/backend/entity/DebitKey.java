@@ -33,8 +33,12 @@ public class DebitKey implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         DebitKey that = (DebitKey) o;
         return Objects.equals(expenseId, that.expenseId) && Objects.equals(userId, that.userId);
     }
