@@ -52,6 +52,9 @@ export class CookingComponent implements OnInit {
           { id: 1, name: 'Ground beef', unit: 'g', amount: 500 },
           { id: 2, name: 'Tomato sauce', unit: 'ml', amount: 400 },
           // Add more ingredients as needed
+        ],
+        missedIngredients:[
+          { id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2 },
         ]
       },
       {
@@ -64,6 +67,9 @@ export class CookingComponent implements OnInit {
           { id: 3, name: 'Chicken breast', unit: 'g', amount: 300 },
           { id: 4, name: 'Broccoli', unit: 'g', amount: 200 },
           // Add more ingredients as needed
+        ],
+        missedIngredients:[
+          { id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2 },
         ]
       },
       // Add more recipes as needed
