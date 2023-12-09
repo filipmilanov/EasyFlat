@@ -8,6 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
+import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -140,6 +143,11 @@ public class ApplicationUser implements UserDetails {
     public SharedFlat getSharedFlat() {
         return sharedFlat;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 
     @Override
     public boolean equals(Object o) {
