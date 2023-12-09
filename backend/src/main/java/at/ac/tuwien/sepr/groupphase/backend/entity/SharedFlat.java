@@ -126,5 +126,13 @@ public class SharedFlat {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public Set<ApplicationUser> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<ApplicationUser> users) {
+        this.users = users;
+    }
 }
 
