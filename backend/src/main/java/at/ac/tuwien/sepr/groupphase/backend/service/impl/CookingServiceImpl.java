@@ -51,6 +51,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
+
     public List<RecipeSuggestionDto> getRecipeSuggestion(Long storId) throws ValidationException {
 
         List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(storId, new ItemSearchDto(null, true, null, null, null));
@@ -74,7 +75,19 @@ public class CookingServiceImpl implements CookingService {
                 ResponseEntity<RecipeSuggestionDto> response = restTemplate.exchange(newReqString, HttpMethod.GET, null, new ParameterizedTypeReference<RecipeSuggestionDto>() {
                 });
                 if (response.getBody() != null) {
-                    recipeSuggestions.add(response.getBody());
+                    RecipeSuggestionDto details = response.getBody();
+
+                    RecipeSuggestionDto toAdd = new RecipeSuggestionDto(
+                        details.id(),
+                        details.title(),
+                        details.servings(),
+                        details.readyInMinutes(),
+                        details.extendedIngredients(),
+                        details.summary(),
+                        recipeDto.missedIngredients()
+                    );
+
+                    recipeSuggestions.add(toAdd);
                 }
             }
         }
@@ -144,7 +157,4 @@ public class CookingServiceImpl implements CookingService {
         return requestString;
     }
 
-    private String getRequestStringForDetails(String recipeId) {
-        return "https://api.spoonacular.com/recipes/" + recipeId + "/analyzedInstructions" + "?apiKey=" + apiKey;
-    }
 }

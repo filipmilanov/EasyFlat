@@ -67,7 +67,10 @@ export class RecipeDetailComponent implements OnInit{
           { number: 4, step: 'Step 4: Final step' },
           // Add more steps as needed
         ]
-      }
+      },
+      missedIngredients:[
+        { id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2 },
+      ]
     };
 this.recipe = testRecipe;
   }

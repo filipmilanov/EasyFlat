@@ -29,7 +29,8 @@ export class CookbookCreateComponent implements OnInit{
     summary: '',
     servings: 0,
     readyInMinutes: 0,
-    extendedIngredients: []
+    extendedIngredients: [],
+    missedIngredients:[]
   };
 
   constructor(
