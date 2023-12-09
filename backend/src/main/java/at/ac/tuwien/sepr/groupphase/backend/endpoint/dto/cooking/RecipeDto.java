@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.NotEmpty;
 
+import java.util.List;
+
 @RecordBuilder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record RecipeDto(
@@ -12,8 +14,8 @@ public record RecipeDto(
     String title,
     String description,
 
-    String image
-
+    String image,
+    List<RecipeIngredientDto> missedIngredients
 ) {
 
 }
