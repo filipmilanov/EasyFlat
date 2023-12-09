@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -44,7 +45,7 @@ public class ApplicationUser implements UserDetails {
     private SharedFlat sharedFlat;
     @OneToMany
     private List<Expense> myExpense = new ArrayList<>();
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "id.user", fetch = FetchType.LAZY)
     private List<Debit> debits = new ArrayList<>();
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -168,7 +169,6 @@ public class ApplicationUser implements UserDetails {
 
     public void setDebits(List<Debit> debits) {
         this.debits = debits;
-        debits.forEach(debit -> debit.setUser(this));
     }
 
     @Override
