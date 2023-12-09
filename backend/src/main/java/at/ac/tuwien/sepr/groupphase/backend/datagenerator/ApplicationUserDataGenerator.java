@@ -29,7 +29,7 @@ public class ApplicationUserDataGenerator {
     }
 
     @PostConstruct
-    public void generateDigitalStorages() {
+    public void generateApplicationUsers() {
         LOGGER.debug("generating {} User Entities", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             ApplicationUser user = new ApplicationUser();
