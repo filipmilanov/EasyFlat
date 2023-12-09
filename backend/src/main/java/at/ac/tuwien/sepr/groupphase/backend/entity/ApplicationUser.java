@@ -31,8 +31,9 @@ public class ApplicationUser {
     @ManyToOne
     private SharedFlat sharedFlat;
     @OneToMany
-    private List<Expense> expense;
-
+    private List<Expense> myExpense;
+    @OneToMany(mappedBy = "user")
+    private List<Debit> debits;
 
     public ApplicationUser() {
     }
@@ -93,11 +94,20 @@ public class ApplicationUser {
         this.id = id;
     }
 
-    public List<Expense> getExpense() {
-        return expense;
+    public List<Expense> getMyExpense() {
+        return myExpense;
     }
 
-    public void setExpense(List<Expense> expense) {
-        this.expense = expense;
+    public void setMyExpense(List<Expense> expense) {
+        this.myExpense = expense;
+    }
+
+    public List<Debit> getDebits() {
+        return debits;
+    }
+
+    public void setDebits(List<Debit> debits) {
+        this.debits = debits;
+        debits.forEach(debit -> debit.setUser(this));
     }
 }

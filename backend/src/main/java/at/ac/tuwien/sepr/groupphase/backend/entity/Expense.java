@@ -6,6 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
+import java.util.List;
 
 @Entity
 public class Expense {
@@ -28,6 +31,11 @@ public class Expense {
 
     @ManyToOne
     private ApplicationUser paidBy;
+
+    @OneToMany(mappedBy = "expense")
+    private List<Debit> debitUsers;
+
+
 
     public Long getId() {
         return id;
@@ -75,6 +83,15 @@ public class Expense {
 
     public void setPaidBy(ApplicationUser paidBy) {
         this.paidBy = paidBy;
-        paidBy.getExpense().add(this);
+        paidBy.getMyExpense().add(this);
+    }
+
+    public List<Debit> getAffectedUsers() {
+        return debitUsers;
+    }
+
+    public void setAffectedUsers(List<Debit> debitUsers) {
+        this.debitUsers = debitUsers;
+        debitUsers.forEach(a -> a.setExpense(this));
     }
 }
