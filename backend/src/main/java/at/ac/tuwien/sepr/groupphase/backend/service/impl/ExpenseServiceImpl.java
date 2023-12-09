@@ -17,12 +17,12 @@ public class ExpenseServiceImpl implements ExpenseService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
-    public Expense findById(Long id) throws NotFoundException {
+    public Expense findById(Long id, String jwt) throws NotFoundException {
         return null;
     }
 
     @Override
-    public Expense create(ExpenseDto expenseDto) throws ValidationException, ConflictException {
+    public Expense create(ExpenseDto expenseDto, String jwt) throws ValidationException, ConflictException {
         return null;
     }
 }
