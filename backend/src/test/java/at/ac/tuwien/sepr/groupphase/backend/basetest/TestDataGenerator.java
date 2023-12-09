@@ -22,6 +22,7 @@ public class TestDataGenerator {
     private final ApplicationUserDataGenerator applicationUserDataGenerator;
     private final SharedFlatDataGenerator sharedFlatDataGenerator;
     private final UnitDataGenerator unitDataGenerator;
+    private final ExpenseDataGenerator expenseDataGenerator;
 
     public TestDataGenerator(StorageDataGenerator digitalStorageDataGenerator,
                              IngredientsDataGenerator ingredientsDataGenerator,
@@ -29,7 +30,8 @@ public class TestDataGenerator {
                              CleanDatabase cleanDatabase,
                              UnitDataGenerator unitDataGenerator,
                              ApplicationUserDataGenerator applicationUserDataGenerator,
-                             SharedFlatDataGenerator sharedFlatDataGenerator) {
+                             SharedFlatDataGenerator sharedFlatDataGenerator,
+                             ExpenseDataGenerator expenseDataGenerator)) {
         this.digitalStorageDataGenerator = digitalStorageDataGenerator;
         this.ingredientsDataGenerator = ingredientsDataGenerator;
         this.itemDataGenerator = itemDataGenerator;
@@ -37,6 +39,7 @@ public class TestDataGenerator {
         this.applicationUserDataGenerator = applicationUserDataGenerator;
         this.sharedFlatDataGenerator = sharedFlatDataGenerator;
         this.unitDataGenerator = unitDataGenerator;
+        this.expenseDataGenerator = expenseDataGenerator;
     }
 
     public void cleanUp() throws ValidationException, ConflictException {
@@ -47,6 +50,7 @@ public class TestDataGenerator {
         ingredientsDataGenerator.generateIngredients();
         itemDataGenerator.generateItems();
         unitDataGenerator.generate();
+        expenseDataGenerator.generateExpenses();
     }
 
 
