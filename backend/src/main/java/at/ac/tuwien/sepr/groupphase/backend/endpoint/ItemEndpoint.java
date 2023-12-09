@@ -75,7 +75,7 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("/ean/{ean}")
-    public ItemFromApiDto findItemByEan(@PathVariable Long ean) {
+    public ItemFromApiDto findItemByEan(@PathVariable Long ean) throws ConflictException {
         LOGGER.info("findItemByEan({})", ean);
         return itemService.findItemByEan(ean);
     }

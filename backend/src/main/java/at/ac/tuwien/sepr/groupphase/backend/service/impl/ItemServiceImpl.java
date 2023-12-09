@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFromApiDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -153,7 +155,7 @@ public class ItemServiceImpl implements ItemService {
 
     @SuppressWarnings("checkstyle:Indentation")
     @Override
-    public ItemFromApiDto findItemByEan(Long ean) {
+    public ItemFromApiDto findItemByEan(Long ean) throws ConflictException {
 
         LOGGER.trace("findItemByEan({})", ean);
 
@@ -182,6 +184,17 @@ public class ItemServiceImpl implements ItemService {
 
             String boughtAt = rootNode.path("product").path("stores").asText();
 
+            String ingredientList = rootNode.path("product").path("ingredients_text_en").asText();
+
+            List<IngredientDto> ingredientDtoList = Arrays.stream(ingredientList.split(","))
+                .map(String::trim)
+                .map(ingredientName -> IngredientDtoBuilder.builder()
+                    .name(ingredientName)
+                    .build())
+                .toList();
+
+            List<Ingredient> ingredients = findIngredientsAndCreateMissing(ingredientDtoList);
+
             Long status = rootNode.path("status").asLong();
 
             String statusText = rootNode.path("status_verbose").asText();
@@ -195,6 +208,7 @@ public class ItemServiceImpl implements ItemService {
                 unit,
                 description,
                 boughtAt,
+                ingredients,
                 status,
                 statusText
             );

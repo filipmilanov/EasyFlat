@@ -1,6 +1,9 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import io.soabase.recordbuilder.core.RecordBuilder;
+
+import java.util.List;
 
 @RecordBuilder
 public record ItemFromApiDto(
@@ -12,6 +15,7 @@ public record ItemFromApiDto(
     String unit,
     String description,
     String boughtAt,
+    List<Ingredient> ingredients,
     Long status,
     String statusText
 ) {
