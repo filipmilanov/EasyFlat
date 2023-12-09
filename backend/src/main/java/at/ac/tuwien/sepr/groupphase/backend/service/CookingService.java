@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CookingService {
 
@@ -37,4 +38,8 @@ public interface CookingService {
     List<RecipeSuggestionDto> getCookbook() throws ValidationException;
 
     RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException;
+
+    Optional<RecipeSuggestion> getCookbookRecipe(Long id);
+
+    RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException;
 }
