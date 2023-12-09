@@ -14,6 +14,7 @@ public abstract class RecipeMapper {
 
     @Mapping(target = "extendedIngredients", expression = "java( ingredients )")
     @Mapping(target = "missingIngredients", source = "recipeSuggestionDto.missingIngredients")
+    @Mapping(target = "version", ignore = true)
     public abstract RecipeSuggestion dtoToEntity(RecipeSuggestionDto recipeSuggestionDto,
                                                  @Context List<RecipeIngredient> ingredients);
 

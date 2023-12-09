@@ -12,6 +12,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
@@ -28,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 import java.lang.invoke.MethodHandles;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CookingServiceImpl implements CookingService {
@@ -144,6 +146,31 @@ public class CookingServiceImpl implements CookingService {
         RecipeSuggestion createdRecipe = repository.save(recipeEntity);
         createdRecipe.setExtendedIngredients(ingredientList);
         return createdRecipe;
+    }
+
+    @Override
+    public Optional<RecipeSuggestion> getCookbookRecipe(Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
+        Optional<RecipeSuggestion> recipe = repository.findById(id);
+        return recipe;
+    }
+
+    @Override
+    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException {
+        List<RecipeIngredient> ingredientList = findIngredientsAndCreateMissing(recipe.extendedIngredients());
+        RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipe, ingredientList);
+        RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id()).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        oldRecipe.setTitle(recipeEntity.getTitle());
+        oldRecipe.setSummary(recipeEntity.getSummary());
+        oldRecipe.setReadyInMinutes(recipeEntity.getReadyInMinutes());
+        oldRecipe.setServings(recipe.servings());
+        oldRecipe.setExtendedIngredients(recipeEntity.getExtendedIngredients());
+        oldRecipe.setMissingIngredients(recipeEntity.getMissingIngredients());
+        RecipeSuggestion updatedRecipe = repository.save(oldRecipe);
+        updatedRecipe.setExtendedIngredients(ingredientList);
+        return updatedRecipe;
     }
 
 

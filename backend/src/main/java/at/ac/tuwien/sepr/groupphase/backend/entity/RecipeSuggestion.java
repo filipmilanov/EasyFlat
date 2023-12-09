@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,10 +32,10 @@ public class RecipeSuggestion {
     private Integer readyInMinutes;
 
     @Version Integer version;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<RecipeIngredient> extendedIngredients;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<RecipeIngredient> missingIngredients;
 
     private String summary;
