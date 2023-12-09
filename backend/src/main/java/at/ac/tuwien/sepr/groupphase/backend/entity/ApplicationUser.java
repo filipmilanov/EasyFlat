@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //TODO: replace this class with a correct ApplicationUser Entity implementation
@@ -31,9 +32,9 @@ public class ApplicationUser {
     @ManyToOne
     private SharedFlat sharedFlat;
     @OneToMany
-    private List<Expense> myExpense;
+    private List<Expense> myExpense = new ArrayList<>();
     @OneToMany(mappedBy = "user")
-    private List<Debit> debits;
+    private List<Debit> debits = new ArrayList<>();
 
     public ApplicationUser() {
     }

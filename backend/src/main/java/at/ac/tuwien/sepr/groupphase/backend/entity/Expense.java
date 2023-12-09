@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,7 +34,7 @@ public class Expense {
     private ApplicationUser paidBy;
 
     @OneToMany(mappedBy = "expense")
-    private List<Debit> debitUsers;
+    private List<Debit> debitUsers = new ArrayList<>();
 
     @ManyToOne
     private SharedFlat sharedFlat;
