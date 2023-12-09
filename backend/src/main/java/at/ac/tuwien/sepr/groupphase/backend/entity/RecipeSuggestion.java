@@ -1,7 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -16,6 +19,7 @@ import java.util.List;
 public class RecipeSuggestion {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty
@@ -29,6 +33,9 @@ public class RecipeSuggestion {
     @Version Integer version;
     @OneToMany
     private List<RecipeIngredient> extendedIngredients;
+
+    @OneToMany
+    private List<RecipeIngredient> missingIngredients;
 
     private String summary;
 
@@ -86,5 +93,13 @@ public class RecipeSuggestion {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public List<RecipeIngredient> getMissingIngredients() {
+        return missingIngredients;
+    }
+
+    public void setMissingIngredients(List<RecipeIngredient> missingIngredients) {
+        this.missingIngredients = missingIngredients;
     }
 }

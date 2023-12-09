@@ -2,6 +2,8 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
 import java.util.List;
@@ -33,4 +35,6 @@ public interface CookingService {
      * @throws ValidationException If there is a validation error.
      */
     List<RecipeSuggestionDto> getCookbook() throws ValidationException;
+
+    RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException;
 }
