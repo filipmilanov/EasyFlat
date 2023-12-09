@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 import java.util.List;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,6 +41,10 @@ public class ApplicationUser implements UserDetails {
     private Boolean admin;
     @ManyToOne
     private SharedFlat sharedFlat;
+    @OneToMany
+    private List<Expense> myExpense;
+    @OneToMany(mappedBy = "user")
+    private List<Debit> debits;
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -148,9 +153,19 @@ public class ApplicationUser implements UserDetails {
         this.id = id;
     }
 
+    public List<Expense> getMyExpense() {
+        return myExpense;
+    }
+
+    public void setMyExpense(List<Expense> expense) {
+        this.myExpense = expense;
+    }
+
+    public List<Debit> getDebits() {
+        return debits;
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals (Object o){
         if (this == o) {
             return true;
         }
@@ -161,9 +176,12 @@ public class ApplicationUser implements UserDetails {
         return Objects.equals(id, user.id);
     }
 
+    public void setDebits (List < Debit > debits) {
+        this.debits = debits;
+        debits.forEach(debit -> debit.setUser(this));
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(id);
     }
-
-}
