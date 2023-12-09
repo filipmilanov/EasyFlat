@@ -35,6 +35,9 @@ public class Expense {
     @OneToMany(mappedBy = "expense")
     private List<Debit> debitUsers;
 
+    @ManyToOne
+    private SharedFlat sharedFlat;
+
 
 
     public Long getId() {
@@ -86,12 +89,21 @@ public class Expense {
         paidBy.getMyExpense().add(this);
     }
 
-    public List<Debit> getAffectedUsers() {
+    public List<Debit> getDebitUsers() {
         return debitUsers;
     }
 
-    public void setAffectedUsers(List<Debit> debitUsers) {
+    public void setDebitUsers(List<Debit> debitUsers) {
         this.debitUsers = debitUsers;
-        debitUsers.forEach(a -> a.setExpense(this));
+        debitUsers.forEach(debit -> debit.setExpense(this));
+    }
+
+    public SharedFlat getSharedFlat() {
+        return sharedFlat;
+    }
+
+    public void setSharedFlat(SharedFlat sharedFlat) {
+        this.sharedFlat = sharedFlat;
+        sharedFlat.getExpenses().add(this);
     }
 }

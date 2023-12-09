@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +28,6 @@ public class SharedFlat {
     private String password;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sharedFlat")
     private Set<ApplicationUser> users = new HashSet<>();
-
     @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
     private DigitalStorage digitalStorage;
 
@@ -95,6 +95,14 @@ public class SharedFlat {
         this.cookbook = cookbook;
     }
 
+    public List<ShoppingList> getShoppingLists() {
+        return shoppingLists;
+    }
+
+    public void setShoppingLists(List<ShoppingList> shoppingLists) {
+        this.shoppingLists = shoppingLists;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -110,14 +118,6 @@ public class SharedFlat {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public List<ShoppingList> getShoppingLists() {
-        return shoppingLists;
-    }
-
-    public void setShoppingLists(List<ShoppingList> shoppingLists) {
-        this.shoppingLists = shoppingLists;
     }
 }
 
