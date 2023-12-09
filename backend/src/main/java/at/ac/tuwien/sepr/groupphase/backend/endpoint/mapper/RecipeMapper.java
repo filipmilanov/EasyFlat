@@ -13,6 +13,7 @@ import java.util.List;
 public abstract class RecipeMapper {
 
     @Mapping(target = "extendedIngredients", expression = "java( ingredients )")
+    @Mapping(target = "missingIngredients", source = "recipeSuggestionDto.missingIngredients")
     public abstract RecipeSuggestion dtoToEntity(RecipeSuggestionDto recipeSuggestionDto,
                                                  @Context List<RecipeIngredient> ingredients);
 

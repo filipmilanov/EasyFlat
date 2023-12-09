@@ -16,4 +16,6 @@ public abstract class RecipeIngredientMapper {
 
     public abstract RecipeIngredientDto entityToDto(RecipeIngredient recipeIngredient);
 
+    public abstract List<RecipeIngredientDto> entityListToDtoList(List<RecipeIngredient> recipeIngredients);
+
 }
