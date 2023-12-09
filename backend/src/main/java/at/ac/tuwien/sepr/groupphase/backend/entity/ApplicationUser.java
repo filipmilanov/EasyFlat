@@ -141,9 +141,7 @@ public class ApplicationUser implements UserDetails {
     public void setSharedFlat(SharedFlat existingSharedFlat) {
         this.sharedFlat = existingSharedFlat;
         if (existingSharedFlat != null) {
-            Set<ApplicationUser> users = existingSharedFlat.getUsers();
-            users.add(this);
-            existingSharedFlat.setUsers(users);
+            sharedFlat.getUsers().add(this);
         }
     }
 
