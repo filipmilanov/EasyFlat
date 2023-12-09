@@ -16,7 +16,7 @@ public interface ExpenseService {
      * @return the expense if found
      * @throws NotFoundException if the expense is not persisted
      */
-    Expense findById(Long id) throws NotFoundException;
+    Expense findById(Long id, String jwt) throws NotFoundException;
 
     /**
      * Creates a new expense.
@@ -26,5 +26,5 @@ public interface ExpenseService {
      * @throws ValidationException if the expense is not valid
      * @throws ConflictException   if the expense would produce an inconsistent state in the database
      */
-    Expense create(ExpenseDto expenseDto) throws ValidationException, ConflictException;
+    Expense create(ExpenseDto expenseDto, String jwt) throws ValidationException, ConflictException;
 }
