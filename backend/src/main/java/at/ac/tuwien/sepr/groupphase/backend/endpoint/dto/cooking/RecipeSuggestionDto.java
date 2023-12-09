@@ -17,6 +17,5 @@ public record RecipeSuggestionDto(
     Integer readyInMinutes,
     List<RecipeIngredientDto> extendedIngredients,
     String summary,
-    List<RecipeIngredientDto> missedIngredients) {
-
+    List<RecipeIngredientDto> missingIngredients) {
 }

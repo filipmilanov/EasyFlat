@@ -1,15 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 import {RecipeIngredient} from "../../../dtos/cookingDtos/recipeIngredient";
-import {ItemService} from "../../../services/item.service";
-import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {CookingService} from "../../../services/cooking.service";
-import {ItemCreateEditMode} from "../../digital-storage/item-create-edit/item-create-edit.component";
 import {NgForm} from "@angular/forms";
 import {Observable} from "rxjs";
-import {ItemDto} from "../../../dtos/item";
 
 
 export enum CookbookMode {
@@ -111,6 +107,29 @@ export class CookbookCreateComponent implements OnInit{
     this.route.data.subscribe(data => {
       this.mode = data.mode;
     });
+
+    if (this.mode === CookbookMode.edit) {
+      this.route.params.subscribe({
+        next: params => {
+          const itemId = params.id;
+          this.cookingService.getCookbookRecipe(itemId).subscribe({
+            next: res => {
+              this.recipe = res;
+            },
+            error: error => {
+              console.error(`Recipe could not be retrieved from the backend: ${error}`);
+              this.router.navigate(['/cookbook']);
+              this.notification.error('Recipe could not be retrieved', "Error");
+            }
+          })
+        },
+        error: error => {
+          console.error(`Recipe could not be retrieved using the ID from the URL: ${error}`);
+          this.router.navigate(['cookbook']);
+          this.notification.error('No recipe provided for editing', "Error");
+        }
+      })
+    }
   }
 
   public onSubmit(form: NgForm): void {
@@ -120,17 +139,35 @@ export class CookbookCreateComponent implements OnInit{
       let observable: Observable<RecipeSuggestion>;
       switch (this.mode) {
         case CookbookMode.create:
-          //this.recipe.quantityCurrent = this.item.quantityTotal;
-          //observable = this.itemService.createItem(this.item);
+          observable = this.cookingService.createCookbookRecipe(this.recipe);
           break;
         case CookbookMode.edit:
-          //observable = this.itemService.updateItem(this.item);
+          observable = this.cookingService.updateCookbookRecipe(this.recipe);
           break;
         default:
           console.error('Unknown CookbookMode', this.mode);
           return;
       }
+      observable.subscribe({
+        next: data => {
+          this.notification.success(`Recipe ${this.recipe.title} successfully ${this.modeActionFinished} and added to the cookbook.`, "Success");
+          this.router.navigate(['/cookbook']);
+        },
+        error: error => {
+          console.error(`Error cookbook was not ${this.modeActionFinished}: ${error}`);
+          console.error(error);
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
+        }
+      });
     }
+
+
   }
 
 }

@@ -48,7 +48,7 @@ const routes: Routes = [
   {path: 'cookbook', children: [
       {path: '', component: CookbookComponent},
       {path: 'create', component: CookbookCreateComponent, data: {mode: CookbookMode.create}},
-      {path: 'edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}}
+      {path: ':id/edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}}
     ]}
 ];
 
