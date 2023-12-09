@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,7 +35,7 @@ public class Expense {
     @ManyToOne
     private ApplicationUser paidBy;
 
-    @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id.expense", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Debit> debitUsers = new ArrayList<>();
 
     @ManyToOne
@@ -97,7 +98,6 @@ public class Expense {
 
     public void setDebitUsers(List<Debit> debitUsers) {
         this.debitUsers = debitUsers;
-        debitUsers.forEach(debit -> debit.setExpense(this));
     }
 
     public SharedFlat getSharedFlat() {

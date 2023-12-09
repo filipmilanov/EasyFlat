@@ -2,8 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 
 import java.util.Objects;
 
@@ -13,14 +11,6 @@ public class Debit {
     @EmbeddedId
     private DebitKey id;
 
-    @ManyToOne
-    @MapsId("expenseId")
-    private Expense expense;
-
-    @ManyToOne
-    @MapsId("userId")
-    private ApplicationUser user;
-
     private Long percent;
 
     public DebitKey getId() {
@@ -29,22 +19,6 @@ public class Debit {
 
     public void setId(DebitKey id) {
         this.id = id;
-    }
-
-    public Expense getExpense() {
-        return expense;
-    }
-
-    public void setExpense(Expense expense) {
-        this.expense = expense;
-    }
-
-    public ApplicationUser getUser() {
-        return user;
-    }
-
-    public void setUser(ApplicationUser user) {
-        this.user = user;
     }
 
     public Long getPercent() {
@@ -57,12 +31,8 @@ public class Debit {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Debit debit = (Debit) o;
         return Objects.equals(id, debit.id);
     }
