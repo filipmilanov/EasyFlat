@@ -6,7 +6,7 @@ package at.ac.tuwien.sepr.groupphase.backend.exception;
 public class FatalException extends RuntimeException {
 
     /**
-     * Creates a new object of type {@link FatalException}
+     * Creates a new object of type {@link FatalException}.
      *
      * @param message a description of the exception
      */
@@ -16,7 +16,7 @@ public class FatalException extends RuntimeException {
 
 
     /**
-     * Creates a new object of type {@link FatalException}
+     * Creates a new object of type {@link FatalException}.
      *
      * @param cause the cause
      */
@@ -26,7 +26,7 @@ public class FatalException extends RuntimeException {
 
 
     /**
-     * Creates a new object of type {@link FatalException}
+     * Creates a new object of type {@link FatalException}.
      *
      * @param message a description of the exception
      * @param cause   the cause
