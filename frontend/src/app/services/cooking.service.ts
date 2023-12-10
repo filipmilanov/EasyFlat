@@ -16,7 +16,7 @@ export class CookingService {
   }
 
   loadRecipes(): Observable<RecipeSuggestion[]> {
-    return this.httpClient.get<RecipeSuggestion[]>(this.baseUri)
+    return this.httpClient.get<RecipeSuggestion[]>(this.baseUri);
   }
 
   getCookbook(): Observable<RecipeSuggestion[]> {
@@ -28,11 +28,15 @@ export class CookingService {
   }
 
   updateCookbookRecipe(recipe: RecipeSuggestion): Observable<RecipeSuggestion> {
-    return this.httpClient.put<RecipeSuggestion>(this.cookbookUri + '/' + recipe.id, recipe)
+    return this.httpClient.put<RecipeSuggestion>(this.cookbookUri + '/' + recipe.id, recipe);
   }
 
   getCookbookRecipe(id:string): Observable<RecipeSuggestion> {
-    return this.httpClient.get<RecipeSuggestion>(this.cookbookUri+ '/' + id)
+    return this.httpClient.get<RecipeSuggestion>(this.cookbookUri+ '/' + id);
+  }
+
+  deleteCookbookRecipe(id: string): Observable<RecipeSuggestion> {
+    return this.httpClient.delete<RecipeSuggestion>(this.cookbookUri + '/' + id);
   }
 
   getRecipeDetails(id:string): Observable<RecipeDetailDto>{
