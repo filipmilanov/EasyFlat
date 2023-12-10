@@ -10,6 +10,14 @@ import java.util.List;
 public interface UnitService {
 
     /**
+     * Find unit by id.
+     *
+     * @param id the id of the unit
+     * @return the unit
+     */
+    Unit findByName(String name);
+
+    /**
      * Find all unit entries ordered by published at date (descending).
      *
      * @return list of al unit entries

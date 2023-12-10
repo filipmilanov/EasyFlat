@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UnitRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
@@ -32,6 +33,14 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
+    public Unit findByName(String name) {
+        LOGGER.info("findByName({})", name);
+
+        return unitRepository.findByName(name).orElseThrow(() -> new NotFoundException("Unit not found"));
+    }
+
+
+    @Override
     public List<Unit> findAll() {
         LOGGER.info("findAll()");
 
@@ -42,8 +51,8 @@ public class UnitServiceImpl implements UnitService {
     public Long convertUnits(Unit from, Unit to, Long value) throws ValidationException, ConflictException {
         LOGGER.info("convertUnits({}, {}, {})", from, to, value);
 
-        Unit persistedFrom = unitRepository.findByName(from.getName());
-        Unit persistedTo = unitRepository.findByName(to.getName());
+        Unit persistedFrom = this.findByName(from.getName());
+        Unit persistedTo = this.findByName(to.getName());
 
         unitValidator.validateUnit(from, to, persistedFrom, persistedTo);
 

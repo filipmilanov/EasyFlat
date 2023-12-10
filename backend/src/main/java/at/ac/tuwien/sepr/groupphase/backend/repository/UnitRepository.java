@@ -4,9 +4,11 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UnitRepository extends JpaRepository<Unit, Long> {
 
-    Unit findByName(String name);
+    Optional<Unit> findByName(String name);
 
 }
