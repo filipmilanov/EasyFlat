@@ -37,8 +37,8 @@ public class UnitServiceImpl implements UnitService {
     public Long convertUnits(Unit from, Unit to, Long value) throws ValidationException, ConflictException {
         LOGGER.info("convertUnits({}, {}, {})", from, to, value);
 
-        Unit persistedFrom = unitRepository.findByUnit(from.getUnit());
-        Unit persistedTo = unitRepository.findByUnit(to.getUnit());
+        Unit persistedFrom = unitRepository.findByUnit(from.getName());
+        Unit persistedTo = unitRepository.findByUnit(to.getName());
 
         unitValidator.validateUnit(from, to, persistedFrom, persistedTo);
 

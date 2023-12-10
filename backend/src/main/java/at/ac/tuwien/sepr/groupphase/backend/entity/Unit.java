@@ -11,7 +11,7 @@ import java.util.Objects;
 public class Unit {
 
     @Id
-    private String unit;
+    private String name;
 
     @Nullable
     private Long convertFactor;
@@ -19,12 +19,12 @@ public class Unit {
     @OneToOne
     private Unit subUnit;
 
-    public String getUnit() {
-        return unit;
+    public String getName() {
+        return name;
     }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
+    public void setName(String unit) {
+        this.name = unit;
     }
 
     @Nullable
@@ -53,18 +53,18 @@ public class Unit {
             return false;
         }
         Unit unit1 = (Unit) o;
-        return Objects.equals(unit, unit1.unit);
+        return Objects.equals(name, unit1.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(unit);
+        return Objects.hash(name);
     }
 
     @Override
     public String toString() {
         return "Unit{"
-            + "unit='" + unit + '\''
+            + "unit='" + name + '\''
             + '}';
     }
 }
