@@ -1,5 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,5 +31,11 @@ public interface TestData {
             add("ROLE_USER");
         }
     };
+
+    UnitDto g = new UnitDto("g", null, null);
+    UnitDto kg = new UnitDto("kg", 1000L, g);
+
+    UnitDto ml = new UnitDto("ml", null, null);
+    UnitDto l = new UnitDto("l", 1000L, ml);
 
 }

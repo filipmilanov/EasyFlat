@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -30,6 +31,7 @@ import java.util.List;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -88,7 +90,7 @@ class ItemEndpointTest {
             .brand("Hofer")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("ml")
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -179,7 +181,7 @@ class ItemEndpointTest {
             .brand("")
             .quantityCurrent(100L)
             .quantityTotal(-200L)
-            .unit("")
+            .unit(UnitDtoBuilder.builder().build())
             .description("")
             .priceInCent(-1234L)
             .digitalStorage(digitalStorageDto)
@@ -233,7 +235,7 @@ class ItemEndpointTest {
             .brand("Hofer")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("ml")
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
