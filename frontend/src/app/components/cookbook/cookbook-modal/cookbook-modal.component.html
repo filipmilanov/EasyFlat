@@ -2,7 +2,7 @@
   <h3>Missing ingredients for {{recipe.title}}</h3>
   It seems like you are missing the following ingredients :
   <ul class="list-group">
-    <li *ngFor="let ingredient of recipe.extendedIngredients" class="list-group-item">
+    <li *ngFor="let ingredient of recipeWithMissing.missedIngredients" class="list-group-item">
       <strong>{{ ingredient.amount }} {{ ingredient.unit }}</strong> - {{ ingredient.name }}
     </li>
   </ul>
