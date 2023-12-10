@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
+import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ public class UnitEndpoint {
         this.unitMapper = unitMapper;
     }
 
+    @PermitAll
     @GetMapping("/all")
     public List<UnitDto> findAll() {
         LOGGER.info("findAll()");
@@ -39,6 +41,7 @@ public class UnitEndpoint {
         );
     }
 
+    @PermitAll
     @GetMapping("/convert")
     public Long convertUnits(UnitConvertDto unitConvertDto) throws ValidationException, ConflictException {
         LOGGER.info("convertUnits()");
