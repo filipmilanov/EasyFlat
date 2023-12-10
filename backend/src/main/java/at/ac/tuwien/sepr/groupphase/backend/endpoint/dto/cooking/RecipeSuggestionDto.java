@@ -17,6 +17,9 @@ public record RecipeSuggestionDto(
     Integer readyInMinutes,
     List<RecipeIngredientDto> extendedIngredients,
     String summary,
-    List<RecipeIngredientDto> missedIngredients) {
+    List<RecipeIngredientDto> missingIngredients) {
 
+    public RecipeSuggestionDto withId(Long newId) {
+        return new RecipeSuggestionDto(newId, title, servings, readyInMinutes, extendedIngredients, summary, missingIngredients);
+    }
 }

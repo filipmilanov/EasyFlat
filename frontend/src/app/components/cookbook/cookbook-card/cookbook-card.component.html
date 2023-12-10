@@ -22,13 +22,13 @@
 
     <div class="row justify-content-center ">
       <div class="col-3 mb-2 ">
-        <button class="btn btn-outline-danger ">Delete</button>
+        <button class="btn btn-outline-danger " (click)="delete()">Delete</button>
       </div>
       <div class="col-3 mb-2 ">
         <button class="btn btn-outline-info">Details</button>
       </div>
       <div class="col-3 mb-2">
-        <button class="btn btn-outline-secondary">Edit</button>
+        <button class="btn btn-outline-secondary" [routerLink]="[recipe.id, 'edit']">Edit</button>
       </div>
       <div class="col-3 mb-2">
         <button class="btn btn-success">Cook</button>
