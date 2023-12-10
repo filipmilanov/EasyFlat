@@ -12,7 +12,7 @@ public interface UnitService {
     /**
      * Find unit by id.
      *
-     * @param id the id of the unit
+     * @param name the id of the unit
      * @return the unit
      */
     Unit findByName(String name);
