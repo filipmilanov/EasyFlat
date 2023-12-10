@@ -7,10 +7,12 @@ import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
+@Profile({"default", "generateData", "test"})
 @Component("UnitDataGenerator")
 public class UnitDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

@@ -36,8 +36,8 @@ public class ItemDataGenerator {
     @PostConstruct
     public void generateDigitalStorages() {
         LOGGER.debug("generating {} Items ", NUMBER_OF_ENTITIES_TO_GENERATE);
+        Unit kg = unitRepository.findByName("kg").orElseThrow();
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
-            Unit kg = unitRepository.findByName("kg").orElseThrow();
 
             Item item = new Item();
             item.setGeneralName("Item" + (i + 1));
