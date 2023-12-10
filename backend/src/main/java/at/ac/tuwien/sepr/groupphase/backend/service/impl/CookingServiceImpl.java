@@ -173,6 +173,13 @@ public class CookingServiceImpl implements CookingService {
         return updatedRecipe;
     }
 
+    @Override
+    public RecipeSuggestion deleteCookbookRecipe(Long id) {
+        RecipeSuggestion deletedRecipe = this.getCookbookRecipe(id).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        repository.delete(deletedRecipe);
+        return deletedRecipe;
+    }
+
 
     private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
         List<String> ingredients = new LinkedList<>();
