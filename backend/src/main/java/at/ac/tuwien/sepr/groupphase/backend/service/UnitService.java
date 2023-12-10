@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -24,4 +25,14 @@ public interface UnitService {
      * @return the converted value
      */
     Long convertUnits(Unit from, Unit to, Long value) throws ValidationException, ConflictException;
+
+
+    /**
+     * Creates a new unit.
+     *
+     * @param unit the unit to create
+     * @return the created unit
+     */
+    Unit create(UnitDto unit) throws ValidationException, ConflictException;
+
 }

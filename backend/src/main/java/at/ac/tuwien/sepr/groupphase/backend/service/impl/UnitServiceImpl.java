@@ -1,5 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -19,11 +21,14 @@ public class UnitServiceImpl implements UnitService {
 
     private final UnitRepository unitRepository;
     private final UnitValidator unitValidator;
+    private final UnitMapper unitMapper;
 
     public UnitServiceImpl(UnitRepository unitRepository,
-                           UnitValidator unitValidator) {
+                           UnitValidator unitValidator,
+                           UnitMapper unitMapper) {
         this.unitRepository = unitRepository;
         this.unitValidator = unitValidator;
+        this.unitMapper = unitMapper;
     }
 
     @Override
@@ -43,5 +48,15 @@ public class UnitServiceImpl implements UnitService {
         unitValidator.validateUnit(from, to, persistedFrom, persistedTo);
 
         return value * persistedFrom.getConvertFactor();
+    }
+
+    @Override
+    public Unit create(UnitDto unit) throws ValidationException, ConflictException {
+        LOGGER.info("create({})", unit);
+
+        unitValidator.validateForCreate(unit);
+
+        Unit unitEntity = unitMapper.unitDtoToEntity(unit);
+        return unitRepository.save(unitEntity);
     }
 }

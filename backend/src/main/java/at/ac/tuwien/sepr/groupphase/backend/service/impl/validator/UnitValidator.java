@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.FatalException;
@@ -40,6 +41,24 @@ public class UnitValidator {
 
         if (!errors.isEmpty()) {
             throw new ConflictException("Conflict", errors);
+        }
+    }
+
+    public void validateForCreate(UnitDto unitDto) throws ValidationException {
+        LOGGER.info("validateForCreate({})", unitDto);
+
+        List<String> errors = new ArrayList<>();
+
+        if (unitDto.name() == null || unitDto.name().trim().isEmpty()) {
+            errors.add("Unit must not be empty");
+        }
+
+        if (unitDto.subUnit() != null && unitDto.conversionFactor() == null) {
+            errors.add("Unit must have a convert factor");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ValidationException("Invalid Unit", errors);
         }
     }
 
