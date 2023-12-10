@@ -34,8 +34,8 @@ public class CookingEndPoint {
 
     @PermitAll
     @GetMapping
-    public List<RecipeSuggestionDto> getRecipeSuggestion() throws ValidationException {
-        return cookingService.getRecipeSuggestion(1L);
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type) throws ValidationException {
+        return cookingService.getRecipeSuggestion(1L, type);
     }
 
     @PermitAll

@@ -27,8 +27,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -64,7 +67,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<RecipeSuggestionDto> getRecipeSuggestion(Long storId) throws ValidationException {
+    public List<RecipeSuggestionDto> getRecipeSuggestion(Long storId, String type) throws ValidationException {
 
         List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(storId, new ItemSearchDto(null, true, null, null, null));
         List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(storId, new ItemSearchDto(null, false, null, null, null));
@@ -91,7 +94,60 @@ public class CookingServiceImpl implements CookingService {
 
         List<RecipeSuggestionDto> toReturn = getRecipeSuggestionDtos(response, exchange);
 
+        if (type != null) {
+            toReturn = filterSuggestions(toReturn, type);
+        }
+
         return toReturn;
+    }
+
+    private List<RecipeSuggestionDto> filterSuggestions(List<RecipeSuggestionDto> recipeSuggestions, String type) {
+        List<String> filterTypes = new ArrayList<>();
+        if (type.equals("breakfast")) {
+            filterTypes.add("breakfast");
+            filterTypes.add("snack");
+            filterTypes.add("dessert");
+            filterTypes.add("brunch");
+            filterTypes.add("morning meal");
+        }
+        if (type.equals("main dish")) {
+            filterTypes.add("main course");
+            filterTypes.add("lunch");
+            filterTypes.add("dinner");
+            filterTypes.add("soup");
+
+        }
+        if (type.equals("side dish")) {
+            filterTypes.add("salad");
+            filterTypes.add("side dish");
+            filterTypes.add("appetizer");
+            filterTypes.add("snack");
+            filterTypes.add("fingerfood");
+            filterTypes.add("marinade");
+            filterTypes.add("starter");
+            filterTypes.add("antipasti");
+        }
+
+        Map<String, RecipeSuggestionDto> results = new HashMap<>();
+
+
+        for (String filter : filterTypes) {
+            loop2:
+            for (RecipeSuggestionDto suggestionDto : recipeSuggestions) {
+                for (String typeOfDish : suggestionDto.dishTypes()) {
+                    if (filter.equals(typeOfDish)) {
+                        results.put(suggestionDto.title(), suggestionDto);
+                        break;
+                    }
+                }
+            }
+        }
+        List<RecipeSuggestionDto> recipesToRet = new ArrayList<>();
+        for (Map.Entry<String, RecipeSuggestionDto> recipe : results.entrySet()) {
+            recipesToRet.add(recipe.getValue());
+        }
+
+        return recipesToRet;
     }
 
     private static List<RecipeSuggestionDto> getRecipeSuggestionDtos(ResponseEntity<List<RecipeSuggestionDto>> response, ResponseEntity<List<RecipeDto>> exchange) {
@@ -218,7 +274,7 @@ public class CookingServiceImpl implements CookingService {
                 requestString += ",+" + ingredient;
             }
         }
-        requestString += "&number=2";
+        requestString += "&number=15";
         return requestString + "&ranking=2";
     }
 
