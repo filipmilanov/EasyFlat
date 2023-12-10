@@ -82,7 +82,9 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
 
         return digitalStorageRepository.findByTitleContainingAndSharedFlatIs(
-            (digitalStorageSearchDto != null) ? digitalStorageSearchDto.title() : "",
+            (digitalStorageSearchDto != null && digitalStorageSearchDto.title() != null)
+                ? digitalStorageSearchDto.title()
+                : "",
             applicationUser.getSharedFlat()
         );
     }
