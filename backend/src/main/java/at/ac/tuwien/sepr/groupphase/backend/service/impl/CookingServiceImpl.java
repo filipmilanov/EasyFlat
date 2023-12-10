@@ -77,23 +77,43 @@ public class CookingServiceImpl implements CookingService {
         ResponseEntity<List<RecipeDto>> exchange = restTemplate.exchange(requestString, HttpMethod.GET, null, new ParameterizedTypeReference<List<RecipeDto>>() {
         });
 
-
+        String newReqString = "https://api.spoonacular.com/recipes/informationBulk?apiKey=" + apiKey + "&ids=";
         List<RecipeSuggestionDto> recipeSuggestions = new LinkedList<>();
         if (exchange.getBody() != null) {
             for (RecipeDto recipeDto : exchange.getBody()) {
                 String recipeId = String.valueOf(recipeDto.id());
-                String newReqString = "https://api.spoonacular.com/recipes/" + recipeId + "/information" + "?apiKey=" + apiKey + "&includeNutrition=false";
-
-                ResponseEntity<RecipeSuggestionDto> response = restTemplate.exchange(newReqString, HttpMethod.GET, null, new ParameterizedTypeReference<RecipeSuggestionDto>() {
-                });
-                if (response.getBody() != null) {
-                    recipeSuggestions.add(response.getBody());
-                }
+                newReqString += "," + recipeId;
             }
         }
+        newReqString += "&includeNutrition=false";
+        ResponseEntity<List<RecipeSuggestionDto>> response = restTemplate.exchange(newReqString, HttpMethod.GET, null, new ParameterizedTypeReference<List<RecipeSuggestionDto>>() {
+        });
 
+        List<RecipeSuggestionDto> toReturn = getRecipeSuggestionDtos(response, exchange);
 
-        return recipeSuggestions;
+        return toReturn;
+    }
+
+    private static List<RecipeSuggestionDto> getRecipeSuggestionDtos(ResponseEntity<List<RecipeSuggestionDto>> response, ResponseEntity<List<RecipeDto>> exchange) {
+        List<RecipeSuggestionDto> toReturn = new LinkedList<>();
+        if (response.getBody() != null) {
+            for (int i = 0; i < response.getBody().size(); i++) {
+                RecipeDto hereWeHaveMissIng = exchange.getBody().get(i);
+                RecipeSuggestionDto details = response.getBody().get(i);
+                RecipeSuggestionDto toAdd = new RecipeSuggestionDto(
+                    details.id(),
+                    details.title(),
+                    details.servings(),
+                    details.readyInMinutes(),
+                    details.extendedIngredients(),
+                    details.summary(),
+                    hereWeHaveMissIng.missedIngredients(),
+                    details.dishTypes()
+                );
+                toReturn.add(toAdd);
+            }
+        }
+        return toReturn;
     }
 
     @Override
@@ -198,7 +218,7 @@ public class CookingServiceImpl implements CookingService {
                 requestString += ",+" + ingredient;
             }
         }
-        requestString += "&number=1";
+        requestString += "&number=2";
         return requestString + "&ranking=2";
     }
 
