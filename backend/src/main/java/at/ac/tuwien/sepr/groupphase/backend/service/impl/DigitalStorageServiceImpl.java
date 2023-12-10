@@ -162,7 +162,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         Map<String, Long[]> items = new HashMap<>();
         Map<String, String> itemUnits = new HashMap<>();
         for (Item item : allItems) {
-            itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit());
+            itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit().getName());
             long currentQ = 0;
             long totalQ = 0;
             if (items.get(item.getGeneralName()) != null) {

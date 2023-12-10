@@ -53,7 +53,7 @@ public class UnitValidator {
             errors.add("Unit must not be empty");
         }
 
-        if (unitDto.subUnit() != null && unitDto.conversionFactor() == null) {
+        if (unitDto.subUnit() != null && unitDto.convertFactor() == null) {
             errors.add("Unit must have a convert factor");
         }
 

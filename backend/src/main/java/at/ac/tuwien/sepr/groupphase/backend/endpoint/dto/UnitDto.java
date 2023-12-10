@@ -6,7 +6,7 @@ import jakarta.annotation.Nullable;
 @RecordBuilder
 public record UnitDto(
     String name,
-    @Nullable Long conversionFactor,
+    @Nullable Long convertFactor,
     @Nullable UnitDto subUnit
 ) {
 }
