@@ -111,7 +111,9 @@ public class ItemServiceImpl implements ItemService {
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         Item presistedItem = this.findById(itemDto.itemId()).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
-        itemValidator.validateForUpdate(itemDto, digitalStorageList);
+        List<Unit> unitList = unitService.findAll();
+
+        itemValidator.validateForUpdate(itemDto, digitalStorageList, unitList);
 
         List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
 

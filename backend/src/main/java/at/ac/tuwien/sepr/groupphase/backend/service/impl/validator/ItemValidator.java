@@ -83,11 +83,13 @@ public class ItemValidator {
         }
     }
 
-    public void validateForUpdate(ItemDto itemDto, List<DigitalStorage> digitalStorageList) throws ConflictException, ValidationException {
+    public void validateForUpdate(ItemDto itemDto,
+                                  List<DigitalStorage> digitalStorageList,
+                                  List<Unit> unitList) throws ConflictException, ValidationException {
         LOGGER.trace("validateForUpdate({})", itemDto);
 
         checkValidationForUpdate(itemDto);
-        checkConflictForUpdate(itemDto, digitalStorageList);
+        checkConflictForUpdate(itemDto, digitalStorageList, unitList);
     }
 
     private void checkValidationForUpdate(ItemDto itemDto) throws ValidationException {
@@ -100,7 +102,8 @@ public class ItemValidator {
     }
 
     public void checkConflictForUpdate(ItemDto itemDto,
-                                       List<DigitalStorage> digitalStorageList) throws ConflictException {
+                                       List<DigitalStorage> digitalStorageList,
+                                       List<Unit> unitList) throws ConflictException {
         LOGGER.trace("checkConflictForUpdate({}, {})", itemDto, digitalStorageList);
 
         List<String> errors = new ArrayList<>();
@@ -124,6 +127,10 @@ public class ItemValidator {
             errors.add("There is no AlwaysInStock defined");
         } else if (itemDto.alwaysInStock() && itemDto.minimumQuantity() == null) {
             errors.add("There is no MinimumQuantity defined");
+        }
+
+        if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
+            errors.add("The given Unit does not exists");
         }
 
         if (!errors.isEmpty()) {
