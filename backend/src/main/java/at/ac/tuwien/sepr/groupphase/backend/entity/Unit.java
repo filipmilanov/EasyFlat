@@ -1,7 +1,9 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 
 import java.util.Objects;
 
@@ -11,12 +13,35 @@ public class Unit {
     @Id
     private String unit;
 
+    @Nullable
+    private Long convertFactor;
+
+    @OneToOne
+    private Unit subUnit;
+
     public String getUnit() {
         return unit;
     }
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    @Nullable
+    public Long getConvertFactor() {
+        return convertFactor;
+    }
+
+    public void setConvertFactor(@Nullable Long convertFactor) {
+        this.convertFactor = convertFactor;
+    }
+
+    public Unit getSubUnit() {
+        return subUnit;
+    }
+
+    public void setSubUnit(Unit subUnit) {
+        this.subUnit = subUnit;
     }
 
     @Override
