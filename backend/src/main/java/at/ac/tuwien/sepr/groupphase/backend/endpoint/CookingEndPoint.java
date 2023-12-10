@@ -70,6 +70,12 @@ public class CookingEndPoint {
     }
 
     @PermitAll
+    @GetMapping("/cookbook/missing/{id}")
+    public RecipeSuggestionDto getMissingIngredients(@PathVariable Long id) {
+        return cookingService.getMissingIngredients(id);
+    }
+
+    @PermitAll
     @GetMapping("/detail/{id}")
     public RecipeDetailDto getRecipeDetail(@PathVariable Long id) {
         return cookingService.getRecipeDetails(id);
