@@ -10,7 +10,7 @@
     <div class="col-md-6 mx-auto">
       <span class="anchor" id="formRegister"></span>
 
-      <div class="card rounded-0">
+      <div class="card mt-3">
         <div class="card-header">
           <h3 class="mb-0">Account Details</h3>
         </div>
@@ -66,22 +66,22 @@
   </div>
 </div>
 <br>
-<div class="pt-5">
+<div *ngIf="user.flatName != null">
   <div class="row">
     <div class="col-md-6 mx-auto">
       <span class="anchor" id="formRegister"></span>
 
-      <div class="card rounded-0">
+      <div class="card mt-3">
         <div class="card-header">
           <h3 class="mb-0">Shared Flat Details</h3>
         </div>
 
         <div class="card-body">
-          <form class="form" [formGroup]="accountForm" (ngSubmit)="update()">
+          <form class="form" [formGroup]="accountForm" >
             <div class="form-group">
               <div>
                 <label for="name">Flat name</label>
-                <input type="text" name="name" formControlName="flatName" class="form-control" id="name">
+                <input type="text"  name="name" formControlName="flatName" class="form-control" id="name">
               </div>
               <div *ngIf="submitted && accountForm.get('name').errors?.required" class="error">
                 <small class="form-text text-warning">Your flat name is required!</small>
