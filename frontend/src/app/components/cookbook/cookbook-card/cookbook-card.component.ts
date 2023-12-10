@@ -38,6 +38,17 @@ export class CookbookCardComponent {
   }
 
   cook() {
-    this.cookClicked.emit(this.recipe);
+    this.cookingService.getMissingIngredients(this.recipe.id).subscribe({
+      next: (missingIngredients: RecipeSuggestion) => {
+        if (missingIngredients && missingIngredients.missedIngredients.length > 0) {
+          this.cookClicked.emit(this.recipe);
+        } else {
+          // If no missing ingredients, proceed to cook directly
+        }
+      },
+      error: error => {
+        console.error('Error checking missing ingredients:', error);
+      }
+    });
   }
 }
