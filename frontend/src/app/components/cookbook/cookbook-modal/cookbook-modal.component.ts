@@ -1,22 +1,40 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Router} from "@angular/router";
+import {CookingService} from "../../../services/cooking.service";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-cookbook-modal',
   templateUrl: './cookbook-modal.component.html',
   styleUrls: ['./cookbook-modal.component.scss']
 })
-export class CookbookModalComponent {
+export class CookbookModalComponent implements OnInit{
 
   @Input() recipe: RecipeSuggestion;
+  recipeWithMissing : RecipeSuggestion;
 
-  constructor(public activeModal: NgbActiveModal, private router: Router) { }
+  constructor(public activeModal: NgbActiveModal, private router: Router, public cookingService: CookingService, private notification: ToastrService) {
+
+  }
 
   edit() {
     this.activeModal.dismiss();
     this.router.navigate(['cookbook/' + this.recipe.id + '/edit']);
+  }
+
+  ngOnInit(): void {
+    this.cookingService.getMissingIngredients(this.recipe.id).subscribe({
+      next: res => {
+        this.recipeWithMissing = res;
+        console.log(this.recipeWithMissing)
+      },
+      error: err => {
+        console.error("Error loading recipes:", err);
+        this.notification.error("Error loading recipes");
+      }
+    })
   }
 
 }
