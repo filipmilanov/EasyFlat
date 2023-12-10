@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,6 +61,12 @@ public class CookingEndPoint {
     @PutMapping("/cookbook/{id}")
     public RecipeSuggestionDto updateCookbookRecipe(@PathVariable Long id, @RequestBody RecipeSuggestionDto recipe) throws ConflictException {
         return recipeMapper.entityToRecipeSuggestionDto(cookingService.updateCookbookRecipe(recipe.withId(id)));
+    }
+
+    @PermitAll
+    @DeleteMapping("/cookbook/{id}")
+    public RecipeSuggestionDto deleteCookbookRecipe(@PathVariable Long id) {
+        return recipeMapper.entityToRecipeSuggestionDto(cookingService.deleteCookbookRecipe(id));
     }
 
     @PermitAll

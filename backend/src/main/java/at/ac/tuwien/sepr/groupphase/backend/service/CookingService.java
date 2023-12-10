@@ -42,4 +42,6 @@ public interface CookingService {
     Optional<RecipeSuggestion> getCookbookRecipe(Long id);
 
     RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException;
+
+    RecipeSuggestion deleteCookbookRecipe(Long id);
 }
