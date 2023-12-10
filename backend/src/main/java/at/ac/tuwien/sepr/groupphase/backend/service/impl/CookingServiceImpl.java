@@ -199,7 +199,7 @@ public class CookingServiceImpl implements CookingService {
             }
         }
         requestString += "&number=1";
-        return requestString;
+        return requestString + "&ranking=2";
     }
 
     private String getRequestStringForDetails(String recipeId) {
