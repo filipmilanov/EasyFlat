@@ -7,6 +7,8 @@ import {DigitalStorageDto} from "../../../dtos/digitalStorageDto";
 import {Observable, of} from "rxjs";
 import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {Unit} from "../../../dtos/unit";
+import {UnitService} from "../../../services/unit.service";
 
 export enum ItemCreateEditMode {
   create,
@@ -18,15 +20,15 @@ export enum ItemCreateEditMode {
   templateUrl: './item-create-edit.component.html',
   styleUrls: ['./item-create-edit.component.scss']
 })
-export class ItemCreateEditComponent implements OnInit{
+export class ItemCreateEditComponent implements OnInit {
 
   mode: ItemCreateEditMode = ItemCreateEditMode.create;
   item: ItemDto = {
     alwaysInStock: false,
     addToFiance: false,
-    unit: {name: "g"},
   }
   priceInEuro: number = 0.00;
+  availableUnits: Unit[] = [];
 
 
   constructor(
@@ -35,6 +37,7 @@ export class ItemCreateEditComponent implements OnInit{
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
+    private unitServ: UnitService
   ) {
   }
 
@@ -76,6 +79,16 @@ export class ItemCreateEditComponent implements OnInit{
   }
 
   ngOnInit(): void {
+    this.unitServ.findAll().subscribe({
+      next: res => {
+        this.availableUnits = res;
+        this.item.unit = this.availableUnits[0];
+      },
+      error: err => {
+        this.notification.error('Failed to load Units', "Error");
+      }
+    });
+
     this.route.data.subscribe(data => {
       this.mode = data.mode;
     });
@@ -164,7 +177,7 @@ export class ItemCreateEditComponent implements OnInit{
   }
 
   formatPriceInEuroInput(value: string): string {
-    return  value ? `${value} € ` : '';
+    return value ? `${value} € ` : '';
   }
 
   formatStorageName(storage: DigitalStorageDto | null): string {
@@ -174,4 +187,14 @@ export class ItemCreateEditComponent implements OnInit{
   storageSuggestions = (input: string) => (input === '')
     ? of([])
     : this.storageService.findAll(input, 5);
+
+  formatUnitName(unit: Unit | null): string {
+    return unit ? unit.name : '';
+  }
+
+  updateItemUnit(unit: Unit): void {
+    console.log(unit.name + "fdafsd");
+    this.item.unit = unit;
+  }
+
 }
