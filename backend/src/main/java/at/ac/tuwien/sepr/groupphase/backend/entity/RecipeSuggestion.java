@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotEmpty;
@@ -37,7 +38,7 @@ public class RecipeSuggestion {
 
     @OneToMany(fetch = FetchType.EAGER)
     private List<RecipeIngredient> missingIngredients;
-
+    @Column(columnDefinition = "TEXT")
     private String summary;
 
     public void setId(Long id) {
