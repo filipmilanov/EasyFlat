@@ -32,7 +32,7 @@ public class UnitEndpoint {
     }
 
     @PermitAll
-    @GetMapping("/all")
+    @GetMapping()
     public List<UnitDto> findAll() {
         LOGGER.info("findAll()");
 
