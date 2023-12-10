@@ -32,6 +32,7 @@ import { CookbookCardComponent } from './components/cookbook/cookbook-card/cookb
 import { RecipeDetailComponent } from './components/cooking/recipe-detail/recipe-detail.component';
 import { CookbookCreateComponent } from './components/cookbook/cookbook-create/cookbook-create.component';
 import { CookbookDetailComponent } from './components/cookbook/cookbook-detail/cookbook-detail.component';
+import { CookbookModalComponent } from './components/cookbook/cookbook-modal/cookbook-modal.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { CookbookDetailComponent } from './components/cookbook/cookbook-detail/c
     RecipeDetailComponent,
     CookbookCreateComponent,
     CookbookDetailComponent,
+    CookbookModalComponent,
   ],
   imports: [
     BrowserModule,

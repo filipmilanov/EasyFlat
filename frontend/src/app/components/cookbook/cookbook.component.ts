@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {RecipeSuggestion} from "../../dtos/cookingDtos/recipeSuggestion";
 import {CookingService} from "../../services/cooking.service";
 import {ToastrService} from "ngx-toastr";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {CookbookModalComponent} from "./cookbook-modal/cookbook-modal.component";
 
 @Component({
   selector: 'app-cookbook',
@@ -12,7 +14,7 @@ export class CookbookComponent implements OnInit{
   recipes: RecipeSuggestion[];
 
   constructor(private cookingService: CookingService,
-              private notification: ToastrService) {
+              private notification: ToastrService, private modalService: NgbModal) {
  }
 
   ngOnInit(): void {
@@ -25,5 +27,10 @@ export class CookbookComponent implements OnInit{
       this.notification.error("Error loading recipes");
     }
   })
+  }
+
+  openRecipeModal(recipe: RecipeSuggestion) {
+    const modalRef = this.modalService.open(CookbookModalComponent, { size: 'lg' });
+    modalRef.componentInstance.recipe = recipe;
   }
 }
