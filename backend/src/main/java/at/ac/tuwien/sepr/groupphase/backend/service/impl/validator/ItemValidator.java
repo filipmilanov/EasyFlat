@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.validation.ConstraintViolation;
@@ -27,11 +28,13 @@ public class ItemValidator {
         this.validator = validator;
     }
 
-    public void validateForCreate(ItemDto itemDto, List<DigitalStorage> digitalStorageList) throws ConflictException, ValidationException {
+    public void validateForCreate(ItemDto itemDto,
+                                  List<DigitalStorage> digitalStorageList,
+                                  List<Unit> unitList) throws ConflictException, ValidationException {
         LOGGER.trace("validateForCreate({})", itemDto);
 
         checkValidationForCreate(itemDto);
-        checkConflictForCreate(itemDto, digitalStorageList);
+        checkConflictForCreate(itemDto, digitalStorageList, unitList);
     }
 
     private void checkValidationForCreate(ItemDto itemDto) throws ValidationException {
@@ -44,7 +47,8 @@ public class ItemValidator {
     }
 
     private void checkConflictForCreate(ItemDto itemDto,
-                                   List<DigitalStorage> digitalStorageList) throws ConflictException {
+                                        List<DigitalStorage> digitalStorageList,
+                                        List<Unit> unitList) throws ConflictException {
         LOGGER.trace("checkItemForCreate({}, {})", itemDto, digitalStorageList);
 
         List<String> errors = new ArrayList<>();
@@ -70,6 +74,10 @@ public class ItemValidator {
             errors.add("There is no MinimumQuantity defined");
         }
 
+        if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
+            errors.add("The given Unit does not exists");
+        }
+
         if (!errors.isEmpty()) {
             throw new ConflictException("There is a conflict with persisted data", errors);
         }
@@ -92,7 +100,7 @@ public class ItemValidator {
     }
 
     public void checkConflictForUpdate(ItemDto itemDto,
-                                   List<DigitalStorage> digitalStorageList) throws ConflictException {
+                                       List<DigitalStorage> digitalStorageList) throws ConflictException {
         LOGGER.trace("checkConflictForUpdate({}, {})", itemDto, digitalStorageList);
 
         List<String> errors = new ArrayList<>();
