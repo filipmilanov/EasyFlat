@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -32,6 +33,9 @@ public class ItemDataGenerator {
     public void generateDigitalStorages() {
         LOGGER.debug("generating {} Items ", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
+            Unit kg = new Unit();
+            kg.setName("kg");
+
             Item item = new Item();
             item.setGeneralName("Item" + (i + 1));
             item.setEan("123456789012" + i);  // Replace with valid EAN numbers
@@ -39,7 +43,7 @@ public class ItemDataGenerator {
             item.setBrand("Test Brand " + (i + 1));
             item.setQuantityCurrent(10L + i);
             item.setQuantityTotal(20L + i);
-            item.setUnit("pieces");
+            item.setUnit(kg);
             item.setExpireDate(LocalDate.now().plusMonths(i + 1));  // Set expire date to current date + i months
             item.setDescription("This is a test product description for Item " + (i + 1));
             item.setPriceInCent(500L + i * 100);
