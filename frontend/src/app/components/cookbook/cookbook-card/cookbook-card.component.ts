@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 import {CookingService} from "../../../services/cooking.service";
 import {UserDetail} from "../../../dtos/auth-request";
@@ -12,8 +12,9 @@ import {Router} from "@angular/router";
 export class CookbookCardComponent {
 
   @Input() recipe: RecipeSuggestion;
+  @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
 
-  constructor(private cookingService: CookingService,private router: Router) {
+  constructor(private cookingService: CookingService, private router: Router) {
   }
 
   getTruncatedSummary(): string {
@@ -34,5 +35,9 @@ export class CookbookCardComponent {
         }
       });
     }
+  }
+
+  cook() {
+    this.cookClicked.emit(this.recipe);
   }
 }
