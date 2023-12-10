@@ -18,7 +18,7 @@ export class ItemDetailComponent implements OnInit {
     brand: "",
     quantityCurrent: 0,
     quantityTotal: 0,
-    unit: "",
+    unit: {name: "g"},
     expireDate: new Date(),
     description: "",
     priceInCent: 0,
