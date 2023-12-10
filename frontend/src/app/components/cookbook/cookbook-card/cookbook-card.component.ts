@@ -22,8 +22,9 @@ export class CookbookCardComponent {
       this.recipe.summary.slice(0, maxLength) + '...' :
       this.recipe.summary;
   }
+
   delete() {
-    if(confirm("Are you sure you want to delete your account?")) {
+    if(confirm("Are you sure you want to delete this recipe?")) {
       this.cookingService.deleteCookbookRecipe(this.recipe.id).subscribe({
         next: (deletedRecipe: RecipeSuggestion) => {
           console.log('Recipe deleted:', deletedRecipe);
@@ -34,6 +35,4 @@ export class CookbookCardComponent {
       });
     }
   }
-
-
 }

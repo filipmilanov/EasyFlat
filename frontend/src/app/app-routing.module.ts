@@ -21,6 +21,7 @@ import {CookingComponent} from "./components/cooking/cooking.component";
 import {CookbookComponent} from "./components/cookbook/cookbook.component";
 import {CookbookCreateComponent, CookbookMode} from "./components/cookbook/cookbook-create/cookbook-create.component";
 import {RecipeDetailComponent} from "./components/cooking/recipe-detail/recipe-detail.component";
+import {CookbookDetailComponent} from "./components/cookbook/cookbook-detail/cookbook-detail.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -48,7 +49,8 @@ const routes: Routes = [
   {path: 'cookbook', children: [
       {path: '', component: CookbookComponent},
       {path: 'create', component: CookbookCreateComponent, data: {mode: CookbookMode.create}},
-      {path: ':id/edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}}
+      {path: ':id/edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}},
+      {path: ':id/detail', component: CookbookDetailComponent}
     ]}
 ];
 
