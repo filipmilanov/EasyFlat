@@ -29,6 +29,9 @@ export class CookingService {
   }
 
   createCookbookRecipe(recipe: RecipeSuggestion): Observable<RecipeSuggestion> {
+    if(recipe.id != null){
+      recipe.id = null;
+    }
     return this.httpClient.post<RecipeSuggestion>(this.cookbookUri, recipe);
   }
 
