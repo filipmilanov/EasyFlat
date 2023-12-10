@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {RecipeDetailDto} from "../../../dtos/cookingDtos/recipeSuggestion";
+import {RecipeDetailDto, RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 import {ItemService} from "../../../services/item.service";
 import {ToastrService} from "ngx-toastr";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -11,7 +11,8 @@ import {CookingService} from "../../../services/cooking.service";
   styleUrls: ['./recipe-detail.component.scss']
 })
 export class RecipeDetailComponent implements OnInit{
-   recipe:RecipeDetailDto;
+   recipe:RecipeSuggestion;
+   recipeDetail:RecipeDetailDto;
 
   constructor(
     private service: CookingService,
@@ -22,7 +23,7 @@ export class RecipeDetailComponent implements OnInit{
   }
 
   ngOnInit(): void {
-   this.load();
+   this.addTestItems()
   }
 
   load(){
@@ -31,7 +32,7 @@ export class RecipeDetailComponent implements OnInit{
         const recipeId = params.id;
         this.service.getRecipeDetails(recipeId.toString()).subscribe({
           next: res => {
-            this.recipe = res;
+            this.recipeDetail = res;
           },
           error: error => {
 
@@ -72,6 +73,6 @@ export class RecipeDetailComponent implements OnInit{
         { id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2 },
       ]
     };
-this.recipe = testRecipe;
+this.recipeDetail = testRecipe;
   }
 }

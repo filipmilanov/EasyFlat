@@ -154,7 +154,7 @@ public class CookingServiceImpl implements CookingService {
             }
         }
         requestString += "&number=1";
-        return requestString;
+        return requestString + "&ranking=2";
     }
 
 }
