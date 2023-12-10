@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {Globals} from "../global/globals";
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {ItemSearchDto, StorageItem, StorageItemListDto} from "../dtos/storageItem";
 import {DigitalStorageDto} from "../dtos/digitalStorageDto";
 import {ItemDto} from "../dtos/item";
+import {AuthService} from "./auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,8 @@ export class StorageService {
 
   private storageBaseUri: string = 'http://localhost:8080/api/v1/storage';
 
-  constructor(private httpClient: HttpClient, private globals: Globals) {
+  constructor(private httpClient: HttpClient,
+              private authService: AuthService) {
   }
 
   getItems(id: string, searchParameters: ItemSearchDto): Observable<StorageItemListDto[]> {
@@ -41,9 +42,12 @@ export class StorageService {
     let params = new HttpParams();
     params = params.append('title', titleSearch);
     params = params.append('limit', limit);
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
     return this.httpClient.get<DigitalStorageDto[]>(
       this.storageBaseUri,
-      {params}
+      {params, headers}
     );
   }
 
