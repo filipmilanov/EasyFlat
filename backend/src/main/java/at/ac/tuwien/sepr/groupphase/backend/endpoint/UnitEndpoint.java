@@ -4,6 +4,8 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitConvertDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +40,7 @@ public class UnitEndpoint {
     }
 
     @GetMapping("/convert")
-    public Long convertUnits(UnitConvertDto unitConvertDto) {
+    public Long convertUnits(UnitConvertDto unitConvertDto) throws ValidationException, ConflictException {
         LOGGER.info("convertUnits()");
 
         return unitService.convertUnits(

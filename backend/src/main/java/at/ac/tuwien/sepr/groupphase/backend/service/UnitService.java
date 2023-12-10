@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
 import java.util.List;
 
@@ -21,5 +23,5 @@ public interface UnitService {
      * @param value value of source unit
      * @return the converted value
      */
-    Long convertUnits(Unit from, Unit to, Long value);
+    Long convertUnits(Unit from, Unit to, Long value) throws ValidationException, ConflictException;
 }
