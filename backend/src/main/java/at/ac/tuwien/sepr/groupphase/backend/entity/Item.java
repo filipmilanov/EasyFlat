@@ -36,7 +36,6 @@ public class Item {
     private String ean;
 
     @Column
-
     private String generalName;
 
     @Column

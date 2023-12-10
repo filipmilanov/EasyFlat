@@ -44,4 +44,6 @@ public interface CookingService {
     RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException;
 
     RecipeSuggestion deleteCookbookRecipe(Long id);
+
+    // RecipeSuggestion getMissingIngredients(RecipeSuggestion recipe);
 }
