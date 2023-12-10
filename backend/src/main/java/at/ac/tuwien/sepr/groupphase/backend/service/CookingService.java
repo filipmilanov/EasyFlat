@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -45,5 +46,5 @@ public interface CookingService {
 
     RecipeSuggestion deleteCookbookRecipe(Long id);
 
-    // RecipeSuggestion getMissingIngredients(RecipeSuggestion recipe);
+    RecipeSuggestionDto getMissingIngredients(Long id);
 }

@@ -48,4 +48,7 @@ export class CookingService {
     return this.httpClient.get<RecipeDetailDto>(this.baseUri + '/detail/' + id);
   }
 
+  getMissingIngredients(id:string): Observable<RecipeSuggestion> {
+    return this.httpClient.get<RecipeSuggestion>(this.cookbookUri + '/missing/' + id);
+  }
 }

@@ -9,11 +9,13 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredien
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeIngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import at.ac.tuwien.sepr.groupphase.backend.service.RecipeIngredientService;
@@ -46,22 +48,23 @@ public class CookingServiceImpl implements CookingService {
     private final RecipeSuggestionRepository repository;
     private final RecipeIngredientService ingredientService;
     private final RecipeIngredientMapper ingredientMapper;
+    private final DigitalStorageRepository storageRepository;
+    private final RecipeMapper recipeMapper;
+    private final RecipeIngredientMapper recipeIngredientMapper;
 
-    private String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
-
-    private RecipeMapper recipeMapper;
-
-    private RecipeIngredientMapper recipeIngredientMapper;
+    private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
     public CookingServiceImpl(RestTemplate restTemplate, RecipeSuggestionRepository repository, DigitalStorageServiceImpl digitalStorageService,
                               RecipeIngredientService ingredientService,
-                              RecipeIngredientMapper ingredientMapper, RecipeMapper recipeMapper,
+                              RecipeIngredientMapper ingredientMapper,
+                              DigitalStorageRepository storageRepository, RecipeMapper recipeMapper,
                               RecipeIngredientMapper recipeIngredientMapper) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
         this.ingredientMapper = ingredientMapper;
+        this.storageRepository = storageRepository;
         this.recipeMapper = recipeMapper;
         this.recipeIngredientMapper = recipeIngredientMapper;
     }
@@ -255,6 +258,43 @@ public class CookingServiceImpl implements CookingService {
         repository.delete(deletedRecipe);
         return deletedRecipe;
     }
+
+    @Override
+    public RecipeSuggestionDto getMissingIngredients(Long id) {
+        Optional<RecipeSuggestion> recipeEntity = repository.findById(id);
+        Optional<RecipeSuggestionDto> recipeDto = recipeEntity.map(currentRecipe -> {
+            RecipeSuggestionDto recipeSuggestionDto = recipeMapper.entityToRecipeSuggestionDto(currentRecipe);
+            if (recipeSuggestionDto != null) {
+                List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
+                for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
+                    List<Item> items = storageRepository.getItemWithGeneralName(1L, ingredient.name());
+                    if (items.isEmpty()) {
+                        missingIngredients.add(ingredient);
+                    }
+                    for (Item item : items) {
+                        if (!item.getUnit().equals(ingredient.unit())) {
+                            missingIngredients.add(ingredient);
+                        } else if (item.getQuantityCurrent() < ingredient.amount()) {
+                            RecipeIngredientDto newIngredient = new RecipeIngredientDto(
+                                ingredient.id(),
+                                ingredient.name(),
+                                ingredient.unit(),
+                                ingredient.amount() - item.getQuantityCurrent()
+                            );
+                            missingIngredients.add(newIngredient);
+                        }
+                    }
+                }
+                RecipeSuggestionDto newRecipe = new RecipeSuggestionDto(recipeSuggestionDto.id(), recipeSuggestionDto.title(), recipeSuggestionDto.servings(),
+                    recipeSuggestionDto.readyInMinutes(), recipeSuggestionDto.extendedIngredients(), recipeSuggestionDto.summary(),
+                    missingIngredients, recipeSuggestionDto.dishTypes());
+                recipeSuggestionDto = newRecipe;
+            }
+            return recipeSuggestionDto;
+        });
+        return recipeDto.orElse(null);
+    }
+
 
 
     private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
