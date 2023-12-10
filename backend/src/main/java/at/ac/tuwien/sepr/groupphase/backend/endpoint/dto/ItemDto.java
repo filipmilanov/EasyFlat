@@ -30,7 +30,7 @@ public record ItemDto(
     @NotNull(message = "The total quantity cannot be empty")
     @Min(value = 0, message = "The total quantity must be positive")
     Long quantityTotal,
-    @NotEmpty(message = "The unit cannot be empty")
+    @NotNull(message = "The unit cannot be null")
     UnitDto unit,
     @FutureOrPresent(message = "You cannot store products which are over the expire date")
     LocalDate expireDate,
