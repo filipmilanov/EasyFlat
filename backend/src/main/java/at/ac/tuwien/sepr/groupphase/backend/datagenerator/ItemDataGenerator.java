@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UnitRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,22 +20,24 @@ import java.util.List;
 
 @Profile({"generateData", "test"})
 @Component("ItemDataGenerator")
-@DependsOn({"CleanDatabase", "StorageDataGenerator", "IngredientsDataGenerator"})
+@DependsOn({"CleanDatabase", "StorageDataGenerator", "IngredientsDataGenerator", "UnitDataGenerator"})
 public class ItemDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 5;
     private final ItemRepository itemRepository;
+    private final UnitRepository unitRepository;
 
-    public ItemDataGenerator(ItemRepository itemRepository) {
+    public ItemDataGenerator(ItemRepository itemRepository,
+                             UnitRepository unitRepository) {
         this.itemRepository = itemRepository;
+        this.unitRepository = unitRepository;
     }
 
     @PostConstruct
     public void generateDigitalStorages() {
         LOGGER.debug("generating {} Items ", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
-            Unit kg = new Unit();
-            kg.setName("kg");
+            Unit kg = unitRepository.findByName("kg");
 
             Item item = new Item();
             item.setGeneralName("Item" + (i + 1));
