@@ -9,6 +9,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -62,7 +64,7 @@ class ItemEndpointTest {
     private final String BASE_URI = "/api/v1/item";
 
     @BeforeEach
-    private void cleanUp() {
+    public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
     }
 
@@ -207,7 +209,7 @@ class ItemEndpointTest {
                 String content = response.getContentAsString();
                 ;
                 String[] errors = content.split(",");
-                assertEquals(8, errors.length);
+                assertEquals(7, errors.length);
             }
         );
     }

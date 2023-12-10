@@ -43,7 +43,7 @@ class ItemServiceTest {
     private TestDataGenerator testDataGenerator;
 
     @BeforeEach
-    private void cleanUp() {
+    public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
     }
 
@@ -119,7 +119,7 @@ class ItemServiceTest {
                 Item::getBrand,
                 Item::getQuantityCurrent,
                 Item::getQuantityTotal,
-                Item::getUnit,
+                (item) -> item.getUnit().getName(),
                 Item::getExpireDate,
                 Item::getDescription,
                 Item::getPriceInCent
@@ -131,7 +131,7 @@ class ItemServiceTest {
                 itemDto.brand(),
                 itemDto.quantityCurrent(),
                 itemDto.quantityTotal(),
-                itemDto.unit(),
+                itemDto.unit().name(),
                 itemDto.expireDate(),
                 itemDto.description(),
                 itemDto.priceInCent()
@@ -194,7 +194,7 @@ class ItemServiceTest {
                 Item::getBrand,
                 Item::getQuantityCurrent,
                 Item::getQuantityTotal,
-                Item::getUnit,
+                (item) -> item.getUnit().getName(),
                 Item::getExpireDate,
                 Item::getDescription,
                 Item::getPriceInCent,
@@ -209,7 +209,7 @@ class ItemServiceTest {
                 itemDto.brand(),
                 itemDto.quantityCurrent(),
                 itemDto.quantityTotal(),
-                itemDto.unit(),
+                itemDto.unit().name(),
                 itemDto.expireDate(),
                 itemDto.description(),
                 itemDto.priceInCent(),
