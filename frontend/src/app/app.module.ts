@@ -31,6 +31,7 @@ import { CookbookComponent } from './components/cookbook/cookbook.component';
 import { CookbookCardComponent } from './components/cookbook/cookbook-card/cookbook-card.component';
 import { RecipeDetailComponent } from './components/cooking/recipe-detail/recipe-detail.component';
 import { CookbookCreateComponent } from './components/cookbook/cookbook-create/cookbook-create.component';
+import { CookbookDetailComponent } from './components/cookbook/cookbook-detail/cookbook-detail.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { CookbookCreateComponent } from './components/cookbook/cookbook-create/c
     CookbookCardComponent,
     RecipeDetailComponent,
     CookbookCreateComponent,
+    CookbookDetailComponent,
   ],
   imports: [
     BrowserModule,
