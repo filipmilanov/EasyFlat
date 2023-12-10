@@ -37,6 +37,7 @@ public class ApplicationUserDataGenerator {
             user.setLastName("Last" + (i + 1));
             user.setEmail("user" + (i + 1) + "@email.at");
             user.setPassword(passwordEncoder.encode("12341234"));
+            user.setAdmin(false);
 
             SharedFlat sharedFlat = new SharedFlat();
             sharedFlat.setId((long) (i + 1));

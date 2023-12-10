@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
+import java.util.Objects;
 import java.util.Set;
 
 //TODO: replace this class with a correct ApplicationUser Entity implementation
@@ -89,5 +90,18 @@ public class ApplicationUser {
 
     public SharedFlat getSharedFlat() {
         return sharedFlat;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ApplicationUser user = (ApplicationUser) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
