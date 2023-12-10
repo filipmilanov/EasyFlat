@@ -274,7 +274,7 @@ public class CookingServiceImpl implements CookingService {
                 requestString += ",+" + ingredient;
             }
         }
-        requestString += "&number=15";
+        requestString += "&number=2";
         return requestString + "&ranking=2";
     }
 
