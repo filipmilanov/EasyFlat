@@ -23,7 +23,8 @@ export class ItemCreateEditComponent implements OnInit{
   mode: ItemCreateEditMode = ItemCreateEditMode.create;
   item: ItemDto = {
     alwaysInStock: false,
-    addToFiance: false
+    addToFiance: false,
+    unit: {name: "g"},
   }
   priceInEuro: number = 0.00;
 
