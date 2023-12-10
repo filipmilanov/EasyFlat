@@ -32,6 +32,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final LabelService labelService;
     private final ItemMapper itemMapper;
 
+
     public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, LabelService labelService, ItemMapper itemMapper, ShoppingListRepository shoppingListRepository, ShoppingListMapper shoppingListMapper) {
         this.shoppingRepository = shoppingRepository;
         this.labelService = labelService;
