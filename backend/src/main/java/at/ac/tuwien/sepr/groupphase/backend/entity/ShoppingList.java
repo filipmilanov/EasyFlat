@@ -20,6 +20,10 @@ public class ShoppingList {
     @Column
     private String name;
 
+    @OneToMany
+    private List<ShoppingItem> items;
+
+
     public Long getShopListId() {
         return shopListId;
     }
@@ -34,5 +38,13 @@ public class ShoppingList {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<ShoppingItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ShoppingItem> items) {
+        this.items = items;
     }
 }

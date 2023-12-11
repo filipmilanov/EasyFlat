@@ -14,7 +14,7 @@ public interface ShoppingListService {
 
     Optional<ShoppingList> getShoppingListById(Long id);
 
-    List<ShoppingItemDto> getItemsById(Long listId);
+    List<ShoppingItem> getItemsById(Long listId);
 
     ShoppingList createList(String listName);
 }

@@ -71,8 +71,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<ShoppingItemDto> getItemsById(Long listId) {
-        return null;
+    public List<ShoppingItem> getItemsById(Long listId) {
+        List<ShoppingItem> shoppingItems = shoppingRepository.findByShoppingListId(listId);
+        itemMapper.shoppingItemListToShoppingDto(shoppingItems);
+        return shoppingRepository.saveAll(shoppingItems);
     }
 
     @Override

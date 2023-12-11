@@ -13,7 +13,10 @@ import {ShoppingListDto} from "../../dtos/shoppingList";
 })
 export class ShoppingListComponent implements OnInit {
 
-  items: ShoppingItemDto[];
+  shoppingList: ShoppingListDto = {
+    id: 0,
+    listName: '',
+    items: []};
   shopId: string;
 
 
@@ -33,7 +36,7 @@ export class ShoppingListComponent implements OnInit {
 
         this.shoppingListService.getItemsWithShopId(this.shopId).subscribe({
           next: res => {
-            this.items = res;
+            this.shoppingList.items = res;
           },
           error: err => {
             console.error("Error finding items:", err);
@@ -52,5 +55,9 @@ export class ShoppingListComponent implements OnInit {
 
   navigateToCreateList() {
     this.router.navigate(['shopping-list', this.shopId, 'list', 'create']);
+  }
+
+  deleteItem() {
+    this.shoppingListService.deleteItem();
   }
 }
