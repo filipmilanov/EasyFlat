@@ -85,6 +85,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
         this.shoppingService.getShoppingListById(shoppingListId).subscribe({
           next: res => {
             this.item.shoppingList = res;
+            console.log(this.item.shoppingList)
           }
         });
 
