@@ -38,6 +38,9 @@ public class UnitDataGenerator {
 
         UnitDto cup = new UnitDto("cup", 125L, Set.of(g));
         UnitDto tbsp = new UnitDto("tbsp", 15L, Set.of(ml));
+        UnitDto pcs = new UnitDto("pcs", null, Set.of());
+        UnitDto tablespoons = new UnitDto("tablespoons", 15L, Set.of(g));
+
 
         unitService.create(g);
         unitService.create(kg);
@@ -49,6 +52,8 @@ public class UnitDataGenerator {
 
         unitService.create(cup);
         unitService.create(tbsp);
+        unitService.create(pcs);
+        unitService.create(tablespoons);
     }
 
 
