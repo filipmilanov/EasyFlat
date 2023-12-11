@@ -54,4 +54,30 @@ public class IngredientServiceImpl implements IngredientService {
 
         return ingredientRepository.findAllByTitleIsIn(names);
     }
+
+    @Override
+    public List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException {
+        if (ingredientDtoList == null) {
+            return List.of();
+        }
+        List<Ingredient> ingredientList = findByTitle(
+            ingredientDtoList.stream()
+                .map(IngredientDto::name)
+                .toList()
+        );
+
+        List<IngredientDto> missingIngredients = ingredientDtoList.stream()
+            .filter(ingredientDto ->
+                ingredientList.stream()
+                    .noneMatch(ingredient ->
+                        ingredient.getTitle().equals(ingredientDto.name())
+                    )
+            ).toList();
+
+        if (!missingIngredients.isEmpty()) {
+            List<Ingredient> createdIngredients = createAll(missingIngredients);
+            ingredientList.addAll(createdIngredients);
+        }
+        return ingredientList;
+    }
 }
