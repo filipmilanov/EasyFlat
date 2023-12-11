@@ -35,14 +35,16 @@ public interface ItemService {
      * Validates and Updates a new {@link Item} in the db.
      *
      * @param item a storage with existing ID
+     * @param jwt a valid JWT of a user
      * @return an object of type {@link Item} which is updated
      */
-    Item update(ItemDto item) throws ConflictException, ValidationException, AuthenticationException;
+    Item update(ItemDto item, String jwt) throws ConflictException, ValidationException, AuthenticationException;
 
     /**
      * Removes an {@link Item} stored in the db.
      *
      * @param id an ID of a stored {@link Item}
+     * @param jwt a valid JWT of a user
      */
-    void delete(Long id);
+    void delete(Long id, String jwt) throws AuthenticationException;
 }

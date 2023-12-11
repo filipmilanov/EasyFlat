@@ -59,19 +59,19 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping("{id}")
-    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto) throws ValidationException, ConflictException, AuthenticationException {
+    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("update({},{})", id, itemDto);
         return itemMapper.entityToDto(
-            itemService.update(itemDto.withId(id))
+            itemService.update(itemDto.withId(id), jwt)
         );
     }
 
     @Secured("ROLE_USER")
     @DeleteMapping("{itemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long itemId) {
+    public void delete(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("delete({})", itemId);
-        itemService.delete(itemId);
+        itemService.delete(itemId, jwt);
     }
 
 }

@@ -138,16 +138,33 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item update(ItemDto itemDto) throws ConflictException, ValidationException, AuthenticationException {
+    public Item update(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("update({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
             itemDto = itemDto.withAlwaysInStock(false);
         }
 
-        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, "NO JWT");
-        Item presistedItem = this.findById(itemDto.itemId(), "NO JWT").orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
         itemValidator.validateForUpdate(itemDto, digitalStorageList);
+
+        ItemDto finalItemDto = itemDto;
+        DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
+            .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
+
+        List<Long> allowedUser = sharedFlatService.findById(
+                matchingDigitalStorage.getSharedFlat().getId(),
+                jwt
+            ).getUsers().stream()
+            .map(ApplicationUser::getId)
+            .toList();
+        authenticator.authenticateUser(
+            jwt,
+            allowedUser,
+            "The given digital storage does not belong to the user's shared flat!"
+        );
 
         List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
 
@@ -158,9 +175,11 @@ public class ItemServiceImpl implements ItemService {
             item = itemMapper.dtoToEntity(itemDto, ingredientList, null);
         }
 
+        Item presistedItem = this.findById(itemDto.itemId(), jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+
         // necessary because JPA cannot convert an Entity to another Entity
         if (item.alwaysInStock() != presistedItem.alwaysInStock()) {
-            this.delete(itemDto.itemId());
+            this.delete(itemDto.itemId(), jwt);
         }
 
         Item updatedItem = itemRepository.save(item);
@@ -169,8 +188,23 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id, String jwt) throws AuthenticationException {
         LOGGER.trace("delete({})", id);
+
+        Item itemToDelete = this.findById(id, jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+
+        Long sharedFlatId = itemToDelete.getStorage().getSharedFlat().getId();
+
+        List<Long> allowedUsers = sharedFlatService.findById(sharedFlatId, jwt)
+            .getUsers().stream()
+            .map(ApplicationUser::getId)
+            .toList();
+
+        authenticator.authenticateUser(
+            jwt,
+            allowedUsers,
+            "The given digital storage does not belong to the user's shared flat!"
+        );
 
         itemRepository.deleteById(id);
     }
