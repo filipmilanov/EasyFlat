@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 import {CookingService} from "../../../services/cooking.service";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -13,8 +13,9 @@ import {ToastrService} from "ngx-toastr";
 export class RecipeCardComponent {
 
   @Input() recipe: RecipeSuggestion;
+  @Output() recipeAddedToCookbook: EventEmitter<string> = new EventEmitter();
 
-
+  isSaveButtonDisabled = false;
   constructor(
     private cookingService: CookingService,
     private router: Router,
@@ -30,13 +31,12 @@ export class RecipeCardComponent {
       this.recipe.summary;
   }
 
-
-
   addToCookBook(){
 
     this.cookingService.createCookbookRecipe(this.recipe).subscribe({
       next: data => {
-        this.notification.success(`Recipe ${this.recipe.title} successfully added to the cookbook.`, "Success");
+        this.isSaveButtonDisabled = true;
+        this.recipeAddedToCookbook.emit(this.recipe.title);
       },
       error: error => {
         console.error(`Error ${error}`);

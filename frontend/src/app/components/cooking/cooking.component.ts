@@ -26,11 +26,7 @@ export class CookingComponent implements OnInit {
   }
 
   onTypeChange(): void {
-    // Handle any logic you need when the type changes
-    // This method will be called when the user selects a different option in the dropdown
     console.log(`Type changed to: ${this.type}`);
-    // Optionally, you can call reloadRecipes() here if you want to reload recipes immediately upon type change
-    // this.reloadRecipes();
   }
   reloadRecipes() {
     this.cookingService.loadRecipes(this.type).subscribe({
@@ -46,6 +42,10 @@ export class CookingComponent implements OnInit {
       }
     })
 
+  }
+
+  handleRecipeAddedToCookbook(recipeTitle: string) {
+    this.notification.success(`Recipe ${recipeTitle} successfully added to the cookbook.`, "Success");
   }
 
   public addTestData() {
