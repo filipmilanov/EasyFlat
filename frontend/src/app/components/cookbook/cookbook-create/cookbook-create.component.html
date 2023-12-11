@@ -96,13 +96,18 @@
                  class="form-control"
                  placeholder="Amount"
                  #amountInput>
-          <input type="text"
-                 class="form-control"
-                 placeholder="Unit"
-                 #unitInput>
-          <button type="button"
+            <select class="form-select form-select-md"
+                    name="unit"
+                    [(ngModel)]="selectedUnit">
+              <option *ngFor="let unit of availableUnits"
+                      [ngValue]="unit">
+                {{ formatUnitName(unit) }}
+              </option>
+            </select>
+
+            <button type="button"
                   class="btn btn-primary"
-                  (click)="addIngredient(ingredientInput.value, amountInput.value, unitInput.value)">
+                  (click)="addIngredient(ingredientInput.value, amountInput.value)">
             <i class="bi bi-plus-square">Add ingredient</i>
           </button>
           </div>

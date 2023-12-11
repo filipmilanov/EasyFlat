@@ -31,6 +31,7 @@ export class CookbookCreateComponent implements OnInit{
     missedIngredients:[]
   };
   availableUnits: Unit[] = [];
+  selectedUnit: Unit;
 
   constructor(
     private cookingService: CookingService,
@@ -78,8 +79,8 @@ export class CookbookCreateComponent implements OnInit{
     }
   }
 
-  addIngredient(ingredient: string, amount: string, unit: string): void {
-    if (ingredient == undefined || ingredient.length == 0 || amount == undefined || amount.length == 0 || unit == undefined || unit.length == 0) {
+  addIngredient(ingredient: string, amount: string): void {
+    if (ingredient == undefined || ingredient.length == 0 || amount == undefined || amount.length == 0 ) {
       return;
     }
 
@@ -92,7 +93,8 @@ export class CookbookCreateComponent implements OnInit{
 
     const newIngredient: RecipeIngredient = {
       name: ingredient,
-      unit: unit,
+      unit: this.selectedUnit.name,
+      unitEnum: this.selectedUnit,
       amount: parsedAmount
     };
 
@@ -179,8 +181,16 @@ export class CookbookCreateComponent implements OnInit{
         }
       });
     }
-
-
   }
+
+  formatUnitName(unit: Unit | null): string {
+    return unit ? unit.name : '';
+  }
+
+  onUnitSelect(selectedUnit: Unit): void {
+    this.selectedUnit = selectedUnit;
+    console.log(selectedUnit)
+  }
+
 
 }
