@@ -1,16 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
@@ -21,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -83,6 +80,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         shoppingList.setName(listName);
         return shoppingListRepository.save(shoppingList);
     }
+
+    @Override
+    public ShoppingItem deleteItem(Long itemId) {
+        Optional<ShoppingItem> toDeleteOptional = shoppingRepository.findById(itemId);
+
+        if (toDeleteOptional.isPresent()) {
+            ShoppingItem toDelete = toDeleteOptional.get();
+            shoppingRepository.deleteById(itemId);
+            return toDelete;
+        } else {
+            throw new NoSuchElementException("Item with this id does not exist!");
+        }
+    }
+
 
 
     private List<ItemLabel> findItemLabelsAndCreateNew(List<ItemLabelDto> labels) {

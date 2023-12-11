@@ -55,8 +55,8 @@
     <td>{{ item.labels }}</td>
     <td>{{ item.quantityTotal}}{{item.unit}}</td>
     <td>
-      <button *ngIf="item.name !== null" (click)="deleteItem()" >
-        <i class="fa fa-trash"></i>
+      <button *ngIf="item.name !== null" (click)="deleteItem(item.itemId)" class="btn btn-danger" >
+        <i class="bi-trash">X</i>
       </button>
     </td>
 

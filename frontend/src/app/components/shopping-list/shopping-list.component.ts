@@ -5,6 +5,7 @@ import {ShoppingItemDto} from "../../dtos/item";
 import {ItemService} from "../../services/item.service";
 import {ShoppingListService} from "../../services/shopping-list.service";
 import {ShoppingListDto} from "../../dtos/shoppingList";
+import {SharedFlat} from "../../dtos/sharedFlat";
 
 @Component({
   selector: 'app-shopping-list',
@@ -18,6 +19,8 @@ export class ShoppingListComponent implements OnInit {
     listName: '',
     items: []};
   shopId: string;
+
+  location: Location;
 
 
   constructor(
@@ -57,7 +60,17 @@ export class ShoppingListComponent implements OnInit {
     this.router.navigate(['shopping-list', this.shopId, 'list', 'create']);
   }
 
-  deleteItem() {
-    this.shoppingListService.deleteItem();
+  deleteItem(itemId: number) {
+    if (confirm("Are you sure you want to delete this item?")) {
+      this.shoppingListService.deleteItem(itemId).subscribe({
+        next: (deletedItem: ShoppingItemDto) => {
+          console.log( deletedItem.generalName, ' was deleted form the list');
+          this.ngOnInit();
+        },
+        error: error => {
+          console.error(error.message, error);
+        }
+      });
+    }
   }
 }

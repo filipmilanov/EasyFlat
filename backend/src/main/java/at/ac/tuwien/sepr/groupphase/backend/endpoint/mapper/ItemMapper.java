@@ -57,4 +57,5 @@ public abstract class ItemMapper {
     public abstract ShoppingItemDto entityToShopping(ShoppingItem item);
 
     public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItem> items);
+
 }
