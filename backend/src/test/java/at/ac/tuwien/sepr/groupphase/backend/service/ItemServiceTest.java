@@ -421,7 +421,7 @@ class ItemServiceTest {
             .build();
 
         // when:
-        service.update(updatedItemDto);
+        service.update(updatedItemDto, "Bearer test");
 
         // then:
         Optional<Item> updatedItem = service.findById(createdItem.getItemId(), "bearer token");
@@ -483,7 +483,7 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto)).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto, "bearer token")).getMessage();
         assertThat(message)
             .contains(
                 "The actual quantity must be positive"
@@ -544,7 +544,7 @@ class ItemServiceTest {
             .build();
 
         // when:
-        service.update(updatedItemDto);
+        service.update(updatedItemDto, "Bearer test");
 
         // then:
         Optional<Item> updatedItem = service.findById(createdItem.getItemId(), "bearer token");
@@ -607,7 +607,7 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto)).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto, "bearer token")).getMessage();
         assertThat(message)
             .contains(
                 "brand",
@@ -650,7 +650,7 @@ class ItemServiceTest {
         Item createdItem = service.create(itemDto, "Bearer test");
 
         // when:
-        service.delete(createdItem.getItemId());
+        service.delete(createdItem.getItemId(), "Bearer test");
 
         // then:
         Optional<Item> deletedItem = service.findById(createdItem.getItemId(), "bearer token");
