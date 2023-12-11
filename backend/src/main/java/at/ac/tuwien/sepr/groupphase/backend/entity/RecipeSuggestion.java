@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -36,7 +37,8 @@ public class RecipeSuggestion {
     @OneToMany(fetch = FetchType.EAGER)
     private List<RecipeIngredient> extendedIngredients;
 
-    @OneToMany(fetch = FetchType.EAGER)
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<RecipeIngredient> missingIngredients;
     @Column(columnDefinition = "TEXT")
     private String summary;

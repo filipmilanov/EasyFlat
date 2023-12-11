@@ -32,6 +32,14 @@ export class CookingService {
     if(recipe.id != null){
       recipe.id = null;
     }
+    if (recipe.missedIngredients) {
+      recipe.missedIngredients.forEach(ingredient => {
+        if (ingredient.id != null) {
+          ingredient.id = null;
+        }
+      });
+    }
+
     return this.httpClient.post<RecipeSuggestion>(this.cookbookUri, recipe);
   }
 
