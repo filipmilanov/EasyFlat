@@ -81,7 +81,7 @@
             <div class="form-group">
               <div>
                 <label for="name">Flat name</label>
-                <input type="text"  name="name" formControlName="flatName" class="form-control" id="name">
+                <input type="text"  name="name" formControlName="flatName" class="form-control" id="name" readonly>
               </div>
               <div *ngIf="submitted && accountForm.get('name').errors?.required" class="error">
                 <small class="form-text text-warning">Your flat name is required!</small>
