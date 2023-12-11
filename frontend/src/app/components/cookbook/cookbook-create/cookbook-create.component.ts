@@ -6,6 +6,8 @@ import {ToastrService} from "ngx-toastr";
 import {CookingService} from "../../../services/cooking.service";
 import {NgForm} from "@angular/forms";
 import {Observable} from "rxjs";
+import {Unit} from "../../../dtos/unit";
+import {UnitService} from "../../../services/unit.service";
 
 
 export enum CookbookMode {
@@ -28,12 +30,14 @@ export class CookbookCreateComponent implements OnInit{
     extendedIngredients: [],
     missedIngredients:[]
   };
+  availableUnits: Unit[] = [];
 
   constructor(
     private cookingService: CookingService,
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
+    private unitService: UnitService
   ) {
   }
 
@@ -106,6 +110,15 @@ export class CookbookCreateComponent implements OnInit{
   ngOnInit(): void {
     this.route.data.subscribe(data => {
       this.mode = data.mode;
+    });
+
+    this.unitService.findAll().subscribe({
+      next: res => {
+        this.availableUnits = res;
+      },
+      error: err => {
+        this.notification.error('Failed to load Units', "Error");
+      }
     });
 
     if (this.mode === CookbookMode.edit) {

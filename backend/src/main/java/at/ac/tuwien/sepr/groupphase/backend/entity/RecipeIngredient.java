@@ -21,6 +21,9 @@ public class RecipeIngredient {
     @ManyToOne
     private RecipeSuggestion recipeSuggestion;
 
+    @ManyToOne
+    private Unit unitEnum;
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -59,5 +62,13 @@ public class RecipeIngredient {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public Unit getUnitEnum() {
+        return unitEnum;
+    }
+
+    public void setUnitEnum(Unit unitEnum) {
+        this.unitEnum = unitEnum;
     }
 }
