@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookingSteps;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
@@ -9,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredien
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeIngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
@@ -19,6 +21,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import at.ac.tuwien.sepr.groupphase.backend.service.RecipeIngredientService;
+import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -51,14 +54,20 @@ public class CookingServiceImpl implements CookingService {
     private final DigitalStorageRepository storageRepository;
     private final RecipeMapper recipeMapper;
     private final RecipeIngredientMapper recipeIngredientMapper;
-
+    private final UnitService unitService;
+    private final UnitMapper unitMapper;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
-    public CookingServiceImpl(RestTemplate restTemplate, RecipeSuggestionRepository repository, DigitalStorageServiceImpl digitalStorageService,
+    public CookingServiceImpl(RestTemplate restTemplate,
+                              RecipeSuggestionRepository repository,
+                              DigitalStorageServiceImpl digitalStorageService,
                               RecipeIngredientService ingredientService,
                               RecipeIngredientMapper ingredientMapper,
-                              DigitalStorageRepository storageRepository, RecipeMapper recipeMapper,
-                              RecipeIngredientMapper recipeIngredientMapper) {
+                              DigitalStorageRepository storageRepository,
+                              RecipeMapper recipeMapper,
+                              RecipeIngredientMapper recipeIngredientMapper,
+                              UnitService unitService,
+                              UnitMapper unitMapper) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
@@ -67,6 +76,8 @@ public class CookingServiceImpl implements CookingService {
         this.storageRepository = storageRepository;
         this.recipeMapper = recipeMapper;
         this.recipeIngredientMapper = recipeIngredientMapper;
+        this.unitService = unitService;
+        this.unitMapper = unitMapper;
     }
 
     @Override
@@ -100,6 +111,8 @@ public class CookingServiceImpl implements CookingService {
         if (type != null) {
             toReturn = filterSuggestions(toReturn, type);
         }
+
+        toReturn = saveUnitsAlsUnits(toReturn);
 
         return toReturn;
     }
@@ -173,6 +186,50 @@ public class CookingServiceImpl implements CookingService {
             }
         }
         return toReturn;
+    }
+
+    private List<RecipeSuggestionDto> saveUnitsAlsUnits(List<RecipeSuggestionDto> recipes) {
+
+        List<RecipeSuggestionDto> updatedRecipeList = new LinkedList<>();
+        for (RecipeSuggestionDto recipeSuggestion : recipes) {
+            List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
+            List<RecipeIngredientDto> updatedMissedIngredients = new LinkedList<>();
+            for (RecipeIngredientDto recipeIngredient : recipeSuggestion.extendedIngredients()) {
+                UnitDto unitDto;
+                if (recipeIngredient.unit().isEmpty()) {
+                    unitDto = unitMapper.entityToUnitDto(unitService.findByName("pcs"));
+                } else {
+                    unitDto = unitMapper.entityToUnitDto(unitService.findByName(recipeIngredient.unit()));
+                }
+                updatedIngredients.add(new RecipeIngredientDto(recipeIngredient.id(),
+                    recipeIngredient.name(),
+                    recipeIngredient.unit(),
+                    unitDto,
+                    recipeIngredient.amount()));
+            }
+            for (RecipeIngredientDto recipeIngredient : recipeSuggestion.missedIngredients()) {
+                UnitDto unitDto;
+                if (recipeIngredient.unit().isEmpty()) {
+                    unitDto = unitMapper.entityToUnitDto(unitService.findByName("pcs"));
+                } else {
+                    unitDto = unitMapper.entityToUnitDto(unitService.findByName(recipeIngredient.unit()));
+                }
+                updatedMissedIngredients.add(new RecipeIngredientDto(recipeIngredient.id(),
+                    recipeIngredient.name(),
+                    recipeIngredient.unit(),
+                    unitDto,
+                    recipeIngredient.amount()));
+            }
+            updatedRecipeList.add(new RecipeSuggestionDto(recipeSuggestion.id(),
+                recipeSuggestion.title(),
+                recipeSuggestion.servings(),
+                recipeSuggestion.readyInMinutes(),
+                updatedIngredients,
+                recipeSuggestion.summary(),
+                updatedMissedIngredients,
+                recipeSuggestion.dishTypes()));
+        }
+        return updatedRecipeList;
     }
 
     @Override
@@ -279,6 +336,7 @@ public class CookingServiceImpl implements CookingService {
                                 ingredient.id(),
                                 ingredient.name(),
                                 ingredient.unit(),
+                                new UnitDto(" ", 1L, null),
                                 ingredient.amount() - item.getQuantityCurrent()
                             );
                             missingIngredients.add(newIngredient);
@@ -294,8 +352,6 @@ public class CookingServiceImpl implements CookingService {
         });
         return recipeDto.orElse(null);
     }
-
-
 
     private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
         List<String> ingredients = new LinkedList<>();
