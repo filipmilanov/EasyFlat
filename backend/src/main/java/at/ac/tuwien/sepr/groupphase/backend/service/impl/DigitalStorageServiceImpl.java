@@ -2,10 +2,12 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
@@ -39,11 +41,15 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final DigitalStorageValidator digitalStorageValidator;
     private final Validator validator;
 
-    public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository, DigitalStorageMapper digitalStorageMapper, DigitalStorageValidator digitalStorageValidator, Validator validator) {
+    private final ItemMapper itemMapper;
+
+
+    public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository, DigitalStorageMapper digitalStorageMapper, DigitalStorageValidator digitalStorageValidator, Validator validator, ItemMapper itemMapper) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
         this.validator = validator;
+        this.itemMapper = itemMapper;
     }
 
     @Override
@@ -125,7 +131,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }).toList();
     }
 
-
     @Override
     public DigitalStorage create(DigitalStorageDto storageDto) throws ConflictException, at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException {
         LOGGER.trace("create({})", storageDto);
@@ -155,8 +160,15 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<Item> getItemWithGeneralName(String name, Long storId) {
-        return digitalStorageRepository.getItemWithGeneralName(storId, name);
+    public List<ItemDto> getItemWithGeneralName(String name, Long storId) {
+        List<Item> items = digitalStorageRepository.getItemWithGeneralName(storId, name);
+
+
+        List<ItemDto> itemDtos = items.stream()
+            .map(itemMapper::entityToDto)
+            .toList();
+
+        return itemDtos;
     }
 
     private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) {

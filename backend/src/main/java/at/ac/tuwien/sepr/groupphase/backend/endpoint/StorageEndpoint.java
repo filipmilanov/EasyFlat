@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
@@ -68,7 +69,7 @@ public class StorageEndpoint {
 
     @PermitAll
     @GetMapping("/info/{name}")
-    public List<Item> getItemWithGeneralName(@PathVariable String name, String storId) {
+    public List<ItemDto> getItemWithGeneralName(@PathVariable String name, String storId) {
         LOGGER.info("getItemWithGeneralName");
         return digitalStorageService.getItemWithGeneralName(name, Long.parseLong(storId));
     }
