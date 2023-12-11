@@ -23,6 +23,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/v1/cooking")
 public class CookingEndPoint {
+
     private final CookingService cookingService;
     private final RecipeMapper recipeMapper;
 
