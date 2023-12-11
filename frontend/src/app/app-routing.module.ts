@@ -19,6 +19,9 @@ import {ShoppingListComponent} from "./components/shopping-list/shopping-list.co
 import {
   ShoppingItemCreateEditComponent
 } from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
+import {
+  ShoppingListCreateComponent
+} from "./components/shopping-list/shopping-list-create/shopping-list-create.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -40,7 +43,10 @@ const routes: Routes = [
       {path: 'item', children: [
           {path: 'create', component: ShoppingItemCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
           {path: ':id/edit', component: ShoppingItemCreateEditComponent, data: {mode: ItemCreateEditMode.edit}},
-        ]}
+        ]},
+      {path: 'list', children: [
+          {path: 'create', component: ShoppingListCreateComponent}
+        ]},
     ]},
   {path: 'register', component: RegisterComponent},
   {path: 'account', component: AccountComponent},

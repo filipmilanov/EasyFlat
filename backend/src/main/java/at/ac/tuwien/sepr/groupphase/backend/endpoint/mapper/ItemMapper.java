@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
@@ -51,9 +50,11 @@ public abstract class ItemMapper {
     @Mapping(target = "shoppingList", expression = "java( shoppingList )")
     public abstract ShoppingItem dtoToShopping(ShoppingItemDto itemDto,
                                                @Context List<ItemLabel> labels,
-                                               @Context ShoppingList shoppingList);
+                                                @Context ShoppingList shoppingList);
 
     @Mapping(target = "labels", source = "labels")
     @Mapping(target = "shoppingList", source = "shoppingList")
     public abstract ShoppingItemDto entityToShopping(ShoppingItem item);
+
+    public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItemDto> items);
 }

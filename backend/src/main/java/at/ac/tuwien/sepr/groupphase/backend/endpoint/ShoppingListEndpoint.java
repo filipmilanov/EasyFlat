@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
+import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -58,12 +60,32 @@ public class ShoppingListEndpoint {
         return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToShopping(currentItem)));
     }
 
+
     @Secured("ROLE_USER")
     @GetMapping("/list/{id}")
     public Optional<ShoppingListDto> getShoppingListById(@PathVariable Long id) {
         Optional<ShoppingList> ret = shoppingService.getShoppingListById(id);
 
         return ret.flatMap(shoppingList -> Optional.ofNullable(shoppingListMapper.entityToDto(shoppingList)));
+
     }
 
+    @PermitAll
+    @GetMapping("/list/{listId}")
+    public List<ShoppingItemDto> getItemsById(@PathVariable Long listId) {
+        LOGGER.info("getItemsById({})", listId);
+        List<ShoppingItemDto> items = shoppingService.getItemsById(listId);
+
+        return itemMapper.shoppingItemListToShoppingDto(items);
+    }
+
+    @PermitAll
+    @PostMapping("/list-create")
+    public ShoppingListDto createList(@RequestBody String listName) {
+        LOGGER.info("createList({})", listName);
+        ShoppingList shoppingList = shoppingService.createList(listName);
+        return shoppingListMapper.entityToDto(shoppingList);
+    }
 }
+
+

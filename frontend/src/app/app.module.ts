@@ -27,6 +27,7 @@ import { CreateFlatComponent } from './components/create-flat/create-flat.compon
 import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
 import {ShoppingItemCreateEditComponent} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
 import {ColorPickerModule} from "ngx-color-picker";
+import { ShoppingListCreateComponent } from './components/shopping-list/shopping-list-create/shopping-list-create.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import {ColorPickerModule} from "ngx-color-picker";
     LoginFlatComponent,
     CreateFlatComponent,
     ShoppingListComponent,
-    ShoppingItemCreateEditComponent
+    ShoppingItemCreateEditComponent,
+    ShoppingListCreateComponent
   ],
   imports: [
     BrowserModule,

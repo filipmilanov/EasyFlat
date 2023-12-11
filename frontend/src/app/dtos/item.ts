@@ -1,7 +1,7 @@
 import {DigitalStorageDto} from "./digitalStorageDto";
 import {IngredientDto} from "./ingredientDto";
 import {ShoppingLabelDto} from "./shoppingLabel";
-import {ShoppingList} from "./shoppingList";
+import {ShoppingListDto} from "./shoppingList";
 
 export class ItemDto {
   itemId?: number;
@@ -24,6 +24,6 @@ export class ItemDto {
 }
 
 export class ShoppingItemDto extends ItemDto {
-  shoppingList?: ShoppingList;
+  shoppingList?: ShoppingListDto;
   labels?: [ShoppingLabelDto];
 }

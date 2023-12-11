@@ -12,14 +12,14 @@
         <a href="#">Option 3</a>
       </div>
     </div>
-    <button style="margin-left: 625px;" type="button" (click)="details()" >Add new list</button>
+    <button style="margin-left: 625px;" type="button" (click)="navigateToCreateList()" >Add new list</button>
   </div>
 </form>
 
 <br>
 
 <h4>All</h4>
-<hr>
+
 
 <form class="d-flex flex-row w-auto mb-3">
   <div class="mt-3">
@@ -64,6 +64,7 @@
 
   </tr>
 
-  <button style="margin-top: 20px;" type="button" (click)="details()" >Add new item</button>
+  <button style="margin-top: 20px;" type="button" (click)="navigateToCreateItem()">Add new item</button>
+
   </tbody>
 </table>

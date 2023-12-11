@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ShoppingListService {
@@ -12,4 +13,8 @@ public interface ShoppingListService {
     Optional<ShoppingItem> getById(Long itemId);
 
     Optional<ShoppingList> getShoppingListById(Long id);
+
+    List<ShoppingItemDto> getItemsById(Long listId);
+
+    ShoppingList createList(String listName);
 }
