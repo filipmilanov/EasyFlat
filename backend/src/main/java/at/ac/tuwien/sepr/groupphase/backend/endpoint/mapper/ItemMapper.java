@@ -51,7 +51,7 @@ public abstract class ItemMapper {
     @Mapping(target = "shoppingList", expression = "java( shoppingList )")
     public abstract ShoppingItem dtoToShopping(ShoppingItemDto itemDto,
                                                @Context List<ItemLabel> labels,
-                                               @Context ShoppingList shoppingList);
+                                                @Context ShoppingList shoppingList);
 
     @Mapping(target = "labels", source = "labels")
     @Mapping(target = "shoppingList", source = "shoppingList")

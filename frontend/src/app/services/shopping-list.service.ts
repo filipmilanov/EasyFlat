@@ -36,4 +36,9 @@ export class ShoppingListService {
   createList(listName: string): Observable<ShoppingListDto> {
     return this.http.post<ShoppingListDto>(this.baseUri + "/list-create", listName);
   }
+
+  deleteItem(): Observable<ItemDto> {
+    console.log('Delete item with ID ');
+    return this.http.delete<ItemDto>(this.baseUri + '/' );
+  }
 }

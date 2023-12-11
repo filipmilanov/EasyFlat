@@ -74,7 +74,7 @@ public class ShoppingListEndpoint {
     @GetMapping("/list-items/{listId}")
     public List<ShoppingItemDto> getItemsById(@PathVariable Long listId) {
         LOGGER.info("getItemsById({})", listId);
-        List<ShoppingItemDto> items = shoppingService.getItemsById(listId);
+        List<ShoppingItem> items = shoppingService.getItemsById(listId);
 
         return itemMapper.shoppingItemListToShoppingDto(items);
     }
