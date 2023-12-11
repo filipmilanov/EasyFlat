@@ -6,7 +6,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 import java.util.List;
 
 @RecordBuilder
-public record ItemFromApiDto(
+public record OpenFoodFactsItemDto(
     String eanCode,
     String generalName,
     String productName,
@@ -15,8 +15,6 @@ public record ItemFromApiDto(
     String unit,
     String description,
     String boughtAt,
-    List<Ingredient> ingredients,
-    Long status,
-    String statusText
+    List<Ingredient> ingredients
 ) {
 }
