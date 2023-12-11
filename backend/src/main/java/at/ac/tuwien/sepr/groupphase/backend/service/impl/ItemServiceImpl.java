@@ -1,7 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFromApiDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
@@ -93,7 +91,7 @@ public class ItemServiceImpl implements ItemService {
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         itemValidator.validateForCreate(itemDto, digitalStorageList);
 
-        List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
+        List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
         ItemStats curr = new ItemStats();
         curr.setDateOfPurchase(LocalDate.now());
@@ -127,7 +125,7 @@ public class ItemServiceImpl implements ItemService {
         Item presistedItem = this.findById(itemDto.itemId()).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         itemValidator.validateForUpdate(itemDto, digitalStorageList);
 
-        List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
+        List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
         Item item;
         if (itemDto.alwaysInStock()) {

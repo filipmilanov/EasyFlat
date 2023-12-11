@@ -33,4 +33,14 @@ public interface IngredientService {
      * @return a list of all ingredients with a given name
      */
     List<Ingredient> findByTitle(List<String> names);
+
+    /**
+     * Check if ingredient already exists and create it if it does not exist.
+     *
+     * @param ingredientDtoList Takes a list of IngredientDtos that are either given or created using the IngredientBuilder
+     * @return a list of all the ingredients given
+     * @throws ConflictException if a given ingredient already has an id
+     */
+
+    List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException;
 }
