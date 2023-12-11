@@ -42,6 +42,8 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final SharedFlatService sharedFlatService;
     private final Authorization authorization;
     private final CustomUserDetailService customUserDetailService;
+    private final Validator validator;
+    private final ItemMapper itemMapper;
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      DigitalStorageMapper digitalStorageMapper,

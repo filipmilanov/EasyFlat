@@ -79,4 +79,10 @@ public class CookingEndPoint {
     public RecipeDetailDto getRecipeDetail(@PathVariable Long id) {
         return cookingService.getRecipeDetails(id);
     }
+
+    @PermitAll
+    @PutMapping("/cook")
+    public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook) {
+        return cookingService.cookRecipe(recipeToCook);
+    }
 }

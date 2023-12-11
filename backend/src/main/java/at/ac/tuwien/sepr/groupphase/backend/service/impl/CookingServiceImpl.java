@@ -44,9 +44,7 @@ public class CookingServiceImpl implements CookingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final RestTemplate restTemplate;
-
     private final DigitalStorageServiceImpl digitalStorageService;
-
     private final String apiKey = "3b683601a4f44cd38d367ab0a1db032d";
     private final RecipeSuggestionRepository repository;
     private final RecipeIngredientService ingredientService;
@@ -351,6 +349,19 @@ public class CookingServiceImpl implements CookingService {
             return recipeSuggestionDto;
         });
         return recipeDto.orElse(null);
+    }
+
+    @Override
+    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook) {
+        List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
+        for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
+            List<Item> items = storageRepository.getItemWithGeneralName(1L, recipeIngredientDto.name());
+            for (Item item : items) {
+                //
+            }
+        }
+
+        return null;
     }
 
     private String getRequestStringForRecipeSearch(List<ItemListDto> items) {

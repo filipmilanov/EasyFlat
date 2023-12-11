@@ -79,4 +79,6 @@ public interface CookingService {
      * @return The missing ingredients for the recipe.
      */
     RecipeSuggestionDto getMissingIngredients(Long id);
+
+    RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook);
 }
