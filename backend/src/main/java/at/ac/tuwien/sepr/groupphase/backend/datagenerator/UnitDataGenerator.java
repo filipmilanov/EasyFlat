@@ -34,7 +34,8 @@ public class UnitDataGenerator {
         UnitDto cl = new UnitDto("cl", 10L, dl);
         UnitDto ml = new UnitDto("ml", 10L, cl);
         UnitDto l = new UnitDto("l", 1000L, ml);
-
+UnitDto cup = new UnitDto("cup",125,g);
+UnitDto tbsp = new UnitDto("tbsp",15,ml);
         unitService.create(g);
         unitService.create(kg);
 
