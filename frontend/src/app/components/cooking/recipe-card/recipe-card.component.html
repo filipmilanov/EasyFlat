@@ -20,12 +20,11 @@
     </div>
 
 
-
     <div class="row justify-content-center ">
 
 
       <div class="col-4 mb-2 ">
-        <button class="btn btn-outline-info " (click)="addToCookBook()">Save</button>
+        <button class="btn btn-info " (click)="addToCookBook()" [disabled]="isSaveButtonDisabled">Save</button>
       </div>
       <div class="col-4 mb-2 ">
         <button class="btn btn-outline-secondary" [routerLink]="[ recipe.id, 'detail']">Detail</button>
