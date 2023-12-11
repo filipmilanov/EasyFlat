@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -86,6 +88,15 @@ public class ShoppingListEndpoint {
         ShoppingList shoppingList = shoppingService.createList(listName);
         return shoppingListMapper.entityToDto(shoppingList);
     }
+
+    @PermitAll
+    @DeleteMapping("/{itemId}")
+    public ShoppingItemDto deleteItem(@PathVariable Long itemId) {
+        LOGGER.info("deleteItem({})", itemId);
+        ShoppingItem deletedItem = shoppingService.deleteItem(itemId);
+        return itemMapper.entityToShopping(deletedItem);
+    }
+
 }
 
 

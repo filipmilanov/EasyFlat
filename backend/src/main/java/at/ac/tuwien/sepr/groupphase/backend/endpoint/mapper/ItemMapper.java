@@ -60,4 +60,6 @@ public abstract class ItemMapper {
     public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItemDto> items);
 
     public abstract List<ItemDto> entityListToItemDtoList(List<Item> items);
+    public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItem> items);
+
 }
