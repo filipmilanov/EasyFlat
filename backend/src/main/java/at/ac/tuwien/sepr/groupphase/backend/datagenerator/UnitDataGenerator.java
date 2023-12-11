@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Set;
 
 @Profile({"default", "generateData", "test"})
 @Component("UnitDataGenerator")
@@ -27,16 +28,16 @@ public class UnitDataGenerator {
     public void generate() throws ValidationException, ConflictException {
         LOGGER.info("generate()");
 
-        UnitDto g = new UnitDto("g", null, null);
-        UnitDto kg = new UnitDto("kg", 1000L, g);
+        UnitDto g = new UnitDto("g", null, Set.of());
+        UnitDto kg = new UnitDto("kg", 1000L, Set.of(g));
 
-        UnitDto dl = new UnitDto("dl", null, null);
-        UnitDto cl = new UnitDto("cl", 10L, dl);
-        UnitDto ml = new UnitDto("ml", 10L, cl);
-        UnitDto l = new UnitDto("l", 1000L, ml);
+        UnitDto dl = new UnitDto("dl", null, Set.of());
+        UnitDto cl = new UnitDto("cl", 10L, Set.of(dl));
+        UnitDto ml = new UnitDto("ml", 10L, Set.of(cl));
+        UnitDto l = new UnitDto("l", 1000L, Set.of(ml));
 
-        UnitDto cup = new UnitDto("cup", 125L, g);
-        UnitDto tbsp = new UnitDto("tbsp", 15L, ml);
+        UnitDto cup = new UnitDto("cup", 125L, Set.of(g));
+        UnitDto tbsp = new UnitDto("tbsp", 15L, Set.of(ml));
 
         unitService.create(g);
         unitService.create(kg);

@@ -3,9 +3,11 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToMany;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Unit {
@@ -16,8 +18,8 @@ public class Unit {
     @Nullable
     private Long convertFactor;
 
-    @OneToOne
-    private Unit subUnit;
+    @ManyToMany
+    private Set<Unit> subUnit = new HashSet<>();
 
     public String getName() {
         return name;
@@ -36,11 +38,11 @@ public class Unit {
         this.convertFactor = convertFactor;
     }
 
-    public Unit getSubUnit() {
+    public Set<Unit> getSubUnit() {
         return subUnit;
     }
 
-    public void setSubUnit(Unit subUnit) {
+    public void setSubUnit(Set<Unit> subUnit) {
         this.subUnit = subUnit;
     }
 
