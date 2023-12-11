@@ -1,8 +1,7 @@
-import {ShoppingLabelDto} from "./shoppingLabel";
 
-export class ShoppingList{
+export class ShoppingListDto{
   constructor(
     public id: number,
-    public name: string,
+    public listName: string,
   ) {}
 }

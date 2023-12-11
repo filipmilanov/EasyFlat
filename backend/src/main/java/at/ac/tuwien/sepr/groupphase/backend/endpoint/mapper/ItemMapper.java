@@ -57,5 +57,7 @@ public abstract class ItemMapper {
     @Mapping(target = "shoppingList", source = "shoppingList")
     public abstract ShoppingItemDto entityToShopping(ShoppingItem item);
 
+    public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItemDto> items);
+
     public abstract List<ItemDto> entityListToItemDtoList(List<Item> items);
 }

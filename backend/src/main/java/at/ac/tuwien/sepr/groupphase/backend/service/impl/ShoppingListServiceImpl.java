@@ -33,7 +33,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final ItemMapper itemMapper;
 
 
-    public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, LabelService labelService, ItemMapper itemMapper, ShoppingListRepository shoppingListRepository, ShoppingListMapper shoppingListMapper) {
+    public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, ShoppingListRepository shoppingListRepository,
+                                   ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper) {
         this.shoppingRepository = shoppingRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -44,6 +45,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingItem create(ShoppingItemDto itemDto) {
         List<ItemLabel> labels = findItemLabelsAndCreateNew(itemDto.labels());
+
         ShoppingItem createdItem = shoppingRepository.save(itemMapper.dtoToShopping(itemDto, labels, shoppingListMapper.dtoToEntity(itemDto.shoppingList())));
         createdItem.setLabels(labels);
         return createdItem;
@@ -67,6 +69,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         return shoppingListRepository.getByShopListId(shopListId);
     }
+
+    @Override
+    public List<ShoppingItemDto> getItemsById(Long listId) {
+        return null;
+    }
+
+    @Override
+    public ShoppingList createList(String listName) {
+        ShoppingList shoppingList = new ShoppingList();
+        shoppingList.setName(listName);
+        return shoppingListRepository.save(shoppingList);
+    }
+
 
     private List<ItemLabel> findItemLabelsAndCreateNew(List<ItemLabelDto> labels) {
         if (labels == null) {

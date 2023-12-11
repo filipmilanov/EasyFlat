@@ -4,16 +4,18 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ShoppingItemDto} from "../../dtos/item";
 import {ItemService} from "../../services/item.service";
 import {ShoppingListService} from "../../services/shopping-list.service";
+import {ShoppingListDto} from "../../dtos/shoppingList";
 
 @Component({
   selector: 'app-shopping-list',
   templateUrl: './shopping-list.component.html',
   styleUrls: ['./shopping-list.component.scss']
 })
-export class ShoppingListComponent implements OnInit{
+export class ShoppingListComponent implements OnInit {
 
   items: ShoppingItemDto[];
   shopId: string;
+
 
   constructor(
     private shoppingListService: ShoppingListService,
@@ -29,7 +31,7 @@ export class ShoppingListComponent implements OnInit{
       next: params => {
         this.shopId = params.id;
 
-        this.shoppingListService.getItemsWithShopId( this.shopId).subscribe({
+        this.shoppingListService.getItemsWithShopId(this.shopId).subscribe({
           next: res => {
             this.items = res;
           },
@@ -44,10 +46,11 @@ export class ShoppingListComponent implements OnInit{
     });
   }
 
-  details() {
-
+  navigateToCreateItem() {
+    this.router.navigate(['shopping-list', this.shopId, 'item', 'create']);
   }
 
-  deleteList() {
+  navigateToCreateList() {
+    this.router.navigate(['shopping-list', this.shopId, 'list', 'create']);
   }
 }

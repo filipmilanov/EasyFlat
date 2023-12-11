@@ -3,6 +3,7 @@ import {IngredientDto} from "./ingredientDto";
 import {ShoppingLabelDto} from "./shoppingLabel";
 import {ShoppingList} from "./shoppingList";
 import {Unit} from "./unit";
+import {ShoppingListDto} from "./shoppingList";
 
 export class ItemDto {
   itemId?: number;
