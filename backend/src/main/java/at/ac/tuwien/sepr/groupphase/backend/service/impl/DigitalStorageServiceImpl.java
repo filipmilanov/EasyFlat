@@ -40,7 +40,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final DigitalStorageMapper digitalStorageMapper;
     private final DigitalStorageValidator digitalStorageValidator;
     private final Validator validator;
-
     private final ItemMapper itemMapper;
 
 
