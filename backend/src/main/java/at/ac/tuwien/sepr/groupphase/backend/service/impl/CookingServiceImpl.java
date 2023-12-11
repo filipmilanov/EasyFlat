@@ -272,11 +272,8 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException {
-
-        List<RecipeIngredient> ingredientList = findIngredientsAndCreateMissing(recipe.extendedIngredients());
-
+        List<RecipeIngredient> ingredientList = ingredientService.createAll(recipe.extendedIngredients());
         RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipe, ingredientList);
-
         RecipeSuggestion createdRecipe = repository.save(recipeEntity);
         createdRecipe.setExtendedIngredients(ingredientList);
         return createdRecipe;
@@ -293,15 +290,19 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException {
-        List<RecipeIngredient> ingredientList = findIngredientsAndCreateMissing(recipe.extendedIngredients());
-        RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipe, ingredientList);
-        RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id()).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
-        oldRecipe.setTitle(recipeEntity.getTitle());
-        oldRecipe.setSummary(recipeEntity.getSummary());
-        oldRecipe.setReadyInMinutes(recipeEntity.getReadyInMinutes());
+        RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id())
+            .orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
+
+        oldRecipe.setTitle(recipe.title());
+        oldRecipe.setSummary(recipe.summary());
+        oldRecipe.setReadyInMinutes(recipe.readyInMinutes());
         oldRecipe.setServings(recipe.servings());
-        oldRecipe.setExtendedIngredients(recipeEntity.getExtendedIngredients());
-        oldRecipe.setMissingIngredients(recipeEntity.getMissingIngredients());
+
+        List<RecipeIngredient> ingredientList = ingredientService.createAll(recipe.extendedIngredients());
+        oldRecipe.getExtendedIngredients().clear();
+        oldRecipe.getExtendedIngredients().addAll(ingredientList);
+
+
         RecipeSuggestion updatedRecipe = repository.save(oldRecipe);
         updatedRecipe.setExtendedIngredients(ingredientList);
         return updatedRecipe;
@@ -387,30 +388,5 @@ public class CookingServiceImpl implements CookingService {
 
     private String getRequestStringForDetails(String recipeId) {
         return "https://api.spoonacular.com/recipes/" + recipeId + "/analyzedInstructions" + "?apiKey=" + apiKey;
-    }
-
-    private List<RecipeIngredient> findIngredientsAndCreateMissing(List<RecipeIngredientDto> ingredientDtoList) throws ConflictException {
-        if (ingredientDtoList == null) {
-            return List.of();
-        }
-        List<RecipeIngredient> ingredientList = ingredientService.findByName(
-            ingredientDtoList.stream()
-                .map(RecipeIngredientDto::name)
-                .toList()
-        );
-
-        List<RecipeIngredientDto> missingIngredients = ingredientDtoList.stream()
-            .filter(ingredientDto ->
-                ingredientList.stream()
-                    .noneMatch(ingredient ->
-                        ingredient.getName().equals(ingredientDto.name())
-                    )
-            ).toList();
-
-        if (!missingIngredients.isEmpty()) {
-            List<RecipeIngredient> createdIngredients = ingredientService.createAll(missingIngredients);
-            ingredientList.addAll(createdIngredients);
-        }
-        return ingredientList;
     }
 }

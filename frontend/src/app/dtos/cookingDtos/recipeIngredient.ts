@@ -5,6 +5,6 @@ export class RecipeIngredient {
   id?: number;
   name?: string;
   unit?: string;
-  unitDto?:Unit;
+  unitEnum?:Unit;
   amount?:number;
 }

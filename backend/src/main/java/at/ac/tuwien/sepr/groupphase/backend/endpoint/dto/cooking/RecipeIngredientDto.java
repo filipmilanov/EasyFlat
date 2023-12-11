@@ -12,14 +12,14 @@ public record RecipeIngredientDto(
     Long id,
     String name,
     String unit,
-    UnitDto unitDto,
+    UnitDto unitEnum,
     double amount) {
 
 
-    public static RecipeIngredientDto createWithCustomLogic(Long id, String name, String unit, UnitDto unitDto, double amount) {
+    public static RecipeIngredientDto createWithCustomLogic(Long id, String name, String unit, UnitDto unitEnum, double amount) {
 
         // Return the new instance of RecipeIngredientDto
-        return new RecipeIngredientDto(id, name, unit, unitDto, amount);
+        return new RecipeIngredientDto(id, name, unit, unitEnum, amount);
     }
 
 
