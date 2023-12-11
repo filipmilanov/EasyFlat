@@ -3,3 +3,10 @@ export class Unit {
   convertFactor?: number;
   subUnit?: Unit
 }
+
+export class UnitConvertDto {
+  from: Unit;
+  to: Unit;
+  value: number;
+}
+
