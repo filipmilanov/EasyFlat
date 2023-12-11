@@ -1,4 +1,5 @@
 import {OrderType} from "./orderType";
+import {Unit} from "./unit";
 
 export class StorageItem {
   itemId?: string;
@@ -8,7 +9,7 @@ export class StorageItem {
   brand?:string;
   quantityCurrent:number;
   quantityTotal?:number;
-  unit?:number;
+  unit?: Unit;
   expireDate?:string;
   description?:string;
   priceInCent?:number;
@@ -27,5 +28,5 @@ export class StorageItemListDto {
   quantityCurrent:number;
   quantityTotal:number;
   storId:string;
-  unit:string;
+  unit: Unit;
 }

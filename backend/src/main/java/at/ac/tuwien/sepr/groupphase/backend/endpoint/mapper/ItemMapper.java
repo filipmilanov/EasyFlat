@@ -12,7 +12,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(uses = {IngredientMapper.class, DigitalStorageMapper.class})
+@Mapper(uses = {IngredientMapper.class, DigitalStorageMapper.class, UnitMapper.class})
 public abstract class ItemMapper {
 
     @Mapping(target = "storage", source = "digitalStorage")

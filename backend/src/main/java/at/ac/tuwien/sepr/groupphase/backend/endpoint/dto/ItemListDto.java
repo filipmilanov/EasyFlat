@@ -13,8 +13,7 @@ public record ItemListDto(
     Long quantityTotal,
     @NotEmpty
     Long storId,
-    @NotEmpty
-    String unit
+    UnitDto unit
 
 
 ) {

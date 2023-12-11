@@ -3,7 +3,9 @@ package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UnitRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,20 +20,25 @@ import java.util.List;
 
 @Profile({"generateData", "test"})
 @Component("ItemDataGenerator")
-@DependsOn({"CleanDatabase", "StorageDataGenerator", "IngredientsDataGenerator"})
+@DependsOn({"CleanDatabase", "StorageDataGenerator", "IngredientsDataGenerator", "UnitDataGenerator"})
 public class ItemDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 5;
     private final ItemRepository itemRepository;
+    private final UnitRepository unitRepository;
 
-    public ItemDataGenerator(ItemRepository itemRepository) {
+    public ItemDataGenerator(ItemRepository itemRepository,
+                             UnitRepository unitRepository) {
         this.itemRepository = itemRepository;
+        this.unitRepository = unitRepository;
     }
 
     @PostConstruct
     public void generateDigitalStorages() {
         LOGGER.debug("generating {} Items ", NUMBER_OF_ENTITIES_TO_GENERATE);
+        Unit kg = unitRepository.findByName("kg").orElseThrow();
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
+
             Item item = new Item();
             item.setGeneralName("Item" + (i + 1));
             item.setEan("123456789012" + i);  // Replace with valid EAN numbers
@@ -39,7 +46,7 @@ public class ItemDataGenerator {
             item.setBrand("Test Brand " + (i + 1));
             item.setQuantityCurrent(10L + i);
             item.setQuantityTotal(20L + i);
-            item.setUnit("pieces");
+            item.setUnit(kg);
             item.setExpireDate(LocalDate.now().plusMonths(i + 1));  // Set expire date to current date + i months
             item.setDescription("This is a test product description for Item " + (i + 1));
             item.setPriceInCent(500L + i * 100);

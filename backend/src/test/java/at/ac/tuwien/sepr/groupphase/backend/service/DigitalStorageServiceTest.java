@@ -33,7 +33,7 @@ class DigitalStorageServiceTest {
     private TestDataGenerator testDataGenerator;
 
     @BeforeEach
-    private void cleanUp() {
+    public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
     }
 

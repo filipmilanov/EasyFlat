@@ -54,10 +54,6 @@ public class Item {
     private Long quantityTotal;
 
     @Column
-    @NotEmpty(message = "The unit cannot be empty")
-    private String unit;
-
-    @Column
     @FutureOrPresent(message = "You cannot store products which are over the expire date")
     private LocalDate expireDate;
 
@@ -69,6 +65,9 @@ public class Item {
 
     @Column
     private String boughtAt;
+
+    @ManyToOne
+    private Unit unit;
 
     @ManyToOne
     @NotNull(message = "A Item need to be linked to a storage")
@@ -141,11 +140,11 @@ public class Item {
         this.quantityTotal = quantityTotal;
     }
 
-    public String getUnit() {
+    public Unit getUnit() {
         return unit;
     }
 
-    public void setUnit(String unit) {
+    public void setUnit(Unit unit) {
         this.unit = unit;
     }
 

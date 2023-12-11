@@ -1,22 +1,49 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Unit {
 
     @Id
-    private String unit;
+    private String name;
 
-    public String getUnit() {
-        return unit;
+    @Nullable
+    private Long convertFactor;
+
+    @ManyToMany
+    private Set<Unit> subUnit = new HashSet<>();
+
+    public String getName() {
+        return name;
     }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
+    public void setName(String unit) {
+        this.name = unit;
+    }
+
+    @Nullable
+    public Long getConvertFactor() {
+        return convertFactor;
+    }
+
+    public void setConvertFactor(@Nullable Long convertFactor) {
+        this.convertFactor = convertFactor;
+    }
+
+    public Set<Unit> getSubUnit() {
+        return subUnit;
+    }
+
+    public void setSubUnit(Set<Unit> subUnit) {
+        this.subUnit = subUnit;
     }
 
     @Override
@@ -28,18 +55,18 @@ public class Unit {
             return false;
         }
         Unit unit1 = (Unit) o;
-        return Objects.equals(unit, unit1.unit);
+        return Objects.equals(name, unit1.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(unit);
+        return Objects.hash(name);
     }
 
     @Override
     public String toString() {
         return "Unit{"
-            + "unit='" + unit + '\''
+            + "unit='" + name + '\''
             + '}';
     }
 }

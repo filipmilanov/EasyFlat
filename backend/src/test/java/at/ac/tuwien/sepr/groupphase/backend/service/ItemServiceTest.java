@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -22,6 +23,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.g;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,7 +43,7 @@ class ItemServiceTest {
     private TestDataGenerator testDataGenerator;
 
     @BeforeEach
-    private void cleanUp() {
+    public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
     }
 
@@ -92,7 +95,7 @@ class ItemServiceTest {
             .brand("Hofer")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("ml")
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -116,7 +119,7 @@ class ItemServiceTest {
                 Item::getBrand,
                 Item::getQuantityCurrent,
                 Item::getQuantityTotal,
-                Item::getUnit,
+                (item) -> item.getUnit().getName(),
                 Item::getExpireDate,
                 Item::getDescription,
                 Item::getPriceInCent
@@ -128,7 +131,7 @@ class ItemServiceTest {
                 itemDto.brand(),
                 itemDto.quantityCurrent(),
                 itemDto.quantityTotal(),
-                itemDto.unit(),
+                itemDto.unit().name(),
                 itemDto.expireDate(),
                 itemDto.description(),
                 itemDto.priceInCent()
@@ -164,7 +167,7 @@ class ItemServiceTest {
             .brand("Hofer")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("ml")
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -191,7 +194,7 @@ class ItemServiceTest {
                 Item::getBrand,
                 Item::getQuantityCurrent,
                 Item::getQuantityTotal,
-                Item::getUnit,
+                (item) -> item.getUnit().getName(),
                 Item::getExpireDate,
                 Item::getDescription,
                 Item::getPriceInCent,
@@ -206,7 +209,7 @@ class ItemServiceTest {
                 itemDto.brand(),
                 itemDto.quantityCurrent(),
                 itemDto.quantityTotal(),
-                itemDto.unit(),
+                itemDto.unit().name(),
                 itemDto.expireDate(),
                 itemDto.description(),
                 itemDto.priceInCent(),
@@ -245,7 +248,7 @@ class ItemServiceTest {
             .brand("")
             .quantityCurrent(100L)
             .quantityTotal(-200L)
-            .unit("")
+            .unit(UnitDtoBuilder.builder().build())
             .description("")
             .priceInCent(-1234L)
             .digitalStorage(digitalStorageDto)
@@ -287,7 +290,7 @@ class ItemServiceTest {
             .brand("Hofer")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("ml")
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -328,7 +331,7 @@ class ItemServiceTest {
             .brand("Hofer")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("ml")
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -371,7 +374,7 @@ class ItemServiceTest {
             .brand("TestBrand")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("g")
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -389,7 +392,7 @@ class ItemServiceTest {
             .brand("TestBrand")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("g")
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -433,7 +436,7 @@ class ItemServiceTest {
             .brand("TestBrand")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("g")
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -451,7 +454,7 @@ class ItemServiceTest {
             .brand("TestBrand")
             .quantityCurrent(-100L)
             .quantityTotal(200L)
-            .unit("g")
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -494,7 +497,7 @@ class ItemServiceTest {
             .brand("TestBrand")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("g")
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -512,7 +515,7 @@ class ItemServiceTest {
             .brand("TestBrand")
             .quantityCurrent(updatedCurrentAmount)
             .quantityTotal(200L)
-            .unit("g")
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -557,7 +560,7 @@ class ItemServiceTest {
             .brand("TestBrand")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("g")
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -575,7 +578,7 @@ class ItemServiceTest {
             .brand(null)
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("g")
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -616,7 +619,7 @@ class ItemServiceTest {
             .brand("TestBrand")
             .quantityCurrent(100L)
             .quantityTotal(200L)
-            .unit("g")
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
