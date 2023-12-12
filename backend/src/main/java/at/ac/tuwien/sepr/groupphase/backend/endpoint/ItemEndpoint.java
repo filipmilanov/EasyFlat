@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.OpenFoodFactsItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -79,9 +78,11 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("/ean/{ean}")
-    public OpenFoodFactsItemDto findByEan(@PathVariable Long ean) throws ConflictException, JsonProcessingException {
+    public ItemDto findByEan(@PathVariable Long ean) throws ConflictException, JsonProcessingException {
         LOGGER.info("findByEan({})", ean);
-        return openFoodFactsService.findByEan(ean);
+        return itemMapper.openFoodFactItemDtoToItemDto(
+            openFoodFactsService.findByEan(ean)
+        );
     }
 
 }
