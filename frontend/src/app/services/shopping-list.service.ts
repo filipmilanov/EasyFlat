@@ -46,4 +46,8 @@ export class ShoppingListService {
     console.log('Delete list with ID ');
     return this.http.delete<ShoppingListDto>(this.baseUri + '/delete/' + shopId);
   }
+
+  getShoppingLists(): Observable<ShoppingListDto[]> {
+    return this.http.get<ShoppingListDto[]>(this.baseUri + '/lists');
+  }
 }

@@ -14,4 +14,6 @@ public abstract class ShoppingListMapper {
 
     public abstract ShoppingList dtoToEntity(ShoppingListDto shoppingListDto);
 
+    public abstract List<ShoppingListDto> entityListToDtoList(List<ShoppingList> shoppingList);
+
 }

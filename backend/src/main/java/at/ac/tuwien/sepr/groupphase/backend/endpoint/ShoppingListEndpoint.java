@@ -105,6 +105,15 @@ public class ShoppingListEndpoint {
         return shoppingListMapper.entityToDto(deletedList);
     }
 
+    @PermitAll
+    @GetMapping("/lists")
+    public List<ShoppingListDto> getShoppingLists() {
+        LOGGER.info("getShoppingLists()");
+        List<ShoppingList> lists = shoppingService.getShoppingLists();
+
+        return shoppingListMapper.entityListToDtoList(lists);
+    }
+
 
 }
 

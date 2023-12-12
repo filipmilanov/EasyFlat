@@ -6,6 +6,7 @@ import {ItemService} from "../../services/item.service";
 import {ShoppingListService} from "../../services/shopping-list.service";
 import {ShoppingListDto} from "../../dtos/shoppingList";
 import {SharedFlat} from "../../dtos/sharedFlat";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-shopping-list',
@@ -19,8 +20,9 @@ export class ShoppingListComponent implements OnInit {
     listName: '',
     items: []};
   shopId: string;
-
   checkedItems: ShoppingItemDto[] = this.getCheckedItems();
+  selectedShoppingList: number;
+  shoppingLists: Observable<ShoppingListDto[]>;
 
   constructor(
     private shoppingListService: ShoppingListService,
@@ -35,6 +37,7 @@ export class ShoppingListComponent implements OnInit {
 
     this.checkedItems = this.getCheckedItems();
     console.log('Checked Items:', this.checkedItems);
+    this.shoppingListService.getShoppingLists();
     this.route.params.subscribe({
       next: params => {
         this.shopId = params.id;
@@ -135,4 +138,7 @@ export class ShoppingListComponent implements OnInit {
     }
   }
 
+  onShoppingListChange() {
+    console.log('Selected Shopping List:', this.selectedShoppingList);
+  }
 }
