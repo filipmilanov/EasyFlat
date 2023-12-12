@@ -1,0 +1,17 @@
+.btn-light .form-control {
+  display: none;
+}
+
+.btn-light:before {
+  content: "Color";
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.hide-hex-color-picker {
+  &:hover {
+    .color-picker-hex-row {
+      display: none;
+    }
+  }
+}
