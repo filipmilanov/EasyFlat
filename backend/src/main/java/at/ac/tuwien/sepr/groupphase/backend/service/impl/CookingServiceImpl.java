@@ -345,6 +345,24 @@ public class CookingServiceImpl implements CookingService {
                             Unit ingredientUnitMin = this.getMinUnit(ingredientUnit);
                             if (!itemUnitMin.equals(ingredientUnitMin)) {
                                 missingIngredients.add(ingredient);
+                            } else {
+                                try {
+                                    Long ingredientConverted = unitService.convertUnits(ingredientUnit, ingredientUnitMin, (long) ingredient.amount());
+                                    Long itemConverted = unitService.convertUnits(item.getUnit(), itemUnitMin, item.getQuantityCurrent());
+                                    if (ingredientConverted > itemConverted) {
+                                        RecipeIngredientDto newIngredient = new RecipeIngredientDto(
+                                            ingredient.id(),
+                                            ingredient.name(),
+                                            ingredientUnitMin.getName(),
+                                            unitMapper.entityToUnitDto(ingredientUnitMin),
+                                            ingredientConverted - itemConverted
+                                        );
+                                        missingIngredients.add(newIngredient);
+                                    }
+                                } catch (ValidationException | ConflictException e) {
+                                    e.printStackTrace();
+                                }
+
                             }
                         } else if (item.getQuantityCurrent() < ingredient.amount()) {
                             RecipeIngredientDto newIngredient = new RecipeIngredientDto(
@@ -416,9 +434,7 @@ public class CookingServiceImpl implements CookingService {
             return unit;
         }
         for (Unit subUnit : unit.getSubUnit()) {
-            if (subUnit.getSubUnit().isEmpty()) {
-                return subUnit;
-            }
+            return subUnit;
         }
         return null;
     }
