@@ -34,4 +34,5 @@ export class ItemFieldSearchDto {
 export class ShoppingItemDto extends ItemDto {
   shoppingList?: ShoppingList;
   labels?: [ShoppingLabelDto];
+  check?: boolean;
 }

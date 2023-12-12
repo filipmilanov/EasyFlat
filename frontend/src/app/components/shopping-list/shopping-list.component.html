@@ -53,14 +53,17 @@
       </button>
     </td>
     <td>
-      <input type="checkbox" [(ngModel)]="item.selected">
+      <input type="checkbox" [checked]="item.check" (change)="updateCheckedItems(item)">
     </td>
 
 
   </tr>
 
   <button style="margin-top: 20px;" style="margin-right: 20px;" type="button" (click)="navigateToCreateItem()">Add item</button>
-  <button style="margin-top: 20px;" type="button" (click)="deleteList()">Delete List</button>
+  <button style="margin-top: 20px;" style="margin-right: 20px;" type="button" (click)="deleteList()">Delete List</button>
+  <button style="margin-top: 20px;" style="margin-right: 20px;"type="button" (click)="deleteCheckedItems()">Delete</button>
+  <button style="margin-top: 20px;" style="margin-right: 20px;"type="button" (click)="deleteCheckedItems()">Buy</button>
+
 
   </tbody>
 </table>

@@ -20,10 +20,7 @@ export class ShoppingListComponent implements OnInit {
     items: []};
   shopId: string;
 
-  allLists: ShoppingListDto[];
-
-  location: Location;
-
+  checkedItems: ShoppingItemDto[] = this.getCheckedItems();
 
   constructor(
     private shoppingListService: ShoppingListService,
@@ -35,6 +32,8 @@ export class ShoppingListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.checkedItems = this.getCheckedItems();
+    console.log('Checked Items:', this.checkedItems);
     this.route.params.subscribe({
       next: params => {
         this.shopId = params.id;
@@ -86,6 +85,43 @@ export class ShoppingListComponent implements OnInit {
         error: error => {
           console.error(error.message, error);
         }
+      });
+    }
+  }
+
+  updateCheckedItems(item: ShoppingItemDto) {
+    item.check = !item.check; // Toggle the 'check' property
+    this.checkedItems = this.getCheckedItems(); // Update the checkedItems array
+    console.log('Checked Items:', this.checkedItems); // Log the updated checkedItems array
+  }
+
+  getCheckedItems(): ShoppingItemDto[] {
+    return this.shoppingList.items.filter(item => item.check);
+  }
+
+  deleteCheckedItems() {
+    const checkedItems = this.checkedItems.slice();
+
+    if (checkedItems.length === 0) {
+      this.notification.error('No items are checked for deletion.');
+      return;
+    }
+
+    if (confirm("Are you sure you want to delete the checked items?")) {
+      checkedItems.forEach(item => {
+        this.shoppingListService.deleteItem(item.itemId).subscribe({
+          next: (deletedItem: ShoppingItemDto) => {
+            console.log(deletedItem.generalName, ' was deleted from the list');
+
+            this.shoppingList.items = this.shoppingList.items.filter(listItem => listItem.itemId !== deletedItem.itemId);
+
+            this.checkedItems = this.getCheckedItems();
+            console.log('Checked Items:', this.checkedItems);
+          },
+          error: error => {
+            console.error(error.message, error);
+          }
+        });
       });
     }
   }
