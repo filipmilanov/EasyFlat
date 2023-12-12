@@ -28,10 +28,11 @@ public class ExpenseValidator {
 
     public void validateExpense(ExpenseDto expenseDto,
                                 List<ApplicationUser> applicationUsersOfFlat,
-                                SharedFlat flatOfUser) throws ValidationException {
+                                SharedFlat flatOfUser) throws ValidationException, ConflictException {
         LOGGER.trace("validateExpense({}, {}, {})", expenseDto, applicationUsersOfFlat, flatOfUser);
 
         validateExpenseDtoForCreate(expenseDto);
+        checkForConflict(expenseDto, applicationUsersOfFlat, flatOfUser);
 
     }
 
