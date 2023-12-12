@@ -135,6 +135,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
             Item item = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()));
             itemRepository.save(item);
+            shoppingRepository.deleteById(item.getItemId());
             itemsList.add(item);
         }
         return itemsList;
