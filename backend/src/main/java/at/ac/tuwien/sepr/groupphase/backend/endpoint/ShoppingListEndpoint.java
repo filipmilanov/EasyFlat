@@ -3,7 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,10 +40,15 @@ public class ShoppingListEndpoint {
     private final ItemMapper itemMapper;
     private final ShoppingListMapper shoppingListMapper;
 
-    public ShoppingListEndpoint(ShoppingListService shoppingService, ItemMapper mapper, ShoppingListMapper shoppingListMapper) {
+    private final IngredientMapper ingredientsMapper;
+
+
+
+    public ShoppingListEndpoint(ShoppingListService shoppingService, ItemMapper mapper, ShoppingListMapper shoppingListMapper, IngredientMapper ingredientsMapper) {
         this.shoppingService = shoppingService;
         this.itemMapper = mapper;
         this.shoppingListMapper = shoppingListMapper;
+        this.ingredientsMapper = ingredientsMapper;
     }
 
     @Secured("ROLE_USER")
@@ -112,6 +118,18 @@ public class ShoppingListEndpoint {
         List<ShoppingList> lists = shoppingService.getShoppingLists();
 
         return shoppingListMapper.entityListToDtoList(lists);
+    }
+
+    @PermitAll
+    @PostMapping("/storage")
+    public List<ItemDto> transferToStorage(@RequestBody List<ShoppingItemDto> items) {
+        LOGGER.info("transferToStorage({})", items);
+        List<Item> res = this.shoppingService.transferToServer(items);
+        List<ItemDto> toRet = new ArrayList<>();
+        for (Item item : res) {
+            toRet.add(itemMapper.entityToDto(item));
+        }
+        return toRet;
     }
 
 

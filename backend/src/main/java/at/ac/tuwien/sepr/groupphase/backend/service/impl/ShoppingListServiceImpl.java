@@ -2,8 +2,10 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
@@ -31,14 +33,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final LabelService labelService;
     private final ItemMapper itemMapper;
 
+    private final IngredientMapper ingredientMapper;
+
 
     public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, ShoppingListRepository shoppingListRepository,
-                                   ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper) {
+                                   ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper, IngredientMapper ingredientMapper) {
         this.shoppingRepository = shoppingRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
         this.shoppingListRepository = shoppingListRepository;
         this.shoppingListMapper = shoppingListMapper;
+        this.ingredientMapper = ingredientMapper;
     }
 
     @Override
@@ -119,6 +124,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<ShoppingList> shoppingLists = shoppingListRepository.findAll();
         shoppingListMapper.entityListToDtoList(shoppingLists);
         return shoppingListRepository.saveAll(shoppingLists);
+    }
+
+    @Override
+    public List<Item> transferToServer(List<ShoppingItemDto> items) {
+        List<Item> itemsList = new ArrayList<>();
+        for (ShoppingItemDto item : items) {
+            itemsList.add(shoppingListMapper.shoppingItemDtoToItem(item, ingredientMapper.dtoListToEntityList(item.ingredients())));
+        }
+        return null;
     }
 
 

@@ -77,6 +77,7 @@ public class StorageEndpoint {
         LOGGER.info("getItemWithGeneralName");
         return digitalStorageService.getItemWithGeneralName(name, Long.parseLong(storId));
     }
+
     @PermitAll
     @PostMapping("/shop")
     @ResponseStatus(HttpStatus.CREATED)
