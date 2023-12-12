@@ -81,4 +81,6 @@ public abstract class ItemMapper {
 
         return shoppingItem;
     }
+
+    public abstract List<ItemDto> itemsToItemsDto(List<Item> items);
 }

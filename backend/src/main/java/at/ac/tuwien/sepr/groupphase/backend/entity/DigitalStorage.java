@@ -32,6 +32,14 @@ public class DigitalStorage {
     @JsonIgnore
     private List<Item> itemList = new ArrayList<>();
 
+    public DigitalStorage(long storId) {
+        this.storId = storId;
+    }
+
+    public DigitalStorage() {
+
+    }
+
 
     public Long getStorId() {
         return storId;

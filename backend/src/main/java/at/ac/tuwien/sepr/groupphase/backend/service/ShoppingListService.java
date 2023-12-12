@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 
@@ -23,4 +24,6 @@ public interface ShoppingListService {
     ShoppingList deleteList(Long shopId);
 
     List<ShoppingList> getShoppingLists();
+
+    List<Item> transferToServer(List<ShoppingItemDto> items);
 }

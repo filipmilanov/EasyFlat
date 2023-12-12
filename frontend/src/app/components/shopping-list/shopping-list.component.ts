@@ -37,7 +37,7 @@ export class ShoppingListComponent implements OnInit {
 
     this.checkedItems = this.getCheckedItems();
     console.log('Checked Items:', this.checkedItems);
-    this.shoppingListService.getShoppingLists();
+    this.shoppingLists = this.shoppingListService.getShoppingLists();
     this.route.params.subscribe({
       next: params => {
         this.shopId = params.id;
@@ -140,5 +140,14 @@ export class ShoppingListComponent implements OnInit {
 
   onShoppingListChange() {
     console.log('Selected Shopping List:', this.selectedShoppingList);
+  }
+
+  transferToStorage() {
+    this.shoppingListService.transferToStorage(this.checkedItems).subscribe( {
+        next: data => {
+          this.router.navigate([`/digital-storage/1`])
+        }
+      }
+    );
   }
 }

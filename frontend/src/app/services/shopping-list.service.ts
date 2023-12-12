@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {ItemDto, ShoppingItemDto} from "../dtos/item";
 import {Observable} from "rxjs";
 import {ShoppingListDto} from "../dtos/shoppingList";
+import {StorageItem} from "../dtos/storageItem";
 
 @Injectable({
   providedIn: 'root'
@@ -49,5 +50,9 @@ export class ShoppingListService {
 
   getShoppingLists(): Observable<ShoppingListDto[]> {
     return this.http.get<ShoppingListDto[]>(this.baseUri + '/lists');
+  }
+
+  transferToStorage(shoppingItems: ShoppingItemDto[]): Observable<StorageItem[]> {
+    return this.http.post<StorageItem[]>(this.baseUri + '/storage', shoppingItems);
   }
 }
