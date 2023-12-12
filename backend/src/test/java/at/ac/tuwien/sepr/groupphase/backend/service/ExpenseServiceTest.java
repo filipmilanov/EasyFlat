@@ -14,6 +14,8 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,6 +23,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
@@ -29,6 +32,8 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -43,9 +48,20 @@ class ExpenseServiceTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @MockBean
+    private CustomUserDetailService customUserDetailService;
+
+    private ApplicationUser applicationUser;
+
     @BeforeEach
     public void cleanUp() {
         testDataGenerator.cleanUp();
+
+        applicationUser = userRepository.findById(1L).orElseThrow();
+        when(customUserDetailService.getUser(any(String.class))).thenReturn(applicationUser);
     }
 
     @Test
@@ -238,7 +254,7 @@ class ExpenseServiceTest {
         // given
         long totalAmount = 100L;
         WgDetailDto sharedFlat = new WgDetailDto();
-        sharedFlat.setId(1L);
+        sharedFlat.setId(applicationUser.getSharedFlat().getId());
 
         Set<ApplicationUser> usersOfFlat = sharedFlatRepository.findById(sharedFlat.getId()).orElseThrow().getUsers();
 
