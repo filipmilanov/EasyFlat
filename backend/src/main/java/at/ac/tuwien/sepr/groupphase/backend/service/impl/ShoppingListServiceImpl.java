@@ -17,6 +17,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -125,18 +126,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (labels == null) {
             return List.of();
         }
-        List<ItemLabel> ret = labelService.findByValue(
-            labels.stream()
-                .map(ItemLabelDto::labelValue)
-                .toList()
-        );
-        List<ItemLabelDto> newLabels = labels.stream()
-            .filter(labelDto ->
-                ret.stream()
-                    .noneMatch(label ->
-                        label.getLabelValue().equals(labelDto.labelValue())
-                    )
-            ).toList();
+        List<ItemLabel> ret = new ArrayList<>();
+        List<ItemLabelDto> newLabels = labels.stream().toList();
 
         if (!newLabels.isEmpty()) {
             List<ItemLabel> createdLabels = labelService.createAll(newLabels);

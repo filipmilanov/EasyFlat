@@ -49,9 +49,9 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   public get submitButtonText(): string {
     switch (this.mode) {
       case ItemCreateEditMode.create:
-        return 'Add';
+        return 'Add Item';
       case ItemCreateEditMode.edit:
-        return 'Update';
+        return 'Update Item';
       default:
         return '?';
     }
@@ -136,7 +136,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
       observable.subscribe({
         next: data => {
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
-          this.router.navigate(['/shopping-list/1']);
+          this.router.navigate(['/shopping-list/' + this.item.shoppingList.id]);
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}`);
@@ -145,14 +145,15 @@ export class ShoppingItemCreateEditComponent implements OnInit {
     }
   }
 
-  addLabel(label: string): void {
+  addLabel(label: string, selectedLabelColor: string): void {
     if (label == undefined || label.length == 0) {
       return
     }
+    console.log(label, selectedLabelColor)
     if (this.item.labels === undefined) {
-      this.item.labels = [{labelValue: label, labelColour: null}];
+      this.item.labels = [{labelValue: label, labelColour: (selectedLabelColor != '#ffffff' ? selectedLabelColor : '#000000')}];
     } else {
-      this.item.labels.push({labelValue: label, labelColour: null});
+      this.item.labels.push({labelValue: label, labelColour: (selectedLabelColor != '#ffffff' ? selectedLabelColor : '#000000')});
     }
   }
 
@@ -167,4 +168,5 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   storageSuggestions = (input: string) => (input === '')
     ? of([])
     : this.storageService.findAll(input, 5);
+  protected readonly parseInt = parseInt;
 }
