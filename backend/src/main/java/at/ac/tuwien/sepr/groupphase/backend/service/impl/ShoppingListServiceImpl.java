@@ -13,6 +13,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -96,6 +97,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingList deleteList(Long shopId) {
+        if (shopId == 1) {
+            throw new BadCredentialsException("The main list can not be deleted!");
+        }
         Optional<ShoppingList> toDeleteOptional = shoppingListRepository.findById(shopId);
 
         if (toDeleteOptional.isPresent()) {
