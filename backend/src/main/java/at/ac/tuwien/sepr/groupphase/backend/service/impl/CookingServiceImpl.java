@@ -391,13 +391,18 @@ public class CookingServiceImpl implements CookingService {
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
             List<Item> items = storageRepository.getItemWithGeneralName(1L, recipeIngredientDto.name());
-
+            Unit ingredientUnit = unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum());
             for (Item item : items) {
-                if (unitMapper.entityToUnitDto(item.getUnit()).equals(recipeIngredientDto.unitEnum())) {
-                    if (item.getQuantityCurrent() < recipeIngredientDto.amount()) {
+
+                if (item.getUnit().equals(ingredientUnit)) {
+                    if (item.getQuantityCurrent() > recipeIngredientDto.amount()) {
                         ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity((long) (item.getQuantityCurrent() - recipeIngredientDto.amount()));
                         itemService.update(updatedItem);
                     }
+                } else {
+                    Unit minUnitRecipeIng = getMinUnit(unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum()));
+                    Unit minUnitItem = getMinUnit(item.getUnit());
+                    int a = 0;
                 }
             }
         }
@@ -436,6 +441,7 @@ public class CookingServiceImpl implements CookingService {
         for (Unit subUnit : unit.getSubUnit()) {
             return subUnit;
         }
+
         return null;
     }
 }
