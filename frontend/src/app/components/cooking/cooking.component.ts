@@ -1,8 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 
 import {CookingService} from "../../services/cooking.service";
 import {ToastrService} from "ngx-toastr";
 import {RecipeSuggestion} from "../../dtos/cookingDtos/recipeSuggestion";
+import {CookbookModalComponent} from "../cookbook/cookbook-modal/cookbook-modal.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {CookingModalComponent} from "./cooking-modal/cooking-modal.component";
 
 @Component({
   selector: 'app-cooking',
@@ -13,10 +16,11 @@ export class CookingComponent implements OnInit {
   recipes: RecipeSuggestion[];
   empty: boolean = true;
   type:string;
-
+  @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
 
   constructor(private cookingService: CookingService,
-              private notification: ToastrService) {
+              private notification: ToastrService,
+              private modalService: NgbModal) {
 
 
   }
@@ -42,6 +46,11 @@ export class CookingComponent implements OnInit {
       }
     })
 
+  }
+  openRecipeModal(recipe: RecipeSuggestion) {
+    const modalRef = this.modalService.open(CookingModalComponent, { size: 'lg' });
+    console.log(recipe + "from Modal");
+    modalRef.componentInstance.recipe = recipe;
   }
 
   handleRecipeAddedToCookbook(recipeTitle: string) {
