@@ -131,11 +131,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public List<Item> transferToServer(List<ShoppingItemDto> items) {
         List<Item> itemsList = new ArrayList<>();
-        for (ShoppingItemDto itemDto: items) {
-
+        for (ShoppingItemDto itemDto : items) {
             Item item = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()));
             itemRepository.save(item);
-            shoppingRepository.deleteById(item.getItemId());
+            shoppingRepository.deleteById(itemDto.itemId());
             itemsList.add(item);
         }
         return itemsList;

@@ -15,6 +15,8 @@ import java.util.List;
 @Mapper
 public abstract class ShoppingListMapper {
 
+    @Mapping(target = "id", source = "shopListId")
+    @Mapping(target = "listName", source = "name")
     public abstract ShoppingListDto entityToDto(ShoppingList shoppingList);
 
     public abstract ShoppingList dtoToEntity(ShoppingListDto shoppingListDto);

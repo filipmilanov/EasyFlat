@@ -137,6 +137,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
         next: data => {
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
           this.router.navigate(['/shopping-list/' + this.item.shoppingList.id]);
+          console.log(this.item.shoppingList.id)
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}`);

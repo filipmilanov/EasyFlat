@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit} from '@angular/core';
+import {Component, ElementRef, NgIterable, OnInit} from '@angular/core';
 import {ToastrService} from "ngx-toastr";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ShoppingItemDto} from "../../dtos/item";
@@ -17,12 +17,13 @@ export class ShoppingListComponent implements OnInit {
 
   shoppingList: ShoppingListDto = {
     id: 0,
-    listName: '',
-    items: []};
+    listName: ''
+  };
+  items: ShoppingItemDto[] = [];
   shopId: string;
   checkedItems: ShoppingItemDto[] = this.getCheckedItems();
   selectedShoppingList: number;
-  shoppingLists: Observable<ShoppingListDto[]>;
+  shoppingLists: ShoppingListDto[] = [];
 
   constructor(
     private shoppingListService: ShoppingListService,
@@ -37,22 +38,30 @@ export class ShoppingListComponent implements OnInit {
 
     this.checkedItems = this.getCheckedItems();
     console.log('Checked Items:', this.checkedItems);
-    this.shoppingLists = this.shoppingListService.getShoppingLists();
+    this.shoppingListService.getShoppingLists().subscribe({
+        next: res => {
+          this.shoppingLists = res
+          console.log(res)
+        }
+      }
+    );
     this.route.params.subscribe({
       next: params => {
         this.shopId = params.id;
-        this.shoppingListService.getShoppingListById(this.shopId).subscribe(
-          (shoppingList: ShoppingListDto) => {
-            this.shoppingList = shoppingList;
-            console.log(shoppingList.listName);
+        console.log(this.shopId)
+        this.shoppingListService.getShoppingListById(this.shopId).subscribe({
+          next: (res: ShoppingListDto) => {
+            console.log(res);
+            this.shoppingList = res;
           },
-          error => {
+          error: (error: any) => {
             console.error('Error fetching shopping list:', error);
           }
-        );
+        });
+
         this.shoppingListService.getItemsWithShopId(this.shopId).subscribe({
           next: res => {
-            this.shoppingList.items = res;
+            this.items = res;
           },
           error: err => {
             console.error("Error finding items:", err);
@@ -63,6 +72,8 @@ export class ShoppingListComponent implements OnInit {
         console.error("Error fetching parameters:", error);
       }
     });
+
+
   }
 
   navigateToCreateItem() {
@@ -77,7 +88,7 @@ export class ShoppingListComponent implements OnInit {
     if (confirm("Are you sure you want to delete this item?")) {
       this.shoppingListService.deleteItem(itemId).subscribe({
         next: (deletedItem: ShoppingItemDto) => {
-          console.log( deletedItem.generalName, ' was deleted form the list');
+          console.log(deletedItem.generalName, ' was deleted form the list');
           this.ngOnInit();
         },
         error: error => {
@@ -108,7 +119,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   getCheckedItems(): ShoppingItemDto[] {
-    return this.shoppingList.items.filter(item => item.check);
+    return this.items.filter(item => item.check);
   }
 
   deleteCheckedItems() {
@@ -125,7 +136,7 @@ export class ShoppingListComponent implements OnInit {
           next: (deletedItem: ShoppingItemDto) => {
             console.log(deletedItem.generalName, ' was deleted from the list');
 
-            this.shoppingList.items = this.shoppingList.items.filter(listItem => listItem.itemId !== deletedItem.itemId);
+            this.items = this.items.filter(listItem => listItem.itemId !== deletedItem.itemId);
 
             this.checkedItems = this.getCheckedItems();
             console.log('Checked Items:', this.checkedItems);
@@ -143,7 +154,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   transferToStorage() {
-    this.shoppingListService.transferToStorage(this.checkedItems).subscribe( {
+    this.shoppingListService.transferToStorage(this.checkedItems).subscribe({
         next: data => {
           this.router.navigate([`/digital-storage/1`])
         }

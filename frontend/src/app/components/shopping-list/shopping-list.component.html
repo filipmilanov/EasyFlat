@@ -6,10 +6,9 @@
               name="selectedShoppingList"
               [(ngModel)]="selectedShoppingList"
               (change)="onShoppingListChange()">
-        <option *ngFor="let list of shoppingLists"
-                [ngValue]="list.id">
+        <div *ngFor="let list of shoppingLists">
           {{ list.listName }}
-        </option>
+        </div>
       </select>
     </div>
     <button style="margin-left: 625px;" type="button" (click)="navigateToCreateList()" >Add new list</button>
@@ -51,12 +50,12 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let item of shoppingList?.items">
+  <tr *ngFor="let item of items">
     <td>{{ item.generalName }}</td>
     <td>{{ item.labels }}</td>
     <td>{{ item.quantityTotal}}{{item.unit}}</td>
     <td>
-      <button *ngIf="item.name !== null" (click)="deleteItem(item.itemId)" class="btn btn-danger" >
+      <button *ngIf="item.generalName !== null" (click)="deleteItem(item.itemId)" class="btn btn-danger" >
         <i class="bi-trash">X</i>
       </button>
     </td>
