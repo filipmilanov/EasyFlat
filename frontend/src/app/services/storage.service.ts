@@ -5,6 +5,7 @@ import {ItemSearchDto, StorageItem, StorageItemListDto} from "../dtos/storageIte
 import {DigitalStorageDto} from "../dtos/digitalStorageDto";
 import {ItemDto} from "../dtos/item";
 import {AuthService} from "./auth.service";
+import {ItemDto, ShoppingItemDto} from "../dtos/item";
 
 @Injectable({
   providedIn: 'root'
@@ -61,5 +62,9 @@ export class StorageService {
     });
 
     return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName,{headers});
+  }
+
+  addToShoppingList(item: StorageItem): Observable<ShoppingItemDto> {
+    return this.httpClient.post<ShoppingItemDto>(this.storageBaseUri + '/shop', item);
   }
 }

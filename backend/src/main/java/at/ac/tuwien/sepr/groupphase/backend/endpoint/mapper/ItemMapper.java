@@ -14,6 +14,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 import java.util.List;
 
@@ -39,10 +40,6 @@ public abstract class ItemMapper {
     public abstract ItemDto entityToDto(Item item);
 
 
-    Long digitalStorageToId(DigitalStorage storage) {
-        return storage.getStorId();
-    }
-
     List<Long> ingredientListToIdList(List<Ingredient> ingredientList) {
         return ingredientList.stream().map(Ingredient::getIngrId).toList();
     }
@@ -62,4 +59,26 @@ public abstract class ItemMapper {
     public abstract List<ItemDto> entityListToItemDtoList(List<Item> items);
     public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItem> items);
 
+    public ShoppingItem itemDtoToShoppingItem(ItemDto itemDto, DigitalStorage digitalStorage, List<Ingredient> ingredients) {
+        if (itemDto == null) {
+            return null;
+        }
+        ShoppingItem shoppingItem = new ShoppingItem();
+        shoppingItem.setEan(itemDto.ean());
+        shoppingItem.setGeneralName(itemDto.generalName());
+        shoppingItem.setProductName(itemDto.productName());
+        shoppingItem.setBrand(itemDto.brand());
+        shoppingItem.setQuantityCurrent(itemDto.quantityCurrent());
+        shoppingItem.setQuantityTotal(itemDto.quantityTotal());
+        shoppingItem.setUnit(itemDto.unit());
+        shoppingItem.setExpireDate(null);
+        shoppingItem.setDescription(itemDto.description());
+        shoppingItem.setPriceInCent(itemDto.priceInCent());
+        shoppingItem.setBoughtAt(itemDto.boughtAt());
+        shoppingItem.setStorage(digitalStorage);
+        shoppingItem.setIngredientList(ingredients);
+        shoppingItem.setShoppingList(new ShoppingList(1L, null));
+
+        return shoppingItem;
+    }
 }

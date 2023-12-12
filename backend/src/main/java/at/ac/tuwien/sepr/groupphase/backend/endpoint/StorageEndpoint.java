@@ -2,9 +2,12 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -33,10 +36,12 @@ public class StorageEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final DigitalStorageService digitalStorageService;
     private final DigitalStorageMapper digitalStorageMapper;
+    private final ItemMapper itemMapper;
 
-    public StorageEndpoint(DigitalStorageService digitalStorageService, DigitalStorageMapper digitalStorageMapper) {
+    public StorageEndpoint(DigitalStorageService digitalStorageService, DigitalStorageMapper digitalStorageMapper, ItemMapper itemMapper) {
         this.digitalStorageService = digitalStorageService;
         this.digitalStorageMapper = digitalStorageMapper;
+        this.itemMapper = itemMapper;
     }
 
     @PermitAll
@@ -73,5 +78,11 @@ public class StorageEndpoint {
     public List<Item> getItemWithGeneralName(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.info("getItemWithGeneralName");
         return digitalStorageService.getItemWithGeneralName(name, jwt);
+    }
+    @PermitAll
+    @PostMapping("/shop")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto) {
+        return itemMapper.entityToShopping(digitalStorageService.addItemToShopping(itemDto));
     }
 }

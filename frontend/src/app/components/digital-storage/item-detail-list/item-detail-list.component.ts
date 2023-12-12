@@ -5,6 +5,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ItemDto} from "../../../dtos/item";
 import {ItemService} from "../../../services/item.service";
 import {ToastrService} from "ngx-toastr";
+import {parseInt} from "lodash";
 
 @Component({
   selector: 'app-item-detail-list',
@@ -189,6 +190,15 @@ export class ItemDetailListComponent implements OnInit {
         this.notification.error(`Item ${itemId} could not be deleted`, "Error");
       }
     });
+  }
+
+  addToShoppingList(item: StorageItem) {
+    this.storageService.addToShoppingList(item).subscribe( {
+      next: data => {
+        this.router.navigate([`/shopping-list/1`])
+      }
+    }
+    );
   }
 
   protected readonly parseInt = parseInt;
