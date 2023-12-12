@@ -60,7 +60,8 @@
                  id="ean"
                  name="ean"
                  placeholder="EAN Number"
-                 [(ngModel)]="item.ean">
+                 [(ngModel)]="item.ean"
+                 (ngModelChange)="searchForEan($event)">
         </div>
       </div>
 

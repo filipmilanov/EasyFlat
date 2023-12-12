@@ -18,7 +18,7 @@ export class OpenFoodFactService {
   }
 
   findByEan(ean: string): Observable<ItemDto> {
-    return this.http.get<ItemDto>(`${this.baseUri}/${ean}`);
+    return this.http.get<ItemDto>(`${this.baseUri}/ean/${ean}`);
   }
 
 }
