@@ -42,5 +42,4 @@ public interface UnitService {
      * @return the created unit
      */
     Unit create(UnitDto unit) throws ValidationException, ConflictException;
-
 }

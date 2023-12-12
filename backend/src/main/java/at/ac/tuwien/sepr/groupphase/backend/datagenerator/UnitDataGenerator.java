@@ -31,9 +31,7 @@ public class UnitDataGenerator {
         UnitDto g = new UnitDto("g", null, Set.of());
         UnitDto kg = new UnitDto("kg", 1000L, Set.of(g));
 
-        UnitDto dl = new UnitDto("dl", null, Set.of());
-        UnitDto cl = new UnitDto("cl", 10L, Set.of(dl));
-        UnitDto ml = new UnitDto("ml", 10L, Set.of(cl));
+        UnitDto ml = new UnitDto("ml", 10L, Set.of());
         UnitDto l = new UnitDto("l", 1000L, Set.of(ml));
 
         UnitDto cup = new UnitDto("cup", 125L, Set.of(g));
@@ -51,8 +49,6 @@ public class UnitDataGenerator {
         unitService.create(g);
         unitService.create(kg);
 
-        unitService.create(dl);
-        unitService.create(cl);
         unitService.create(ml);
         unitService.create(l);
 
