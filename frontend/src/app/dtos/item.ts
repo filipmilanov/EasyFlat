@@ -41,6 +41,5 @@ export class ShoppingItemDto extends ItemDto {
 export class ShoppingItemSearchDto {
   itemId?: string;
   productName?: string;
-  label?: string;
-  orderBy: OrderType;
+  labels?: ShoppingLabelDto[];
 }

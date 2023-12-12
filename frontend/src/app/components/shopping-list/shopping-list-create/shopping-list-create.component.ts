@@ -19,10 +19,8 @@ export class ShoppingListCreateComponent {
 
   list: ShoppingListDto = {
     id: 0,
-    listName: '',
-    items: null
+    listName: ''
   };
-
   constructor(
     private itemService: ItemService,
     private storageService: StorageService,

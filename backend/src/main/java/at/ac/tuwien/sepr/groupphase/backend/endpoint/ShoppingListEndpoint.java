@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.LabelMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
@@ -41,14 +42,14 @@ public class ShoppingListEndpoint {
     private final ShoppingListMapper shoppingListMapper;
 
     private final IngredientMapper ingredientsMapper;
+    private final LabelMapper labelMapper;
 
-
-
-    public ShoppingListEndpoint(ShoppingListService shoppingService, ItemMapper mapper, ShoppingListMapper shoppingListMapper, IngredientMapper ingredientsMapper) {
+    public ShoppingListEndpoint(ShoppingListService shoppingService, ItemMapper mapper, ShoppingListMapper shoppingListMapper, IngredientMapper ingredientsMapper, LabelMapper labelMapper) {
         this.shoppingService = shoppingService;
         this.itemMapper = mapper;
         this.shoppingListMapper = shoppingListMapper;
         this.ingredientsMapper = ingredientsMapper;
+        this.labelMapper = labelMapper;
     }
 
     @Secured("ROLE_USER")
@@ -83,8 +84,11 @@ public class ShoppingListEndpoint {
     public List<ShoppingItemDto> getItemsById(@PathVariable Long listId) {
         LOGGER.info("getItemsById({})", listId);
         List<ShoppingItem> items = shoppingService.getItemsById(listId);
-
-        return itemMapper.shoppingItemListToShoppingDto(items);
+        List<ShoppingItemDto> ret = new ArrayList<>();
+        for (ShoppingItem item : items) {
+            ret.add(itemMapper.entityToShopping(item));
+        }
+        return ret;
     }
 
     @PermitAll
