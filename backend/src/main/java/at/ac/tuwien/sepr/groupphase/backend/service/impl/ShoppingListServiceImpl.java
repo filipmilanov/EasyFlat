@@ -94,6 +94,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
     }
 
+    @Override
+    public ShoppingList deleteList(Long shopId) {
+        Optional<ShoppingList> toDeleteOptional = shoppingListRepository.findById(shopId);
+
+        if (toDeleteOptional.isPresent()) {
+            ShoppingList toDelete = toDeleteOptional.get();
+            List<ShoppingItem> items = shoppingRepository.findByShoppingListId(shopId);
+            shoppingRepository.deleteAll(items);
+            shoppingListRepository.deleteById(shopId);
+            return toDelete;
+        } else {
+            throw new NoSuchElementException("Shopping list with this id does not exist!");
+        }
+    }
 
 
     private List<ItemLabel> findItemLabelsAndCreateNew(List<ItemLabelDto> labels) {
