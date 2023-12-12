@@ -30,7 +30,7 @@
         <button class="btn btn-outline-secondary" [routerLink]="[ recipe.id, 'detail']">Detail</button>
       </div>
       <div class="col-4 mb-2">
-        <button class="btn btn-success">Cook</button>
+        <button class="btn btn-success" (click)="cook()">Cook</button>
       </div>
     </div>
   </div>
