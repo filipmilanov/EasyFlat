@@ -4,7 +4,7 @@ import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
 import {ItemSearchDto, StorageItem, StorageItemListDto} from "../dtos/storageItem";
 import {DigitalStorageDto} from "../dtos/digitalStorageDto";
-import {ItemDto} from "../dtos/item";
+import {ItemDto, ShoppingItemDto} from "../dtos/item";
 
 @Injectable({
   providedIn: 'root'
@@ -57,5 +57,9 @@ export class StorageService {
 
 
     return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName , {params});
+  }
+
+  addToShoppingList(item: StorageItem): Observable<ShoppingItemDto> {
+    return this.httpClient.post<ShoppingItemDto>(this.storageBaseUri + '/shop', item);
   }
 }

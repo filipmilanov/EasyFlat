@@ -15,7 +15,6 @@ import java.util.List;
 @RecordBuilder
 public record ItemDto(
     Long itemId,
-
     @Pattern(regexp = "^\\d{13}$", message = "EAN number has exactly 13 numbers")
     String ean,
     @NotEmpty(message = "The general name cannot be empty")

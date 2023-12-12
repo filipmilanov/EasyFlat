@@ -23,6 +23,14 @@ public class ShoppingList {
     @OneToMany
     private List<ShoppingItem> items;
 
+    public ShoppingList(Long id, String name) {
+        this.shopListId = id;
+        this.name = name;
+    }
+
+    public ShoppingList() {
+
+    }
 
     public Long getShopListId() {
         return shopListId;

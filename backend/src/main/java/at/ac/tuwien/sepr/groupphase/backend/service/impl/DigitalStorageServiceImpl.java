@@ -2,16 +2,22 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import jakarta.validation.Validator;
@@ -37,12 +43,19 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final DigitalStorageMapper digitalStorageMapper;
     private final DigitalStorageValidator digitalStorageValidator;
     private final Validator validator;
+    private final ShoppingRepository shoppingRepository;
+    private final ItemMapper itemMapper;
+    private final IngredientMapper ingredientMapper;
 
-    public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository, DigitalStorageMapper digitalStorageMapper, DigitalStorageValidator digitalStorageValidator, Validator validator) {
+    public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository, DigitalStorageMapper digitalStorageMapper, DigitalStorageValidator digitalStorageValidator, Validator validator,
+                                     ShoppingRepository shoppingRepository, ItemMapper itemMapper, IngredientMapper ingredientMapper) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
         this.validator = validator;
+        this.shoppingRepository = shoppingRepository;
+        this.itemMapper = itemMapper;
+        this.ingredientMapper = ingredientMapper;
     }
 
     @Override
@@ -156,6 +169,13 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     @Override
     public List<Item> getItemWithGeneralName(String name, Long storId) {
         return digitalStorageRepository.getItemWithGeneralName(storId, name);
+    }
+
+    @Override
+    public ShoppingItem addItemToShopping(ItemDto itemDto) {
+        ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto, digitalStorageMapper.dtoToEntity(itemDto.digitalStorage()),
+            ingredientMapper.dtoListToEntityList(itemDto.ingredients()));
+        return shoppingRepository.save(shoppingItem);
     }
 
     private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) {
