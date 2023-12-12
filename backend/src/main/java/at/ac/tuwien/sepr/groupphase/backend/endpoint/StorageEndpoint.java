@@ -8,7 +8,9 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
@@ -35,11 +37,13 @@ public class StorageEndpoint {
     private final DigitalStorageService digitalStorageService;
     private final DigitalStorageMapper digitalStorageMapper;
     private final ItemMapper itemMapper;
+    private final ShoppingListMapper shoppingListMapper;
 
-    public StorageEndpoint(DigitalStorageService digitalStorageService, DigitalStorageMapper digitalStorageMapper, ItemMapper itemMapper) {
+    public StorageEndpoint(DigitalStorageService digitalStorageService, DigitalStorageMapper digitalStorageMapper, ItemMapper itemMapper, ShoppingListMapper shoppingListMapper) {
         this.digitalStorageService = digitalStorageService;
         this.digitalStorageMapper = digitalStorageMapper;
         this.itemMapper = itemMapper;
+        this.shoppingListMapper = shoppingListMapper;
     }
 
     @PermitAll
@@ -82,6 +86,7 @@ public class StorageEndpoint {
     @PostMapping("/shop")
     @ResponseStatus(HttpStatus.CREATED)
     public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto) {
-        return itemMapper.entityToShopping(digitalStorageService.addItemToShopping(itemDto));
+        ShoppingItem item = digitalStorageService.addItemToShopping(itemDto);
+        return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
     }
 }
