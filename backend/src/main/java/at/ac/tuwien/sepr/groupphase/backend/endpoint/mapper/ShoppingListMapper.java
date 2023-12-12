@@ -28,7 +28,7 @@ public abstract class ShoppingListMapper {
         Item item = new Item();
         item.setEan(shoppingItem.ean());
         item.setGeneralName(shoppingItem.generalName());
-        item.setProductName(shoppingItem.productName());
+        item.setProductName(shoppingItem.generalName());
         item.setBrand(shoppingItem.brand());
         item.setQuantityCurrent(shoppingItem.quantityCurrent());
         item.setQuantityTotal(shoppingItem.quantityTotal());

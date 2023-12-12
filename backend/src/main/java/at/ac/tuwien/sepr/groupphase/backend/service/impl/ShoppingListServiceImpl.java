@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
@@ -32,18 +33,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final ShoppingListMapper shoppingListMapper;
     private final LabelService labelService;
     private final ItemMapper itemMapper;
-
     private final IngredientMapper ingredientMapper;
-
+    private final ItemRepository itemRepository;
 
     public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, ShoppingListRepository shoppingListRepository,
-                                   ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper, IngredientMapper ingredientMapper) {
+                                   ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
+                                   IngredientMapper ingredientMapper, ItemRepository itemRepository) {
         this.shoppingRepository = shoppingRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
         this.shoppingListRepository = shoppingListRepository;
         this.shoppingListMapper = shoppingListMapper;
         this.ingredientMapper = ingredientMapper;
+        this.itemRepository = itemRepository;
     }
 
     @Override
@@ -129,10 +131,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public List<Item> transferToServer(List<ShoppingItemDto> items) {
         List<Item> itemsList = new ArrayList<>();
-        for (ShoppingItemDto item : items) {
-            itemsList.add(shoppingListMapper.shoppingItemDtoToItem(item, ingredientMapper.dtoListToEntityList(item.ingredients())));
+        for (ShoppingItemDto itemDto: items) {
+
+            Item item = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()));
+            itemRepository.save(item);
+            itemsList.add(item);
         }
-        return null;
+        return itemsList;
     }
 
 
