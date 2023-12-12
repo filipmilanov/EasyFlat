@@ -82,6 +82,7 @@ export class ItemCreateEditComponent implements OnInit {
     this.unitServ.findAll().subscribe({
       next: res => {
         this.availableUnits = res;
+        console.log(this.availableUnits)
         this.item.unit = this.availableUnits[0];
       },
       error: err => {
