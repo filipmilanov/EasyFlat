@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Expense {
@@ -35,7 +36,7 @@ public class Expense {
     @ManyToOne
     private ApplicationUser paidBy;
 
-    @OneToMany(mappedBy = "id.expense", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id.expense", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Debit> debitUsers = new ArrayList<>();
 
     @ManyToOne
@@ -107,5 +108,22 @@ public class Expense {
     public void setSharedFlat(SharedFlat sharedFlat) {
         this.sharedFlat = sharedFlat;
         sharedFlat.getExpenses().add(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Expense expense = (Expense) o;
+        return Objects.equals(id, expense.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
