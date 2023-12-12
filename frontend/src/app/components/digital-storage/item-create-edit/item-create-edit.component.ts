@@ -185,9 +185,17 @@ export class ItemCreateEditComponent implements OnInit{
 
   updateEAN(ean: ScannerQRCodeResult[]) {
     if (this.scanner.data.value.length > 0) {
+      this.scanner.pause();
       this.item.ean = this.scanner.data.value[0].value;
     }
   }
 
 
+  togglePlayPause() {
+    if (this.scanner.isPause) {
+      this.scanner.play();
+    } else {
+      this.scanner.pause();
+    }
+  }
 }

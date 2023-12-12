@@ -10,8 +10,15 @@
     </ngx-scanner-qrcode>
   </div>
   <div class="row mt-2 w-75 mx-auto ">
+    <button *ngIf="action.isStart"
+            type="button"
+            class="col-4 btn btn-primary"
+            (click)="togglePlayPause()">
+      {{action.isPause ? 'Play' : 'Pause'}}
+    </button>
+
     <button type="button"
-            [ngClass]="{'btn btn-primary': true, 'col-8': action.isStart}"
+            [ngClass]="{'btn btn-primary': true, 'col-4': action.isStart}"
             (click)="toggleScanning()">
       {{action.isStart ? 'Stop' : 'Start Scanning'}}
     </button>
