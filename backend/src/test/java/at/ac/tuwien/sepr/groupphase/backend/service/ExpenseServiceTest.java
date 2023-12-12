@@ -264,7 +264,7 @@ class ExpenseServiceTest {
         ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
             .title("Test")
             .description("Test")
-            .amountInCents(100L)
+            .amountInCents(totalAmount)
             .paidBy(paidBy)
             .debitUsers(debitDtos)
             .sharedFlat(sharedFlat)
@@ -277,7 +277,7 @@ class ExpenseServiceTest {
         // then
         assertThat(actual.getDebitUsers()).hasSize(expenseDto.debitUsers().size());
         assertThat(actual.getDebitUsers().stream().map((debit) ->
-            debit.getPercent() * totalAmount
+            Math.round(debit.getPercent() / 100.0 * totalAmount)
         ).toList()).isEqualTo(
             expected
         );
