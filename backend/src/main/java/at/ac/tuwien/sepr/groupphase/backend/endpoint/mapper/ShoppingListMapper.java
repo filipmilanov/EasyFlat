@@ -19,6 +19,8 @@ public abstract class ShoppingListMapper {
     @Mapping(target = "listName", source = "name")
     public abstract ShoppingListDto entityToDto(ShoppingList shoppingList);
 
+    @Mapping(target = "shopListId", source = "id")
+    @Mapping(target = "name", source = "listName")
     public abstract ShoppingList dtoToEntity(ShoppingListDto shoppingListDto);
 
     public abstract List<ShoppingListDto> entityListToDtoList(List<ShoppingList> shoppingList);
@@ -39,7 +41,7 @@ public abstract class ShoppingListMapper {
         item.setDescription(shoppingItem.description());
         item.setPriceInCent(shoppingItem.priceInCent());
         item.setBoughtAt(shoppingItem.boughtAt());
-        item.setStorage(new DigitalStorage(1L));
+        item.setStorage(new DigitalStorage(1L, "Default"));
         item.setIngredientList(ingredients);
         return item;
     }

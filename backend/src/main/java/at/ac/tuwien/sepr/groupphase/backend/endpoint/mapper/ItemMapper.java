@@ -51,8 +51,9 @@ public abstract class ItemMapper {
                                                 @Context ShoppingList shoppingList);
 
     @Mapping(target = "labels", source = "labels")
-    @Mapping(target = "shoppingList", source = "shoppingList")
-    public abstract ShoppingItemDto entityToShopping(ShoppingItem item);
+    @Mapping(target = "shoppingList", expression = "java( shoppingList )")
+    public abstract ShoppingItemDto entityToShopping(ShoppingItem item,
+                                                     @Context ShoppingListDto shoppingList);
 
     public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItemDto> items);
 
@@ -77,7 +78,7 @@ public abstract class ItemMapper {
         shoppingItem.setBoughtAt(itemDto.boughtAt());
         shoppingItem.setStorage(digitalStorage);
         shoppingItem.setIngredientList(ingredients);
-        shoppingItem.setShoppingList(new ShoppingList(1L, null));
+        shoppingItem.setShoppingList(new ShoppingList(1L, "billa"));
 
         return shoppingItem;
     }

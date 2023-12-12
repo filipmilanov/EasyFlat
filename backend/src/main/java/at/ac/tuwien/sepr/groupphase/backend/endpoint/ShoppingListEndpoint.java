@@ -57,7 +57,8 @@ public class ShoppingListEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     public ShoppingItemDto create(@RequestBody ShoppingItemDto itemDto) throws ValidationException, ConflictException {
         LOGGER.info("create({})", itemDto);
-        return itemMapper.entityToShopping(shoppingService.create(itemDto));
+        ShoppingItem item = shoppingService.create(itemDto);
+        return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
     }
 
     @Secured("ROLE_USER")
@@ -66,7 +67,8 @@ public class ShoppingListEndpoint {
         LOGGER.info("findById({})", itemId);
         Optional<ShoppingItem> item = shoppingService.getById(itemId);
 
-        return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToShopping(currentItem)));
+        return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToShopping(currentItem,
+            shoppingListMapper.entityToDto(currentItem.getShoppingList()))));
     }
 
 
@@ -86,7 +88,7 @@ public class ShoppingListEndpoint {
         List<ShoppingItem> items = shoppingService.getItemsById(listId);
         List<ShoppingItemDto> ret = new ArrayList<>();
         for (ShoppingItem item : items) {
-            ret.add(itemMapper.entityToShopping(item));
+            ret.add(itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList())));
         }
         return ret;
     }
@@ -104,7 +106,7 @@ public class ShoppingListEndpoint {
     public ShoppingItemDto deleteItem(@PathVariable Long itemId) {
         LOGGER.info("deleteItem({})", itemId);
         ShoppingItem deletedItem = shoppingService.deleteItem(itemId);
-        return itemMapper.entityToShopping(deletedItem);
+        return itemMapper.entityToShopping(deletedItem, shoppingListMapper.entityToDto(deletedItem.getShoppingList()));
     }
 
     @PermitAll
