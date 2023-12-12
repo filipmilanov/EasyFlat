@@ -40,7 +40,7 @@ public class ApplicationUserDataGenerator {
             user.setAdmin(false);
 
             SharedFlat sharedFlat = new SharedFlat();
-            sharedFlat.setId((long) (i + 1));
+            sharedFlat.setId((long) (i < 4 ? 1 : i + 1));
 
             user.setSharedFlat(sharedFlat);
 
