@@ -4,6 +4,7 @@ import {ShoppingLabelDto} from "./shoppingLabel";
 import {ShoppingList} from "./shoppingList";
 import {Unit} from "./unit";
 import {ShoppingListDto} from "./shoppingList";
+import {OrderType} from "./orderType";
 
 export class ItemDto {
   itemId?: number;
@@ -35,4 +36,11 @@ export class ShoppingItemDto extends ItemDto {
   shoppingList?: ShoppingList;
   labels?: [ShoppingLabelDto];
   check?: boolean;
+}
+
+export class ShoppingItemSearchDto {
+  itemId?: string;
+  productName?: string;
+  label?: string;
+  orderBy: OrderType;
 }
