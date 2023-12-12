@@ -83,7 +83,7 @@ public class CookingEndPoint {
 
     @PermitAll
     @PutMapping("/cook")
-    public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook) {
+    public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook) throws ValidationException, ConflictException {
         return cookingService.cookRecipe(recipeToCook);
     }
 }

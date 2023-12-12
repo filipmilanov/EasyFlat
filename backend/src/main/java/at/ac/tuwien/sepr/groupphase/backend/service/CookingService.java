@@ -80,5 +80,5 @@ public interface CookingService {
      */
     RecipeSuggestionDto getMissingIngredients(Long id);
 
-    RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook);
+    RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook) throws ValidationException, ConflictException;
 }

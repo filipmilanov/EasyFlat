@@ -14,6 +14,7 @@ export class RecipeCardComponent {
 
   @Input() recipe: RecipeSuggestion;
   @Output() recipeAddedToCookbook: EventEmitter<string> = new EventEmitter();
+  @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
 
   isSaveButtonDisabled = false;
   constructor(
@@ -40,6 +41,21 @@ export class RecipeCardComponent {
       },
       error: error => {
         console.error(`Error ${error}`);
+      }
+    });
+  }
+
+  cook() {
+    this.cookingService.getMissingIngredients(this.recipe.id).subscribe({
+      next: (missingIngredients: RecipeSuggestion) => {
+        if (missingIngredients && missingIngredients.missedIngredients.length > 0) {
+          this.cookClicked.emit(this.recipe);
+        } else {
+          // If no missing ingredients, proceed to cook directly
+        }
+      },
+      error: error => {
+        console.error('Error checking missing ingredients:', error);
       }
     });
   }
