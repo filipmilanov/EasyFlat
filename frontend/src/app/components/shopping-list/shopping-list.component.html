@@ -10,7 +10,7 @@
 
 <br>
 
-<h4>{{shoppingList.listName}}</h4>
+<h4>{{shoppingList?.listName}}</h4>
 
 
 <form class="d-flex flex-row w-auto mb-3">
@@ -38,7 +38,7 @@
     <th scope="col">Name</th>
     <th scope="col">Labels</th>
     <th scope="col">Quantity</th>
-    <th scope="col">Action</th>
+    <th scope="col">Details</th>
     <th scope="col">Mark</th>
   </tr>
   </thead>
@@ -59,10 +59,14 @@
 
   </tr>
 
-  <button style="margin-top: 20px;" style="margin-right: 20px;" type="button" (click)="navigateToCreateItem()">Add item</button>
-  <button style="margin-top: 20px;" style="margin-right: 20px;" type="button" (click)="deleteList()">Delete List</button>
-  <button style="margin-top: 20px;" style="margin-right: 20px;"type="button" (click)="deleteCheckedItems()">Delete</button>
-  <button style="margin-top: 20px;" style="margin-right: 20px;"type="button" (click)="deleteCheckedItems()">Buy</button>
+  <button style="margin-top: 20px; margin-right: 20px;" type="button" (click)="navigateToCreateItem()">Add item</button>
+  <button *ngIf="shoppingList?.id && shoppingList.id !== 1"
+    style="margin-top: 20px; margin-right: 20px;"
+          type="button" (click)="deleteList()">
+    Delete List
+  </button>
+  <button style="margin-top: 20px; margin-right: 20px;" type="button" (click)="deleteCheckedItems()">Delete</button>
+  <button style="margin-top: 20px; margin-right: 20px;" type="button" (click)="deleteCheckedItems()">Buy</button>
 
 
   </tbody>

@@ -32,12 +32,21 @@ export class ShoppingListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.checkedItems = this.getCheckedItems();
     console.log('Checked Items:', this.checkedItems);
     this.route.params.subscribe({
       next: params => {
         this.shopId = params.id;
-
+        this.shoppingListService.getShoppingListById(this.shopId).subscribe(
+          (shoppingList: ShoppingListDto) => {
+            this.shoppingList = shoppingList;
+            console.log(shoppingList.listName);
+          },
+          error => {
+            console.error('Error fetching shopping list:', error);
+          }
+        );
         this.shoppingListService.getItemsWithShopId(this.shopId).subscribe({
           next: res => {
             this.shoppingList.items = res;
@@ -80,7 +89,7 @@ export class ShoppingListComponent implements OnInit {
       this.shoppingListService.deleteList(this.shopId).subscribe({
         next: (deletedList: ShoppingListDto) => {
           console.log(deletedList.listName, ' was deleted successfully');
-          this.router.navigate(['shopping-list/2']);
+          this.router.navigate(['shopping-list/1']);
         },
         error: error => {
           console.error(error.message, error);
@@ -90,9 +99,9 @@ export class ShoppingListComponent implements OnInit {
   }
 
   updateCheckedItems(item: ShoppingItemDto) {
-    item.check = !item.check; // Toggle the 'check' property
-    this.checkedItems = this.getCheckedItems(); // Update the checkedItems array
-    console.log('Checked Items:', this.checkedItems); // Log the updated checkedItems array
+    item.check = !item.check;
+    this.checkedItems = this.getCheckedItems();
+    console.log('Checked Items:', this.checkedItems);
   }
 
   getCheckedItems(): ShoppingItemDto[] {
