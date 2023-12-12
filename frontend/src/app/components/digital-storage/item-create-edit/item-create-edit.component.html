@@ -24,7 +24,7 @@
         <option [value]="null" selected>Select device</option>
         <option *ngFor="let cameraDevice of action.devices.value; let i = index"
                 [value]="cameraDevice.deviceId"
-                [selected]="i == action.deviceIndexActive">
+                [selected]="i === action.deviceIndexActive">
           {{i + 1 + ": " + (!cameraDevice.label ? 'Camera' : cameraDevice.label)}}
         </option>
       </select>
