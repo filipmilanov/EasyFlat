@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -75,7 +74,7 @@ public class ItemServiceImpl implements ItemService {
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         itemValidator.validateForCreate(itemDto, digitalStorageList);
 
-        List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
+        List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
         ItemStats curr = new ItemStats();
         curr.setDateOfPurchase(LocalDate.now());
@@ -109,7 +108,7 @@ public class ItemServiceImpl implements ItemService {
         Item presistedItem = this.findById(itemDto.itemId()).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         itemValidator.validateForUpdate(itemDto, digitalStorageList);
 
-        List<Ingredient> ingredientList = findIngredientsAndCreateMissing(itemDto.ingredients());
+        List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
         Item item;
         if (itemDto.alwaysInStock()) {
@@ -133,30 +132,5 @@ public class ItemServiceImpl implements ItemService {
         LOGGER.trace("delete({})", id);
 
         itemRepository.deleteById(id);
-    }
-
-    private List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException {
-        if (ingredientDtoList == null) {
-            return List.of();
-        }
-        List<Ingredient> ingredientList = ingredientService.findByTitle(
-            ingredientDtoList.stream()
-                .map(IngredientDto::name)
-                .toList()
-        );
-
-        List<IngredientDto> missingIngredients = ingredientDtoList.stream()
-            .filter(ingredientDto ->
-                ingredientList.stream()
-                    .noneMatch(ingredient ->
-                        ingredient.getTitle().equals(ingredientDto.name())
-                    )
-            ).toList();
-
-        if (!missingIngredients.isEmpty()) {
-            List<Ingredient> createdIngredients = ingredientService.createAll(missingIngredients);
-            ingredientList.addAll(createdIngredients);
-        }
-        return ingredientList;
     }
 }

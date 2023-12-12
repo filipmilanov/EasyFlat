@@ -42,4 +42,5 @@ public interface ItemService {
      * @param id an ID of a stored {@link Item}
      */
     void delete(Long id);
+
 }
