@@ -42,9 +42,21 @@ export class CookbookCardComponent {
       next: (missingIngredients: RecipeSuggestion) => {
         if (missingIngredients && missingIngredients.missedIngredients.length > 0) {
           this.cookClicked.emit(this.recipe);
-        } else {
-          // If no missing ingredients, proceed to cook directly
         }
+        this.cookingService.cookRecipe(missingIngredients).subscribe({
+          next: res => {
+
+            this.cookingService.cookRecipe(missingIngredients)
+
+          },
+          error: error => {
+            console.error('Error checking missing ingredients:', error);
+          }
+
+        });
+
+
+
       },
       error: error => {
         console.error('Error checking missing ingredients:', error);
