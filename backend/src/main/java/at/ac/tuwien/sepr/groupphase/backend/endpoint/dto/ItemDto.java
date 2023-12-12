@@ -123,4 +123,26 @@ public record ItemDto(
             + ", ingredients=" + ingredients
             + '}';
     }
+
+    public ItemDto withUpdatedQuantity(Long updatedQuantity) {
+        return new ItemDto(
+            itemId,
+            ean,
+            generalName,
+            productName,
+            brand,
+            updatedQuantity,
+            quantityTotal,
+            unit,
+            expireDate,
+            description,
+            priceInCent,
+            alwaysInStock,
+            minimumQuantity,
+            boughtAt,
+            digitalStorage,
+            ingredients,
+            itemStats
+        );
+    }
 }

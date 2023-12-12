@@ -37,4 +37,17 @@ export class CookbookModalComponent implements OnInit{
     })
   }
 
+  cook(){
+    this.cookingService.cookRecipe(this.recipeWithMissing).subscribe({
+      next: res => {
+        console.log("cooked");
+
+      },
+      error: err => {
+        console.error("Error loading recipes:", err);
+        this.notification.error("Error loading recipes");
+      }
+    })
+  }
+
 }

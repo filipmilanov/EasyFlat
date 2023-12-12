@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
@@ -8,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeIngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
@@ -20,6 +22,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
+import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.RecipeIngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import org.slf4j.Logger;
@@ -54,6 +57,8 @@ public class CookingServiceImpl implements CookingService {
     private final RecipeIngredientMapper recipeIngredientMapper;
     private final UnitService unitService;
     private final UnitMapper unitMapper;
+    private final ItemService itemService;
+    private final ItemMapper itemMapper;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
     public CookingServiceImpl(RestTemplate restTemplate,
@@ -65,7 +70,9 @@ public class CookingServiceImpl implements CookingService {
                               RecipeMapper recipeMapper,
                               RecipeIngredientMapper recipeIngredientMapper,
                               UnitService unitService,
-                              UnitMapper unitMapper) {
+                              UnitMapper unitMapper,
+                              ItemService itemService,
+                              ItemMapper itemMapper) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
@@ -76,6 +83,8 @@ public class CookingServiceImpl implements CookingService {
         this.recipeIngredientMapper = recipeIngredientMapper;
         this.unitService = unitService;
         this.unitMapper = unitMapper;
+        this.itemService = itemService;
+        this.itemMapper = itemMapper;
     }
 
     @Override
@@ -328,7 +337,7 @@ public class CookingServiceImpl implements CookingService {
                         missingIngredients.add(ingredient);
                     }
                     for (Item item : items) {
-                        if (!item.getUnit().equals(ingredient.unit())) {
+                        if (!unitMapper.entityToUnitDto(item.getUnit()).equals(ingredient.unitEnum())) {
                             missingIngredients.add(ingredient);
                         } else if (item.getQuantityCurrent() < ingredient.amount()) {
                             RecipeIngredientDto newIngredient = new RecipeIngredientDto(
@@ -353,16 +362,21 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook) {
+    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook) throws ValidationException, ConflictException {
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
             List<Item> items = storageRepository.getItemWithGeneralName(1L, recipeIngredientDto.name());
+
             for (Item item : items) {
-                //
+                if (unitMapper.entityToUnitDto(item.getUnit()).equals(recipeIngredientDto.unitEnum())) {
+                    if (item.getQuantityCurrent() < recipeIngredientDto.amount()) {
+                        ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity((long) (item.getQuantityCurrent() - recipeIngredientDto.amount()));
+                        itemService.update(updatedItem);
+                    }
+                }
             }
         }
-
-        return null;
+        return recipeToCook;
     }
 
     private String getRequestStringForRecipeSearch(List<ItemListDto> items) {

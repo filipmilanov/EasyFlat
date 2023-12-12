@@ -62,4 +62,8 @@ export class CookingService {
   getMissingIngredients(id:string): Observable<RecipeSuggestion> {
     return this.httpClient.get<RecipeSuggestion>(this.cookbookUri + '/missing/' + id);
   }
+
+  cookRecipe(recipe:RecipeSuggestion):Observable<RecipeSuggestion>{
+    return this.httpClient.put<RecipeSuggestion>(this.baseUri + "/cook",recipe)
+  }
 }
