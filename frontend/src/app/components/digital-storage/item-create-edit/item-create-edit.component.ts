@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ItemDto} from "../../../dtos/item";
 import {NgForm} from "@angular/forms";
 import {ItemService} from "../../../services/item.service";
@@ -7,6 +7,8 @@ import {DigitalStorageDto} from "../../../dtos/digitalStorageDto";
 import {Observable, of} from "rxjs";
 import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {NgxScannerQrcodeComponent} from "ngx-scanner-qrcode";
+import {ScannerQRCodeResult} from "ngx-scanner-qrcode/lib/ngx-scanner-qrcode.options";
 
 export enum ItemCreateEditMode {
   create,
@@ -19,6 +21,9 @@ export enum ItemCreateEditMode {
   styleUrls: ['./item-create-edit.component.scss']
 })
 export class ItemCreateEditComponent implements OnInit{
+
+  @ViewChild('action')
+  scanner: NgxScannerQrcodeComponent;
 
   mode: ItemCreateEditMode = ItemCreateEditMode.create;
   item: ItemDto = {
@@ -173,4 +178,16 @@ export class ItemCreateEditComponent implements OnInit{
   storageSuggestions = (input: string) => (input === '')
     ? of([])
     : this.storageService.findAll(input, 5);
+
+  toggleScanning() {
+    this.scanner.isStart ? this.scanner.stop() : this.scanner.start()
+  }
+
+  updateEAN(ean: ScannerQRCodeResult[]) {
+    if (this.scanner.data.value.length > 0) {
+      this.item.ean = this.scanner.data.value[0].value;
+    }
+  }
+
+
 }
