@@ -16,9 +16,10 @@ public abstract class ExpenseMapper {
     @Mapping(target = "debitUsers", source = "expense")
     public abstract ExpenseDto entityToExpenseDto(Expense expense);
 
-    @Mapping(target = "splitBy", source = "debitUsers")
-    @Mapping(target = "debitUsers", source = "expenseDto")
-    public abstract Expense expenseDtoToExpense(ExpenseDto expenseDto);
+    @Mapping(target = "splitBy", source = "expenseDto.debitUsers")
+    @Mapping(target = "debitUsers", expression = "java( debits )")
+    public abstract Expense expenseDtoToExpense(ExpenseDto expenseDto,
+                                                List<Debit> debits);
 
     public SplitBy splitByFromDebitDtoList(List<DebitDto> debitUsersDtoList) {
         return debitUsersDtoList.stream()
