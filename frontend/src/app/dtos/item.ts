@@ -26,4 +26,5 @@ export class ItemDto {
 export class ShoppingItemDto extends ItemDto {
   shoppingList?: ShoppingListDto;
   labels?: [ShoppingLabelDto];
+  check?: boolean;
 }
