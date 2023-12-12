@@ -117,6 +117,7 @@ export class CookbookCreateComponent implements OnInit{
     this.unitService.findAll().subscribe({
       next: res => {
         this.availableUnits = res;
+        console.log(this.availableUnits)
       },
       error: err => {
         this.notification.error('Failed to load Units', "Error");
@@ -186,11 +187,4 @@ export class CookbookCreateComponent implements OnInit{
   formatUnitName(unit: Unit | null): string {
     return unit ? unit.name : '';
   }
-
-  onUnitSelect(selectedUnit: Unit): void {
-    this.selectedUnit = selectedUnit;
-    console.log(selectedUnit)
-  }
-
-
 }

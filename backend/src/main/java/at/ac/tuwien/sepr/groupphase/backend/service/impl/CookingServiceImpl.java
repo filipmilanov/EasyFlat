@@ -16,6 +16,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -335,16 +336,22 @@ public class CookingServiceImpl implements CookingService {
                     List<Item> items = storageRepository.getItemWithGeneralName(1L, ingredient.name());
                     if (items.isEmpty()) {
                         missingIngredients.add(ingredient);
+                        continue;
                     }
+                    Unit ingredientUnit = unitMapper.unitDtoToEntity(ingredient.unitEnum());
                     for (Item item : items) {
-                        if (!unitMapper.entityToUnitDto(item.getUnit()).equals(ingredient.unitEnum())) {
-                            missingIngredients.add(ingredient);
+                        if (!item.getUnit().equals(ingredientUnit)) {
+                            Unit itemUnitMin = this.getMinUnit(item.getUnit());
+                            Unit ingredientUnitMin = this.getMinUnit(ingredientUnit);
+                            if (!itemUnitMin.equals(ingredientUnitMin)) {
+                                missingIngredients.add(ingredient);
+                            }
                         } else if (item.getQuantityCurrent() < ingredient.amount()) {
                             RecipeIngredientDto newIngredient = new RecipeIngredientDto(
                                 ingredient.id(),
                                 ingredient.name(),
                                 ingredient.unit(),
-                                new UnitDto(" ", 1L, null),
+                                ingredient.unitEnum(),
                                 ingredient.amount() - item.getQuantityCurrent()
                             );
                             missingIngredients.add(newIngredient);
@@ -402,5 +409,17 @@ public class CookingServiceImpl implements CookingService {
 
     private String getRequestStringForDetails(String recipeId) {
         return "https://api.spoonacular.com/recipes/" + recipeId + "/analyzedInstructions" + "?apiKey=" + apiKey;
+    }
+
+    private Unit getMinUnit(Unit unit) {
+        if (unit.getSubUnit().isEmpty()) {
+            return unit;
+        }
+        for (Unit subUnit : unit.getSubUnit()) {
+            if (subUnit.getSubUnit().isEmpty()) {
+                return subUnit;
+            }
+        }
+        return null;
     }
 }
