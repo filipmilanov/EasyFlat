@@ -161,4 +161,12 @@ export class ShoppingListComponent implements OnInit {
       }
     );
   }
+
+  checkIsEmpty() {
+    return this.checkedItems.length == 0;
+  }
+
+  checkId() {
+    return this.shopId == '1';
+  }
 }
