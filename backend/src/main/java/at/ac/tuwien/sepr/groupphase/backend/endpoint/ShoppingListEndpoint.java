@@ -97,6 +97,15 @@ public class ShoppingListEndpoint {
         return itemMapper.entityToShopping(deletedItem);
     }
 
+    @PermitAll
+    @DeleteMapping("/delete/{shopId}")
+    public ShoppingListDto deleteList(@PathVariable Long shopId) {
+        LOGGER.info("deleteList({})", shopId);
+        ShoppingList deletedList = shoppingService.deleteList(shopId);
+        return shoppingListMapper.entityToDto(deletedList);
+    }
+
+
 }
 
 

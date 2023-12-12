@@ -1,16 +1,8 @@
 <h1 class="display-4">Shopping List</h1>
 <form>
   <div class="form-elements">
-    <div class="dropdown">
-      <button class="dropbtn">
-        <span class="dropdown-label">Dropdown</span>
-        <span class="arrow">&#9660;</span>
-      </button>
-      <div class="dropdown-content">
-        <a href="#">Option 1</a>
-        <a href="#">Option 2</a>
-        <a href="#">Option 3</a>
-      </div>
+    <div class="col-md-2 col-lg-2 mt-2">
+
     </div>
     <button style="margin-left: 625px;" type="button" (click)="navigateToCreateList()" >Add new list</button>
   </div>
@@ -18,7 +10,7 @@
 
 <br>
 
-<h4>All</h4>
+<h4>{{shoppingList.listName}}</h4>
 
 
 <form class="d-flex flex-row w-auto mb-3">
@@ -47,6 +39,7 @@
     <th scope="col">Labels</th>
     <th scope="col">Quantity</th>
     <th scope="col">Action</th>
+    <th scope="col">Mark</th>
   </tr>
   </thead>
   <tbody>
@@ -59,10 +52,15 @@
         <i class="bi-trash">X</i>
       </button>
     </td>
+    <td>
+      <input type="checkbox" [(ngModel)]="item.selected">
+    </td>
+
 
   </tr>
 
-  <button style="margin-top: 20px;" type="button" (click)="navigateToCreateItem()">Add new item</button>
+  <button style="margin-top: 20px;" style="margin-right: 20px;" type="button" (click)="navigateToCreateItem()">Add item</button>
+  <button style="margin-top: 20px;" type="button" (click)="deleteList()">Delete List</button>
 
   </tbody>
 </table>

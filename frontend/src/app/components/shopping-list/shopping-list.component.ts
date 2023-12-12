@@ -20,6 +20,8 @@ export class ShoppingListComponent implements OnInit {
     items: []};
   shopId: string;
 
+  allLists: ShoppingListDto[];
+
   location: Location;
 
 
@@ -73,4 +75,19 @@ export class ShoppingListComponent implements OnInit {
       });
     }
   }
+
+  deleteList() {
+    if (confirm("Are you sure you want to delete this list?")) {
+      this.shoppingListService.deleteList(this.shopId).subscribe({
+        next: (deletedList: ShoppingListDto) => {
+          console.log(deletedList.listName, ' was deleted successfully');
+          this.router.navigate(['shopping-list/2']);
+        },
+        error: error => {
+          console.error(error.message, error);
+        }
+      });
+    }
+  }
+
 }

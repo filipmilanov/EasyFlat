@@ -19,4 +19,6 @@ public interface ShoppingListService {
     ShoppingList createList(String listName);
 
     ShoppingItem deleteItem(Long itemId);
+
+    ShoppingList deleteList(Long shopId);
 }
