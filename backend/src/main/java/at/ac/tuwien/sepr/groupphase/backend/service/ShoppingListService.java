@@ -21,4 +21,6 @@ public interface ShoppingListService {
     ShoppingItem deleteItem(Long itemId);
 
     ShoppingList deleteList(Long shopId);
+
+    List<ShoppingList> getShoppingLists();
 }

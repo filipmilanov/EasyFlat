@@ -2,7 +2,15 @@
 <form>
   <div class="form-elements">
     <div class="col-md-2 col-lg-2 mt-2">
-
+      <select class="form-select form-select-md"
+              name="selectedShoppingList"
+              [(ngModel)]="selectedShoppingList"
+              (change)="onShoppingListChange()">
+        <option *ngFor="let list of shoppingLists"
+                [ngValue]="list.id">
+          {{ list.listName }}
+        </option>
+      </select>
     </div>
     <button style="margin-left: 625px;" type="button" (click)="navigateToCreateList()" >Add new list</button>
   </div>

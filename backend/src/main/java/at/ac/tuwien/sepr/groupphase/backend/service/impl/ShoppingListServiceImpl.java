@@ -113,6 +113,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
     }
 
+    @Override
+    public List<ShoppingList> getShoppingLists() {
+        List<ShoppingList> shoppingLists = shoppingListRepository.findAll();
+        shoppingListMapper.entityListToDtoList(shoppingLists);
+        return shoppingListRepository.saveAll(shoppingLists);
+    }
+
 
     private List<ItemLabel> findItemLabelsAndCreateNew(List<ItemLabelDto> labels) {
         if (labels == null) {
