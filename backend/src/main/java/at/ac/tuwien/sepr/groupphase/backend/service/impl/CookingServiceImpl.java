@@ -400,9 +400,20 @@ public class CookingServiceImpl implements CookingService {
                         itemService.update(updatedItem);
                     }
                 } else {
-                    Unit minUnitRecipeIng = getMinUnit(unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum()));
-                    Unit minUnitItem = getMinUnit(item.getUnit());
-                    int a = 0;
+                    Unit itemUnitMin = this.getMinUnit(item.getUnit());
+                    Unit ingredientUnitMin = this.getMinUnit(ingredientUnit);
+                    if (itemUnitMin.equals(ingredientUnitMin)) {
+                        Long ingredientConverted = unitService.convertUnits(ingredientUnit, ingredientUnitMin, (long) recipeIngredientDto.amount());
+                        Long itemConverted = unitService.convertUnits(item.getUnit(), itemUnitMin, item.getQuantityCurrent());
+                        if (itemUnitMin.equals(item.getUnit())) {
+                            ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity(itemConverted - ingredientConverted);
+                            itemService.update(updatedItem);
+                        } else {
+                            ingredientConverted = unitService.convertUnits(ingredientUnitMin, item.getUnit(), ingredientConverted);
+                            ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity(item.getQuantityCurrent() - ingredientConverted);
+                            itemService.update(updatedItem);
+                        }
+                    }
                 }
             }
         }
