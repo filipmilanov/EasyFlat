@@ -59,7 +59,7 @@ public class UnitServiceImpl implements UnitService {
         if (this.getMinUnit(from).equals(to)) {
             return value * from.getConvertFactor();
         } else {
-            return value / from.getConvertFactor();
+            return value / to.getConvertFactor();
         }
 
     }
