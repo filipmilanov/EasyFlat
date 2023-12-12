@@ -66,14 +66,16 @@
 
   </tr>
 
-  <button style="margin-top: 20px; margin-right: 20px;" type="button" (click)="navigateToCreateItem()">Add item</button>
-  <button *ngIf="shoppingList?.id && shoppingList.id !== 1"
-    style="margin-top: 20px; margin-right: 20px;"
+  <button style="margin-top: 30px; margin-right: 20px;" type="button" (click)="navigateToCreateItem()">Add item</button>
+  <button *ngIf="!checkId()"
+    style="margin-top: 30px; margin-right: 600px;"
           type="button" (click)="deleteList()">
     Delete List
   </button>
-  <button style="margin-top: 20px; margin-right: 20px;" type="button" (click)="deleteCheckedItems()">Delete</button>
-  <button style="margin-top: 20px; margin-right: 20px;" type="button" (click)="transferToStorage()">Bought</button>
+  <button *ngIf="!checkIsEmpty()"
+    style="margin-top: 30px; margin-right: 20px;" type="button" (click)="deleteCheckedItems()">Delete</button>
+  <button *ngIf="!checkIsEmpty()"
+    style="margin-top: 30px; margin-right: 20px;" type="button" (click)="transferToStorage()">Bought</button>
 
 
   </tbody>
