@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(uses = {UserMapper.class, ExpenseMapper.class})
+@Mapper(uses = {UserMapper.class})
 public abstract class DebitMapper {
 
     @Mapping(target = "user", source = "debit.id.user")
