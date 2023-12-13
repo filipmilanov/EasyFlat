@@ -15,16 +15,16 @@ export class ItemCardComponent {
   @Input() id: string;
   @Input() title: string;
   @Input() quantity: number;
-  @Input() quantityTotal:number;
-  @Input() unit:string;
-
+  @Input() quantityTotal: number;
+  @Input() unit: string;
 
 
   customModalOpen: boolean = false;
   customModalOpen1: boolean = false;
 
   constructor(private el: ElementRef, private digitalStorage: DigitalStorageComponent, private storageService: StorageService,
-              private itemService: ItemService) {}
+              private itemService: ItemService) {
+  }
 
   getCardColor(): string {
     const ratio = this.quantity / this.quantityTotal;
@@ -70,7 +70,7 @@ export class ItemCardComponent {
         item.quantityCurrent = quantityCurrent;
         console.log(item)
         this.itemService.updateItem(item);
-        this.storageService.getItems(item.digitalStorage.digitalStorageId + '', new ItemSearchDto())
+        this.storageService.getItems(new ItemSearchDto())
       },
       error: err => {
         console.error("Error finding item:", err);

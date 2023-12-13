@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,6 +57,7 @@ public class DigitalStorage {
         this.itemList = itemList;
     }
 
+    @JsonBackReference
     public SharedFlat getSharedFlat() {
         return sharedFlat;
     }

@@ -17,7 +17,7 @@ export class StorageService {
               private authService: AuthService) {
   }
 
-  getItems(id: string, searchParameters: ItemSearchDto): Observable<StorageItemListDto[]> {
+  getItems( searchParameters: ItemSearchDto): Observable<StorageItemListDto[]> {
     let params = new HttpParams();
     if (searchParameters.productName) {
       params = params.append('productName', searchParameters.productName);
@@ -33,7 +33,7 @@ export class StorageService {
       'Authorization': this.authService.getToken()
     });
     params = params.append('orderType', searchParameters.orderBy);
-    return this.httpClient.get<StorageItemListDto[]>(this.storageBaseUri + '/' + id, {params,headers});
+    return this.httpClient.get<StorageItemListDto[]>(this.storageBaseUri + '/items' , {params,headers});
   }
 
   updateItemQuantity(storageId: string, value: string, item: ItemDto) {
@@ -54,17 +54,12 @@ export class StorageService {
     );
   }
 
-  getItemsWithGenaralName(generalName:string, storId:string): Observable<StorageItem[]> {
-    let params = new HttpParams();
+  getItemsWithGenaralName(generalName:string): Observable<StorageItem[]> {
+
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });
 
-    if (storId) {
-      params = params.append('storId', storId);
-    }
-
-
-    return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName , {params,headers});
+    return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName,{headers});
   }
 }
