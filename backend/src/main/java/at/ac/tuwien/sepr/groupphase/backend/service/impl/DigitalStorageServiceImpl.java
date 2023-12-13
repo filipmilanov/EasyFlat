@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -20,6 +21,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.Authenticator.Authenticator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import org.slf4j.Logger;
@@ -48,6 +50,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final Authorization authorization;
     private CustomUserDetailService customUserDetailService;
     private SharedFlatMapper sharedFlatMapper;
+    private final SharedFlatService sharedFlatService;
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      DigitalStorageMapper digitalStorageMapper,
@@ -60,11 +63,11 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
-        this.itemMapper = itemMapper;
         this.sharedFlatService = sharedFlatService;
         this.authorization = authorization;
         this.customUserDetailService = customUserDetailService;
         this.sharedFlatMapper = sharedFlatMapper;
+        this.itemMapper = itemMapper;
     }
 
     @Override
@@ -226,7 +229,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
         List<ItemListDto> toRet = new LinkedList<>();
         for (Map.Entry<String, Long[]> item : items.entrySet()) {
-            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1], UnitDtoBuilder.builder().name(itemUnits.get(item.getKey())).build()));
+            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1], itemUnits.get(item.getKey())));
         }
         return toRet;
     }

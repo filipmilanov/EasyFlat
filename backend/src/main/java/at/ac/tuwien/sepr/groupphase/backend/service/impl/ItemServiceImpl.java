@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -20,6 +21,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -105,7 +107,6 @@ public class ItemServiceImpl implements ItemService {
         List<Unit> unitList = unitService.findAll();
         itemValidator.validateForCreate(itemDto, digitalStorageList, unitList);
 
-
         ItemDto finalItemDto = itemDto;
         DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
             .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
@@ -156,9 +157,8 @@ public class ItemServiceImpl implements ItemService {
         }
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
-        List<Unit> unitList = unitService.findAll();
-
-        itemValidator.validateForUpdate(itemDto, digitalStorageList, unitList);
+        Item presistedItem = this.findById(itemDto.itemId()).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        itemValidator.validateForUpdate(itemDto, digitalStorageList);
 
         ItemDto finalItemDto = itemDto;
         DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
