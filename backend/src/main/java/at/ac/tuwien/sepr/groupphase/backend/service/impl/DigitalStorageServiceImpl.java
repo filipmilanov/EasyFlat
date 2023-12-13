@@ -158,6 +158,8 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         return digitalStorageRepository.updateItemQuantity(storageId, itemId, quantity);
     }
 
+
+
     @Override
     public List<ItemDto> getItemWithGeneralName(String name, Long storId) {
         List<Item> items = digitalStorageRepository.getItemWithGeneralName(storId, name);
@@ -169,6 +171,8 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
         return itemDtos;
     }
+
+
 
     private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) {
         Map<String, Double[]> items = new HashMap<>();
