@@ -26,6 +26,8 @@ public class SharedFlat {
     private String password;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sharedFlat")
     private Set<ApplicationUser> users = new HashSet<>();
+    @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
+    private DigitalStorage digitalStorage;
 
     @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
     private DigitalStorage digitalStorage;
@@ -41,6 +43,7 @@ public class SharedFlat {
         this.name = name;
     }
 
+
     public String getPassword() {
         return password;
     }
@@ -52,6 +55,48 @@ public class SharedFlat {
     public Long getId() {
         return id;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Set<ApplicationUser> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<ApplicationUser> users) {
+        this.users = users;
+    }
+
+    @JsonManagedReference
+    public DigitalStorage getDigitalStorage() {
+        return digitalStorage;
+    }
+
+    public void setDigitalStorage(DigitalStorage digitalStorage) {
+        this.digitalStorage = digitalStorage;
+        if (digitalStorage != null) {
+            digitalStorage.setSharedFlat(this);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SharedFlat that = (SharedFlat) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 
     public void setId(Long id) {
         this.id = id;
