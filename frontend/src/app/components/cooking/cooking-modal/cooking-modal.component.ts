@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Router} from "@angular/router";
@@ -14,11 +14,13 @@ export class CookingModalComponent {
 
   @Input() recipe: RecipeSuggestion;
 
+  recipeWithMissing: RecipeSuggestion;
 
   constructor(public activeModal: NgbActiveModal, private router: Router, public cookingService: CookingService, private notification: ToastrService) {
 
   }
-  cook(){
+
+  cook() {
     this.cookingService.cookRecipe(this.recipe).subscribe({
       next: res => {
         console.log("cooked");
@@ -30,4 +32,6 @@ export class CookingModalComponent {
       }
     })
   }
+
+
 }
