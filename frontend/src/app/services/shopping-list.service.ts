@@ -17,16 +17,35 @@ export class ShoppingListService {
               private authService: AuthService) {
   }
 
+  /**
+   * Creates a shopping item in the system
+   *
+   * @param item the data without ID for the shopping item that should be stored in the system
+   * @return an Observable for the stored shopping list in the system
+   */
   createItem(item: ShoppingItemDto): Observable<ShoppingItemDto> {
     console.log('Create item with content ' + item);
     return this.http.post<ItemDto>(this.baseUri, item);
   }
 
+  /**
+   * Find an existing shopping item in the system
+   *
+   * @param id the id of the shopping item that should already be stored in the system
+   * @return an Observable for the existing shopping list in the system
+   */
   getById(id: string): Observable<ShoppingItemDto> {
     console.log('Get item with ID ' + id);
     return this.http.get<ShoppingItemDto>(this.baseUri + '/' + id);
   }
 
+  /**
+   * Find existing shopping items in the system
+   *
+   * @param shopId the id of the shopping list to which the shopping items are connected in the system
+   * @param searchParams search parameters consisting of the products' name and their labels' value
+   * @return an Observable for the existing shopping items in the system
+   */
   getItemsWithShopId(shopId: string, searchParams: ShoppingItemSearchDto):Observable<ShoppingItemDto[]> {
     console.log('Get items with shopId ' + shopId + ' and search parameters ' + searchParams);
     let params = new HttpParams();
@@ -42,7 +61,7 @@ export class ShoppingListService {
   /**
    * Find an existing shopping list in the system
    *
-   * @param shoppingListId the id of the list that should be stored in the system
+   * @param shoppingListId the id of the list that should already be stored in the system
    * @return an Observable for the existing shopping list in the system
    */
   getShoppingListById(shoppingListId: string): Observable<ShoppingListDto> {
