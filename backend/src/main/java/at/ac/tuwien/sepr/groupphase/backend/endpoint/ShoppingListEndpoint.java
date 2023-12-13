@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
@@ -83,9 +84,9 @@ public class ShoppingListEndpoint {
 
     @PermitAll
     @GetMapping("/list-items/{listId}")
-    public List<ShoppingItemDto> getItemsById(@PathVariable Long listId) {
+    public List<ShoppingItemDto> getItemsById(@PathVariable Long listId, ShoppingItemSearchDto itemSearchDto) {
         LOGGER.info("getItemsById({})", listId);
-        List<ShoppingItem> items = shoppingService.getItemsById(listId);
+        List<ShoppingItem> items = shoppingService.getItemsById(listId, itemSearchDto);
         List<ShoppingItemDto> ret = new ArrayList<>();
         for (ShoppingItem item : items) {
             ret.add(itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList())));
