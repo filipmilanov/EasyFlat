@@ -65,6 +65,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingItem create(ShoppingItemDto itemDto) {
+        LOGGER.trace("create({})", itemDto);
         List<ItemLabel> labels = findLabelsAndCreateMissing(itemDto.labels());
 
         ShoppingItem createdItem = shoppingRepository.save(itemMapper.dtoToShopping(itemDto, labels, shoppingListMapper.dtoToEntity(itemDto.shoppingList())));
@@ -74,7 +75,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public Optional<ShoppingItem> getById(Long itemId) {
-        LOGGER.trace("findById({})", itemId);
+        LOGGER.trace("getById({})", itemId);
         if (itemId == null) {
             return Optional.empty();
         }
@@ -84,6 +85,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public Optional<ShoppingList> getShoppingListById(Long shopListId) {
+        LOGGER.trace("getShoppingListById({})", shopListId);
         if (shopListId == null) {
             return Optional.empty();
         }
@@ -93,6 +95,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public List<ShoppingItem> getItemsById(Long listId, ShoppingItemSearchDto itemSearchDto) {
+        LOGGER.trace("getItemsById({}, {})", listId, itemSearchDto);
         List<ShoppingItem> shoppingItems = shoppingRepository.searchItems(listId,
             (itemSearchDto.productName() != null) ? itemSearchDto.productName() : null,
             (itemSearchDto.label() != null) ? itemSearchDto.label() : null);
@@ -140,6 +143,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public List<ShoppingList> getShoppingLists(String jwt) throws AuthenticationException {
+        LOGGER.trace("getShoppingLists({})", jwt);
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
@@ -149,6 +153,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public List<Item> transferToServer(List<ShoppingItemDto> items) {
+        LOGGER.trace("transferToServer({})", items);
         List<Item> itemsList = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
             Item item;
@@ -166,7 +171,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingItem update(ShoppingItemDto itemDto) throws ConflictException {
-
+        LOGGER.trace("update({})", itemDto);
         List<ItemLabel> labels = null;
         if (itemDto.labels() != null) {
             labels = findLabelsAndCreateMissing(itemDto.labels());
@@ -184,6 +189,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
 
     private List<ItemLabel> findLabelsAndCreateMissing(List<ItemLabelDto> labels) {
+        LOGGER.trace("findLabelsAndCreateMissing({})", labels);
         if (labels == null) {
             return List.of();
         }

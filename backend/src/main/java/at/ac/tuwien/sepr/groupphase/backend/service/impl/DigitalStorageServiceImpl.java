@@ -215,6 +215,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public ShoppingItem addItemToShopping(ItemDto itemDto) {
+        LOGGER.trace("addItemToShopping({})", itemDto);
         ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto, digitalStorageMapper.dtoToEntity(itemDto.digitalStorage()),
             ingredientMapper.dtoListToEntityList(itemDto.ingredients()));
         return shoppingRepository.save(shoppingItem);

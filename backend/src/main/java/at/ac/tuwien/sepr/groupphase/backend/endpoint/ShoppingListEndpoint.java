@@ -71,9 +71,8 @@ public class ShoppingListEndpoint {
     @Secured("ROLE_USER")
     @GetMapping("{itemId}")
     public Optional<ShoppingItemDto> getById(@PathVariable Long itemId) {
-        LOGGER.info("findById({})", itemId);
+        LOGGER.info("getById({})", itemId);
         Optional<ShoppingItem> item = shoppingService.getById(itemId);
-
         return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToShopping(currentItem,
             shoppingListMapper.entityToDto(currentItem.getShoppingList()))));
     }
@@ -82,8 +81,8 @@ public class ShoppingListEndpoint {
     @Secured("ROLE_USER")
     @GetMapping("/list/{id}")
     public Optional<ShoppingListDto> getShoppingListById(@PathVariable Long id) {
+        LOGGER.info("getShoppingListById({})", id);
         Optional<ShoppingList> ret = shoppingService.getShoppingListById(id);
-
         return ret.flatMap(shoppingList -> Optional.ofNullable(shoppingListMapper.entityToDto(shoppingList)));
 
     }
