@@ -102,7 +102,9 @@ class DigitalStorageServiceTest {
 
 
     @Test
-    @Disabled("Test does not work, because it tries to create second digital storage for a WG, but one WG can have only one DS")
+    @Disabled("Test does not work, because it tries to create second digital storage for a WG, " +
+        "but one WG can have only one DS. It is still here, because of the opportunity to extend " +
+        "the functionality of the app. ")
     void givenValidStorageWhenCreateThenStorageIsPersistedAndHasId() throws Exception {
         // given
         when(jwtTokenizer.getEmailFromToken(any(String.class))).thenReturn(applicationUser.getEmail());
