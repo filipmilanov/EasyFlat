@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
+import {UserDetail} from "../../dtos/auth-request";
 
 @Component({
   selector: 'app-header',
@@ -7,10 +8,20 @@ import {AuthService} from '../../services/auth.service';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+  user: UserDetail;
 
-  constructor(public authService: AuthService) { }
-
-  ngOnInit() {
+  constructor(public authService: AuthService) {
   }
 
+  ngOnInit() {
+    this.authService.getUser(this.authService.getToken()).subscribe({
+      next: res => {
+        this.user = res;
+      }
+    });
+  }
+
+  isInWg() {
+    return this.user.flatName != null;
+  }
 }
