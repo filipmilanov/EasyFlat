@@ -51,6 +51,7 @@ public abstract class ItemMapper {
                                                 @Context ShoppingList shoppingList);
 
     @Mapping(target = "labels", source = "labels")
+    @Mapping(target = "alwaysInStock", expression = "java( item.alwaysInStock() )")
     @Mapping(target = "shoppingList", expression = "java( shoppingList )")
     public abstract ShoppingItemDto entityToShopping(ShoppingItem item,
                                                      @Context ShoppingListDto shoppingList);
@@ -65,6 +66,7 @@ public abstract class ItemMapper {
             return null;
         }
         ShoppingItem shoppingItem = new ShoppingItem();
+        shoppingItem.setAlwaysIsStock(itemDto.alwaysInStock());
         shoppingItem.setEan(itemDto.ean());
         shoppingItem.setGeneralName(itemDto.generalName());
         shoppingItem.setProductName(itemDto.productName());

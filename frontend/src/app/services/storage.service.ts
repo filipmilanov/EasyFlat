@@ -64,7 +64,9 @@ export class StorageService {
     return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName,{headers});
   }
 
-  addToShoppingList(item: StorageItem): Observable<ShoppingItemDto> {
+  addItemToShoppingList(item: ItemDto): Observable<ShoppingItemDto> {
+    console.log(item)
     return this.httpClient.post<ShoppingItemDto>(this.storageBaseUri + '/shop', item);
   }
+
 }
