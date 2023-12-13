@@ -24,15 +24,16 @@ import { RegisterComponent } from './components/register/register.component';
 import { AccountComponent } from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import { CreateFlatComponent } from './components/create-flat/create-flat.component';
-import {CookingComponent} from "./components/cooking/cooking.component";
-import {RecipeCardComponent} from "./components/cooking/recipe-card/recipe-card.component";
-import {CookbookComponent} from "./components/cookbook/cookbook.component";
-import {CookbookCardComponent} from "./components/cookbook/cookbook-card/cookbook-card.component";
-import {RecipeDetailComponent} from "./components/cooking/recipe-detail/recipe-detail.component";
-import {CookbookCreateComponent} from "./components/cookbook/cookbook-create/cookbook-create.component";
-import {CookbookDetailComponent} from "./components/cookbook/cookbook-detail/cookbook-detail.component";
-import {CookbookModalComponent} from "./components/cookbook/cookbook-modal/cookbook-modal.component";
+import { CookingComponent } from './components/cooking/cooking.component';
+import { RecipeCardComponent } from './components/cooking/recipe-card/recipe-card.component';
 import {NgOptimizedImage} from "@angular/common";
+import { CookbookComponent } from './components/cookbook/cookbook.component';
+import { CookbookCardComponent } from './components/cookbook/cookbook-card/cookbook-card.component';
+import { RecipeDetailComponent } from './components/cooking/recipe-detail/recipe-detail.component';
+import { CookbookCreateComponent } from './components/cookbook/cookbook-create/cookbook-create.component';
+import { CookbookDetailComponent } from './components/cookbook/cookbook-detail/cookbook-detail.component';
+import { CookbookModalComponent } from './components/cookbook/cookbook-modal/cookbook-modal.component';
+import { CookingModalComponent } from './components/cooking/cooking-modal/cooking-modal.component';
 
 @NgModule({
   declarations: [
@@ -60,9 +61,7 @@ import {NgOptimizedImage} from "@angular/common";
     CookbookCreateComponent,
     CookbookDetailComponent,
     CookbookModalComponent,
-    CookingComponent,
-    RecipeCardComponent,
-
+    CookingModalComponent,
   ],
   imports: [
     BrowserModule,
