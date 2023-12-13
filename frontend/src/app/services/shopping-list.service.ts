@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {ItemDto, ShoppingItemDto, ShoppingItemSearchDto} from "../dtos/item";
 import {Observable} from "rxjs";
 import {ShoppingListDto} from "../dtos/shoppingList";
 import {StorageItem} from "../dtos/storageItem";
+import {AuthService} from "./auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -12,9 +13,8 @@ export class ShoppingListService {
 
   private baseUri: string = 'http://localhost:8080/api/v1/shopping';
 
-  constructor(
-    private http: HttpClient
-  ) {
+  constructor(private http: HttpClient,
+              private authService: AuthService) {
   }
 
   createItem(item: ShoppingItemDto): Observable<ShoppingItemDto> {
@@ -56,7 +56,10 @@ export class ShoppingListService {
   }
 
   getShoppingLists(): Observable<ShoppingListDto[]> {
-    return this.http.get<ShoppingListDto[]>(this.baseUri + '/lists');
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.http.get<ShoppingListDto[]>(this.baseUri + '/lists', {headers});
   }
 
   transferToStorage(shoppingItems: ShoppingItemDto[]): Observable<StorageItem[]> {

@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
@@ -8,14 +7,14 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.LabelMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingRepository;
@@ -46,11 +45,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final ItemRepository itemRepository;
     private final DigitalStorageService digitalStorageService;
     private final ItemService itemService;
-    private final LabelMapper labelMapper;
+    private CustomUserDetailService customUserDetailService;
 
     public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
-                                   IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService, ItemService itemService, LabelMapper labelMapper) {
+                                   IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
+                                   ItemService itemService, LabelMapper labelMapper, CustomUserDetailService customUserDetailService) {
         this.shoppingRepository = shoppingRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -60,7 +60,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.itemService = itemService;
-        this.labelMapper = labelMapper;
+        this.customUserDetailService = customUserDetailService;
     }
 
     @Override
@@ -139,10 +139,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<ShoppingList> getShoppingLists() {
-        List<ShoppingList> shoppingLists = shoppingListRepository.findAll();
-        shoppingListMapper.entityListToDtoList(shoppingLists);
-        return shoppingListRepository.saveAll(shoppingLists);
+    public List<ShoppingList> getShoppingLists(String jwt) throws AuthenticationException {
+        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+        if (applicationUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+        }
+        return shoppingListRepository.findAll();
     }
 
     @Override

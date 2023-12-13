@@ -1,11 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
@@ -23,14 +25,8 @@ public class ShoppingList {
     @OneToMany
     private List<ShoppingItem> items;
 
-    public ShoppingList(Long id, String name) {
-        this.shopListId = id;
-        this.name = name;
-    }
-
-    public ShoppingList() {
-
-    }
+    @OneToOne
+    private SharedFlat sharedFlat;
 
     public Long getShopListId() {
         return shopListId;
@@ -55,4 +51,14 @@ public class ShoppingList {
     public void setItems(List<ShoppingItem> items) {
         this.items = items;
     }
+
+    @JsonBackReference
+    public SharedFlat getSharedFlat() {
+        return sharedFlat;
+    }
+
+    public void setSharedFlat(SharedFlat sharedFlat) {
+        this.sharedFlat = sharedFlat;
+    }
+
 }

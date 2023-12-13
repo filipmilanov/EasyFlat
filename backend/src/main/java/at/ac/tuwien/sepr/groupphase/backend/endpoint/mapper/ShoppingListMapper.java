@@ -42,7 +42,7 @@ public abstract class ShoppingListMapper {
         item.setDescription(shoppingItem.description());
         item.setPriceInCent(shoppingItem.priceInCent());
         item.setBoughtAt(shoppingItem.boughtAt());
-        item.setStorage(new DigitalStorage(1L, "Main"));
+        item.setStorage(new DigitalStorage());
         item.setIngredientList(ingredients);
         return item;
     }
@@ -63,7 +63,7 @@ public abstract class ShoppingListMapper {
         item.setDescription(shoppingItem.description());
         item.setPriceInCent(shoppingItem.priceInCent());
         item.setBoughtAt(shoppingItem.boughtAt());
-        item.setStorage(new DigitalStorage(1L, "Main"));
+        item.setStorage(new DigitalStorage());
         item.setIngredientList(ingredients);
         item.setMinimumQuantity(shoppingItem.minimumQuantity());
         return item;

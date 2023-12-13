@@ -122,10 +122,9 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public UserDetailDto getUser(String authToken) {
+    public ApplicationUser getUser(String authToken) {
         String email = jwtTokenizer.getEmailFromToken(authToken);
-        ApplicationUser user = userRepository.findUserByEmail(email);
-        return userMapper.entityToUserDetailDto(user);
+        return userRepository.findUserByEmail(email);
     }
 
     @Override

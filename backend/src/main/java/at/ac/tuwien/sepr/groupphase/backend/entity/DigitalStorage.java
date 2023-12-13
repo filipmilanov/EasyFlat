@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,7 +9,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,18 +25,12 @@ public class DigitalStorage {
     @Column
     private String title;
 
+    @OneToOne
+    private SharedFlat sharedFlat;
+
     @OneToMany(mappedBy = "digitalStorage", fetch = FetchType.EAGER)
     @JsonIgnore
-    private List<Item> itemList;
-
-    public DigitalStorage(long storId, String title) {
-        this.storId = storId;
-        this.title = title;
-    }
-
-    public DigitalStorage() {
-
-    }
+    private List<Item> itemList = new ArrayList<>();
 
 
     public Long getStorId() {
@@ -60,6 +57,15 @@ public class DigitalStorage {
         this.itemList = itemList;
     }
 
+    @JsonBackReference
+    public SharedFlat getSharedFlat() {
+        return sharedFlat;
+    }
+
+    public void setSharedFlat(SharedFlat sharedFlat) {
+        this.sharedFlat = sharedFlat;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -76,4 +82,5 @@ public class DigitalStorage {
     public int hashCode() {
         return Objects.hash(storId);
     }
+
 }

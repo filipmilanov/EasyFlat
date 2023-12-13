@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface ShoppingListService {
 
     ShoppingList deleteList(Long shopId);
 
-    List<ShoppingList> getShoppingLists();
+    List<ShoppingList> getShoppingLists(String jwt) throws AuthenticationException;
 
     List<Item> transferToServer(List<ShoppingItemDto> items);
 

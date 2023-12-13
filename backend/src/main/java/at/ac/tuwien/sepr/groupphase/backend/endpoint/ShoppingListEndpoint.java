@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -124,9 +126,9 @@ public class ShoppingListEndpoint {
 
     @PermitAll
     @GetMapping("/lists")
-    public List<ShoppingListDto> getShoppingLists() {
+    public List<ShoppingListDto> getShoppingLists(@RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("getShoppingLists()");
-        List<ShoppingList> lists = shoppingService.getShoppingLists();
+        List<ShoppingList> lists = shoppingService.getShoppingLists(jwt);
 
         return shoppingListMapper.entityListToDtoList(lists);
     }

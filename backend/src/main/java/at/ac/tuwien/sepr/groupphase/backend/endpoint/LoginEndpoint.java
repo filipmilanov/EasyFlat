@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import jakarta.annotation.security.PermitAll;
@@ -20,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginEndpoint {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
-    public LoginEndpoint(UserService userService) {
+    public LoginEndpoint(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @PermitAll
@@ -34,7 +37,9 @@ public class LoginEndpoint {
     @PermitAll
     @GetMapping
     public UserDetailDto getUser(@RequestHeader("Authorization") String authToken) {
-        return userService.getUser(authToken);
+        return userMapper.entityToUserDetailDto(
+            userService.getUser(authToken)
+        );
     }
 
     @PermitAll
