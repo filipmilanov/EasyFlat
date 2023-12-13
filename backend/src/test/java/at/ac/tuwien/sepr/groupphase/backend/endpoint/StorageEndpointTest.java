@@ -7,16 +7,13 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
-import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,41 +81,6 @@ class StorageEndpointTest {
 
         applicationUser = userRepository.findById(1L).orElseThrow();
         when(customUserDetailService.getUser(any(String.class))).thenReturn(applicationUser);
-    }
-
-    @Test
-    @Disabled("Fails because of authentication, but service test works")
-    public void givenStorageWhenCreateThenStorageCreated() throws Exception {
-        // given
-        when(jwtTokenizer.getEmailFromToken(any(String.class))).thenReturn(applicationUser.getEmail());
-
-        SharedFlat sharedFlat = new SharedFlat();
-        sharedFlat.setName("TestWG");
-        sharedFlat.setPassword("1234");
-
-        WgDetailDto wgDetailDto = sharedFlatService.create(sharedFlat, "");
-        DigitalStorageDto digitalStorageDto = new DigitalStorageDto(null, "MyTestStorage", wgDetailDto);
-
-        String body = objectMapper.writeValueAsString(digitalStorageDto);
-
-        // when
-        MvcResult mvcResult = this.mockMvc.perform(post(BASE_URI)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
-            .andDo(print())
-            .andReturn();
-        MockHttpServletResponse response = mvcResult.getResponse();
-
-        // then
-        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
-        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
-
-        DigitalStorage digitalStorageResponse = objectMapper.readValue(response.getContentAsString(),
-            DigitalStorage.class);
-
-        assertThat(digitalStorageResponse).extracting(DigitalStorage::getStorId).isNotNull();
-        assertThat(digitalStorageResponse).extracting(DigitalStorage::getTitle).isEqualTo(digitalStorageDto.title());
     }
 
     @Test
