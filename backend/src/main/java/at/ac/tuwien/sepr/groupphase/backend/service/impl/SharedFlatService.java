@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
@@ -12,8 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
-import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authenticator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +33,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     private final UserRepository userRepository;
 
     private final JwtTokenizer jwtTokenizer;
-    private final Authenticator authenticator;
+    private final Authorization authorization;
 
     private final DigitalStorageRepository digitalStorageRepository;
 
@@ -44,13 +42,13 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     public SharedFlatService(SharedFlatRepository sharedFlatRepository,
                              PasswordEncoder passwordEncoder,
                              SharedFlatMapper sharedFlatMapper,
-                             JwtTokenizer jwtTokenizer, UserRepository userRepository, Authenticator authenticator, DigitalStorageRepository digitalStorageRepository) {
+                             JwtTokenizer jwtTokenizer, UserRepository userRepository, Authorization authorization, DigitalStorageRepository digitalStorageRepository) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.sharedFlatMapper = sharedFlatMapper;
         this.jwtTokenizer = jwtTokenizer;
         this.userRepository = userRepository;
-        this.authenticator = authenticator;
+        this.authorization = authorization;
         this.digitalStorageRepository = digitalStorageRepository;
 
 
@@ -63,7 +61,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         Optional<SharedFlat> sharedFlatOptional = sharedFlatRepository.findById(id);
         SharedFlat sharedFlat = sharedFlatOptional.orElseThrow(() -> new NotFoundException("Shared flat not found"));
 
-        authenticator.authenticateUser(
+        authorization.authenticateUser(
             jwt,
             sharedFlat.getUsers().stream().map(ApplicationUser::getId).toList(),
             "User does not have access to this shared flat"
