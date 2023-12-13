@@ -75,12 +75,11 @@ public class UnitServiceImpl implements UnitService {
     }
 
     private Unit getMinUnit(Unit unit) {
-        if (unit.getSubUnit().isEmpty()) {
-            return unit;
+        if (!unit.getSubUnit().isEmpty()) {
+            for (Unit subUnit : unit.getSubUnit()) {
+                return subUnit;
+            }
         }
-        for (Unit subUnit : unit.getSubUnit()) {
-            return subUnit;
-        }
-        return null;
+        return unit;
     }
 }

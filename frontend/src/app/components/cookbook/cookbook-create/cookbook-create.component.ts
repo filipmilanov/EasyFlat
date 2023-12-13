@@ -117,6 +117,7 @@ export class CookbookCreateComponent implements OnInit{
     this.unitService.findAll().subscribe({
       next: res => {
         this.availableUnits = res;
+        this.selectedUnit = this.availableUnits[0]
         console.log(this.availableUnits)
       },
       error: err => {

@@ -45,7 +45,7 @@ public interface CookingService {
      * @return The created recipe.
      * @throws ConflictException If there is a conflict with existing data.
      */
-    RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException;
+    RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException, ValidationException;
 
     /**
      * Get a specific recipe from the cookbook based on its ID.

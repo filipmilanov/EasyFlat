@@ -46,7 +46,7 @@ public class CookingEndPoint {
 
     @PermitAll
     @PostMapping("/cookbook")
-    public RecipeSuggestionDto createCookbookRecipe(@RequestBody RecipeSuggestionDto recipe) throws ConflictException {
+    public RecipeSuggestionDto createCookbookRecipe(@RequestBody RecipeSuggestionDto recipe) throws ConflictException, ValidationException {
         return recipeMapper.entityToRecipeSuggestionDto(cookingService.createCookbookRecipe(recipe));
     }
 
