@@ -6,14 +6,17 @@
               name="selectedShoppingList"
               [(ngModel)]="selectedShoppingList"
               (change)="onShoppingListChange()">
-        <div *ngFor="let list of shoppingLists">
+        <option value="" disabled selected>Select Shopping List</option>
+        <option *ngFor="let list of shoppingLists" [value]="list.id">
           {{ list.listName }}
-        </div>
+        </option>
       </select>
     </div>
-    <button style="margin-left: 625px;" type="button" (click)="navigateToCreateList()" >Add new list</button>
+    <button style="margin-left: 625px;" type="button" (click)="navigateToCreateList()">Add new list</button>
   </div>
 </form>
+
+
 
 <br>
 

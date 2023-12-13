@@ -157,6 +157,9 @@ export class ShoppingListComponent implements OnInit {
 
   onShoppingListChange() {
     console.log('Selected Shopping List:', this.selectedShoppingList);
+    if (this.selectedShoppingList) {
+      this.router.navigate(['/shopping-list', this.selectedShoppingList]);
+    }
   }
 
   transferToStorage() {
