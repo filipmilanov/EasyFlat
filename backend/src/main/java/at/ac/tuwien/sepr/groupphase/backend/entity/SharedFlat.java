@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +27,7 @@ public class SharedFlat {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sharedFlat")
     private Set<ApplicationUser> users = new HashSet<>();
 
-    @OneToOne(mappedBy = "sharedFlat")
+    @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
     private DigitalStorage digitalStorage;
 
     public SharedFlat() {
@@ -64,6 +65,7 @@ public class SharedFlat {
         this.users = users;
     }
 
+    @JsonManagedReference
     public DigitalStorage getDigitalStorage() {
         return digitalStorage;
     }

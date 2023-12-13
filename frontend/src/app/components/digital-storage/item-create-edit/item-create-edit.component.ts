@@ -124,7 +124,7 @@ export class ItemCreateEditComponent implements OnInit{
       observable.subscribe({
         next: data => {
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
-          this.router.navigate(['/digital-storage/1']);
+          this.router.navigate(['/digital-storage']);
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}: ${error}`);

@@ -252,11 +252,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
             return matchingDigitalStorage.getStorId();
         } else {
-            ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
-            DigitalStorageDto storageDto = new DigitalStorageDto(null, "Storage", sharedFlatMapper.entityToWgDetailDto(applicationUser.getSharedFlat()));
-            DigitalStorage newStorage = create(storageDto, jwt);
-
-            return newStorage.getStorId();
+            return null;
         }
     }
 

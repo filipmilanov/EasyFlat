@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
@@ -36,15 +37,21 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     private final JwtTokenizer jwtTokenizer;
     private final Authenticator authenticator;
 
+    private final DigitalStorageRepository digitalStorageRepository;
+
 
     @Autowired
-    public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder, SharedFlatMapper sharedFlatMapper, JwtTokenizer jwtTokenizer, UserRepository userRepository, Authenticator authenticator) {
+    public SharedFlatService(SharedFlatRepository sharedFlatRepository,
+                             PasswordEncoder passwordEncoder,
+                             SharedFlatMapper sharedFlatMapper,
+                             JwtTokenizer jwtTokenizer, UserRepository userRepository, Authenticator authenticator, DigitalStorageRepository digitalStorageRepository) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.sharedFlatMapper = sharedFlatMapper;
         this.jwtTokenizer = jwtTokenizer;
         this.userRepository = userRepository;
         this.authenticator = authenticator;
+        this.digitalStorageRepository = digitalStorageRepository;
 
 
     }
@@ -81,6 +88,12 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         user.setSharedFlat(newSharedFlat);
         user.setAdmin(true);
         userRepository.save(user);
+        DigitalStorage digitalStorage = new DigitalStorage();
+        digitalStorage.setTitle("Storage");
+        digitalStorage.setSharedFlat(newSharedFlat);
+        newSharedFlat.setDigitalStorage(digitalStorage);
+
+        digitalStorageRepository.save(digitalStorage);
         return sharedFlatMapper.entityToWgDetailDto(newSharedFlat);
     }
 

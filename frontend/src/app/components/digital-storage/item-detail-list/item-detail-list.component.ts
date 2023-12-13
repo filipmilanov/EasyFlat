@@ -32,7 +32,7 @@ export class ItemDetailListComponent implements OnInit {
         this.itemGeneralName = params.name;
 
 
-        this.storageService.getItemsWithGenaralName(this.itemGeneralName, storId).subscribe({
+        this.storageService.getItemsWithGenaralName(this.itemGeneralName).subscribe({
           next: res => {
             this.items = res;
           },

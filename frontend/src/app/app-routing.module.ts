@@ -20,7 +20,7 @@ import {CreateFlatComponent} from "./components/create-flat/create-flat.componen
 const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'digital-storage/:id', children: [
+  {path: 'digital-storage', children: [
       {path: '', component: DigitalStorageComponent},
       {path: 'item', children: [
           {path: 'create', component: ItemCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
