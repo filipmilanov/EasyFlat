@@ -5,10 +5,12 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
@@ -32,6 +34,8 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
 
     private final UserRepository userRepository;
 
+    private final ShoppingListRepository shoppingListRepository;
+
     private final JwtTokenizer jwtTokenizer;
     private final Authorization authorization;
 
@@ -39,6 +43,9 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
 
 
     @Autowired
+    public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder,
+                             SharedFlatMapper sharedFlatMapper, JwtTokenizer jwtTokenizer, UserRepository userRepository,
+                             ShoppingListRepository shoppingListRepository) {
     public SharedFlatService(SharedFlatRepository sharedFlatRepository,
                              PasswordEncoder passwordEncoder,
                              SharedFlatMapper sharedFlatMapper,
@@ -48,6 +55,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         this.sharedFlatMapper = sharedFlatMapper;
         this.jwtTokenizer = jwtTokenizer;
         this.userRepository = userRepository;
+        this.shoppingListRepository = shoppingListRepository;
         this.authorization = authorization;
         this.digitalStorageRepository = digitalStorageRepository;
 
@@ -86,6 +94,9 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         user.setSharedFlat(newSharedFlat);
         user.setAdmin(true);
         userRepository.save(user);
+        ShoppingList defaultList = new ShoppingList();
+        defaultList.setName("Default");
+        shoppingListRepository.save(defaultList);
         DigitalStorage digitalStorage = new DigitalStorage();
         digitalStorage.setTitle("Storage");
         digitalStorage.setSharedFlat(newSharedFlat);
