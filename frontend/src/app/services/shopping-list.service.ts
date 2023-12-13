@@ -60,6 +60,7 @@ export class ShoppingListService {
   }
 
   transferToStorage(shoppingItems: ShoppingItemDto[]): Observable<StorageItem[]> {
+    console.log(shoppingItems)
     return this.http.post<StorageItem[]>(this.baseUri + '/storage', shoppingItems);
   }
 
@@ -67,4 +68,5 @@ export class ShoppingListService {
     console.log('Update item with ID ' + item.itemId);
     return this.http.put<ShoppingItemDto>(`${this.baseUri}/${item.itemId}`, item);
   }
+
 }

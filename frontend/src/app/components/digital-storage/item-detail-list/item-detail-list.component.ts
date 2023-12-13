@@ -2,10 +2,12 @@ import {Component, ElementRef, HostListener, OnInit} from '@angular/core';
 import {StorageItem} from "../../../dtos/storageItem";
 import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {ItemDto} from "../../../dtos/item";
+import {ItemDto, ShoppingItemDto} from "../../../dtos/item";
 import {ItemService} from "../../../services/item.service";
 import {ToastrService} from "ngx-toastr";
 import {parseInt} from "lodash";
+import {Observable} from "rxjs";
+import {dateComparator} from "@ng-bootstrap/ng-bootstrap/datepicker/datepicker-tools";
 
 @Component({
   selector: 'app-item-detail-list',
@@ -32,7 +34,7 @@ export class ItemDetailListComponent implements OnInit {
         this.storageService.getItemsWithGenaralName(this.itemGeneralName, this.storId).subscribe({
           next: res => {
             this.items = res;
-
+            console.log(this.items)
             for (let i = 0; i < this.items.length; i++) {
               let modalArr: boolean[] = [false, false];
               this.hashMap.set(this.items[i].itemId, modalArr)
@@ -191,13 +193,23 @@ export class ItemDetailListComponent implements OnInit {
     });
   }
 
-  addToShoppingList(item: StorageItem) {
-    this.storageService.addToShoppingList(item).subscribe( {
-      next: data => {
-        this.router.navigate([`/shopping-list/1`])
+  addToShoppingList(itemId: string) {
+    let item: ItemDto;
+    this.itemService.getById(parseInt(itemId)).subscribe({
+      next: res => {
+        item = res;
+
+        console.log(item)
+        this.storageService.addItemToShoppingList(item).subscribe( {
+            next: data => {
+              this.router.navigate([`/shopping-list/1`])
+            }
+          },
+        );
       }
-    }
-    );
+    });
+
+
   }
 
   protected readonly parseInt = parseInt;

@@ -149,7 +149,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public List<Item> transferToServer(List<ShoppingItemDto> items) {
         List<Item> itemsList = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
-            Item item = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()));
+            Item item;
+            if (itemDto.alwaysInStock() != null && itemDto.alwaysInStock()) {
+                item = shoppingListMapper.shoppingItemDtoToAis(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()));
+            } else {
+                item = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()));
+            }
             itemRepository.save(item);
             shoppingRepository.deleteById(itemDto.itemId());
             itemsList.add(item);

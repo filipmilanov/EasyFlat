@@ -49,6 +49,9 @@ public class ShoppingItem {
     private Long quantityTotal;
 
     @Column
+    private Boolean alwaysInStock;
+
+    @Column
     @NotEmpty(message = "The unit cannot be empty")
     private String unit;
 
@@ -78,6 +81,14 @@ public class ShoppingItem {
 
     @ManyToOne
     private ShoppingList shoppingList;
+
+    public void setAlwaysIsStock(Boolean alwaysIsStock) {
+        this.alwaysInStock = alwaysIsStock;
+    }
+
+    public Boolean getAlwaysIsStock() {
+        return alwaysInStock;
+    }
 
     public ShoppingList getShoppingList() {
         return shoppingList;
@@ -213,7 +224,7 @@ public class ShoppingItem {
     }
 
     public boolean alwaysInStock() {
-        return false;
+        return this.alwaysInStock;
     }
 
     @Override

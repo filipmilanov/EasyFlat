@@ -58,14 +58,14 @@
   </thead>
   <tbody>
   <tr *ngFor="let item of items">
-    <td>{{ item.generalName }}</td>
+    <td>{{ item.productName }}</td>
     <td>
       <span *ngFor="let label of item.labels" [style.color]="label.labelColour">{{ label.labelValue }}</span>
     </td>
     <td>{{ item.quantityTotal}}{{item.unit}}</td>
     <td>
       <button *ngIf="item.generalName !== null" (click)="navigateToEditItem(item.itemId)" class="btn btn-danger" >
-        <i class="bi-trash">Deteils</i>
+        <i class="bi-trash">Details</i>
       </button>
     </td>
     <td>

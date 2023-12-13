@@ -5,7 +5,7 @@ import {ShoppingListDto} from "./shoppingList";
 import {OrderType} from "./orderType";
 
 export class ItemDto {
-  itemId?: number;
+  itemId?: string;
   ean?: string;
   generalName?: string;
   productName?: string;

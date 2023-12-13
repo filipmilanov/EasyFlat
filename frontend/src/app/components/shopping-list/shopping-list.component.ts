@@ -45,7 +45,6 @@ export class ShoppingListComponent implements OnInit {
     this.shoppingListService.getShoppingLists().subscribe({
         next: res => {
           this.shoppingLists = res
-          console.log(res)
         }
       }
     );
@@ -55,7 +54,6 @@ export class ShoppingListComponent implements OnInit {
         console.log(this.shopId)
         this.shoppingListService.getShoppingListById(this.shopId).subscribe({
           next: (res: ShoppingListDto) => {
-            console.log(res);
             this.shoppingList = res;
           },
           error: (error: any) => {
@@ -75,6 +73,7 @@ export class ShoppingListComponent implements OnInit {
     this.shoppingListService.getItemsWithShopId(this.shopId, this.searchParams).subscribe({
       next: res => {
         this.items = res;
+        console.log(this.items)
       },
       error: err => {
         console.error("Error finding items:", err);
@@ -138,7 +137,7 @@ export class ShoppingListComponent implements OnInit {
 
     if (confirm("Are you sure you want to delete the checked items?")) {
       checkedItems.forEach(item => {
-        this.shoppingListService.deleteItem(item.itemId).subscribe({
+        this.shoppingListService.deleteItem(parseInt(item.itemId)).subscribe({
           next: (deletedItem: ShoppingItemDto) => {
             console.log(deletedItem.generalName, ' was deleted from the list');
 
@@ -179,7 +178,7 @@ export class ShoppingListComponent implements OnInit {
     return this.shopId == '1';
   }
 
-  navigateToEditItem(itemId: number) {
+  navigateToEditItem(itemId: string) {
     this.router.navigate(['shopping-list', this.shopId, 'item', itemId, 'edit']);
   }
 
