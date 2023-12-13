@@ -17,6 +17,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -92,10 +93,12 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<RecipeSuggestionDto> getRecipeSuggestion(Long storId, String type) throws ValidationException, ConflictException {
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwp) throws ValidationException, ConflictException, AuthenticationException {
 
-        List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(storId, new ItemSearchDto(null, true, null, null, null));
-        List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(storId, new ItemSearchDto(null, false, null, null, null));
+        Long storId = 1L;
+
+        List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, true, null, null, null), jwp);
+        List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, false, null, null, null), jwp);
 
         List<ItemListDto> items = new LinkedList<>();
         items.addAll(alwaysInStockItems);
@@ -399,7 +402,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook) throws ValidationException, ConflictException {
+    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthenticationException {
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
             List<Item> items = storageRepository.getItemWithGeneralName(1L, recipeIngredientDto.name());
@@ -413,19 +416,19 @@ public class CookingServiceImpl implements CookingService {
                 if (item.getQuantityCurrent() >= ingAmountMin) {
                     if (item.getUnit().equals(items.get(i).getUnit())) {
                         ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity((item.getQuantityCurrent() - ingAmountMin));
-                        itemService.update(updatedItem);
+                        itemService.update(updatedItem, jwt);
                     } else {
                         Double updatedQuantity = unitService.convertUnits(item.getUnit(), items.get(i).getUnit(), item.getQuantityCurrent() - ingAmountMin);
                         item.setUnit(items.get(i).getUnit());
                         ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity(updatedQuantity);
-                        itemService.update(updatedItem);
+                        itemService.update(updatedItem, jwt);
                     }
                     break;
                 } else {
                     ingAmountMin -= item.getQuantityCurrent();
                     item.setUnit(items.get(i).getUnit());
                     ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity(0.0);
-                    itemService.update(updatedItem);
+                    itemService.update(updatedItem, jwt);
 
                 }
             }
@@ -498,7 +501,6 @@ public class CookingServiceImpl implements CookingService {
     private List<Item> minimizeUnits(List<Item> items) throws ValidationException, ConflictException {
 
         List<Item> minimizedItems = new LinkedList<>();
-
 
 
         for (Item item : items) {

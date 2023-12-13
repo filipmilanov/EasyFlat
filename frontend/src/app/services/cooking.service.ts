@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
 import {RecipeDetailDto, RecipeSuggestion} from "../dtos/cookingDtos/recipeSuggestion";
+import {AuthService} from "./auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,8 @@ export class CookingService {
   baseUri = environment.backendUrl + '/cooking';
   cookbookUri = this.baseUri + '/cookbook';
 
-  constructor(private httpClient: HttpClient, private globals: Globals) {
+  constructor(private httpClient: HttpClient,
+              private authService: AuthService) {
   }
 
   loadRecipes(type: string): Observable<RecipeSuggestion[]> {
@@ -21,7 +23,10 @@ export class CookingService {
     if (type) {
       params = params.append('type', type);
     }
-    return this.httpClient.get<RecipeSuggestion[]>(this.baseUri, {params});
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.get<RecipeSuggestion[]>(this.baseUri, {params,headers},);
   }
 
   getCookbook(): Observable<RecipeSuggestion[]> {
@@ -64,6 +69,9 @@ export class CookingService {
   }
 
   cookRecipe(recipe:RecipeSuggestion):Observable<RecipeSuggestion>{
-    return this.httpClient.put<RecipeSuggestion>(this.baseUri + "/cook",recipe)
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.put<RecipeSuggestion>(this.baseUri + "/cook",recipe,{headers})
   }
 }

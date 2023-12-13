@@ -13,11 +13,13 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
+import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import jakarta.validation.Validator;
@@ -47,19 +49,15 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final CustomUserDetailService customUserDetailService;
     private final Validator validator;
     private final ItemMapper itemMapper;
-
-    public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
-                                     DigitalStorageMapper digitalStorageMapper,
-                                     DigitalStorageValidator digitalStorageValidator,
-                                     SharedFlatService sharedFlatService,
-                                     Authorization authorization,
-                                     CustomUserDetailService customUserDetailService) {
     private final UnitService unitService;
 
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      DigitalStorageMapper digitalStorageMapper,
-                                     DigitalStorageValidator digitalStorageValidator, Validator validator, ItemMapper itemMapper, UnitService unitService) {
+                                     DigitalStorageValidator digitalStorageValidator, Validator validator, ItemMapper itemMapper,
+                                     UnitService unitService, SharedFlatService sharedFlatService,
+                                     Authorization authorization,
+                                     CustomUserDetailService customUserDetailService) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
@@ -204,7 +202,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
         return digitalStorageRepository.updateItemQuantity(storageId, itemId, quantity);
     }
-
 
 
     @Override

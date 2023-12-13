@@ -57,9 +57,7 @@ export class CookingComponent implements OnInit {
     this.notification.success(`Recipe ${recipeTitle} successfully added to the cookbook.`, "Success");
   }
 
-  handleRecipeAddedToCookbook(recipeTitle: string) {
-    this.notification.success(`Recipe ${recipeTitle} successfully added to the cookbook.`, "Success");
-  }
+
 
   public addTestData() {
     this.empty = false;

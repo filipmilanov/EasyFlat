@@ -27,13 +27,6 @@ export class RecipeCardComponent {
   }
 
 
-  constructor(
-    private cookingService: CookingService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private notification: ToastrService,
-  ) {
-  }
 
   getTruncatedSummary(): string {
     const maxLength = 100; // Adjust as needed
@@ -67,17 +60,7 @@ console.log(this.recipe)
   }
 
 
-  addToCookBook(){
 
-    this.cookingService.createCookbookRecipe(this.recipe).subscribe({
-      next: data => {
-        this.notification.success(`Recipe ${this.recipe.title} successfully added to the cookbook.`, "Success");
-      },
-      error: error => {
-        console.error(`Error ${error}`);
-      }
-    });
-  }
 
 
 

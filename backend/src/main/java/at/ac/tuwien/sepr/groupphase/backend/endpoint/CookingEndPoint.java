@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,8 +35,8 @@ public class CookingEndPoint {
 
     @PermitAll
     @GetMapping
-    public List<RecipeSuggestionDto> getRecipeSuggestion(String type) throws ValidationException, ConflictException {
-        return cookingService.getRecipeSuggestion(1L, type);
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
+        return cookingService.getRecipeSuggestion(type, jwt);
     }
 
     @PermitAll
@@ -83,7 +85,7 @@ public class CookingEndPoint {
 
     @PermitAll
     @PutMapping("/cook")
-    public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook) throws ValidationException, ConflictException {
-        return cookingService.cookRecipe(recipeToCook);
+    public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
+        return cookingService.cookRecipe(recipeToCook, jwt);
     }
 }

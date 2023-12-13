@@ -17,8 +17,7 @@ export class CookbookCardComponent {
   constructor(private cookingService: CookingService, private router: Router) {
   }
 
-  constructor(private cookingService: CookingService,private router: Router) {
-  }
+
 
   getTruncatedSummary(): string {
     const maxLength = 100; // Adjust as needed
@@ -26,18 +25,7 @@ export class CookbookCardComponent {
       this.recipe.summary.slice(0, maxLength) + '...' :
       this.recipe.summary;
   }
-  delete() {
-    if(confirm("Are you sure you want to delete your account?")) {
-      this.cookingService.deleteCookbookRecipe(this.recipe.id).subscribe({
-        next: (deletedRecipe: RecipeSuggestion) => {
-          console.log('Recipe deleted:', deletedRecipe);
-        },
-        error: error => {
-          console.error(error.message, error);
-        }
-      });
-    }
-  }
+
 
 
   delete() {

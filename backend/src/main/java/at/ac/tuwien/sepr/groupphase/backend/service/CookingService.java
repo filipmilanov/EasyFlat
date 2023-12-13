@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -15,12 +16,11 @@ public interface CookingService {
     /**
      * Get a list of recipe suggestions based on the provided store ID and type.
      *
-     * @param storId The ID of the storage.
      * @param type   The type of the recipe (e.g., breakfast, main dish ...).
      * @return A list of recipe suggestions.
      * @throws ValidationException If there is a validation error.
      */
-    List<RecipeSuggestionDto> getRecipeSuggestion(Long storId, String type) throws ValidationException, ConflictException;
+    List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt) throws ValidationException, ConflictException, AuthenticationException;
 
     /**
      * Get the details of a specific recipe based on the provided recipe ID.
@@ -80,5 +80,5 @@ public interface CookingService {
      */
     RecipeSuggestionDto getMissingIngredients(Long id);
 
-    RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook) throws ValidationException, ConflictException;
+    RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthenticationException;
 }
