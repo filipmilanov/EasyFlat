@@ -33,7 +33,7 @@ public class CookingEndPoint {
 
     @PermitAll
     @GetMapping
-    public List<RecipeSuggestionDto> getRecipeSuggestion(String type) throws ValidationException {
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type) throws ValidationException, ConflictException {
         return cookingService.getRecipeSuggestion(1L, type);
     }
 
