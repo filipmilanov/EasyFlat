@@ -2,14 +2,10 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -20,8 +16,6 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.Authenticator.Authenticator;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import org.slf4j.Logger;
@@ -46,28 +40,21 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final DigitalStorageMapper digitalStorageMapper;
     private final DigitalStorageValidator digitalStorageValidator;
     private final SharedFlatService sharedFlatService;
-    private final ItemMapper itemMapper;
     private final Authorization authorization;
-    private CustomUserDetailService customUserDetailService;
-    private SharedFlatMapper sharedFlatMapper;
-    private final SharedFlatService sharedFlatService;
+    private final CustomUserDetailService customUserDetailService;
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      DigitalStorageMapper digitalStorageMapper,
                                      DigitalStorageValidator digitalStorageValidator,
                                      SharedFlatService sharedFlatService,
-                                     ItemMapper itemMapper,
                                      Authorization authorization,
-                                     CustomUserDetailService customUserDetailService,
-                                     SharedFlatMapper sharedFlatMapper) {
+                                     CustomUserDetailService customUserDetailService) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
         this.sharedFlatService = sharedFlatService;
         this.authorization = authorization;
         this.customUserDetailService = customUserDetailService;
-        this.sharedFlatMapper = sharedFlatMapper;
-        this.itemMapper = itemMapper;
     }
 
     @Override
@@ -229,7 +216,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
         List<ItemListDto> toRet = new LinkedList<>();
         for (Map.Entry<String, Long[]> item : items.entrySet()) {
-            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1], itemUnits.get(item.getKey())));
+            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1], UnitDtoBuilder.builder().name(itemUnits.get(item.getKey())).build()));
         }
         return toRet;
     }

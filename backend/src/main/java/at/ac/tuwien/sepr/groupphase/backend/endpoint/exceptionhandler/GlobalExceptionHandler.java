@@ -76,14 +76,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.METHOD_NOT_ALLOWED, request);
     }
 
-    /**
-     * Handles AuthenticationException and sends a METHOD_NOT_ALLOWED status.
-     */
-    @ExceptionHandler(value = {AuthenticationException.class})
-    protected ResponseEntity<Object> handleAuthentication(AuthenticationException ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
-        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.METHOD_NOT_ALLOWED, request);
-    }
 
     /**
      * Override methods from ResponseEntityExceptionHandler to send a customized HTTP response for a know exception
