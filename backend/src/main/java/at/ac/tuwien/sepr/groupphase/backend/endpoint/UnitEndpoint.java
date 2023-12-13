@@ -43,7 +43,7 @@ public class UnitEndpoint {
 
     @PermitAll
     @GetMapping("/convert")
-    public Long convertUnits(UnitConvertDto unitConvertDto) throws ValidationException, ConflictException {
+    public Double convertUnits(UnitConvertDto unitConvertDto) throws ValidationException, ConflictException {
         LOGGER.info("convertUnits()");
 
         return unitService.convertUnits(
