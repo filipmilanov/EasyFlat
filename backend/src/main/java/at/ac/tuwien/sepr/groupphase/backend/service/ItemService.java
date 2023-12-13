@@ -62,5 +62,11 @@ public interface ItemService {
     void delete(Long id, String jwt) throws AuthenticationException;
     void delete(Long id);
 
+    /**
+     * Finds existing and creates non-existing objects of type {@link Ingredient} in the db.
+     *
+     * @param ingredientDtoList list of objects of type {@link IngredientDto} which should already be stored in or saved to the db
+     * @return a list of objects of type {@link Ingredient} which represent all existing and newly saved ingredients
+     */
     List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException;
 }
