@@ -10,7 +10,7 @@
   <h1 class="display-4">{{ heading }}</h1>
   <div style="width: 100%; height: 100%; border: 1px black solid"></div>
 
-  <form #form="ngForm" [class.was-validated]="form.submitted" (submit)="onSubmit(form)">
+  <form #form="ngForm" (submit)="onSubmit(form)">
 
     <div class="row row-cols-1">
       <div class="row p-2">
