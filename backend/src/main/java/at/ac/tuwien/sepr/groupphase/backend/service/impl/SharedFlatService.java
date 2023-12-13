@@ -1,11 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import jakarta.transaction.Transactional;
@@ -27,15 +28,20 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
 
     private final UserRepository userRepository;
 
+    private final ShoppingListRepository shoppingListRepository;
+
     private final JwtTokenizer jwtTokenizer;
 
     @Autowired
-    public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder, SharedFlatMapper sharedFlatMapper, JwtTokenizer jwtTokenizer, UserRepository userRepository) {
+    public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder,
+                             SharedFlatMapper sharedFlatMapper, JwtTokenizer jwtTokenizer, UserRepository userRepository,
+                             ShoppingListRepository shoppingListRepository) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.sharedFlatMapper = sharedFlatMapper;
         this.jwtTokenizer = jwtTokenizer;
         this.userRepository = userRepository;
+        this.shoppingListRepository = shoppingListRepository;
     }
 
 
@@ -55,6 +61,9 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         user.setSharedFlat(newSharedFlat);
         user.setAdmin(true);
         userRepository.save(user);
+        ShoppingList defaultList = new ShoppingList();
+        defaultList.setName("Default");
+        shoppingListRepository.save(defaultList);
         return sharedFlatMapper.entityToWgDetailDto(newSharedFlat);
     }
 
