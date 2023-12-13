@@ -86,6 +86,7 @@ public class StorageEndpoint {
     @PostMapping("/shop")
     @ResponseStatus(HttpStatus.CREATED)
     public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto) {
+        LOGGER.info("addItemToShopping({})", itemDto);
         ShoppingItem item = digitalStorageService.addItemToShopping(itemDto);
         return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
     }
