@@ -224,7 +224,7 @@ public class ShoppingItem {
     }
 
     public boolean alwaysInStock() {
-        return this.alwaysInStock;
+        return Objects.requireNonNullElse(this.alwaysInStock, false);
     }
 
     @Override

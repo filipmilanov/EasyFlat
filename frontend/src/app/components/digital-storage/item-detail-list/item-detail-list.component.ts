@@ -59,7 +59,7 @@ export class ItemDetailListComponent implements OnInit {
     }
   }
 
-  toggleCustomModal(id: string) {
+  toggleCustomModalSubtract(id: string) {
     this.hashMap.get(id)[0] = !this.hashMap.get(id)[0];
     if (this.hashMap.get(id)[0] == true) {
       this.hashMap.get(id)[1] = false;
@@ -71,7 +71,7 @@ export class ItemDetailListComponent implements OnInit {
     });
   }
 
-  toggleCustomModal1(id: string) {
+  toggleCustomModalAdd(id: string) {
     this.hashMap.get(id)[1] = !this.hashMap.get(id)[1];
     if (this.hashMap.get(id)[1] == true) {
       this.hashMap.get(id)[0] = false;
