@@ -100,9 +100,13 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<ItemListDto> searchItems(Long id, ItemSearchDto searchItem) throws ValidationException {
-        LOGGER.trace("searchItems({}, {})", id, searchItem);
-        digitalStorageValidator.validateForSearchItems(id, searchItem);
+    public List<ItemListDto> searchItems(ItemSearchDto searchItem, String jwt) throws ValidationException, AuthenticationException {
+        LOGGER.trace("searchItems({}, {})", searchItem);
+        digitalStorageValidator.validateForSearchItems(searchItem);
+
+        Long storId = getStorIdForUser(jwt);
+
+
         Class alwaysInStock = null;
         if (searchItem.alwaysInStock() == null || !searchItem.alwaysInStock()) {
             alwaysInStock = Item.class;
@@ -111,7 +115,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
 
         List<Item> allItems = digitalStorageRepository.searchItems(
-            id,
+            storId,
             (searchItem.productName() != null) ? searchItem.productName() : null,
             (searchItem.fillLevel() != null) ? searchItem.fillLevel() : null,
             alwaysInStock
@@ -143,7 +147,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             }
         }).toList();
     }
-
 
     @Override
     public DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
@@ -188,7 +191,8 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<Item> getItemWithGeneralName(String name, Long storId) {
+    public List<Item> getItemWithGeneralName(String name, String jwt) throws AuthenticationException {
+        Long storId = getStorIdForUser(jwt);
         return digitalStorageRepository.getItemWithGeneralName(storId, name);
     }
 
@@ -215,5 +219,37 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
         return toRet;
     }
+
+    /**
+     * The Method assume, that there is only one storage per sharedFlat.
+     */
+    private Long getStorIdForUser(String jwt) throws AuthenticationException {
+        List<DigitalStorage> digitalStorageList = findAll(null, jwt);
+        DigitalStorage matchingDigitalStorage = null;
+        if (!digitalStorageList.isEmpty()) {
+            matchingDigitalStorage = digitalStorageList.stream().toList().get(0);
+        }
+        if (matchingDigitalStorage != null) {
+            List<Long> allowedUser = sharedFlatService.findById(
+                    matchingDigitalStorage.getSharedFlat().getId(),
+                    jwt
+                ).getUsers().stream()
+                .map(ApplicationUser::getId)
+                .toList();
+
+
+            authenticator.authenticateUser(
+                jwt,
+                allowedUser,
+                "The given digital storage does not belong to the user's shared flat!"
+            );
+
+
+            return matchingDigitalStorage.getStorId();
+        } else {
+            return null;
+        }
+    }
+
 
 }

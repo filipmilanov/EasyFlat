@@ -29,8 +29,11 @@ export class StorageService {
       console.log(searchParameters)
       params = params.append('alwaysInStock', searchParameters.alwaysInStock);
     }
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
     params = params.append('orderType', searchParameters.orderBy);
-    return this.httpClient.get<StorageItemListDto[]>(this.storageBaseUri + '/' + id, {params});
+    return this.httpClient.get<StorageItemListDto[]>(this.storageBaseUri + '/' + id, {params,headers});
   }
 
   updateItemQuantity(storageId: string, value: string, item: ItemDto) {
@@ -53,13 +56,15 @@ export class StorageService {
 
   getItemsWithGenaralName(generalName:string, storId:string): Observable<StorageItem[]> {
     let params = new HttpParams();
-
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
 
     if (storId) {
       params = params.append('storId', storId);
     }
 
 
-    return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName , {params});
+    return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName , {params,headers});
   }
 }
