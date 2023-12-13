@@ -169,4 +169,9 @@ export class ShoppingListComponent implements OnInit {
   checkId() {
     return this.shopId == '1';
   }
+
+  navigateToEditItem(itemId: number) {
+    this.router.navigate(['shopping-list', this.shopId, 'item', itemId, 'edit']);
+  }
+
 }

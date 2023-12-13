@@ -78,7 +78,7 @@ public abstract class ItemMapper {
         shoppingItem.setBoughtAt(itemDto.boughtAt());
         shoppingItem.setStorage(digitalStorage);
         shoppingItem.setIngredientList(ingredients);
-        shoppingItem.setShoppingList(new ShoppingList(1L, "billa"));
+        shoppingItem.setShoppingList(new ShoppingList(1L, "Main"));
 
         return shoppingItem;
     }
