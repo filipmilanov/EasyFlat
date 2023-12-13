@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -42,18 +43,22 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final Authenticator authenticator;
     private CustomUserDetailService customUserDetailService;
 
+    private SharedFlatMapper sharedFlatMapper;
+
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      DigitalStorageMapper digitalStorageMapper,
                                      DigitalStorageValidator digitalStorageValidator,
                                      SharedFlatService sharedFlatService,
                                      Authenticator authenticator,
-                                     CustomUserDetailService customUserDetailService) {
+                                     CustomUserDetailService customUserDetailService,
+                                     SharedFlatMapper sharedFlatMapper) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
         this.sharedFlatService = sharedFlatService;
         this.authenticator = authenticator;
         this.customUserDetailService = customUserDetailService;
+        this.sharedFlatMapper = sharedFlatMapper;
     }
 
     @Override
@@ -100,7 +105,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<ItemListDto> searchItems(ItemSearchDto searchItem, String jwt) throws ValidationException, AuthenticationException {
+    public List<ItemListDto> searchItems(ItemSearchDto searchItem, String jwt) throws ValidationException, AuthenticationException, ConflictException {
         LOGGER.trace("searchItems({}, {})", searchItem);
         digitalStorageValidator.validateForSearchItems(searchItem);
 
@@ -191,7 +196,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<Item> getItemWithGeneralName(String name, String jwt) throws AuthenticationException {
+    public List<Item> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException {
         Long storId = getStorIdForUser(jwt);
         return digitalStorageRepository.getItemWithGeneralName(storId, name);
     }
@@ -223,7 +228,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     /**
      * The Method assume, that there is only one storage per sharedFlat.
      */
-    private Long getStorIdForUser(String jwt) throws AuthenticationException {
+    private Long getStorIdForUser(String jwt) throws AuthenticationException, ValidationException, ConflictException {
         List<DigitalStorage> digitalStorageList = findAll(null, jwt);
         DigitalStorage matchingDigitalStorage = null;
         if (!digitalStorageList.isEmpty()) {
@@ -247,7 +252,11 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
             return matchingDigitalStorage.getStorId();
         } else {
-            return null;
+            ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+            DigitalStorageDto storageDto = new DigitalStorageDto(null, "Storage", sharedFlatMapper.entityToWgDetailDto(applicationUser.getSharedFlat()));
+            DigitalStorage newStorage = create(storageDto, jwt);
+
+            return newStorage.getStorId();
         }
     }
 

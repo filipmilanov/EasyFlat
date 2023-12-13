@@ -1,14 +1,17 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authenticator;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -33,6 +36,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     private final JwtTokenizer jwtTokenizer;
     private final Authenticator authenticator;
 
+
     @Autowired
     public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder, SharedFlatMapper sharedFlatMapper, JwtTokenizer jwtTokenizer, UserRepository userRepository, Authenticator authenticator) {
         this.sharedFlatRepository = sharedFlatRepository;
@@ -41,6 +45,8 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         this.jwtTokenizer = jwtTokenizer;
         this.userRepository = userRepository;
         this.authenticator = authenticator;
+
+
     }
 
     @Override
