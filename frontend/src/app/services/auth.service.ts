@@ -58,6 +58,7 @@ export class AuthService {
    */
   isLoggedIn() {
     return !!this.getToken() && (this.getTokenExpirationDate(this.getToken()).valueOf() > new Date().valueOf());
+
   }
 
   logoutUser() {
