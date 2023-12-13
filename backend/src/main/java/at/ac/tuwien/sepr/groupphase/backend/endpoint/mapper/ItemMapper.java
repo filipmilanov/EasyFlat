@@ -82,5 +82,10 @@ public abstract class ItemMapper {
         return shoppingItem;
     }
 
-    public abstract List<ItemDto> itemsToItemsDto(List<Item> items);
+    public abstract List<ItemDto> entityListToItemDtoList(List<Item> items);
+
+    Long digitalStorageToId(DigitalStorage storage) {
+        return storage.getStorId();
+    }
+
 }

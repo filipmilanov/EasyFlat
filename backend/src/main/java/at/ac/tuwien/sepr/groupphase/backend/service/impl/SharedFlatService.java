@@ -3,13 +3,16 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import jakarta.transaction.Transactional;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
 @Service
 public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService {
@@ -25,25 +29,42 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     private final SharedFlatRepository sharedFlatRepository;
     private final PasswordEncoder passwordEncoder;
     private final SharedFlatMapper sharedFlatMapper;
-
     private final UserRepository userRepository;
-
-    private final ShoppingListRepository shoppingListRepository;
-
     private final JwtTokenizer jwtTokenizer;
+    private final Authorization authorization;
+    private final DigitalStorageRepository digitalStorageRepository;
 
     @Autowired
-    public SharedFlatService(SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder,
-                             SharedFlatMapper sharedFlatMapper, JwtTokenizer jwtTokenizer, UserRepository userRepository,
-                             ShoppingListRepository shoppingListRepository) {
+    public SharedFlatService(SharedFlatRepository sharedFlatRepository,
+                             PasswordEncoder passwordEncoder,
+                             SharedFlatMapper sharedFlatMapper,
+                             JwtTokenizer jwtTokenizer, UserRepository userRepository, Authorization authorization, DigitalStorageRepository digitalStorageRepository) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.sharedFlatMapper = sharedFlatMapper;
         this.jwtTokenizer = jwtTokenizer;
         this.userRepository = userRepository;
-        this.shoppingListRepository = shoppingListRepository;
+        this.authorization = authorization;
+        this.digitalStorageRepository = digitalStorageRepository;
+
+
     }
 
+    @Override
+    public SharedFlat findById(Long id, String jwt) throws AuthenticationException {
+        LOGGER.trace("findById({}, {})", id, jwt);
+
+        Optional<SharedFlat> sharedFlatOptional = sharedFlatRepository.findById(id);
+        SharedFlat sharedFlat = sharedFlatOptional.orElseThrow(() -> new NotFoundException("Shared flat not found"));
+
+        authorization.authenticateUser(
+            jwt,
+            sharedFlat.getUsers().stream().map(ApplicationUser::getId).toList(),
+            "User does not have access to this shared flat"
+        );
+
+        return sharedFlat;
+    }
 
     public WgDetailDto create(SharedFlat sharedFlat, String authToken) throws Exception {
         LOGGER.debug("Create a new shared flat");
@@ -61,9 +82,12 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         user.setSharedFlat(newSharedFlat);
         user.setAdmin(true);
         userRepository.save(user);
-        ShoppingList defaultList = new ShoppingList();
-        defaultList.setName("Default");
-        shoppingListRepository.save(defaultList);
+        DigitalStorage digitalStorage = new DigitalStorage();
+        digitalStorage.setTitle("Storage");
+        digitalStorage.setSharedFlat(newSharedFlat);
+        newSharedFlat.setDigitalStorage(digitalStorage);
+
+        digitalStorageRepository.save(digitalStorage);
         return sharedFlatMapper.entityToWgDetailDto(newSharedFlat);
     }
 
