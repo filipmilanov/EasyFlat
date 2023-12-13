@@ -41,36 +41,36 @@ public class StorageEndpoint {
     @PermitAll
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<DigitalStorageDto> findAll(DigitalStorageSearchDto digitalStorageDto, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public List<DigitalStorageDto> findAll(DigitalStorageSearchDto digitalStorageDto) {
         LOGGER.info("findAll({})", digitalStorageDto);
 
         return digitalStorageMapper.entityListToDtoList(
-            digitalStorageService.findAll(digitalStorageDto, jwt)
+            digitalStorageService.findAll(digitalStorageDto)
         );
     }
 
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DigitalStorageDto create(@RequestBody DigitalStorageDto digitalStorageDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public DigitalStorageDto create(@RequestBody DigitalStorageDto digitalStorageDto) throws ValidationException, ConflictException {
         LOGGER.info("create({})", digitalStorageDto);
         return digitalStorageMapper.entityToDto(
-            digitalStorageService.create(digitalStorageDto, jwt)
+            digitalStorageService.create(digitalStorageDto)
         );
     }
 
     @PermitAll
-    @GetMapping("/items")
+    @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemListDto> getStorageItems(ItemSearchDto itemSearchDto, @RequestHeader("Authorization") String jwt) throws ValidationException, AuthenticationException, ConflictException {
-        LOGGER.info("getStorageItems({}, {})", itemSearchDto);
-        return digitalStorageService.searchItems(itemSearchDto, jwt);
+    public List<ItemListDto> getStorageItems(@PathVariable Long id, ItemSearchDto itemSearchDto) throws ValidationException {
+        LOGGER.info("getStorageItems({}, {})", id, itemSearchDto);
+        return digitalStorageService.searchItems(id, itemSearchDto);
     }
 
     @PermitAll
     @GetMapping("/info/{name}")
-    public List<Item> getItemWithGeneralName(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthenticationException, ValidationException, ConflictException {
+    public List<ItemDto> getItemWithGeneralName(@PathVariable String name, String storId) {
         LOGGER.info("getItemWithGeneralName");
-        return digitalStorageService.getItemWithGeneralName(name, jwt);
+        return digitalStorageService.getItemWithGeneralName(name, Long.parseLong(storId));
     }
 }
