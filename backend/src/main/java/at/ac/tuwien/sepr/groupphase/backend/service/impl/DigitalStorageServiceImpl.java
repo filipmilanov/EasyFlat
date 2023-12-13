@@ -193,11 +193,15 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         return digitalStorageRepository.updateItemQuantity(storageId, itemId, quantity);
     }
 
+
+
     @Override
     public List<Item> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException {
         Long storId = getStorIdForUser(jwt);
         return digitalStorageRepository.getItemWithGeneralName(storId, name);
     }
+
+
 
     private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) {
         Map<String, Double[]> items = new HashMap<>();

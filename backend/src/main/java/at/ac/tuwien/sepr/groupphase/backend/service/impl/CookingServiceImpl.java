@@ -338,43 +338,50 @@ public class CookingServiceImpl implements CookingService {
                         missingIngredients.add(ingredient);
                         continue;
                     }
-                    Unit ingredientUnit = unitMapper.unitDtoToEntity(ingredient.unitEnum());
-                    for (Item item : items) {
-                        if (!item.getUnit().equals(ingredientUnit)) {
-                            Unit itemUnitMin = this.getMinUnit(item.getUnit());
-                            Unit ingredientUnitMin = this.getMinUnit(ingredientUnit);
-                            if (!itemUnitMin.equals(ingredientUnitMin)) {
-                                missingIngredients.add(ingredient);
-                            } else {
-                                try {
-                                    Double ingredientConverted = unitService.convertUnits(ingredientUnit, ingredientUnitMin, ingredient.amount());
-                                    Double itemConverted = unitService.convertUnits(item.getUnit(), itemUnitMin, item.getQuantityCurrent());
-                                    if (ingredientConverted > itemConverted) {
-                                        RecipeIngredientDto newIngredient = new RecipeIngredientDto(
-                                            ingredient.id(),
-                                            ingredient.name(),
-                                            ingredientUnitMin.getName(),
-                                            unitMapper.entityToUnitDto(ingredientUnitMin),
-                                            ingredientConverted - itemConverted
-                                        );
-                                        missingIngredients.add(newIngredient);
-                                    }
-                                } catch (ValidationException | ConflictException e) {
-                                    e.printStackTrace();
-                                }
 
-                            }
-                        } else if (item.getQuantityCurrent() < ingredient.amount()) {
-                            RecipeIngredientDto newIngredient = new RecipeIngredientDto(
-                                ingredient.id(),
-                                ingredient.name(),
-                                ingredient.unit(),
-                                ingredient.unitEnum(),
-                                ingredient.amount() - item.getQuantityCurrent()
-                            );
-                            missingIngredients.add(newIngredient);
-                        }
+                    Unit ingredientUnit = unitMapper.unitDtoToEntity(ingredient.unitEnum());
+                    if (!getMinUnit(ingredientUnit).equals(getMinUnit(items.get(0).getUnit()))) {
+                        missingIngredients.add(ingredient);
+                        continue;
                     }
+                    try {
+                        Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), ingredient.amount());
+                        Double itemQuantityTotal = getItemQuantityTotalInMinQuantity(items);
+
+                        if (ingAmountMin > itemQuantityTotal) {
+                            if (ingredientUnit.getConvertFactor() == null) {
+                                ingredientUnit.setConvertFactor(1L);
+                            }
+                            if (ingAmountMin < ingredientUnit.getConvertFactor()) {
+
+                                RecipeIngredientDto newIngredient = new RecipeIngredientDto(
+                                    ingredient.id(),
+                                    ingredient.name(),
+                                    getMinUnit(ingredientUnit).getName(),
+                                    unitMapper.entityToUnitDto(getMinUnit(ingredientUnit)),
+                                    ingAmountMin - itemQuantityTotal
+                                );
+                                missingIngredients.add(newIngredient);
+                            } else {
+
+                                Double updatedQuantity = unitService.convertUnits(getMinUnit(ingredientUnit), items.get(0).getUnit(), ingAmountMin - itemQuantityTotal);
+                                RecipeIngredientDto newIngredient = new RecipeIngredientDto(
+                                    ingredient.id(),
+                                    ingredient.name(),
+                                    items.get(0).getUnit().getName(),
+                                    unitMapper.entityToUnitDto(items.get(0).getUnit()),
+                                    updatedQuantity
+                                );
+                                missingIngredients.add(newIngredient);
+                            }
+                        }
+
+
+                    } catch (ValidationException | ConflictException e) {
+                        throw new RuntimeException(e);
+                    }
+
+
                 }
                 RecipeSuggestionDto newRecipe = new RecipeSuggestionDto(recipeSuggestionDto.id(), recipeSuggestionDto.title(), recipeSuggestionDto.servings(),
                     recipeSuggestionDto.readyInMinutes(), recipeSuggestionDto.extendedIngredients(), recipeSuggestionDto.summary(),
@@ -420,6 +427,15 @@ public class CookingServiceImpl implements CookingService {
         return recipeToCook;
     }
 
+    private boolean isThereEnoughQuantity(List<Item> items, RecipeIngredientDto recipeIngredientDto) {
+
+        for (Item item : items) {
+
+            Double sumQuantity;
+
+        }
+        return false;
+    }
 
 
     private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
@@ -456,5 +472,21 @@ public class CookingServiceImpl implements CookingService {
         }
 
         return null;
+    }
+
+    private Double getItemQuantityTotalInMinQuantity(List<Item> items) throws ValidationException, ConflictException {
+
+        Double toRet = 0.0;
+
+        Unit test = getMinUnit(items.get(0).getUnit());
+        for (Item item : items) {
+            if (item.getUnit().equals(test)) {
+                toRet += item.getQuantityCurrent();
+            } else {
+                Double convert = unitService.convertUnits(item.getUnit(), test, item.getQuantityCurrent());
+                toRet += convert;
+            }
+        }
+        return toRet;
     }
 }
