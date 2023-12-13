@@ -27,11 +27,13 @@ public class LabelServiceImpl implements LabelService {
 
     @Override
     public ItemLabel findByValueAndColour(String value, String colour) {
+        LOGGER.trace("findByValueAndColour({}, {})", value, colour);
         return labelRepository.findByLabelValueAndLabelColour(value, colour);
     }
 
     @Override
     public List<ItemLabel> createAll(List<ItemLabelDto> newLabels) {
+        LOGGER.trace("createAll({})", newLabels);
         List<ItemLabel> ingredientList = labelMapper.dtoListToEntityList(newLabels);
         return labelRepository.saveAll(ingredientList);
     }

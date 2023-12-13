@@ -23,10 +23,12 @@ export class ShoppingListService {
   }
 
   getById(id: string): Observable<ShoppingItemDto> {
+    console.log('Get item with ID ' + id);
     return this.http.get<ShoppingItemDto>(this.baseUri + '/' + id);
   }
 
   getItemsWithShopId(shopId: string, searchParams: ShoppingItemSearchDto):Observable<ShoppingItemDto[]> {
+    console.log('Get items with shopId ' + shopId + ' and search parameters ' + searchParams);
     let params = new HttpParams();
     if (searchParams.productName) {
       params = params.append('productName', searchParams.productName);
@@ -37,6 +39,12 @@ export class ShoppingListService {
     return this.http.get<ShoppingItemDto[]>(this.baseUri + "/list-items/" + shopId, {params});
   }
 
+  /**
+   * Find an existing shopping list in the system
+   *
+   * @param shoppingListId the id of the list that should be stored in the system
+   * @return an Observable for the existing shopping list in the system
+   */
   getShoppingListById(shoppingListId: string): Observable<ShoppingListDto> {
     return this.http.get<ShoppingListDto>(this.baseUri + '/list/' + shoppingListId);
   }
@@ -63,11 +71,17 @@ export class ShoppingListService {
   }
 
   transferToStorage(shoppingItems: ShoppingItemDto[]): Observable<StorageItem[]> {
-    console.log(shoppingItems)
+    console.log('Add items to storage ' + shoppingItems)
     return this.http.post<StorageItem[]>(this.baseUri + '/storage', shoppingItems);
   }
 
-  updateItem(item: ShoppingItemDto) {
+  /**
+   * Update an item in the system.
+   *
+   * @param item the data for the item that should be updated
+   * @return an Observable for the updated item
+   */
+  updateItem(item: ShoppingItemDto): Observable<ShoppingItemDto> {
     console.log('Update item with ID ' + item.itemId);
     return this.http.put<ShoppingItemDto>(`${this.baseUri}/${item.itemId}`, item);
   }

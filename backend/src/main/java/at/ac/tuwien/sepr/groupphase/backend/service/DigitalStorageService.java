@@ -98,5 +98,11 @@ public interface DigitalStorageService {
 
     List<Item> getItemWithGeneralName(String name, Long storId);
 
+    /**
+     * Gets an item from digital storage and adds it to the main shopping list
+     *
+     * @param itemDto existing ID of a storage
+     * @return the added item of type {@link ShoppingItem}
+     */
     ShoppingItem addItemToShopping(ItemDto itemDto);
 }
