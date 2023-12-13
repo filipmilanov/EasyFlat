@@ -38,6 +38,7 @@ export class CookbookModalComponent implements OnInit{
   }
 
   cook(){
+    this.activeModal.dismiss();
     this.cookingService.cookRecipe(this.recipeWithMissing).subscribe({
       next: res => {
         console.log("cooked");

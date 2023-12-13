@@ -25,16 +25,20 @@ public class RecipeValidator {
 
     public void validateForCreate(RecipeSuggestionDto recipeSuggestionDto) throws ValidationException {
         LOGGER.trace("validateForCreate({})", recipeSuggestionDto);
-        this.checkValidationForCreate(recipeSuggestionDto);
+        Set<ConstraintViolation<RecipeSuggestionDto>> validationViolations = validator.validate(recipeSuggestionDto);
+        if (!validationViolations.isEmpty()) {
+            throw new ValidationException("The data is not valid: ", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+        }
 
     }
 
-    private void checkValidationForCreate(RecipeSuggestionDto recipeSuggestionDto) throws ValidationException {
-        LOGGER.trace("checkValidationForCreate({})", recipeSuggestionDto);
+    public void validateForUpdate(RecipeSuggestionDto recipeSuggestionDto) throws ValidationException {
+        LOGGER.trace("checkValidationForUpdate({})", recipeSuggestionDto);
 
         Set<ConstraintViolation<RecipeSuggestionDto>> validationViolations = validator.validate(recipeSuggestionDto);
         if (!validationViolations.isEmpty()) {
-            throw new ValidationException("The data is not valid: " , validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+            throw new ValidationException("The data is not valid: ", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
         }
     }
+
 }
