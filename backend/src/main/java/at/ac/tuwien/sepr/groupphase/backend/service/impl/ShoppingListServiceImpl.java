@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
@@ -77,8 +78,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<ShoppingItem> getItemsById(Long listId) {
-        List<ShoppingItem> shoppingItems = shoppingRepository.findByShoppingListId(listId);
+    public List<ShoppingItem> getItemsById(Long listId, ShoppingItemSearchDto itemSearchDto) {
+        List<ShoppingItem> shoppingItems = shoppingRepository.searchItems(listId,
+            (itemSearchDto.productName() != null) ? itemSearchDto.productName() : null,
+            (itemSearchDto.label() != null) ? itemSearchDto.label() : null);
         itemMapper.shoppingItemListToShoppingDto(shoppingItems);
         return shoppingRepository.saveAll(shoppingItems);
     }

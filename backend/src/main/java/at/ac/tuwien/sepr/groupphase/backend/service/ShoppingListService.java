@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
@@ -15,7 +16,7 @@ public interface ShoppingListService {
 
     Optional<ShoppingList> getShoppingListById(Long id);
 
-    List<ShoppingItem> getItemsById(Long listId);
+    List<ShoppingItem> getItemsById(Long listId, ShoppingItemSearchDto itemSearchDto);
 
     ShoppingList createList(String listName);
 
