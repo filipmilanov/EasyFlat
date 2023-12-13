@@ -20,7 +20,7 @@ public interface CookingService {
      * @return A list of recipe suggestions.
      * @throws ValidationException If there is a validation error.
      */
-    List<RecipeSuggestionDto> getRecipeSuggestion(Long storId, String type) throws ValidationException;
+    List<RecipeSuggestionDto> getRecipeSuggestion(Long storId, String type) throws ValidationException, ConflictException;
 
     /**
      * Get the details of a specific recipe based on the provided recipe ID.

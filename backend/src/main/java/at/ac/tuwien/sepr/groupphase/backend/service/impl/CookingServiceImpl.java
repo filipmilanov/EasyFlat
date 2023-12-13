@@ -89,7 +89,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<RecipeSuggestionDto> getRecipeSuggestion(Long storId, String type) throws ValidationException {
+    public List<RecipeSuggestionDto> getRecipeSuggestion(Long storId, String type) throws ValidationException, ConflictException {
 
         List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(storId, new ItemSearchDto(null, true, null, null, null));
         List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(storId, new ItemSearchDto(null, false, null, null, null));
@@ -437,7 +437,6 @@ public class CookingServiceImpl implements CookingService {
         }
         return false;
     }
-
 
     private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
         List<String> ingredients = new LinkedList<>();

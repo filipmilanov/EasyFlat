@@ -59,7 +59,7 @@ public interface DigitalStorageService {
      * @param itemSearchDto search parameters
      * @return a List of filtered items
      */
-    List<ItemListDto> searchItems(Long id, ItemSearchDto itemSearchDto) throws ValidationException;
+    List<ItemListDto> searchItems(Long id, ItemSearchDto itemSearchDto) throws ValidationException, ConflictException;
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.

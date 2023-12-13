@@ -12,10 +12,12 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
+import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import jakarta.validation.Validator;
 import org.slf4j.Logger;
@@ -42,13 +44,18 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final Validator validator;
     private final ItemMapper itemMapper;
 
+    private final UnitService unitService;
 
-    public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository, DigitalStorageMapper digitalStorageMapper, DigitalStorageValidator digitalStorageValidator, Validator validator, ItemMapper itemMapper) {
+
+    public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
+                                     DigitalStorageMapper digitalStorageMapper,
+                                     DigitalStorageValidator digitalStorageValidator, Validator validator, ItemMapper itemMapper, UnitService unitService) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
         this.validator = validator;
         this.itemMapper = itemMapper;
+        this.unitService = unitService;
     }
 
     @Override
@@ -86,7 +93,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<ItemListDto> searchItems(Long id, ItemSearchDto searchItem) throws ValidationException {
+    public List<ItemListDto> searchItems(Long id, ItemSearchDto searchItem) throws ValidationException, ConflictException {
         LOGGER.trace("searchItems({}, {})", id, searchItem);
         digitalStorageValidator.validateForSearchItems(id, searchItem);
         Class alwaysInStock = null;
@@ -159,7 +166,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
 
-
     @Override
     public List<ItemDto> getItemWithGeneralName(String name, Long storId) {
         List<Item> items = digitalStorageRepository.getItemWithGeneralName(storId, name);
@@ -173,29 +179,36 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
 
-
-    private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) {
+    private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) throws ValidationException, ConflictException {
         Map<String, Double[]> items = new HashMap<>();
-        Map<String, String> itemUnits = new HashMap<>();
+        Map<String, Unit> itemUnits = new HashMap<>();
+        Unit unit = null;
         for (Item item : allItems) {
-            itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit().getName());
+            itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit());
+
             double currentQ = 0;
             double totalQ = 0;
             if (items.get(item.getGeneralName()) != null) {
                 currentQ = items.get(item.getGeneralName())[0];
                 totalQ = items.get(item.getGeneralName())[2];
             }
+
+            Double updatedQuantityCurrent = unitService.convertUnits(item.getUnit(), itemUnits.get(item.getGeneralName()), item.getQuantityCurrent());
+            Double updatedQuantityTotal = unitService.convertUnits(item.getUnit(), itemUnits.get(item.getGeneralName()), item.getQuantityTotal());
+
+
             Double[] quantityStorId = new Double[3];
-            quantityStorId[0] = currentQ + item.getQuantityCurrent();
+            quantityStorId[0] = currentQ + updatedQuantityCurrent;
             quantityStorId[1] = item.getStorage().getStorId().doubleValue();
-            quantityStorId[2] = totalQ + item.getQuantityTotal();
+            quantityStorId[2] = totalQ + updatedQuantityTotal;
             items.put(item.getGeneralName(), quantityStorId);
         }
         List<ItemListDto> toRet = new LinkedList<>();
         for (Map.Entry<String, Double[]> item : items.entrySet()) {
-            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1].longValue(), UnitDtoBuilder.builder().name(itemUnits.get(item.getKey())).build()));
+            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1].longValue(), UnitDtoBuilder.builder().name(itemUnits.get(item.getKey()).getName()).build()));
         }
         return toRet;
     }
 
 }
+
