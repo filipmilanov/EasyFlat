@@ -399,28 +399,29 @@ public class CookingServiceImpl implements CookingService {
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
             List<Item> items = storageRepository.getItemWithGeneralName(1L, recipeIngredientDto.name());
             Unit ingredientUnit = unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum());
-            for (Item item : items) {
+            Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), recipeIngredientDto.amount());
+            List<Item> itemsWithMinUnits = minimizeUnits(items);
+            for (int i = 0; i < itemsWithMinUnits.size(); i++) {
 
-                if (item.getUnit().equals(ingredientUnit)) {
-                    if (item.getQuantityCurrent() > recipeIngredientDto.amount()) {
-                        ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity((item.getQuantityCurrent() - recipeIngredientDto.amount()));
+                Item item = itemsWithMinUnits.get(i);
+
+                if (item.getQuantityCurrent() >= ingAmountMin) {
+                    if (item.getUnit().equals(items.get(i).getUnit())) {
+                        ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity((item.getQuantityCurrent() - ingAmountMin));
+                        itemService.update(updatedItem);
+                    } else {
+                        Double updatedQuantity = unitService.convertUnits(item.getUnit(), items.get(i).getUnit(), item.getQuantityCurrent() - ingAmountMin);
+                        item.setUnit(items.get(i).getUnit());
+                        ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity(updatedQuantity);
                         itemService.update(updatedItem);
                     }
+                    break;
                 } else {
-                    Unit itemUnitMin = this.getMinUnit(item.getUnit());
-                    Unit ingredientUnitMin = this.getMinUnit(ingredientUnit);
-                    if (itemUnitMin.equals(ingredientUnitMin)) {
-                        Double ingredientConverted = unitService.convertUnits(ingredientUnit, ingredientUnitMin, recipeIngredientDto.amount());
-                        Double itemConverted = unitService.convertUnits(item.getUnit(), itemUnitMin, item.getQuantityCurrent());
-                        if (itemUnitMin.equals(item.getUnit())) {
-                            ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity(itemConverted - ingredientConverted);
-                            itemService.update(updatedItem);
-                        } else {
-                            ingredientConverted = unitService.convertUnits(ingredientUnitMin, item.getUnit(), ingredientConverted);
-                            ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity((item.getQuantityCurrent() - ingredientConverted));
-                            itemService.update(updatedItem);
-                        }
-                    }
+                    ingAmountMin -= item.getQuantityCurrent();
+                    item.setUnit(items.get(i).getUnit());
+                    ItemDto updatedItem = itemMapper.entityToDto(item).withUpdatedQuantity(0.0);
+                    itemService.update(updatedItem);
+
                 }
             }
         }
@@ -489,4 +490,39 @@ public class CookingServiceImpl implements CookingService {
         }
         return toRet;
     }
+
+    private List<Item> minimizeUnits(List<Item> items) throws ValidationException, ConflictException {
+
+        List<Item> minimizedItems = new LinkedList<>();
+
+
+
+        for (Item item : items) {
+            Unit minUnit = getMinUnit(item.getUnit());
+            double convertedQuantity = unitService.convertUnits(item.getUnit(), minUnit, item.getQuantityCurrent());
+
+            Item minimizedItem = new Item();
+
+            minimizedItem.setItemId(item.getItemId());
+            minimizedItem.setUnit(minUnit);
+            minimizedItem.setQuantityCurrent(convertedQuantity);
+            minimizedItem.setEan(item.getEan());
+            minimizedItem.setGeneralName(item.getGeneralName());
+            minimizedItem.setProductName(item.getProductName());
+            minimizedItem.setBrand(item.getBrand());
+            minimizedItem.setQuantityTotal(item.getQuantityTotal());
+            minimizedItem.setExpireDate(item.getExpireDate());
+            minimizedItem.setDescription(item.getDescription());
+            minimizedItem.setPriceInCent(item.getPriceInCent());
+            minimizedItem.setBoughtAt(item.getBoughtAt());
+            minimizedItem.setStorage(item.getStorage());
+            minimizedItem.setIngredientList(item.getIngredientList());
+
+            minimizedItems.add(minimizedItem);
+        }
+
+        return minimizedItems;
+
+    }
+
 }
