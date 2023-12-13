@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {ItemDto} from "../dtos/item";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
@@ -19,6 +19,26 @@ export class ItemService {
   getById(id: number): Observable<ItemDto> {
     return this.http.get<ItemDto>(`${this.baseUri}/${id}`);
   }
+
+  findByGeneralName(generalName: string): Observable<ItemDto[]> {
+    let params = new HttpParams();
+    params = params.append('generalName', generalName);
+    return this.http.get<ItemDto[]>(`${this.baseUri}/search`, {params});
+  }
+
+  findByBrand(barnd: string): Observable<ItemDto[]> {
+    let params = new HttpParams();
+    params = params.append('brand', barnd);
+    return this.http.get<ItemDto[]>(`${this.baseUri}/search`, {params});
+  }
+
+  findByBoughtAt(boughtAt: string): Observable<ItemDto[]> {
+    let params = new HttpParams();
+    params = params.append('boughtAt', boughtAt);
+    return this.http.get<ItemDto[]>(`${this.baseUri}/search`, {params});
+  }
+
+
 
 
   /**

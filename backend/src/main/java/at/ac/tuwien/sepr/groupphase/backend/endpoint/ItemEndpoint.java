@@ -41,7 +41,7 @@ public class ItemEndpoint {
     @Secured("ROLE_USER")
     @GetMapping("search")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemDto> findByFields(@RequestBody ItemFieldSearchDto itemFieldSearchDto) {
+    public List<ItemDto> findByFields(ItemFieldSearchDto itemFieldSearchDto) {
         LOGGER.info("findByFields({})", itemFieldSearchDto);
         return itemMapper.entityListToItemDtoList(
             itemService.findByFields(itemFieldSearchDto)

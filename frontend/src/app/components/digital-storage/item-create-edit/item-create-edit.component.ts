@@ -188,6 +188,30 @@ export class ItemCreateEditComponent implements OnInit {
     ? of([])
     : this.storageService.findAll(input, 5);
 
+  formatGeneralName(item: ItemDto | null): string {
+    return item ? item.generalName : '';
+  }
+
+  generalNameSuggestions = (input: string) => (input === '')
+    ? of([])
+    : this.itemService.findByGeneralName(input);
+
+  formatBrand(item: ItemDto | null): string {
+    return item ? item.brand : '';
+  }
+
+  brandSuggestions = (input: string) => (input === '')
+    ? of([])
+    : this.itemService.findByBrand(input);
+
+  formatBoughtAt(item: ItemDto | null): string {
+    return item ? item.boughtAt : '';
+  }
+
+  boughtAtSuggestions = (input: string) => (input === '')
+    ? of([])
+    : this.itemService.findByBoughtAt(input);
+
   formatUnitName(unit: Unit | null): string {
     return unit ? unit.name : '';
   }
@@ -196,5 +220,6 @@ export class ItemCreateEditComponent implements OnInit {
     console.log(unit.name + "fdafsd");
     this.item.unit = unit;
   }
+
 
 }
