@@ -420,6 +420,8 @@ public class CookingServiceImpl implements CookingService {
         return recipeToCook;
     }
 
+
+
     private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
         List<String> ingredients = new LinkedList<>();
         for (ItemListDto item : items) {
