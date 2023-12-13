@@ -115,6 +115,17 @@ export class ItemCreateEditComponent implements OnInit {
         }
       })
     }
+
+    if (this.mode === ItemCreateEditMode.create) {
+      this.storageService.findAll('', 1).subscribe({
+        next: res => {
+          this.item.digitalStorage = res[0];
+        },
+        error: err => {
+          this.notification.error('Failed to load Storages', "Error");
+        }
+      });
+    }
   }
 
   public onSubmit(form: NgForm): void {
