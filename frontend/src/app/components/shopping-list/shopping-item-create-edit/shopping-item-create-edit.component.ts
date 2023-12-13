@@ -181,8 +181,4 @@ export class ShoppingItemCreateEditComponent implements OnInit {
     return storage ? storage.title : '';
   }
 
-  storageSuggestions = (input: string) => (input === '')
-    ? of([])
-    : this.storageService.findAll(input, 5);
-  protected readonly parseInt = parseInt;
 }

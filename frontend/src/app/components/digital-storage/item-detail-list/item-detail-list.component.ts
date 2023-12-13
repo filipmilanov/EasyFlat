@@ -18,7 +18,7 @@ export class ItemDetailListComponent implements OnInit {
   itemGeneralName: string;
   items: StorageItem[];
   storId: string;
-  hashMap= new Map<string, boolean[]>();
+  hashMap = new Map<string, boolean[]>();
 
   constructor(private storageService: StorageService, private router: Router,
               private route: ActivatedRoute, private itemService: ItemService, private el: ElementRef,
@@ -85,7 +85,6 @@ export class ItemDetailListComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    // Check if the clicked element is outside the card
     if (!this.el.nativeElement.contains(event.target)) {
       this.hashMap.forEach((value, key) => {
         this.hashMap.set(key, [false, false]);
@@ -152,6 +151,12 @@ export class ItemDetailListComponent implements OnInit {
                   break;
                 }
               }
+
+            },
+            error: error => {
+              console.error(`Item's quantity could not be changed: ${error.error.message}`);
+              this.notification.error(error.error.message);
+              this.notification.error(`Item ${id} could not be deleted`, "Error");
             }
           });
         }
@@ -199,13 +204,24 @@ export class ItemDetailListComponent implements OnInit {
       next: res => {
         item = res;
 
-        console.log(item)
-        this.storageService.addItemToShoppingList(item).subscribe( {
+        this.storageService.addItemToShoppingList(item).subscribe({
             next: data => {
+              this.notification.success(`Item ${itemId} successfully added to the shopping list.`, "Success");
               this.router.navigate([`/shopping-list/1`])
+            },
+            error: error => {
+              console.error(`Item could not be added to the shopping list: ${error.error.message}`);
+              this.notification.error(error.error.message);
+              this.notification.error(`Item ${itemId} could not be added to the shopping list`, "Error");
             }
+
           },
         );
+      },
+      error: error => {
+        console.error(`Error finding item: ${error.error.message}`);
+        this.notification.error(error.error.message);
+        this.notification.error(`Item with ID: ${itemId} could not be found`, "Error");
       }
     });
 
