@@ -61,7 +61,7 @@ public interface DigitalStorageService {
      * @param jwt           a valid jwt
      * @return a List of filtered items
      */
-    List<ItemListDto> searchItems(ItemSearchDto itemSearchDto, String jwt) throws ValidationException, AuthenticationException;
+    List<ItemListDto> searchItems(ItemSearchDto itemSearchDto, String jwt) throws ValidationException, AuthenticationException, ConflictException;
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.
@@ -106,5 +106,5 @@ public interface DigitalStorageService {
      * @return A list of items with the specified general name.
      * @throws AuthenticationException If authentication fails or the user does not exist.
      */
-    List<Item> getItemWithGeneralName(String name, String jwt) throws AuthenticationException;
+    List<Item> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException;
 }
