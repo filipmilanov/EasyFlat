@@ -15,7 +15,7 @@
                  id="title"
                  name="title"
                  placeholder="Title"
-                 [(ngModel)]="recipe.title">
+                 [(ngModel)]="recipe.title" >
         </div>
       </div>
 
@@ -31,7 +31,8 @@
                  id="summary"
                  name="summary"
                  placeholder="Summary"
-                 [(ngModel)]="recipe.summary">
+                 [(ngModel)]="recipe.summary"
+                 >
         </div>
       </div>
 
@@ -43,11 +44,12 @@
         </label>
         <div class="col-md-10 col-lg-8">
           <input type="number"
+                 min="0"
                  class="form-control"
                  id="servings"
                  name="servings"
                  placeholder="Servings"
-                 [(ngModel)]="recipe.servings">
+                 [(ngModel)]="recipe.servings" >
         </div>
       </div>
 
@@ -59,11 +61,12 @@
         </label>
         <div class="col-md-8 col-lg-8">
           <input type="number"
+                 min="0"
                  class="form-control"
                  id="readyInMinutes"
                  name="readyInMinutes"
                  placeholder="Ready in minutes"
-                 [(ngModel)]="recipe.readyInMinutes">
+                 [(ngModel)]="recipe.readyInMinutes" >
         </div>
       </div>
       <div class="row p-2">
@@ -91,16 +94,17 @@
           <input type="text"
                  class="form-control"
                  placeholder="Ingredient"
-                 #ingredientInput>
+                 #ingredientInput >
           <input type="number"
+                 min="0"
                  class="form-control"
                  placeholder="Amount"
-                 #amountInput>
+                 #amountInput >
             <select class="form-select form-select-md"
                     name="unit"
                     [(ngModel)]="selectedUnit">
               <option *ngFor="let unit of availableUnits"
-                      [ngValue]="unit">
+                      [ngValue]="unit" >
                 {{ formatUnitName(unit) }}
               </option>
             </select>

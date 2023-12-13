@@ -41,9 +41,9 @@ public class UnitDataGenerator {
         UnitDto pcs = new UnitDto("pcs", null, Set.of());
         UnitDto tablespoons = new UnitDto("tablespoons", 15L, Set.of(g));
 
-        UnitDto pound = new UnitDto("pound", 15L, Set.of(g));
-        UnitDto gallon = new UnitDto("gallon", 15L, Set.of(g));
-        UnitDto sheets = new UnitDto("sheets", 15L, Set.of(g));
+        UnitDto pound = new UnitDto("pound", 455L, Set.of(g));
+        UnitDto gallon = new UnitDto("gallon", 3785L, Set.of(ml));
+        UnitDto sheets = new UnitDto("sheets", 1L, Set.of(pcs));
 
 
         unitService.create(g);

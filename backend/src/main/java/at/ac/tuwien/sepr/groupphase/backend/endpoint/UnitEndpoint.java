@@ -49,7 +49,7 @@ public class UnitEndpoint {
         return unitService.convertUnits(
             unitMapper.unitDtoToEntity(unitConvertDto.from()),
             unitMapper.unitDtoToEntity(unitConvertDto.to()),
-            unitConvertDto.value()
+            unitConvertDto.value().doubleValue()
         );
     }
 

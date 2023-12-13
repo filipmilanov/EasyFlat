@@ -26,6 +26,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.RecipeIngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.RecipeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -60,6 +61,7 @@ public class CookingServiceImpl implements CookingService {
     private final UnitMapper unitMapper;
     private final ItemService itemService;
     private final ItemMapper itemMapper;
+    private final RecipeValidator recipeValidator;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
     public CookingServiceImpl(RestTemplate restTemplate,
@@ -73,7 +75,7 @@ public class CookingServiceImpl implements CookingService {
                               UnitService unitService,
                               UnitMapper unitMapper,
                               ItemService itemService,
-                              ItemMapper itemMapper) {
+                              ItemMapper itemMapper, RecipeValidator recipeValidator) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
@@ -86,6 +88,7 @@ public class CookingServiceImpl implements CookingService {
         this.unitMapper = unitMapper;
         this.itemService = itemService;
         this.itemMapper = itemMapper;
+        this.recipeValidator = recipeValidator;
     }
 
     @Override
@@ -281,7 +284,8 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException {
+    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException, ValidationException {
+        recipeValidator.validateForCreate(recipe);
         List<RecipeIngredient> ingredientList = ingredientService.createAll(recipe.extendedIngredients());
         RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipe, ingredientList);
         RecipeSuggestion createdRecipe = repository.save(recipeEntity);
@@ -299,7 +303,8 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException {
+    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException {
+        recipeValidator.validateForUpdate(recipe);
         RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id())
             .orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
 
