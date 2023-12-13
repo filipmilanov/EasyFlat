@@ -20,6 +20,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.Authenticator.Authenticator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +44,9 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final DigitalStorageMapper digitalStorageMapper;
     private final DigitalStorageValidator digitalStorageValidator;
     private final SharedFlatService sharedFlatService;
-    private final Authenticator authenticator;
     private final ItemMapper itemMapper;
+    private final Authorization authorization;
     private CustomUserDetailService customUserDetailService;
-
     private SharedFlatMapper sharedFlatMapper;
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
@@ -54,7 +54,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
                                      DigitalStorageValidator digitalStorageValidator,
                                      SharedFlatService sharedFlatService,
                                      ItemMapper itemMapper,
-                                     Authenticator authenticator,
+                                     Authorization authorization,
                                      CustomUserDetailService customUserDetailService,
                                      SharedFlatMapper sharedFlatMapper) {
         this.digitalStorageRepository = digitalStorageRepository;
@@ -62,7 +62,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         this.digitalStorageValidator = digitalStorageValidator;
         this.itemMapper = itemMapper;
         this.sharedFlatService = sharedFlatService;
-        this.authenticator = authenticator;
+        this.authorization = authorization;
         this.customUserDetailService = customUserDetailService;
         this.sharedFlatMapper = sharedFlatMapper;
     }
@@ -172,7 +172,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             ).getUsers().stream()
             .map(ApplicationUser::getId)
             .toList();
-        authenticator.authenticateUser(
+        authorization.authenticateUser(
             jwt,
             allowedUser,
             "The given digital storage does not belong to the user's shared flat!"
@@ -249,7 +249,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
                 .toList();
 
 
-            authenticator.authenticateUser(
+            authorization.authenticateUser(
                 jwt,
                 allowedUser,
                 "The given digital storage does not belong to the user's shared flat!"

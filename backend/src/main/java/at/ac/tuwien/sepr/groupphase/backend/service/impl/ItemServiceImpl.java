@@ -18,8 +18,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ItemStatsRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authenticator;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.Authenticator.Authenticator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
 import jakarta.transaction.Transactional;
@@ -44,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final ItemValidator itemValidator;
     private final ItemStatsRepository itemStatsRepository;
-    private final Authenticator authenticator;
+    private final Authorization authorization;
     private final SharedFlatService sharedFlatService;
     private final CustomUserDetailService customUserDetailService;
     private final UnitService unitService;
@@ -55,9 +54,9 @@ public class ItemServiceImpl implements ItemService {
                            ItemMapper itemMapper,
                            ItemValidator itemValidator,
                            ItemStatsRepository itemStatsRepository,
+                           Authorization authorization,
                            CustomUserDetailService customUserDetailService,
                            UnitService unitService,
-                           Authenticator authenticator,
                            SharedFlatService sharedFlatService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
@@ -65,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
         this.itemMapper = itemMapper;
         this.itemValidator = itemValidator;
         this.itemStatsRepository = itemStatsRepository;
-        this.authenticator = authenticator;
+        this.authorization = authorization;
         this.sharedFlatService = sharedFlatService;
         this.customUserDetailService = customUserDetailService;
         this.unitService = unitService;
@@ -85,7 +84,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         List<Long> allowedUser = item.get().getStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
-        authenticator.authenticateUser(
+        authorization.authenticateUser(
             jwt,
             allowedUser,
             "The given item does not belong to the user's shared flat!"
@@ -119,7 +118,7 @@ public class ItemServiceImpl implements ItemService {
             ).getUsers().stream()
             .map(ApplicationUser::getId)
             .toList();
-        authenticator.authenticateUser(
+        authorization.authenticateUser(
             jwt,
             allowedUser,
             "The given digital storage does not belong to the user's shared flat!"
@@ -173,7 +172,7 @@ public class ItemServiceImpl implements ItemService {
             ).getUsers().stream()
             .map(ApplicationUser::getId)
             .toList();
-        authenticator.authenticateUser(
+        authorization.authenticateUser(
             jwt,
             allowedUser,
             "The given digital storage does not belong to the user's shared flat!"
@@ -213,7 +212,7 @@ public class ItemServiceImpl implements ItemService {
             .map(ApplicationUser::getId)
             .toList();
 
-        authenticator.authenticateUser(
+        authorization.authenticateUser(
             jwt,
             allowedUsers,
             "The given digital storage does not belong to the user's shared flat!"

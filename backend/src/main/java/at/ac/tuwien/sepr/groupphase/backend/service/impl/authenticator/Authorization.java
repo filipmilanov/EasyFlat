@@ -13,13 +13,13 @@ import java.util.List;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Component
-public class Authenticator {
+public class Authorization {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final CustomUserDetailService customUserDetailService;
 
-    public Authenticator(CustomUserDetailService customUserDetailService) {
+    public Authorization(CustomUserDetailService customUserDetailService) {
         this.customUserDetailService = customUserDetailService;
     }
 
