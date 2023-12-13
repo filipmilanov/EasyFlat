@@ -41,11 +41,14 @@ import {CookingModalComponent} from './components/cooking/cooking-modal/cooking-
 import {LOAD_WASM, NgxScannerQrcodeModule} from "ngx-scanner-qrcode";
 import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
 import { ShoppingListsComponent } from './components/shopping-list/shopping-lists/shopping-lists.component';
+import {CreateFlatComponent} from './components/create-flat/create-flat.component';
+import {FinanceComponent} from './components/finance/finance.component';
+import {ExpenseCreateEditComponent} from './components/finance/expense-create-edit/expense-create-edit.component';
+
+
 import { ShoppingListCardComponent } from './components/shopping-list/shopping-list-card/shopping-list-card.component';
 
-
 LOAD_WASM().subscribe();
-
 
 @NgModule({
   declarations: [
@@ -79,6 +82,8 @@ LOAD_WASM().subscribe();
     CookingModalComponent,
     ShoppingListsComponent,
     ShoppingListCardComponent
+    FinanceComponent,
+    ExpenseCreateEditComponent,
   ],
   imports: [
     BrowserModule,
