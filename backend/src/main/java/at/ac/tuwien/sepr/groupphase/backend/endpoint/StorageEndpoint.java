@@ -64,15 +64,15 @@ public class StorageEndpoint {
     @PermitAll
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemListDto> getStorageItems(@PathVariable Long id, ItemSearchDto itemSearchDto) throws ValidationException {
+    public List<ItemListDto> getStorageItems(@PathVariable Long id, ItemSearchDto itemSearchDto, @RequestHeader("Authorization") String jwt) throws ValidationException, AuthenticationException {
         LOGGER.info("getStorageItems({}, {})", id, itemSearchDto);
-        return digitalStorageService.searchItems(id, itemSearchDto);
+        return digitalStorageService.searchItems(itemSearchDto, jwt);
     }
 
     @PermitAll
     @GetMapping("/info/{name}")
-    public List<ItemDto> getItemWithGeneralName(@PathVariable String name, String storId) {
+    public List<Item> getItemWithGeneralName(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("getItemWithGeneralName");
-        return digitalStorageService.getItemWithGeneralName(name, Long.parseLong(storId));
+        return digitalStorageService.getItemWithGeneralName(name, jwt);
     }
 }
