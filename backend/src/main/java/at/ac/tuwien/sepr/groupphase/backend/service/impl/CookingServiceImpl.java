@@ -303,7 +303,8 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe)  {
+    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException {
+        recipeValidator.validateForUpdate(recipe);
         RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id())
             .orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
 

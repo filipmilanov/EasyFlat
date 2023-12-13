@@ -62,7 +62,7 @@ public interface CookingService {
      * @return The updated recipe.
      * @throws ConflictException If there is a conflict with existing data.
      */
-    RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException;
+    RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException, ValidationException;
 
     /**
      * Delete a recipe from the cookbook based on its ID.

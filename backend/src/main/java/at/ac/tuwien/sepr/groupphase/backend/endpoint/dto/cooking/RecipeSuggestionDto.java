@@ -15,11 +15,11 @@ public record RecipeSuggestionDto(
     Long id,
     @NotEmpty(message = "The title cannot be empty")
     String title,
-    @NotEmpty(message = "The servings cannot be empty")
-    @Min(value = 0, message = "The servings must be positive")
+    @NotNull(message = "The servings cannot be empty")
+    @Min(value = 1, message = "The servings must be positive")
     Integer servings,
-    @NotEmpty(message = "The time in minutes cannot be empty")
-    @Min(value = 0, message = "The time in minutes must be positive")
+    @NotNull(message = "The time in minutes cannot be empty")
+    @Min(value = 1, message = "The time in minutes must be positive")
     Integer readyInMinutes,
     List<RecipeIngredientDto> extendedIngredients,
     @NotEmpty(message = "The summary cannot be empty")

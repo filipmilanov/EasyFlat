@@ -59,7 +59,8 @@ public class CookingEndPoint {
 
     @PermitAll
     @PutMapping("/cookbook/{id}")
-    public RecipeSuggestionDto updateCookbookRecipe(@PathVariable Long id, @RequestBody RecipeSuggestionDto recipe) throws ConflictException {
+    public RecipeSuggestionDto updateCookbookRecipe(@PathVariable Long id, @RequestBody RecipeSuggestionDto recipe)
+        throws ConflictException, ValidationException {
         return recipeMapper.entityToRecipeSuggestionDto(cookingService.updateCookbookRecipe(recipe.withId(id)));
     }
 
