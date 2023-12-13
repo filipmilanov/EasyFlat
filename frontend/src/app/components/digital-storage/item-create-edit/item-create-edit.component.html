@@ -10,7 +10,7 @@
   <h1 class="display-4">{{ heading }}</h1>
   <div style="width: 100%; height: 100%; border: 1px black solid"></div>
 
-  <form #form="ngForm" [class.was-validated]="form.submitted" (submit)="onSubmit(form)">
+  <form #form="ngForm" (submit)="onSubmit(form)">
 
     <div class="row row-cols-1">
       <div class="row p-2">
@@ -36,12 +36,16 @@
           General Name
         </label>
         <div class="col-md-10 col-lg-8">
-          <input type="text"
-                 class="form-control"
-                 id="generalName"
-                 name="generalName"
-                 placeholder="General Name"
-                 [(ngModel)]="item.generalName">
+          <app-autocomplete
+            id="generalName"
+            name="generalName"
+            textInputClass="form-control"
+            valueNeedsToMatchSuggestion="false"
+            [(ngModel)]="item.generalName"
+            [formatModel]="formatGeneralName"
+            [suggestions]="generalNameSuggestions"
+            placeholder="General Name"
+          ></app-autocomplete>
         </div>
       </div>
 
@@ -68,12 +72,16 @@
           Brand
         </label>
         <div class="col-md-10 col-lg-8">
-          <input type="text"
-                 class="form-control"
-                 id="brand"
-                 name="brand"
-                 placeholder="Brand"
-                 [(ngModel)]="item.brand">
+          <app-autocomplete
+            id="brand"
+            name="brand"
+            textInputClass="form-control"
+            valueNeedsToMatchSuggestion="false"
+            [(ngModel)]="item.brand"
+            [formatModel]="formatBrand"
+            [suggestions]="brandSuggestions"
+            placeholder="Brand"
+          ></app-autocomplete>
         </div>
       </div>
 
@@ -223,12 +231,16 @@
           Brought At
         </label>
         <div class="col-md-10 col-lg-8">
-          <input type="text"
-                 class="form-control"
-                 id="boughtAt"
-                 name="boughtAt"
-                 placeholder="Bought At"
-                 [(ngModel)]="item.boughtAt">
+          <app-autocomplete
+            id="boughtAt"
+            name="boughtAt"
+            textInputClass="form-control"
+            valueNeedsToMatchSuggestion="false"
+            [(ngModel)]="item.boughtAt"
+            [formatModel]="formatBoughtAt"
+            [suggestions]="boughtAtSuggestions"
+            placeholder="Bought At">
+          </app-autocomplete>
         </div>
       </div>
 
@@ -238,30 +250,42 @@
         >
           Ingredients
         </label>
-        <div class="col-md-10 col-lg-8"
-             id="ingredients">
-          <span *ngFor="let ingredient of item.ingredients; let i = index"
-                class="p-2">
-            <div class="border-bottom">
-              {{ingredient.name}}
-              <button type="button"
-                      class="btn btn-light ms-2"
-                      (click)="removeIngredient(i)">
-                <i class="bi bi-trash"></i>
-                Delete
-              </button>
-            </div>
-          </span>
 
+        <div class="col-md-7 col-lg-5">
           <input type="text"
                  class="form-control"
                  placeholder="Ingredient"
+                 id="ingredients"
                  #ingredientInput>
+        </div>
+        <div class="col-md-1 col-lg-1">
           <button type="button"
                   class="btn btn-light ms-2"
-                  (click)="addIngredient(ingredientInput.value)">
-            <i class="bi bi-plus-square">Add</i>
+                  (click)="addIngredient(ingredientInput.value); ingredientInput.value = '' ">
+            <i class="bi bi-plus-square"></i>
           </button>
+        </div>
+      </div>
+
+      <div class="row p-2">
+        <label for="ingredients"
+               class="col-form-label text-muted col-md-2 col-lg-4 m-2"
+        >
+        </label>
+
+        <div class="col-md-7 col-lg-5">
+          <div *ngFor="let ingredient of item.ingredients; let i = index"
+               class="border-bottom pb-2 pt-2">
+            <span>
+              {{ingredient.name}}
+
+            </span>
+            <button type="button"
+                    class="btn btn-light float-end"
+                    (click)="removeIngredient(i)">
+              <i class="bi bi-trash" style="color: firebrick"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>

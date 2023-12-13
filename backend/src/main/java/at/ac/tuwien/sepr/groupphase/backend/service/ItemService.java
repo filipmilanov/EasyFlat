@@ -1,11 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,6 +23,15 @@ public interface ItemService {
      * @return if the id exists in the DB, an Optional of a persisted Item with given ID, an empty optional otherwise
      */
     Optional<Item> findById(Long id, String jwt) throws AuthenticationException;
+
+    /**
+     * Search for an item in the database where one field is matching
+     * .
+     *
+     * @param itemFieldSearchDto fields to search for
+     * @return a list of items matching the search criteria
+     */
+    List<Item> findByFields(ItemFieldSearchDto itemFieldSearchDto);
 
     /**
      * Validates and Creates a new {@link Item} in the db.

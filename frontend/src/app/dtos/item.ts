@@ -21,3 +21,9 @@ export class ItemDto {
   ingredients?: [IngredientDto];
   digitalStorage?: DigitalStorageDto;
 }
+
+export class ItemFieldSearchDto {
+  generalName?: string;
+  brand?: string;
+  boughtAt?: string;
+}

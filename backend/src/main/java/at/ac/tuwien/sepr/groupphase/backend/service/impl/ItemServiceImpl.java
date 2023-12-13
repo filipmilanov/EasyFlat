@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -90,6 +91,17 @@ public class ItemServiceImpl implements ItemService {
                 "The given item does not belong to the user's shared flat!"
         );
         return item;
+    }
+
+    @Override
+    public List<Item> findByFields(ItemFieldSearchDto itemFieldSearchDto) {
+        LOGGER.trace("findByFields({})", itemFieldSearchDto);
+
+        return itemRepository.findAllByGeneralNameContainingIgnoreCaseOrBrandContainingIgnoreCaseOrBoughtAtContainingIgnoreCase(
+            itemFieldSearchDto.generalName(),
+            itemFieldSearchDto.brand(),
+            itemFieldSearchDto.boughtAt()
+        );
     }
 
     @Override
