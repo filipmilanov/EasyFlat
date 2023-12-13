@@ -122,6 +122,7 @@ class StorageEndpointTest {
     }
 
     @Test
+
     public void givenInvalidStorageWhenCreateThenException() throws Exception {
         // given
         WgDetailDto wgDetailDto = new WgDetailDto();
@@ -151,10 +152,11 @@ class StorageEndpointTest {
 
 
     @Test
+
     public void givenStorageIdAndSearchParametersWhenGetItemsThenItemsRetrieved() throws Exception {
         // Given
-        Long storageId = 1L;
-        String endpointUrl = BASE_URI + "/" + storageId;
+
+        String endpointUrl = BASE_URI + "/items";
 
         // when
         ItemSearchDto itemSearchDto = new ItemSearchDto(null, false, null, null, null);
@@ -175,10 +177,11 @@ class StorageEndpointTest {
     }
 
     @Test
+
     public void givenStorageIdAndOrderTypeNameWhenGetItemsThenItemsRetrievedInCorrectOrder() throws Exception {
         // Given
-        Long storageId = 1L;
-        String endpointUrl = BASE_URI + "/" + storageId;
+
+        String endpointUrl = BASE_URI + "/items";
 
 
         ItemSearchDto itemSearchDto = ItemSearchDtoBuilder.builder()
@@ -207,10 +210,11 @@ class StorageEndpointTest {
     }
 
     @Test
+
     public void givenStorageIdAndOrderTypeQuantityWhenGetItemsThenItemsRetrievedInCorrectOrder() throws Exception {
         // Given
-        Long storageId = 1L;
-        String endpointUrl = BASE_URI + "/" + storageId;
+
+        String endpointUrl = BASE_URI + "/items";
 
 
         ItemSearchDto itemSearchDto = ItemSearchDtoBuilder.builder()
