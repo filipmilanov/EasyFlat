@@ -135,7 +135,7 @@ public class ItemServiceImpl implements ItemService {
         itemRepository.deleteById(id);
     }
 
-    private List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException {
+    public List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException {
         if (ingredientDtoList == null) {
             return List.of();
         }

@@ -26,8 +26,8 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public List<ItemLabel> findByValue(List<String> values) {
-        return labelRepository.findAllByLabelValueIn(values);
+    public ItemLabel findByValueAndColour(String value, String colour) {
+        return labelRepository.findByLabelValueAndLabelColour(value, colour);
     }
 
     @Override

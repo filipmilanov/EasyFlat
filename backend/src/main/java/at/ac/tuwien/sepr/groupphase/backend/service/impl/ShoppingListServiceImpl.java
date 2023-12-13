@@ -1,17 +1,26 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.LabelMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingRepository;
+import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
+import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import org.slf4j.Logger;
@@ -35,10 +44,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final ItemMapper itemMapper;
     private final IngredientMapper ingredientMapper;
     private final ItemRepository itemRepository;
+    private final DigitalStorageService digitalStorageService;
+    private final ItemService itemService;
+    private final LabelMapper labelMapper;
 
     public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
-                                   IngredientMapper ingredientMapper, ItemRepository itemRepository) {
+                                   IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService, ItemService itemService, LabelMapper labelMapper) {
         this.shoppingRepository = shoppingRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -46,11 +58,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.shoppingListMapper = shoppingListMapper;
         this.ingredientMapper = ingredientMapper;
         this.itemRepository = itemRepository;
+        this.digitalStorageService = digitalStorageService;
+        this.itemService = itemService;
+        this.labelMapper = labelMapper;
     }
 
     @Override
     public ShoppingItem create(ShoppingItemDto itemDto) {
-        List<ItemLabel> labels = findItemLabelsAndCreateNew(itemDto.labels());
+        List<ItemLabel> labels = findLabelsAndCreateMissing(itemDto.labels());
 
         ShoppingItem createdItem = shoppingRepository.save(itemMapper.dtoToShopping(itemDto, labels, shoppingListMapper.dtoToEntity(itemDto.shoppingList())));
         createdItem.setLabels(labels);
@@ -77,8 +92,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<ShoppingItem> getItemsById(Long listId) {
-        List<ShoppingItem> shoppingItems = shoppingRepository.findByShoppingListId(listId);
+    public List<ShoppingItem> getItemsById(Long listId, ShoppingItemSearchDto itemSearchDto) {
+        List<ShoppingItem> shoppingItems = shoppingRepository.searchItems(listId,
+            (itemSearchDto.productName() != null) ? itemSearchDto.productName() : null,
+            (itemSearchDto.label() != null) ? itemSearchDto.label() : null);
         itemMapper.shoppingItemListToShoppingDto(shoppingItems);
         return shoppingRepository.saveAll(shoppingItems);
     }
@@ -140,16 +157,57 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return itemsList;
     }
 
+    @Override
+    public ShoppingItem update(ShoppingItemDto itemDto) throws ConflictException {
 
-    private List<ItemLabel> findItemLabelsAndCreateNew(List<ItemLabelDto> labels) {
+        List<ItemLabel> labels = null;
+        if (itemDto.labels() != null) {
+            labels = findLabelsAndCreateMissing(itemDto.labels());
+        }
+        List<Ingredient> ingredientList = itemService.findIngredientsAndCreateMissing(itemDto.ingredients());
+
+        ShoppingItem item = itemMapper.dtoToShopping(itemDto, labels,
+            shoppingListMapper.dtoToEntity(itemDto.shoppingList()));
+
+        ShoppingItem updatedItem = shoppingRepository.save(item);
+        updatedItem.setIngredientList(ingredientList);
+        updatedItem.setLabels(labels);
+        return updatedItem;
+    }
+
+
+    private List<ItemLabel> findLabelsAndCreateMissing(List<ItemLabelDto> labels) {
         if (labels == null) {
             return List.of();
         }
-        List<ItemLabel> ret = new ArrayList<>();
-        List<ItemLabelDto> newLabels = labels.stream().toList();
+        List<String> values = labels.stream()
+            .map(ItemLabelDto::labelValue)
+            .toList();
+        List<String> colours = labels.stream()
+            .map(ItemLabelDto::labelColour)
+            .toList();
 
-        if (!newLabels.isEmpty()) {
-            List<ItemLabel> createdLabels = labelService.createAll(newLabels);
+        List<ItemLabel> ret = new ArrayList<>();
+        if (!values.isEmpty()) {
+            for (int i = 0; i < values.size(); i++) {
+                ItemLabel found = labelService.findByValueAndColour(values.get(i), colours.get(i));
+                if (found != null) {
+                    ret.add(found);
+                }
+            }
+        }
+
+        List<ItemLabelDto> missingLabels = labels.stream()
+            .filter(labelDto ->
+                ret.stream()
+                    .noneMatch(label ->
+                        (label.getLabelValue().equals(labelDto.labelValue())
+                            && label.getLabelColour().equals(labelDto.labelColour()))
+                    )
+            ).toList();
+
+        if (!missingLabels.isEmpty()) {
+            List<ItemLabel> createdLabels = labelService.createAll(missingLabels);
             ret.addAll(createdLabels);
         }
         return ret;

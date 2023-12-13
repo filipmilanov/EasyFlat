@@ -124,10 +124,11 @@ export class ShoppingItemCreateEditComponent implements OnInit {
       switch (this.mode) {
         case ItemCreateEditMode.create:
           this.item.quantityCurrent = this.item.quantityTotal;
+          this.item.productName = this.item.generalName;
           observable = this.shoppingService.createItem(this.item);
           break;
         case ItemCreateEditMode.edit:
-          observable = this.itemService.updateItem(this.item);
+          observable = this.shoppingService.updateItem(this.item);
           break;
         default:
           console.error('Unknown ItemCreateEditMode', this.mode);

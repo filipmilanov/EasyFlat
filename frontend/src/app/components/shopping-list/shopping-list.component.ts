@@ -1,7 +1,7 @@
 import {Component, ElementRef, NgIterable, OnInit} from '@angular/core';
 import {ToastrService} from "ngx-toastr";
 import {ActivatedRoute, Router} from "@angular/router";
-import {ShoppingItemDto} from "../../dtos/item";
+import {ShoppingItemDto, ShoppingItemSearchDto} from "../../dtos/item";
 import {ItemService} from "../../services/item.service";
 import {ShoppingListService} from "../../services/shopping-list.service";
 import {ShoppingListDto} from "../../dtos/shoppingList";
@@ -24,6 +24,10 @@ export class ShoppingListComponent implements OnInit {
   checkedItems: ShoppingItemDto[] = this.getCheckedItems();
   selectedShoppingList: number;
   shoppingLists: ShoppingListDto[] = [];
+  searchParams: ShoppingItemSearchDto = {
+    productName: '',
+    label: '',
+  }
 
   constructor(
     private shoppingListService: ShoppingListService,
@@ -59,21 +63,23 @@ export class ShoppingListComponent implements OnInit {
           }
         });
 
-        this.shoppingListService.getItemsWithShopId(this.shopId).subscribe({
-          next: res => {
-            this.items = res;
-          },
-          error: err => {
-            console.error("Error finding items:", err);
-          }
-        });
+        this.getItems();
       },
       error: error => {
         console.error("Error fetching parameters:", error);
       }
     });
+  }
 
-
+  getItems() {
+    this.shoppingListService.getItemsWithShopId(this.shopId, this.searchParams).subscribe({
+      next: res => {
+        this.items = res;
+      },
+      error: err => {
+        console.error("Error finding items:", err);
+      }
+    });
   }
 
   navigateToCreateItem() {

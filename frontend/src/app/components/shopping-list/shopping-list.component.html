@@ -26,7 +26,9 @@
       <label for="searchTitle" class="col-form-label">
         Name
       </label>
-      <input type="text" id="searchTitle" name="searchTitle" class="form-control">
+      <input type="text" id="searchTitle" name="searchTitle"
+             class="form-control" [(ngModel)]="searchParams.productName"
+            (change)="getItems()">
     </div>
   </div>
   <div class="mt-3">
@@ -34,7 +36,9 @@
       <label for="searchTitle" class="col-form-label">
         Label
       </label>
-      <input type="text" id="searchTitle1" name="searchTitle" class="form-control">
+      <input type="text" id="searchTitle1" name="searchTitle"
+             class="form-control" [(ngModel)]="searchParams.label"
+             (change)="getItems()">
     </div>
   </div>
 </form>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {ItemDto, ShoppingItemDto} from "../dtos/item";
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {ItemDto, ShoppingItemDto, ShoppingItemSearchDto} from "../dtos/item";
 import {Observable} from "rxjs";
 import {ShoppingListDto} from "../dtos/shoppingList";
 import {StorageItem} from "../dtos/storageItem";
@@ -26,8 +26,15 @@ export class ShoppingListService {
     return this.http.get<ShoppingItemDto>(this.baseUri + '/' + id);
   }
 
-  getItemsWithShopId(shopId: string):Observable<ShoppingItemDto[]> {
-    return this.http.get<ShoppingItemDto[]>(this.baseUri + "/list-items/" + shopId);
+  getItemsWithShopId(shopId: string, searchParams: ShoppingItemSearchDto):Observable<ShoppingItemDto[]> {
+    let params = new HttpParams();
+    if (searchParams.productName) {
+      params = params.append('productName', searchParams.productName);
+    }
+    if (searchParams.label) {
+      params = params.append('label', searchParams.label);
+    }
+    return this.http.get<ShoppingItemDto[]>(this.baseUri + "/list-items/" + shopId, {params});
   }
 
   getShoppingListById(shoppingListId: string): Observable<ShoppingListDto> {
@@ -54,5 +61,10 @@ export class ShoppingListService {
 
   transferToStorage(shoppingItems: ShoppingItemDto[]): Observable<StorageItem[]> {
     return this.http.post<StorageItem[]>(this.baseUri + '/storage', shoppingItems);
+  }
+
+  updateItem(item: ShoppingItemDto) {
+    console.log('Update item with ID ' + item.itemId);
+    return this.http.put<ShoppingItemDto>(`${this.baseUri}/${item.itemId}`, item);
   }
 }

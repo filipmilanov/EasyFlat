@@ -42,4 +42,28 @@ public record ShoppingItemDto(
     List<ItemLabelDto> labels,
     ShoppingListDto shoppingList
 ) {
+
+    public ShoppingItemDto withId(long newId) {
+        return new ShoppingItemDto(
+            newId,
+            ean,
+            generalName,
+            productName,
+            brand,
+            quantityCurrent,
+            quantityTotal,
+            unit,
+            expireDate,
+            description,
+            priceInCent,
+            alwaysInStock,
+            minimumQuantity,
+            boughtAt,
+            digitalStorage,
+            ingredients,
+            itemStats,
+            labels,
+            shoppingList
+        );
+    }
 }

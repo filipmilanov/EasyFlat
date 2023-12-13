@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -41,15 +43,10 @@ public class ShoppingListEndpoint {
     private final ItemMapper itemMapper;
     private final ShoppingListMapper shoppingListMapper;
 
-    private final IngredientMapper ingredientsMapper;
-    private final LabelMapper labelMapper;
-
     public ShoppingListEndpoint(ShoppingListService shoppingService, ItemMapper mapper, ShoppingListMapper shoppingListMapper, IngredientMapper ingredientsMapper, LabelMapper labelMapper) {
         this.shoppingService = shoppingService;
         this.itemMapper = mapper;
         this.shoppingListMapper = shoppingListMapper;
-        this.ingredientsMapper = ingredientsMapper;
-        this.labelMapper = labelMapper;
     }
 
     @Secured("ROLE_USER")
@@ -58,6 +55,14 @@ public class ShoppingListEndpoint {
     public ShoppingItemDto create(@RequestBody ShoppingItemDto itemDto) throws ValidationException, ConflictException {
         LOGGER.info("create({})", itemDto);
         ShoppingItem item = shoppingService.create(itemDto);
+        return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
+    }
+
+    @Secured("ROLE_USER")
+    @PutMapping("{id}")
+    public ShoppingItemDto update(@PathVariable long id, @RequestBody ShoppingItemDto itemDto) throws ValidationException, ConflictException {
+        LOGGER.info("create({})", itemDto);
+        ShoppingItem item = shoppingService.update(itemDto.withId(id));
         return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
     }
 
@@ -83,9 +88,9 @@ public class ShoppingListEndpoint {
 
     @PermitAll
     @GetMapping("/list-items/{listId}")
-    public List<ShoppingItemDto> getItemsById(@PathVariable Long listId) {
+    public List<ShoppingItemDto> getItemsById(@PathVariable Long listId, ShoppingItemSearchDto itemSearchDto) {
         LOGGER.info("getItemsById({})", listId);
-        List<ShoppingItem> items = shoppingService.getItemsById(listId);
+        List<ShoppingItem> items = shoppingService.getItemsById(listId, itemSearchDto);
         List<ShoppingItemDto> ret = new ArrayList<>();
         for (ShoppingItem item : items) {
             ret.add(itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList())));
