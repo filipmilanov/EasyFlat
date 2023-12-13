@@ -41,4 +41,6 @@ public abstract class ItemMapper {
     List<Long> ingredientListToIdList(List<Ingredient> ingredientList) {
         return ingredientList.stream().map(Ingredient::getIngrId).toList();
     }
+
+    public abstract List<ItemDto> entityListToItemDtoList(List<Item> items);
 }

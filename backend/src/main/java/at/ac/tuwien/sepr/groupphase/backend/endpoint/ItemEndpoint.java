@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -34,6 +36,16 @@ public class ItemEndpoint {
     public ItemEndpoint(ItemService itemService, ItemMapper itemMapper) {
         this.itemService = itemService;
         this.itemMapper = itemMapper;
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("search")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ItemDto> findByFields(@RequestBody ItemFieldSearchDto itemFieldSearchDto) {
+        LOGGER.info("findByFields({})", itemFieldSearchDto);
+        return itemMapper.entityListToItemDtoList(
+            itemService.findByFields(itemFieldSearchDto)
+        );
     }
 
     @Secured("ROLE_USER")
