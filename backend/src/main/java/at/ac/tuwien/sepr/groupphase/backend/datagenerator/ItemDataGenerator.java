@@ -50,6 +50,7 @@ public class ItemDataGenerator {
             item.setExpireDate(LocalDate.now().plusMonths(i + 1));  // Set expire date to current date + i months
             item.setDescription("This is a test product description for Item " + (i + 1));
             item.setPriceInCent(500L + i * 100);
+            item.setBoughtAt("Hofer");
 
             DigitalStorage storage = new DigitalStorage();
             storage.setStorId(1L);
