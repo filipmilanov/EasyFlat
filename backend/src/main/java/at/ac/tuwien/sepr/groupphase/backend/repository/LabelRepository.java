@@ -10,4 +10,6 @@ import java.util.List;
 public interface LabelRepository extends JpaRepository<ItemLabel, Long> {
 
     List<ItemLabel> findAllByLabelValueIn(List<String> values);
+
+    ItemLabel findByLabelValueAndLabelColour(String labelValue, String labelColour);
 }
