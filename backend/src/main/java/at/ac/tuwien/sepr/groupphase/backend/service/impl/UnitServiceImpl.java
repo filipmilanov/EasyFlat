@@ -48,7 +48,7 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
-    public Long convertUnits(Unit from, Unit to, Long value) throws ValidationException, ConflictException {
+    public Double convertUnits(Unit from, Unit to, Double value) throws ValidationException, ConflictException {
         LOGGER.info("convertUnits({}, {}, {})", from, to, value);
 
 

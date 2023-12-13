@@ -44,8 +44,8 @@ public class ItemDataGenerator {
             item.setEan("123456789012" + i);  // Replace with valid EAN numbers
             item.setProductName("Test Product " + (i + 1));
             item.setBrand("Test Brand " + (i + 1));
-            item.setQuantityCurrent(10L + i);
-            item.setQuantityTotal(20L + i);
+            item.setQuantityCurrent(10.0 + i);
+            item.setQuantityTotal(20.0 + i);
             item.setUnit(kg);
             item.setExpireDate(LocalDate.now().plusMonths(i + 1));  // Set expire date to current date + i months
             item.setDescription("This is a test product description for Item " + (i + 1));
