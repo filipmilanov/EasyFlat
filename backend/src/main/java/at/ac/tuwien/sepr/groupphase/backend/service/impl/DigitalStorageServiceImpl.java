@@ -200,25 +200,25 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) {
-        Map<String, Long[]> items = new HashMap<>();
+        Map<String, Double[]> items = new HashMap<>();
         Map<String, String> itemUnits = new HashMap<>();
         for (Item item : allItems) {
             itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit().getName());
-            long currentQ = 0;
-            long totalQ = 0;
+            double currentQ = 0;
+            double totalQ = 0;
             if (items.get(item.getGeneralName()) != null) {
                 currentQ = items.get(item.getGeneralName())[0];
                 totalQ = items.get(item.getGeneralName())[2];
             }
-            Long[] quantityStorId = new Long[3];
+            Double[] quantityStorId = new Double[3];
             quantityStorId[0] = currentQ + item.getQuantityCurrent();
-            quantityStorId[1] = item.getStorage().getStorId();
+            quantityStorId[1] = item.getStorage().getStorId().doubleValue();
             quantityStorId[2] = totalQ + item.getQuantityTotal();
             items.put(item.getGeneralName(), quantityStorId);
         }
         List<ItemListDto> toRet = new LinkedList<>();
-        for (Map.Entry<String, Long[]> item : items.entrySet()) {
-            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1], UnitDtoBuilder.builder().name(itemUnits.get(item.getKey())).build()));
+        for (Map.Entry<String, Double[]> item : items.entrySet()) {
+            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1].longValue(), UnitDtoBuilder.builder().name(itemUnits.get(item.getKey())).build()));
         }
         return toRet;
     }
