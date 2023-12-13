@@ -9,7 +9,8 @@ import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {ShoppingListService} from "../../../services/shopping-list.service";
-import {ShoppingLabelDto} from "../../../dtos/shoppingLabel";
+import {switchMap} from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-item-create-edit',
@@ -76,45 +77,52 @@ export class ShoppingItemCreateEditComponent implements OnInit {
     }
   }
 
+
   ngOnInit(): void {
-    this.route.data.subscribe(data => {
-      this.mode = data.mode;
-      this.route.params.subscribe(params => {
-        // Extract the 'id' parameter from the route
-        const shoppingListId = params['id'];
-        this.shoppingService.getShoppingListById(shoppingListId).subscribe({
-          next: res => {
-            this.item.shoppingList = res;
-            console.log(this.item.shoppingList)
-          }
-        });
-
-      });
-    });
-
-    if (this.mode === ItemCreateEditMode.edit) {
-      this.route.params.subscribe({
-        next: params => {
-          const itemId = params.id;
-          this.shoppingService.getById(itemId).subscribe({
-            next: res => {
-              this.item = res;
-            },
-            error: error => {
-              console.error(`Item could not be retrieved from the backend: ${error}`);
-              this.router.navigate(['/shopping-list/1']);
-              this.notification.error('Item could not be retrieved', "Error");
-            }
-          })
+    this.route.data
+      .pipe(
+        switchMap(data => {
+          this.mode = data.mode;
+          return this.route.params;
+        }),
+        switchMap(params => {
+          const shoppingListId = params['id'];
+          return this.shoppingService.getShoppingListById(shoppingListId);
+        })
+      )
+      .subscribe({
+        next: res => {
+          this.item.shoppingList = res;
+          console.log(this.item.shoppingList);
         },
         error: error => {
-          console.error(`Item could not be retrieved using the ID from the URL: ${error}`);
+          console.error(`Error fetching shopping list: ${error}`);
           this.router.navigate(['/shopping-list/1']);
-          this.notification.error('No item provided for editing', "Error");
+        },
+        complete: () => {
+          if (this.mode === ItemCreateEditMode.edit) {
+            this.route.params
+              .pipe(
+                switchMap(params => {
+                  const itemId = params.id;
+                  return this.shoppingService.getById(itemId);
+                })
+              )
+              .subscribe({
+                next: res => {
+                  this.item = res;
+                },
+                error: error => {
+                  console.error(`Error fetching item: ${error}`);
+                  this.router.navigate(['/shopping-list/1']);
+                  this.notification.error('Item could not be retrieved', 'Error');
+                },
+              });
+          }
         }
-      })
-    }
+      });
   }
+
 
   public onSubmit(form: NgForm): void {
     console.log('is form valid?', form.valid, this.item);
@@ -153,9 +161,15 @@ export class ShoppingItemCreateEditComponent implements OnInit {
     }
     console.log(label, selectedLabelColor)
     if (this.item.labels === undefined) {
-      this.item.labels = [{labelValue: label, labelColour: (selectedLabelColor != '#ffffff' ? selectedLabelColor : '#000000')}];
+      this.item.labels = [{
+        labelValue: label,
+        labelColour: (selectedLabelColor != '#ffffff' ? selectedLabelColor : '#000000')
+      }];
     } else {
-      this.item.labels.push({labelValue: label, labelColour: (selectedLabelColor != '#ffffff' ? selectedLabelColor : '#000000')});
+      this.item.labels.push({
+        labelValue: label,
+        labelColour: (selectedLabelColor != '#ffffff' ? selectedLabelColor : '#000000')
+      });
     }
   }
 
