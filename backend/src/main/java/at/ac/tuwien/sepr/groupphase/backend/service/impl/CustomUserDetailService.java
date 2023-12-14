@@ -176,4 +176,14 @@ public class CustomUserDetailService implements UserService {
 
     }
 
+    @Override
+    public List<ApplicationUser> findFlatmates(String jwt) {
+        LOGGER.debug("findFlatmates()");
+
+        ApplicationUser user = this.getUser(jwt);
+        SharedFlat flat = user.getSharedFlat();
+        return flat.getUsers().stream()
+            .filter((flatmate) -> !flatmate.getId().equals(user.getId()))
+            .toList();
+    }
 }
