@@ -90,4 +90,5 @@ public class CookingEndPoint {
     public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
         return cookingService.cookRecipe(recipeToCook, jwt);
     }
+
 }
