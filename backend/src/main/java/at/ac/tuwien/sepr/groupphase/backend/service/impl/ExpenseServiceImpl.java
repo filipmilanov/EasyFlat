@@ -3,6 +3,8 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DebitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DebitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
@@ -66,7 +68,9 @@ public class ExpenseServiceImpl implements ExpenseService {
         SharedFlat sharedFlatOfUser = user.getSharedFlat();
         List<ApplicationUser> usersOfFlat = sharedFlatOfUser.getUsers().stream().toList();
 
+        expenseDto = enhanceWithSharedFlat(expenseDto, user);
         expenseValidator.validateExpense(expenseDto, usersOfFlat, sharedFlatOfUser);
+
         List<Debit> debitList = defineDebitPerUserBySplitBy(
             expenseDto,
             expenseDto.debitUsers().stream().findAny().orElseThrow().splitBy()
@@ -120,5 +124,25 @@ public class ExpenseServiceImpl implements ExpenseService {
                 throw new ValidationException("Unexpected value: " + splitBy, List.of("Unexpected value: " + splitBy));
         }
         return debitList;
+    }
+
+    private ExpenseDto enhanceWithSharedFlat(ExpenseDto expenseDto, ApplicationUser user) {
+        LOGGER.trace("enhanceWithSharedFlat({}, {})", expenseDto, user);
+
+        WgDetailDto sharedFlat = new WgDetailDto();
+        sharedFlat.setId(user.getSharedFlat().getId());
+
+        return ExpenseDtoBuilder.builder()
+            .id(expenseDto.id())
+            .title(expenseDto.title())
+            .amountInCents(expenseDto.amountInCents())
+            .description(expenseDto.description())
+            .createdAt(expenseDto.createdAt())
+            .paidBy(expenseDto.paidBy())
+            .debitUsers(expenseDto.debitUsers())
+            .sharedFlat(sharedFlat)
+            .isRepeating(expenseDto.isRepeating())
+            .interval(expenseDto.interval())
+            .build();
     }
 }
