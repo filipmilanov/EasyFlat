@@ -1,4 +1,17 @@
-<div *ngFor="let option of options">
-  <input type="radio" [value]="option.value" [formControl]="form.get('selectedOption')"/>
-  {{ option.label }}
+<div class="btn-group"
+     role="group"
+     aria-label="Basic example"
+     [(ngModel)]="bindingObject"
+>
+  <button *ngFor="let option of options"
+          type="button"
+          [ngClass]="{
+            'btn': true,
+            'btn-secondary': bindingObject !== option.value,
+            'btn-primary': bindingObject === option.value
+          }"
+          [value]="option.value"
+  >
+    {{ option.label}}
+  </button>
 </div>
