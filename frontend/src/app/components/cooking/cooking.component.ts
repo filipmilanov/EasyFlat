@@ -6,6 +6,7 @@ import {RecipeSuggestion} from "../../dtos/cookingDtos/recipeSuggestion";
 import {CookbookModalComponent} from "../cookbook/cookbook-modal/cookbook-modal.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CookingModalComponent} from "./cooking-modal/cooking-modal.component";
+import {RecipeDetailComponent} from "./recipe-detail/recipe-detail.component";
 
 @Component({
   selector: 'app-cooking',
@@ -50,6 +51,11 @@ export class CookingComponent implements OnInit {
   openRecipeModal(recipe: RecipeSuggestion) {
     const modalRef = this.modalService.open(CookingModalComponent, { size: 'lg' });
     console.log(recipe + "from Modal");
+    modalRef.componentInstance.recipe = recipe;
+  }
+   openDetailModal(recipe: RecipeSuggestion) {
+    const modalRef = this.modalService.open(RecipeDetailComponent, { size: 'lg' });
+
     modalRef.componentInstance.recipe = recipe;
   }
 

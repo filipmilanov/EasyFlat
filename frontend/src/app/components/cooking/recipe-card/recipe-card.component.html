@@ -27,7 +27,7 @@
         <button class="btn btn-info " (click)="addToCookBook()" [disabled]="isSaveButtonDisabled">Save</button>
       </div>
       <div class="col-4 mb-2 ">
-        <button class="btn btn-outline-secondary" [routerLink]="[ recipe.id, 'detail']">Detail</button>
+        <button class="btn btn-outline-secondary" (click)="showDetails()">Detail</button>
       </div>
       <div class="col-4 mb-2">
         <button class="btn btn-success" (click)="cook()">Cook</button>

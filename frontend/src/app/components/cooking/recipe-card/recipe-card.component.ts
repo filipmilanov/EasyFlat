@@ -15,6 +15,7 @@ export class RecipeCardComponent {
   @Input() recipe: RecipeSuggestion;
   @Output() recipeAddedToCookbook: EventEmitter<string> = new EventEmitter();
   @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
+  @Output() detailsClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
 
   isSaveButtonDisabled = false;
 
@@ -59,7 +60,9 @@ console.log(this.recipe)
     }
   }
 
-
+showDetails(){
+this.detailsClicked.emit(this.recipe);
+}
 
 
 

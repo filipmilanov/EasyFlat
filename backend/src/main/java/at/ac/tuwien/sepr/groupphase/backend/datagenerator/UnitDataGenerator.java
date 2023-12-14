@@ -41,6 +41,7 @@ public class UnitDataGenerator {
 
 
         UnitDto pcs = new UnitDto("pcs", null, Set.of());
+        UnitDto servings = new UnitDto("servings", 1L, Set.of(pcs));
         UnitDto tablespoons = new UnitDto("tablespoons", 15L, Set.of(ml));
         UnitDto teaspoon = new UnitDto("teaspoon", 15L, Set.of(ml));
 
@@ -64,7 +65,7 @@ public class UnitDataGenerator {
         unitService.create(sheets);
         unitService.create(cups);
         unitService.create(teaspoon);
-
+        unitService.create(servings);
     }
 
 
