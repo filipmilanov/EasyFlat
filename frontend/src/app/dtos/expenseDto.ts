@@ -1,5 +1,6 @@
 import {SharedFlat} from "./sharedFlat";
 import {UserDetail} from "./auth-request";
+import {ItemDto} from "./item";
 
 export class ExpenseDto {
   id?: number;
@@ -10,6 +11,9 @@ export class ExpenseDto {
   paidBy?: UserDetail;
   debitUsers?: DebitDto[];
   sharedFlat?: SharedFlat;
+  items?: ItemDto[];
+  isRepeating?: boolean;
+  interval?: Date;
 }
 
 export class DebitDto {
