@@ -33,7 +33,7 @@ public interface DigitalStorageService {
      * Search for all Storages stored in the database which matches with the given search criteria.
      *
      * @param digitalStorageSearchDto search criteria
-     * @param jwt        a valid jwt
+     * @param jwt  A valid JWT token for user authentication.
      * @return a List of all persisted Storages
      */
     List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto, String jwt) throws AuthenticationException;
@@ -59,7 +59,7 @@ public interface DigitalStorageService {
      * Search for all Items of a DigitalStorage stored in the database filtered by search parameters.
      *
      * @param itemSearchDto search parameters
-     * @param jwt        a valid jwt
+     * @param jwt  A valid JWT token for user authentication.
      * @return a List of filtered items
      */
     List<ItemListDto> searchItems(ItemSearchDto itemSearchDto, String jwt) throws ValidationException, AuthenticationException, ConflictException;
@@ -68,7 +68,7 @@ public interface DigitalStorageService {
      * Validates and Creates a new {@link DigitalStorage} in the db.
      *
      * @param storageDto a storage without ID
-     * @param jwt        a valid jwt
+     * @param jwt  A valid JWT token for user authentication.
      * @return an object of type {@link DigitalStorage} which is persisted and has an ID
      */
     DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthenticationException;
@@ -115,6 +115,7 @@ public interface DigitalStorageService {
      * Gets an item from digital storage and adds it to the main shopping list.
      *
      * @param itemDto existing ID of a storage
+     * @param jwt  A valid JWT token for user authentication.
      * @return the added item of type {@link ShoppingItem}
      */
     ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException;

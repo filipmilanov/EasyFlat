@@ -117,6 +117,8 @@ export class ShoppingItemCreateEditComponent implements OnInit {
           this.shoppingService.getById(itemId).subscribe({
             next: res => {
               this.item = res;
+              this.item.unit = res.unit;
+              console.log(this.item.unit)
             },
             error: error => {
               console.error(`Item could not be retrieved from the backend: ${error}`);
