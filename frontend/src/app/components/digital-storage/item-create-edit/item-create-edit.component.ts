@@ -257,7 +257,16 @@ export class ItemCreateEditComponent implements OnInit {
       next: data => {
         console.log("Loaded EAN number:", data)
         if (data != null) {
-          this.item = data;
+          this.item = {
+            ...this.item,
+            generalName: data.generalName,
+            productName: data.productName,
+            brand: data.brand,
+            ingredients: data.ingredients,
+            quantityTotal: data.quantityTotal,
+            unit: (this.availableUnits[0] == null ? this.item.unit : this.availableUnits[0]),
+            ean: ean
+          };
         } else {
           console.log("No data found for EAN number:", ean)
         }
