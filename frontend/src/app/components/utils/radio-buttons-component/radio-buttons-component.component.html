@@ -1,7 +1,6 @@
 <div class="btn-group"
      role="group"
      aria-label="Basic example"
-     [(ngModel)]="bindingObject"
 >
   <button *ngFor="let option of options"
           type="button"
@@ -11,6 +10,7 @@
             'btn-primary': bindingObject === option.value
           }"
           [value]="option.value"
+          (click)="onBindingObjectChange(option.value)"
   >
     {{ option.label}}
   </button>
