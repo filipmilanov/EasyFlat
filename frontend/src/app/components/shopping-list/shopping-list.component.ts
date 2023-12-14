@@ -22,12 +22,13 @@ export class ShoppingListComponent implements OnInit {
   items: ShoppingItemDto[] = [];
   shopId: string;
   checkedItems: ShoppingItemDto[] = this.getCheckedItems();
-  selectedShoppingList: string = 'Default';
+  selectedShoppingList: number;
   shoppingLists: ShoppingListDto[] = [];
   searchParams: ShoppingItemSearchDto = {
     productName: '',
     label: '',
   }
+  shopName: string;
 
   constructor(
     private shoppingListService: ShoppingListService,
@@ -44,22 +45,32 @@ export class ShoppingListComponent implements OnInit {
     console.log('Checked Items:', this.checkedItems);
     this.shoppingListService.getShoppingLists().subscribe({
         next: res => {
-          this.shoppingLists = res
-          if (this.selectedShoppingList == 'Default') {
-            this.shoppingList = res[0];
-          } else {
-            for (let i = 0; i < this.shoppingLists.length; i++) {
-              if (this.shoppingLists[i].listName === this.selectedShoppingList) {
-                this.shoppingList = this.shoppingLists[i];
-                break;
-              }
-            }
-          }
+          this.shoppingLists = res;
           this.shopId = this.shoppingList.id + '';
           this.getItems();
         }
       }
     );
+    this.route.params.subscribe({
+      next: params => {
+        this.shopName = params.name;
+        console.log(this.shopName)
+        this.shoppingListService.getShoppingListByName(this.shopName).subscribe({
+          next: (res: ShoppingListDto) => {
+            this.shoppingList = res;
+            this.shopId = res.id + "";
+          },
+          error: (error: any) => {
+            console.error('Error fetching shopping list:', error);
+          }
+        });
+
+        this.getItems();
+      },
+      error: error => {
+        console.error("Error fetching parameters:", error);
+      }
+    });
 
   }
 
