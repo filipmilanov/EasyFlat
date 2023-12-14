@@ -232,8 +232,8 @@ public class CookingServiceTest {
         List<ItemListDto> itemsFromDigitalStorageIST = digitalStorageService.searchItems(searchParamsIS, "jwt");
         List<ItemListDto> itemsFromDigitalStorageAIST = digitalStorageService.searchItems(searchParamsAIS, "jwt");
         List<ItemListDto> itemsT = new LinkedList<>();
-        items.addAll(itemsFromDigitalStorageIS);
-        items.addAll(itemsFromDigitalStorageAIS);
+        items.addAll(itemsFromDigitalStorageIST);
+        items.addAll(itemsFromDigitalStorageAIST);
 
 
         for (ItemListDto item : itemsT) {

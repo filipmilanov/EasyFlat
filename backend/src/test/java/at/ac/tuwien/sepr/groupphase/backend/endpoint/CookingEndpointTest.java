@@ -136,20 +136,25 @@ public class CookingEndpointTest {
         String body = objectMapper.writeValueAsString(testRecipe);
 
         // when
-        MvcResult mvcResult = this.mockMvc.perform(put("/cook")
+        MvcResult mvcResult = this.mockMvc.perform(put(BASE_URI + "/cook")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
-                .header(HttpHeaders.AUTHORIZATION, jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();
 
         // then
-        mvcResult.getResponse().getContentAsString(); // You can assert the response content as needed
+        //  mvcResult.getResponse().getContentAsString(); // You can assert the response content as needed
 
-
+        RecipeSuggestionDto responseRecipe = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), RecipeSuggestionDto.class);
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus()),
-            () -> assertNotNull(mvcResult.getResponse()));
+            () -> assertNotNull(mvcResult.getResponse()),
+            () -> assertEquals(testRecipe, responseRecipe)
+            );
     }
+
+
+
 
 }
