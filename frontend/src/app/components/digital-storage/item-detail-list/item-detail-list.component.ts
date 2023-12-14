@@ -8,6 +8,7 @@ import {ToastrService} from "ngx-toastr";
 import {parseInt} from "lodash";
 import {Observable} from "rxjs";
 import {dateComparator} from "@ng-bootstrap/ng-bootstrap/datepicker/datepicker-tools";
+import {ShoppingListService} from "../../../services/shopping-list.service";
 
 @Component({
   selector: 'app-item-detail-list',
@@ -22,7 +23,7 @@ export class ItemDetailListComponent implements OnInit {
 
   constructor(private storageService: StorageService, private router: Router,
               private route: ActivatedRoute, private itemService: ItemService, private el: ElementRef,
-              private notification: ToastrService) {
+              private notification: ToastrService, private shoppingService: ShoppingListService) {
   }
 
   ngOnInit() {
@@ -209,11 +210,14 @@ export class ItemDetailListComponent implements OnInit {
         this.storageService.addItemToShoppingList(item).subscribe({
             next: data => {
               this.notification.success(`Item ${itemId} successfully added to the shopping list.`, "Success");
-              this.router.navigate([`/shopping-list/1`])
+              this.shoppingService.getShoppingListByName('Default').subscribe({
+                next: res => {
+                  this.router.navigate([`/shopping-list/` + res.listName]);
+                }
+              })
             },
             error: error => {
               console.error(`Item could not be added to the shopping list: ${error.error.message}`);
-              this.notification.error(error.error.message);
               this.notification.error(`Item ${itemId} could not be added to the shopping list`, "Error");
             }
 

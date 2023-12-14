@@ -51,7 +51,7 @@ export class StorageService {
   }
 
   getItemsWithGenaralName(generalName:string): Observable<StorageItem[]> {
-
+    console.log('Get all items with general name ' + generalName);
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });
@@ -67,7 +67,11 @@ export class StorageService {
    */
   addItemToShoppingList(item: ItemDto): Observable<ShoppingItemDto> {
     console.log('Add item ' + item + ' to shopping list')
-    return this.httpClient.post<ShoppingItemDto>(this.storageBaseUri + '/shop', item);
+
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.post<ShoppingItemDto>(this.storageBaseUri + '/shop', item, {headers});
   }
 
 }

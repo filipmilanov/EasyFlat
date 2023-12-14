@@ -64,9 +64,9 @@
     </td>
     <td>{{ item.quantityTotal}}{{item.unit.name}}</td>
     <td>
-      <button *ngIf="item.productName !== null" (click)="navigateToEditItem(item.itemId + '')" class="btn btn-danger" >
-        <i class="bi-trash">Details</i>
-      </button>
+      <a *ngIf="item.productName !== null" (click)="navigateToEditItem(item.itemId + '')" class="btn btn-sm btn-warning">
+        <i class="bi bi-pencil">Edit</i>
+      </a>
     </td>
     <td>
       <input type="checkbox" [checked]="item.check" (change)="updateCheckedItems(item)">
