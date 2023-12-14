@@ -16,6 +16,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -23,8 +24,12 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
+import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
+import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingItemValidator;
 import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +52,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final DigitalStorageRepository digitalStorageRepository;
     private final DigitalStorageMapper digitalStorageMapper;
     private final DigitalStorageValidator digitalStorageValidator;
-    private final Validator validator;
     private final ShoppingRepository shoppingRepository;
     private final ItemMapper itemMapper;
     private final IngredientMapper ingredientMapper;
@@ -55,21 +59,24 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final Authorization authorization;
     private final SharedFlatService sharedFlatService;
     private final ShoppingListRepository shoppingListRepository;
+    private final UnitService unitService;
+    private final ItemValidator itemValidator;
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      DigitalStorageMapper digitalStorageMapper,
                                      DigitalStorageValidator digitalStorageValidator,
-                                     Validator validator,
                                      ShoppingRepository shoppingRepository,
                                      ItemMapper itemMapper,
                                      IngredientMapper ingredientMapper,
                                      CustomUserDetailService customUserDetailService,
                                      Authorization authorization,
-                                     SharedFlatService sharedFlatService, ShoppingListRepository shoppingListRepository) {
+                                     SharedFlatService sharedFlatService,
+                                     ShoppingListRepository shoppingListRepository,
+                                     UnitService unitService,
+                                     ItemValidator itemValidator) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
-        this.validator = validator;
         this.shoppingRepository = shoppingRepository;
         this.itemMapper = itemMapper;
         this.ingredientMapper = ingredientMapper;
@@ -77,6 +84,8 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         this.authorization = authorization;
         this.sharedFlatService = sharedFlatService;
         this.shoppingListRepository = shoppingListRepository;
+        this.unitService = unitService;
+        this.itemValidator = itemValidator;
     }
 
     @Override
@@ -226,8 +235,13 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
 
     @Override
-    public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException {
+    public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.trace("addItemToShopping({})", itemDto);
+
+        List<DigitalStorage> digitalStorageList = this.findAll(null, jwt);
+        List<Unit> unitList = unitService.findAll();
+        itemValidator.validateForCreate(itemDto, digitalStorageList, unitList);
+
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));

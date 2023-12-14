@@ -51,6 +51,9 @@ public class ShoppingItem {
     @Column
     private Boolean alwaysInStock;
 
+    @Column
+    private Long minimumQuantity;
+
     @ManyToOne
     private Unit unit;
 
@@ -215,11 +218,11 @@ public class ShoppingItem {
     }
 
     public Long getMinimumQuantity() {
-        return null;
+        return minimumQuantity;
     }
 
     public void setMinimumQuantity(Long minimumQuantity) {
-
+        this.minimumQuantity = minimumQuantity;
     }
 
     public boolean alwaysInStock() {

@@ -118,5 +118,5 @@ public interface DigitalStorageService {
      * @param jwt  A valid JWT token for user authentication.
      * @return the added item of type {@link ShoppingItem}
      */
-    ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException;
+    ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException;
 }

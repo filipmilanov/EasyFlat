@@ -20,7 +20,7 @@ public interface ShoppingListService {
      * @param itemDto a shopping item without ID
      * @return an object of type {@link ShoppingItem} which is persisted and has an ID
      */
-    ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException;
+    ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException;
 
     /**
      * Search for a shopping item in the database with given ID.

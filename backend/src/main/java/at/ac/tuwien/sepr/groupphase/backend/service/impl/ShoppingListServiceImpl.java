@@ -14,6 +14,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -25,7 +26,9 @@ import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
+import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingItemValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -54,12 +57,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final Authorization authorization;
     private final SharedFlatService sharedFlatService;
     private final DigitalStorageRepository digitalStorageRepository;
+    private final ShoppingItemValidator shoppingItemValidator;
+    private final UnitService unitService;
 
     public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
-                                   ItemService itemService, LabelMapper labelMapper, CustomUserDetailService customUserDetailService, Authorization authorization,
-                                   SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository) {
+                                   ItemService itemService, CustomUserDetailService customUserDetailService, Authorization authorization,
+                                   SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository, ShoppingItemValidator shoppingItemValidator, UnitService unitService) {
         this.shoppingRepository = shoppingRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -73,11 +78,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.authorization = authorization;
         this.sharedFlatService = sharedFlatService;
         this.digitalStorageRepository = digitalStorageRepository;
+        this.shoppingItemValidator = shoppingItemValidator;
+        this.unitService = unitService;
     }
 
     @Override
-    public ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException {
+    public ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.trace("create({},{})", itemDto, jwt);
+
+        List<ShoppingList> shoppingLists = this.getShoppingLists(jwt);
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
+        List<Unit> unitList = unitService.findAll();
+        shoppingItemValidator.validateForCreate(itemDto, shoppingLists, digitalStorageList, unitList);
+
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));

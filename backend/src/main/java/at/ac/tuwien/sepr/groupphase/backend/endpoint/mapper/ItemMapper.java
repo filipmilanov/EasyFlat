@@ -43,6 +43,7 @@ public abstract class ItemMapper {
         return ingredientList.stream().map(Ingredient::getIngrId).toList();
     }
 
+    @Mapping(target = "alwaysIsStock", expression = "java( itemDto.alwaysInStock() )")
     @Mapping(target = "labels", expression = "java( labels )")
     @Mapping(target = "shoppingList", expression = "java( shoppingList )")
     public abstract ShoppingItem dtoToShopping(ShoppingItemDto itemDto,
