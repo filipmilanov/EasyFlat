@@ -48,7 +48,7 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
-    public Double convertUnits(Unit from, Unit to, Double value) throws ValidationException, ConflictException {
+    public Double convertUnits(Unit from, Unit to, Double value) {
         LOGGER.info("convertUnits({}, {}, {})", from, to, value);
 
 
@@ -80,7 +80,8 @@ public class UnitServiceImpl implements UnitService {
         return unitRepository.save(unitEntity);
     }
 
-    private Unit getMinUnit(Unit unit) {
+    @Override
+    public Unit getMinUnit(Unit unit) {
         if (!unit.getSubUnit().isEmpty()) {
             for (Unit subUnit : unit.getSubUnit()) {
                 return subUnit;

@@ -1,14 +1,20 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -28,10 +34,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 
+import static org.assertj.core.api.Assertions.in;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.mock;
@@ -41,10 +49,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
 @SpringBootTest
 @ActiveProfiles("test")
 public class CookingServiceTest {
 
+
+    @Autowired
+    private DigitalStorageService digitalStorageService;
 
     @Autowired
     private CookingService cookingService;
@@ -63,6 +75,9 @@ public class CookingServiceTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UnitService unitService;
 
     private ApplicationUser applicationUser;
 
@@ -94,17 +109,11 @@ public class CookingServiceTest {
     }
 
 
-
-
-
-
-
-
     @Test
     void testCookRecipeReturnTheCookedRecipe() throws ValidationException, ConflictException, AuthenticationException {
         // given
         Set<UnitDto> subUnit = new HashSet<>();
-        subUnit.add(new UnitDto("g",null,null));
+        subUnit.add(new UnitDto("g", null, null));
         RecipeSuggestionDto testRecipe = RecipeSuggestionDtoBuilder.builder()
             .id(1L)
             .title("Test recipe")
@@ -163,6 +172,83 @@ public class CookingServiceTest {
 
     }
 
-    // Additional tests can be added based on specific scenarios and requirements
+    @Test
+    void testCookRecipeRemoveItemsQuantityFromStorage() throws ValidationException, ConflictException, AuthenticationException {
+        // given
+        Set<UnitDto> subUnit = new HashSet<>();
+        subUnit.add(new UnitDto("g", null, null));
+        RecipeSuggestionDto testRecipe = RecipeSuggestionDtoBuilder.builder()
+            .id(1L)
+            .title("Test recipe")
+            .servings(5)
+            .readyInMinutes(10)
+            .extendedIngredients(Arrays.asList(
+                RecipeIngredientDtoBuilder.builder()
+                    .id(1L)
+                    .name("apples")
+                    .unit("kg")
+                    .unitEnum(UnitDtoBuilder.builder()
+                        .name("kg")
+                        .convertFactor(1000L)
+                        .subUnit(subUnit)
+                        .build())
+                    .amount(1.0)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(2L)
+                    .name("flour")
+                    .unit("kg")
+                    .unitEnum(UnitDtoBuilder.builder()
+                        .name("kg")
+                        .convertFactor(1000L)
+                        .subUnit(subUnit)
+                        .build())
+                    .amount(0.5)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(3L)
+                    .name("sugar")
+                    .unit("kg")
+                    .unitEnum(UnitDtoBuilder.builder()
+                        .name("kg")
+                        .convertFactor(1000L)
+                        .subUnit(subUnit)
+                        .build())
+                    .amount(0.2)
+                    .build()))
+            .summary("How to cook")
+            .build();
+
+        ItemSearchDto searchParamsIS = new ItemSearchDto(null, false, null, null, null);
+        ItemSearchDto searchParamsAIS = new ItemSearchDto(null, true, null, null, null);
+        List<ItemListDto> itemsFromDigitalStorageIS = digitalStorageService.searchItems(searchParamsIS, "jwt");
+        List<ItemListDto> itemsFromDigitalStorageAIS = digitalStorageService.searchItems(searchParamsAIS, "jwt");
+        List<ItemListDto> items = new LinkedList<>();
+        items.addAll(itemsFromDigitalStorageIS);
+        items.addAll(itemsFromDigitalStorageAIS);
+        // when
+        RecipeSuggestionDto result = cookingService.cookRecipe(testRecipe, "jwt");
+
+        List<ItemListDto> itemsFromDigitalStorageIST = digitalStorageService.searchItems(searchParamsIS, "jwt");
+        List<ItemListDto> itemsFromDigitalStorageAIST = digitalStorageService.searchItems(searchParamsAIS, "jwt");
+        List<ItemListDto> itemsT = new LinkedList<>();
+        items.addAll(itemsFromDigitalStorageIS);
+        items.addAll(itemsFromDigitalStorageAIS);
+
+
+        for (ItemListDto item : itemsT) {
+            for (ItemListDto initialItem : items) {
+                if(item.generalName().equals(initialItem.generalName())) {
+                    for (RecipeIngredientDto ingredientDto : testRecipe.extendedIngredients()) {
+                        if (item.generalName().equals(ingredientDto.name())) {
+                            assertThat(item.quantityCurrent()).isEqualTo(initialItem.quantityCurrent() - ingredientDto.amount());
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
 
 }

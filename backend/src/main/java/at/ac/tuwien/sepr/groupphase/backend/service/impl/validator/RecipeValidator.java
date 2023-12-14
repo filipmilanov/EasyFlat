@@ -41,4 +41,13 @@ public class RecipeValidator {
         }
     }
 
+    public void validateForCook(RecipeSuggestionDto recipeSuggestionDto) throws ValidationException {
+        LOGGER.trace("checkValidationForCook({})", recipeSuggestionDto);
+
+        Set<ConstraintViolation<RecipeSuggestionDto>> validationViolations = validator.validate(recipeSuggestionDto);
+        if (!validationViolations.isEmpty()) {
+            throw new ValidationException("The data is not valid: ", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+        }
+    }
+
 }

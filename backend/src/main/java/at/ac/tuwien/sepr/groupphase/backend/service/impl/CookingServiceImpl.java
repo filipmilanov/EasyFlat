@@ -457,7 +457,8 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws AuthenticationException, ValidationException, ConflictException {
+        recipeValidator.validateForCook(recipeToCook);
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
             List<Item> items = storageRepository.getItemWithGeneralName(1L, recipeIngredientDto.name());
@@ -489,16 +490,6 @@ public class CookingServiceImpl implements CookingService {
             }
         }
         return recipeToCook;
-    }
-
-    private boolean isThereEnoughQuantity(List<Item> items, RecipeIngredientDto recipeIngredientDto) {
-
-        for (Item item : items) {
-
-            Double sumQuantity;
-
-        }
-        return false;
     }
 
     private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
@@ -553,7 +544,7 @@ public class CookingServiceImpl implements CookingService {
         return toRet;
     }
 
-    private List<Item> minimizeUnits(List<Item> items) throws ValidationException, ConflictException {
+    private List<Item> minimizeUnits(List<Item> items) {
 
         List<Item> minimizedItems = new LinkedList<>();
 
