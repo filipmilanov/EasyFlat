@@ -5,7 +5,8 @@
     <div class="col" *ngFor="let recipe of recipes" style="margin-right: 2rem">
       <app-cookbook-card [recipe]="recipe" (cookClicked)="openRecipeModal($event)"
                          (recipeCooked)="handleRecipeIsCooked($event)"
-                          (recipeDeleted)="handleRecipeDeleted($event)">
+                          (recipeDeleted)="handleRecipeDeleted($event)"
+                          (detailsClicked)="openDetailModal($event)">
 
       </app-cookbook-card>
     </div>

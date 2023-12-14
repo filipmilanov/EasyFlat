@@ -4,6 +4,7 @@ import {CookingService} from "../../services/cooking.service";
 import {ToastrService} from "ngx-toastr";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CookbookModalComponent} from "./cookbook-modal/cookbook-modal.component";
+import {CookbookDetailComponent} from "./cookbook-detail/cookbook-detail.component";
 
 @Component({
   selector: 'app-cookbook',
@@ -31,6 +32,11 @@ export class CookbookComponent implements OnInit{
 
   openRecipeModal(recipe: RecipeSuggestion) {
     const modalRef = this.modalService.open(CookbookModalComponent, { size: 'lg' });
+    modalRef.componentInstance.recipe = recipe;
+  }
+
+  openDetailModal(recipe: RecipeSuggestion) {
+    const modalRef = this.modalService.open(CookbookDetailComponent, { size: 'lg' });
     modalRef.componentInstance.recipe = recipe;
   }
 

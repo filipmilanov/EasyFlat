@@ -15,6 +15,7 @@ export class CookbookCardComponent {
   @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
   @Output() recipeCooked: EventEmitter<string> = new EventEmitter();
   @Output() recipeDeleted: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
+  @Output() detailsClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
   constructor(private cookingService: CookingService, private router: Router) {
   }
 
@@ -66,5 +67,9 @@ export class CookbookCardComponent {
         console.error('Error checking missing ingredients:', error);
       }
     });
+  }
+
+  detail() {
+    this.detailsClicked.emit(this.recipe);
   }
 }
