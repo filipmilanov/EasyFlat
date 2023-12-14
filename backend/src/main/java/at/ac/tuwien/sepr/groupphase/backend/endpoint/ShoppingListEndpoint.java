@@ -98,7 +98,7 @@ public class ShoppingListEndpoint {
 
     @PermitAll
     @GetMapping("/list-items/{name}")
-    public List<ShoppingItemDto> getItemsById(@PathVariable String name, ShoppingItemSearchDto itemSearchDto,
+    public List<ShoppingItemDto> getItemsByName(@PathVariable String name, ShoppingItemSearchDto itemSearchDto,
                                               @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("getItemsById({},{})", name, jwt);
         List<ShoppingItem> items = shoppingService.getItemsByName(name, itemSearchDto, jwt);

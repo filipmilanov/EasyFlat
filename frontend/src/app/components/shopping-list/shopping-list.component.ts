@@ -74,7 +74,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   getItems() {
-    this.shoppingListService.getItemsWithShopId(this.shopName, this.searchParams).subscribe({
+    this.shoppingListService.getItemsWithShopName(this.shopName, this.searchParams).subscribe({
       next: res => {
         this.items = res;
         console.log(this.items)

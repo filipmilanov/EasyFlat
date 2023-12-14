@@ -141,12 +141,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<ShoppingItem> shoppingItems = shoppingRepository.searchItems(name,
             (itemSearchDto.productName() != null) ? itemSearchDto.productName() : null,
             (itemSearchDto.label() != null) ? itemSearchDto.label() : null);
+        List<ShoppingItem> ret = new ArrayList<>();
         for (ShoppingItem item : shoppingItems) {
-            if (!item.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
-                throw new AuthenticationException("Authentication error", List.of("This user has no access to these items"));
+            if (item.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
+                ret.add(item);
             }
         }
-        return shoppingItems;
+        return ret;
     }
 
     @Override

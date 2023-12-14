@@ -53,7 +53,7 @@ export class ShoppingListService {
    * @param searchParams search parameters consisting of the products' name and their labels' value
    * @return an Observable for the existing shopping items in the system
    */
-  getItemsWithShopId(shopName: string, searchParams: ShoppingItemSearchDto):Observable<ShoppingItemDto[]> {
+  getItemsWithShopName(shopName: string, searchParams: ShoppingItemSearchDto):Observable<ShoppingItemDto[]> {
     console.log('Get items with shopId ' + shopName + ' and search parameters ' + searchParams);
     let params = new HttpParams();
     if (searchParams.productName) {
