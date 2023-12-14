@@ -26,6 +26,10 @@ import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import {CreateFlatComponent} from './components/create-flat/create-flat.component';
 import {FinanceComponent} from './components/finance/finance.component';
 import {ExpenseCreateEditComponent} from './components/finance/expense-create-edit/expense-create-edit.component';
+import {
+  RadioButtonsComponentComponent
+} from './components/utils/radio-buttons-component/radio-buttons-component.component';
+import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expense/show-user-for-expense.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +51,9 @@ import {ExpenseCreateEditComponent} from './components/finance/expense-create-ed
     CreateFlatComponent,
     FinanceComponent,
     ExpenseCreateEditComponent,
+    RadioButtonsComponentComponent,
+    RadioButtonsComponentComponent,
+    ShowUserForExpenseComponent,
   ],
   imports: [
     BrowserModule,
