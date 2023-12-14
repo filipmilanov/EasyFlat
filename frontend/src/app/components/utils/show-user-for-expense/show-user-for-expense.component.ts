@@ -17,13 +17,13 @@ export class ShowUserForExpenseComponent {
 
   kindOfValue(value: DebitDto): string {
     if (value.splitBy === SplitBy.EQUAL) {
-      return 'Amount';
+      return '€';
     } else if (value.splitBy === SplitBy.UNEQUAL) {
-      return 'Amount';
+      return '€';
     } else if (value.splitBy === SplitBy.PERCENTAGE) {
-      return 'percentage';
+      return '%';
     } else if (value.splitBy === SplitBy.PROPORTIONAL) {
-      return 'proportion';
+      return 'Proportion';
     }
   }
 
