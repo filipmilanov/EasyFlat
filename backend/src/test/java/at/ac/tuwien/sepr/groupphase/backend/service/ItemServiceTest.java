@@ -96,7 +96,7 @@ class ItemServiceTest {
     void givenGeneralNameWhenFindByFieldsThenItemWithGeneralNameIsReturned() throws AuthenticationException {
         // given
         ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
-                .generalName("Item")
+                .generalName("apples")
                 .build();
 
         // when
