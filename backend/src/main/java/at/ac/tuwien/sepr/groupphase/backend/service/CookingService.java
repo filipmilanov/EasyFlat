@@ -42,7 +42,7 @@ public interface CookingService {
      * @return A list of recipes.
      * @throws ValidationException If there is a validation error.
      */
-    List<RecipeSuggestionDto> getCookbook() throws ValidationException;
+    List<RecipeSuggestionDto> getCookbook(String jwt) throws ValidationException, AuthenticationException;
 
     /**
      * Create a new recipe in the cookbook.
@@ -51,7 +51,7 @@ public interface CookingService {
      * @return The created recipe.
      * @throws ConflictException If there is a conflict with existing data.
      */
-    RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException, ValidationException;
+    RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe, String jwt) throws ConflictException, ValidationException, AuthenticationException;
 
     /**
      * Get a specific recipe from the cookbook based on its ID.
@@ -59,7 +59,7 @@ public interface CookingService {
      * @param id The ID of the recipe to retrieve.
      * @return An Optional containing the recipe, if found.
      */
-    Optional<RecipeSuggestion> getCookbookRecipe(Long id);
+    Optional<RecipeSuggestion> getCookbookRecipe(Long id, String jwt);
 
     /**
      * Update an existing recipe in the cookbook.
@@ -68,7 +68,7 @@ public interface CookingService {
      * @return The updated recipe.
      * @throws ConflictException If there is a conflict with existing data.
      */
-    RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException, ValidationException;
+    RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe, String jwt) throws ConflictException, ValidationException, AuthenticationException;
 
     /**
      * Delete a recipe from the cookbook based on its ID.
@@ -76,7 +76,7 @@ public interface CookingService {
      * @param id The ID of the recipe to be deleted.
      * @return The deleted recipe.
      */
-    RecipeSuggestion deleteCookbookRecipe(Long id);
+    RecipeSuggestion deleteCookbookRecipe(Long id, String jwt) throws AuthenticationException;
 
     /**
      * Get a list of missing ingredients for a specific recipe from the cookbook.
@@ -84,7 +84,7 @@ public interface CookingService {
      * @param id The ID of the recipe to check for missing ingredients.
      * @return The missing ingredients for the recipe.
      */
-    RecipeSuggestionDto getMissingIngredients(Long id);
+    RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthenticationException, ValidationException, ConflictException;
 
     RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthenticationException;
 }

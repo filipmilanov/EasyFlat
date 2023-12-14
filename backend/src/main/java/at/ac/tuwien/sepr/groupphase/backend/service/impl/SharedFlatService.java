@@ -93,7 +93,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         user.setAdmin(true);
         userRepository.save(user);
         DigitalStorage digitalStorage = new DigitalStorage();
-        digitalStorage.setTitle("Storage");
+        digitalStorage.setTitle("Storage " + newSharedFlat.getName());
         digitalStorage.setSharedFlat(newSharedFlat);
         newSharedFlat.setDigitalStorage(digitalStorage);
 
