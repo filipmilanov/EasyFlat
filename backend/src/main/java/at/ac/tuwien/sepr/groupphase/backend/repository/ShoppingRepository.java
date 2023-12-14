@@ -13,9 +13,23 @@ import java.util.List;
 
 @Repository
 public interface ShoppingRepository extends JpaRepository<ShoppingItem, Long> {
+    /**
+     * Finds ShoppingItems by ShoppingList ID.
+     *
+     * @param listId The ID of the ShoppingList.
+     * @return A list of ShoppingItems associated with the given ShoppingList ID.
+     */
     @Query("SELECT e FROM ShoppingItem e WHERE e.shoppingList.shopListId = :listId")
     List<ShoppingItem> findByShoppingListId(@Param("listId") Long listId);
 
+    /**
+     * Searches for ShoppingItems based on ShoppingList name, product name, and label.
+     *
+     * @param name        The name of the ShoppingList.
+     * @param productName The name of the product to search for (can be null).
+     * @param label       The label value to search for (can be null).
+     * @return A list of ShoppingItems based on the criteria.
+     */
     @Query("SELECT i FROM ShoppingItem i LEFT JOIN i.labels il WHERE i.shoppingList.name = :name AND "
         + "(:productName IS NULL OR LOWER(i.generalName) LIKE LOWER(CONCAT('%', :productName, '%'))) AND "
         + "(:label IS NULL OR LOWER(il.labelValue) LIKE LOWER(CONCAT('%', :label, '%')))")

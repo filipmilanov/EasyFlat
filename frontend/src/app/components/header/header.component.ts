@@ -11,8 +11,6 @@ import {SharedFlatService} from "../../services/sharedFlat.service";
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-  user: UserDetail;
-  event: boolean = false;
 
   constructor(public authService: AuthService, private sharedFlatService: SharedFlatService) {
   }
@@ -22,5 +20,10 @@ export class HeaderComponent implements OnInit {
 
   isInWg() {
     return this.sharedFlatService.isLoggInWg();
+  }
+
+  logoutUser() {
+    this.sharedFlatService.changeEventToFalse();
+    this.authService.logoutUser();
   }
 }
