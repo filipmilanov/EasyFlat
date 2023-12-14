@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {DebitDto, SplitBy} from "../../../dtos/expenseDto";
 
 @Component({
@@ -8,6 +8,12 @@ import {DebitDto, SplitBy} from "../../../dtos/expenseDto";
 })
 export class ShowUserForExpenseComponent {
   @Input() users: DebitDto[];
+
+  @Output() usersChange = new EventEmitter<DebitDto[]>();
+
+  onUsersChange() {
+    this.usersChange.emit(this.users);
+  }
 
   kindOfValue(value: DebitDto): string {
     if (value.splitBy === SplitBy.EQUAL) {
