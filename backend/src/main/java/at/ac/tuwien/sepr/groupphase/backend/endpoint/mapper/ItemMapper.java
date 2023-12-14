@@ -57,6 +57,7 @@ public abstract class ItemMapper {
 
     public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItem> items);
 
+    @Mapping(target = "alwaysIsStock", expression = "java( itemDto.alwaysInStock() )")
     @Mapping(target = "ingredientList", expression = "java( ingredients )")
     @Mapping(target = "shoppingList", expression = "java( shoppingList )")
     public abstract ShoppingItem itemDtoToShoppingItem(ItemDto itemDto,
