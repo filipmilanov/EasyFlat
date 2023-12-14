@@ -68,36 +68,11 @@ export class LoginFlatComponent implements OnInit{
   }
 
 
-  // private authenticateWG(sharedFlat: SharedFlat) {
-  //   console.log('Try to authenticate shared flat: ' + sharedFlat.name);
-  //   this.sharedFlatService.loginWG(sharedFlat).subscribe({
-  //     next: () => {
-  //       this.router.navigate(['']);
-  //     },
-  //     error: (error) => {
-  //       console.log('Could not log in due to:');
-  //       console.log(error);
-  //       this.error = true;
-  //       if (error) {
-  //         this.errorMessage = 'Invalid credentials. Could not log in.';
-  //         // Navigate to /wgLogin
-  //         this.router.navigate(['/wgLogin']);
-  //       }
-  //     }
-  //   });
-  // }
-
-  navigateToCreate() {
-    this.router.navigate(['/wgCreate']); // Navigates to /wgCreate route
-  }
-
-
   vanishError() {
     this.error = false;
   }
 
-
   changeEventToTrue() {
-    this.sharedFlatService.changeEvent();
+    return this.sharedFlatService.changeEvent();
   }
 }

@@ -38,6 +38,12 @@ public interface ShoppingListService {
      */
     Optional<ShoppingList> getShoppingListByName(String name, String jwt) throws AuthenticationException;
 
+    /**
+     * Search for a shopping list in the database with given ID.
+     *
+     * @param id a valid ID of a ShoppingList
+     * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
+     */
     Optional<ShoppingList> getShoppingListById(Long id, String jwt) throws AuthenticationException;
 
 
@@ -50,14 +56,43 @@ public interface ShoppingListService {
      */
     List<ShoppingItem> getItemsByName(String name, ShoppingItemSearchDto itemSearchDto, String jwt) throws AuthenticationException;
 
+    /**
+     * Create a new ShoppingList in the db.
+     *
+     * @param listName a valid name for the new ShoppingList
+     * @return an object of type {@link ShoppingList} which is persisted and has an ID
+     */
     ShoppingList createList(String listName, String jwt) throws ValidationException, AuthenticationException;
 
+    /**
+     * Delete a ShoppingItem from the db based on its ID.
+     *
+     * @param itemId a valid ID of a ShoppingItem
+     * @return the deleted ShoppingItem
+     */
     ShoppingItem deleteItem(Long itemId, String jwt) throws AuthenticationException;
 
+    /**
+     * Delete a ShoppingList from the db based on its ID.
+     *
+     * @param shopId a valid ID of a ShoppingList
+     * @return the deleted ShoppingList
+     */
     ShoppingList deleteList(Long shopId, String jwt) throws ValidationException, AuthenticationException;
 
+    /**
+     * Get all ShoppingLists from the db.
+     *
+     * @return a List of all persisted ShoppingLists
+     */
     List<ShoppingList> getShoppingLists(String jwt) throws AuthenticationException;
 
+    /**
+     * Transfer ShoppingItems to the server.
+     *
+     * @param items a List of ShoppingItemDto to be transferred
+     * @return a List of Item objects
+     */
     List<Item> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthenticationException;
 
     /**
