@@ -16,6 +16,7 @@ export class FinanceService {
   }
 
   createExpense(expense: ExpenseDto): Observable<ExpenseDto> {
+    console.log("Create expense: " + expense.debitUsers);
     return this.http.post<ExpenseDto>(this.baseUri, expense);
   }
 }
