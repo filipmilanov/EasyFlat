@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DebitDto, ExpenseDto, SplitBy} from "../../../dtos/expenseDto";
+import {ExpenseDto, SplitBy} from "../../../dtos/expenseDto";
 import {NgForm} from "@angular/forms";
 import {FinanceService} from "../../../services/finance.service";
 import {Router} from "@angular/router";
@@ -18,7 +18,6 @@ export class ExpenseCreateEditComponent implements OnInit {
   splitByOptions = Object.keys(SplitBy).map(key => ({value: key, label: SplitBy[key]}));
   selectedSplitBy: SplitBy = SplitBy.EQUAL;
   submitButtonText: string = 'Create';
-  users: DebitDto[] = [];
 
   constructor(
     private userService: UserService,
@@ -31,10 +30,11 @@ export class ExpenseCreateEditComponent implements OnInit {
   ngOnInit(): void {
     this.userService.findFlatmates().subscribe({
       next: (users) => {
-        this.users = users.map(user => {
+        this.expense.debitUsers = users.map(user => {
           return {
             user: user,
-            splitBy: this.selectedSplitBy
+            splitBy: this.selectedSplitBy,
+            value: 0
           }
         });
       },
@@ -47,6 +47,7 @@ export class ExpenseCreateEditComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
+    console.log(this.expense)
     let o = this.financeService.createExpense(this.expense).subscribe({
       next: (expense: ExpenseDto) => {
         this.notification.success("Expense created");
@@ -66,7 +67,9 @@ export class ExpenseCreateEditComponent implements OnInit {
   }
 
   onSplitByChange() {
-    this.users.forEach(user => {
+    console.log("Split by change: " + this.selectedSplitBy);
+    console.log(this.expense.debitUsers);
+    this.expense.debitUsers.forEach(user => {
       user.splitBy = this.selectedSplitBy;
     });
   }
