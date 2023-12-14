@@ -85,7 +85,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public Optional<ShoppingItem> getById(Long itemId,String jwt) throws AuthenticationException {
+    public Optional<ShoppingItem> getById(Long itemId, String jwt) throws AuthenticationException {
         LOGGER.trace("getById({},{})", itemId, jwt);
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
         if (applicationUser == null) {
@@ -135,8 +135,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<ShoppingItem> shoppingItems = shoppingRepository.searchItems(listId,
             (itemSearchDto.productName() != null) ? itemSearchDto.productName() : null,
             (itemSearchDto.label() != null) ? itemSearchDto.label() : null);
-        for (ShoppingItem item:shoppingItems) {
-            if (!item.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())){
+        for (ShoppingItem item : shoppingItems) {
+            if (!item.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
                 throw new AuthenticationException("Authentication error", List.of("This user has no access to these items"));
             }
         }
@@ -249,7 +249,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public ShoppingItem update(ShoppingItemDto itemDto) throws ConflictException {
+    public ShoppingItem update(ShoppingItemDto itemDto, String jwt) throws ConflictException {
         LOGGER.trace("update({})", itemDto);
         List<ItemLabel> labels = null;
         if (itemDto.labels() != null) {

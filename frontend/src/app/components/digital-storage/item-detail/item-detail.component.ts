@@ -11,7 +11,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class ItemDetailComponent implements OnInit {
   item: ItemDto = {
-    itemId: '0',
+    itemId: 0,
     ean: "",
     generalName: "",
     productName: "",
@@ -63,7 +63,7 @@ export class ItemDetailComponent implements OnInit {
   }
 
   public delete() {
-    this.service.deleteItem(parseInt(this.item.itemId)).subscribe({
+    this.service.deleteItem(this.item.itemId).subscribe({
       next: data => {
         this.router.navigate(['/digital-storage/1']);
         this.notification.success(`Item ${this.item.itemId} was successfully deleted`, "Success");

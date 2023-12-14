@@ -54,7 +54,7 @@ public class ShoppingListEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ShoppingItemDto create(@RequestBody ShoppingItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException {
+    public ShoppingItemDto create(@RequestBody ShoppingItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("create({})", itemDto);
         ShoppingItem item = shoppingService.create(itemDto, jwt);
         return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));

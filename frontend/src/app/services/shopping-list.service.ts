@@ -89,6 +89,21 @@ export class ShoppingListService {
     return this.http.get<ShoppingListDto[]>(this.baseUri + '/lists', {headers});
   }
 
+  getDefaultShopList(): ShoppingListDto {
+    let def: ShoppingListDto = null;
+    this.getShoppingLists().subscribe({
+      next: res => {
+        for (let i = 0; i < res.length; i++) {
+          if (res[i].listName === 'Default') {
+            def = res[i];
+            break;
+          }
+        }
+      }
+    })
+    return def;
+  }
+
   transferToStorage(shoppingItems: ShoppingItemDto[]): Observable<StorageItem[]> {
     console.log('Add items to storage ' + shoppingItems)
     return this.http.post<StorageItem[]>(this.baseUri + '/storage', shoppingItems);
