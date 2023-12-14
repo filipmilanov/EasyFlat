@@ -13,6 +13,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -25,6 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -39,6 +41,7 @@ import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -85,7 +88,6 @@ public class CookingEndpointTest {
     }
 
     @Test
-    @Disabled
     void testCookRecipeEndpoint() throws Exception {
         // given
         Set<UnitDto> subUnit = new HashSet<>();
@@ -151,10 +153,67 @@ public class CookingEndpointTest {
             () -> assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus()),
             () -> assertNotNull(mvcResult.getResponse()),
             () -> assertEquals(testRecipe, responseRecipe)
-            );
+        );
     }
 
+    @Test
+    void cookingInvalidRecipeThrowValidationException() throws Exception {
+        Set<UnitDto> subUnit = new HashSet<>();
+        subUnit.add(new UnitDto("g", null, null));
+        RecipeSuggestionDto invalidRecipe = RecipeSuggestionDtoBuilder.builder()
+            .id(1L)
+            .title("")  // Invalid, empty title
+            .servings(5)
+            .readyInMinutes(10)
+            .extendedIngredients(Arrays.asList(
+                RecipeIngredientDtoBuilder.builder()
+                    .id(1L)
+                    .name("apples")
+                    .unit("kg")
+                    .unitEnum(UnitDtoBuilder.builder()
+                        .name("kg")
+                        .convertFactor(1000L)
+                        .subUnit(subUnit)
+                        .build())
+                    .amount(1.0)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(2L)
+                    .name("flour")
+                    .unit("kg")
+                    .unitEnum(UnitDtoBuilder.builder()
+                        .name("kg")
+                        .convertFactor(1000L)
+                        .subUnit(subUnit)
+                        .build())
+                    .amount(0.5)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(3L)
+                    .name("sugar")
+                    .unit("kg")
+                    .unitEnum(UnitDtoBuilder.builder()
+                        .name("kg")
+                        .convertFactor(1000L)
+                        .subUnit(subUnit)
+                        .build())
+                    .amount(0.2)
+                    .build()))
+            .summary("How to cook")
+            .build();
 
+        String body = objectMapper.writeValueAsString(invalidRecipe);
 
+        // when and then
+        MvcResult mvcResult = this.mockMvc.perform(put(BASE_URI + "/cook")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
+    }
 
 }
