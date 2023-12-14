@@ -135,8 +135,9 @@ export class ItemDetailListComponent implements OnInit {
 
         if (quantityCurrent < 1) {
           console.log(item)
-          this.delete(parseInt(id));
-
+          if (confirm("The item will be deleted from the storage. Are you sure you want to proceed?")) {
+            this.delete(parseInt(id));
+          }
         } else {
           item.quantityCurrent = quantityCurrent;
           item.quantityTotal = quantityTotal;

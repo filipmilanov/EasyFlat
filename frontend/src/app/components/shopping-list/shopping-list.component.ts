@@ -22,7 +22,7 @@ export class ShoppingListComponent implements OnInit {
   items: ShoppingItemDto[] = [];
   shopId: string;
   checkedItems: ShoppingItemDto[] = this.getCheckedItems();
-  selectedShoppingList: number;
+  selectedShoppingList: string = 'Default';
   shoppingLists: ShoppingListDto[] = [];
   searchParams: ShoppingItemSearchDto = {
     productName: '',
@@ -45,28 +45,22 @@ export class ShoppingListComponent implements OnInit {
     this.shoppingListService.getShoppingLists().subscribe({
         next: res => {
           this.shoppingLists = res
+          if (this.selectedShoppingList == 'Default') {
+            this.shoppingList = res[0];
+          } else {
+            for (let i = 0; i < this.shoppingLists.length; i++) {
+              if (this.shoppingLists[i].listName === this.selectedShoppingList) {
+                this.shoppingList = this.shoppingLists[i];
+                break;
+              }
+            }
+          }
+          this.shopId = this.shoppingList.id + '';
+          this.getItems();
         }
       }
     );
-    this.route.params.subscribe({
-      next: params => {
-        this.shopId = params.id;
-        console.log(this.shopId)
-        this.shoppingListService.getShoppingListById(this.shopId).subscribe({
-          next: (res: ShoppingListDto) => {
-            this.shoppingList = res;
-          },
-          error: (error: any) => {
-            console.error('Error fetching shopping list:', error);
-          }
-        });
 
-        this.getItems();
-      },
-      error: error => {
-        console.error("Error fetching parameters:", error);
-      }
-    });
   }
 
   getItems() {
@@ -82,11 +76,11 @@ export class ShoppingListComponent implements OnInit {
   }
 
   navigateToCreateItem() {
-    this.router.navigate(['shopping-list', this.shopId, 'item', 'create']);
+    this.router.navigate(['shopping-list', this.shoppingList.listName, 'item', 'create']);
   }
 
   navigateToCreateList() {
-    this.router.navigate(['shopping-list', this.shopId, 'list', 'create']);
+    this.router.navigate(['shopping-list', this.shoppingList.listName, 'list', 'create']);
   }
 
   deleteItem(itemId: number) {
@@ -108,7 +102,7 @@ export class ShoppingListComponent implements OnInit {
       this.shoppingListService.deleteList(this.shopId).subscribe({
         next: (deletedList: ShoppingListDto) => {
           console.log(deletedList.listName, ' was deleted successfully');
-          this.router.navigate(['shopping-list/1']);
+          this.router.navigate(['shopping-list' + this.shopId]);
         },
         error: error => {
           console.error(error.message, error);

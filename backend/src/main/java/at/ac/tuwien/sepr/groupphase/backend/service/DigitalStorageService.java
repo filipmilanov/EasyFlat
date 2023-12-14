@@ -117,5 +117,5 @@ public interface DigitalStorageService {
      * @param itemDto existing ID of a storage
      * @return the added item of type {@link ShoppingItem}
      */
-    ShoppingItem addItemToShopping(ItemDto itemDto);
+    ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException;
 }

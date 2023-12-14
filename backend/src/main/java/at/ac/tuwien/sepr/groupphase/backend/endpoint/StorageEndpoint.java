@@ -88,9 +88,9 @@ public class StorageEndpoint {
     @PermitAll
     @PostMapping("/shop")
     @ResponseStatus(HttpStatus.CREATED)
-    public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto) {
+    public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("addItemToShopping({})", itemDto);
-        ShoppingItem item = digitalStorageService.addItemToShopping(itemDto);
+        ShoppingItem item = digitalStorageService.addItemToShopping(itemDto, jwt);
         return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
     }
 }

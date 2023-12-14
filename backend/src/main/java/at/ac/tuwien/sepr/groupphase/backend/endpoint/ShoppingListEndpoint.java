@@ -80,10 +80,10 @@ public class ShoppingListEndpoint {
 
 
     @Secured("ROLE_USER")
-    @GetMapping("/list/{id}")
-    public Optional<ShoppingListDto> getShoppingListById(@PathVariable Long id, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
-        LOGGER.info("getShoppingListById({},{})", id, jwt);
-        Optional<ShoppingList> ret = shoppingService.getShoppingListById(id, jwt);
+    @GetMapping("/list/{name}")
+    public Optional<ShoppingListDto> getShoppingListById(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+        LOGGER.info("getShoppingListById({},{})", name, jwt);
+        Optional<ShoppingList> ret = shoppingService.getShoppingListById(name, jwt);
         return ret.flatMap(shoppingList -> Optional.ofNullable(shoppingListMapper.entityToDto(shoppingList)));
 
     }

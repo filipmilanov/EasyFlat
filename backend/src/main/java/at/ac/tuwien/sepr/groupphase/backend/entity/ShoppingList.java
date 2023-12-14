@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
@@ -25,7 +26,7 @@ public class ShoppingList {
     @OneToMany
     private List<ShoppingItem> items;
 
-    @OneToOne
+    @ManyToOne
     private SharedFlat sharedFlat;
 
     public Long getShopListId() {

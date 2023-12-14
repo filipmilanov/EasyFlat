@@ -10,6 +10,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {ShoppingListService} from "../../../services/shopping-list.service";
 import {switchMap} from 'rxjs/operators';
+import {Unit} from "../../../dtos/unit";
+import {UnitService} from "../../../services/unit.service";
 
 
 @Component({
@@ -25,6 +27,8 @@ export class ShoppingItemCreateEditComponent implements OnInit {
     addToFiance: false
   }
   selectedLabelColor = '#ffffff';
+  availableUnits: Unit[] = [];
+  shoppingListName: string = '';
 
   constructor(
     private itemService: ItemService,
@@ -33,6 +37,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
+    private unitService: UnitService
   ) {
   }
 
@@ -79,6 +84,16 @@ export class ShoppingItemCreateEditComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.unitService.findAll().subscribe({
+      next: res => {
+        this.availableUnits = res;
+        this.item.unit = this.availableUnits[0];
+      },
+      error: err => {
+        this.notification.error('Failed to load Units', "Error");
+      }
+    });
+
     this.route.data
       .pipe(
         switchMap(data => {
@@ -86,18 +101,17 @@ export class ShoppingItemCreateEditComponent implements OnInit {
           return this.route.params;
         }),
         switchMap(params => {
-          const shoppingListId = params['id'];
-          return this.shoppingService.getShoppingListById(shoppingListId);
+          this.shoppingListName = params['name'];
+          return this.shoppingService.getShoppingListByName(this.shoppingListName);
         })
       )
       .subscribe({
         next: res => {
           this.item.shoppingList = res;
-          console.log(this.item.shoppingList);
         },
         error: error => {
           console.error(`Error fetching shopping list: ${error}`);
-          this.router.navigate(['/shopping-list/1']);
+          this.router.navigate(['/shopping-list/' + this.shoppingListName]);
         },
         complete: () => {
           if (this.mode === ItemCreateEditMode.edit) {
@@ -114,7 +128,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
                 },
                 error: error => {
                   console.error(`Error fetching item: ${error}`);
-                  this.router.navigate(['/shopping-list/1']);
+                  this.router.navigate(['/shopping-list/' + this.shoppingListName]);
                   this.notification.error('Item could not be retrieved', 'Error');
                 },
               });
@@ -144,9 +158,9 @@ export class ShoppingItemCreateEditComponent implements OnInit {
       }
       observable.subscribe({
         next: data => {
-          this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
-          this.router.navigate(['/shopping-list/' + this.item.shoppingList.id]);
-          console.log(this.item.shoppingList.id)
+          this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished}.`, "Success");
+          this.router.navigate(['/shopping-list/' + this.item.shoppingList.listName]);
+          console.log(this.shoppingListName)
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}`);
@@ -179,6 +193,10 @@ export class ShoppingItemCreateEditComponent implements OnInit {
 
   formatStorageName(storage: DigitalStorageDto | null): string {
     return storage ? storage.title : '';
+  }
+
+  formatUnitName(unit: Unit | null): string {
+    return unit ? unit.name : '';
   }
 
 }

@@ -13,4 +13,8 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
     Optional<ShoppingList> getByShopListId(Long shopListId);
 
     List<ShoppingList> findBySharedFlatIs(SharedFlat sharedFlat);
+
+    ShoppingList findByNameAndSharedFlatIs(String name, SharedFlat sharedFlat);
+
+    Optional<ShoppingList> getByNameAndSharedFlatIs(String name, SharedFlat sharedFlat);
 }

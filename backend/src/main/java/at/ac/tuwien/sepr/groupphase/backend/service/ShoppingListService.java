@@ -33,10 +33,10 @@ public interface ShoppingListService {
     /**
      * Search for a shopping list in the database with given ID.
      *
-     * @param id a valid ID
+     * @param name a valid listName
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
      */
-    Optional<ShoppingList> getShoppingListById(Long id, String jwt) throws AuthenticationException;
+    Optional<ShoppingList> getShoppingListById(String name, String jwt) throws AuthenticationException;
 
     /**
      * Search for a shopping list in the database with given ID.

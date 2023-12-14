@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -28,6 +29,10 @@ public class SharedFlat {
     private Set<ApplicationUser> users = new HashSet<>();
     @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
     private DigitalStorage digitalStorage;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sharedFlat")
+
+    private List<ShoppingList> shoppingLists;
 
     public String getName() {
         return name;
@@ -90,5 +95,12 @@ public class SharedFlat {
         return Objects.hash(id);
     }
 
+    public List<ShoppingList> getShoppingLists() {
+        return shoppingLists;
+    }
+
+    public void setShoppingLists(List<ShoppingList> shoppingLists) {
+        this.shoppingLists = shoppingLists;
+    }
 }
 

@@ -12,24 +12,13 @@ import {Router} from "@angular/router";
 export class HeaderComponent implements OnInit {
   user: UserDetail;
 
-  constructor(public authService: AuthService,
-              private shoppingListService: ShoppingListService,
-              private router: Router) {
+  constructor(public authService: AuthService) {
   }
 
   ngOnInit() {
-    this.authService.getUser(this.authService.getToken()).subscribe({
-      next: res => {
-        this.user = res;
-      }
-    });
   }
 
   isInWg() {
     return this.user.flatName != null;
-  }
-
-  navToDefaultShoppingList() {
-    this.router.navigate(["shopping-list/" + this.shoppingListService.getDefaultShopList().id]);
   }
 }

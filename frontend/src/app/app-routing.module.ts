@@ -38,7 +38,7 @@ const routes: Routes = [
         ]}
   ]},
   {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
-  {path: 'shopping-list/:id', children: [
+  {path: 'shopping-list/:name', children: [
       {path: '', component: ShoppingListComponent},
       {path: 'item', children: [
           {path: 'create', component: ShoppingItemCreateEditComponent, data: {mode: ItemCreateEditMode.create}},

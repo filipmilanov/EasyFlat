@@ -51,16 +51,18 @@
                  id="totalQuantityAndUnit"
                  name="totalQuantityAndUnit"
                  placeholder="Quantity"
-                 min=0
+                 min=1
                  [(ngModel)]="item.quantityTotal">
         </div>
-        <div class="col-md-2 col-lg-3 mt-2">
-          <input type="text"
-                 class="form-control"
-                 id="totalUnit"
-                 name="totalUnit"
-                 placeholder="Unit"
-                 [(ngModel)]="item.unit">
+        <div class="col-md-2 col-lg-2 mt-2">
+          <select class="form-select form-select-md"
+                  name="unit"
+                  [(ngModel)]="item.unit">
+            <option *ngFor="let unit of availableUnits"
+                    [ngValue]="unit">
+              {{formatUnitName(unit)}}
+            </option>
+          </select>
         </div>
       </div>
 

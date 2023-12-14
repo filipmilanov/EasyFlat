@@ -97,8 +97,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         Optional<ShoppingItem> itemOptional = shoppingRepository.findById(itemId);
         if (itemOptional.isPresent()) {
             ShoppingItem item = itemOptional.get();
-            if (item.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
-                throw new AuthenticationException("Autentication error", List.of("User has no access to this shopping items"));
+            if (!item.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
+                throw new AuthenticationException("Authentication error", List.of("User has no access to this shopping items"));
             }
         }
 
@@ -106,23 +106,16 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public Optional<ShoppingList> getShoppingListById(Long shopListId, String jwt) throws AuthenticationException {
-        LOGGER.trace("getShoppingListById({},{})", shopListId, jwt);
+    public Optional<ShoppingList> getShoppingListById(String name, String jwt) throws AuthenticationException {
+        LOGGER.trace("getShoppingListById({},{})", name, jwt);
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        if (shopListId == null) {
+        if (name == null) {
             return Optional.empty();
         }
-        Optional<ShoppingList> listOptional = shoppingListRepository.getByShopListId(shopListId);
-        if (listOptional.isPresent()) {
-            ShoppingList list = listOptional.get();
-            if (list.getSharedFlat().equals(applicationUser.getSharedFlat())) {
-                throw new AuthenticationException("Autentication error", List.of("User has no access to this shopping list"));
-            }
-        }
-        return shoppingListRepository.getByShopListId(shopListId);
+        return shoppingListRepository.getByNameAndSharedFlatIs(name, applicationUser.getSharedFlat());
     }
 
     @Override
@@ -156,17 +149,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setName(listName);
-        List<Long> allowedUser = sharedFlatService.findById(
-                shoppingList.getSharedFlat().getId(),
-                jwt
-            ).getUsers().stream()
-            .map(ApplicationUser::getId)
-            .toList();
-        authorization.authenticateUser(
-            jwt,
-            allowedUser,
-            "The given shopping list does not belong to the user's shared flat!"
-        );
+        shoppingList.setSharedFlat(applicationUser.getSharedFlat());
         return shoppingListRepository.save(shoppingList);
     }
 

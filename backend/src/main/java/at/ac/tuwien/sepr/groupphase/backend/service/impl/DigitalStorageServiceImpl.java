@@ -20,6 +20,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
@@ -53,6 +54,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     CustomUserDetailService customUserDetailService;
     private final Authorization authorization;
     private final SharedFlatService sharedFlatService;
+    private final ShoppingListRepository shoppingListRepository;
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      DigitalStorageMapper digitalStorageMapper,
@@ -63,7 +65,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
                                      IngredientMapper ingredientMapper,
                                      CustomUserDetailService customUserDetailService,
                                      Authorization authorization,
-                                     SharedFlatService sharedFlatService) {
+                                     SharedFlatService sharedFlatService, ShoppingListRepository shoppingListRepository) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
@@ -74,6 +76,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         this.customUserDetailService = customUserDetailService;
         this.authorization = authorization;
         this.sharedFlatService = sharedFlatService;
+        this.shoppingListRepository = shoppingListRepository;
     }
 
     @Override
@@ -223,11 +226,16 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
 
     @Override
-    public ShoppingItem addItemToShopping(ItemDto itemDto) {
+    public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException {
         LOGGER.trace("addItemToShopping({})", itemDto);
+        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+        if (applicationUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+        }
+        ShoppingList shoppingList = shoppingListRepository.findByNameAndSharedFlatIs("Default", applicationUser.getSharedFlat());
         ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto,
             ingredientMapper.dtoListToEntityList(itemDto.ingredients()),
-            new ShoppingList());
+            shoppingList);
         return shoppingRepository.save(shoppingItem);
     }
 
