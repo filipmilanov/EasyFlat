@@ -1,10 +1,12 @@
-<div *ngFor="let user of users"
+<div *ngFor="let user of users; let i = index"
      class="row w-50 p-2 align-items-center align-content-center border rounded m-1">
   <div class="form-check col-2">
     <input class="form-check-input"
            type="checkbox"
            id="target"
-           [(ngModel)]="user.isTarget">
+           #isActive
+           [ngModel]="isActive"
+           (change)="user.value = 0">
   </div>
   <div class="col-6">
     {{user.user.firstName + " " + user.user.lastName}}
@@ -14,7 +16,8 @@
            class="form-control"
            aria-label="value"
            placeholder="{{kindOfValue(user)}}"
-           [(ngModel)]="user.value">
+           [(ngModel)]="user.value"
+           [disabled]="!isActive.checked">
   </div>
 </div>
 
