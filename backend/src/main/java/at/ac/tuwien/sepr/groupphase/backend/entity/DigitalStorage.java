@@ -32,15 +32,6 @@ public class DigitalStorage {
     @JsonIgnore
     private List<Item> itemList = new ArrayList<>();
 
-    public DigitalStorage(long storId, String title) {
-        this.storId = storId;
-        this.title = title;
-    }
-
-    public DigitalStorage() {
-
-    }
-
 
     public Long getStorId() {
         return storId;

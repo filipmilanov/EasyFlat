@@ -1,8 +1,6 @@
 import {DigitalStorageDto} from "./digitalStorageDto";
 import {IngredientDto} from "./ingredientDto";
 import {ShoppingLabelDto} from "./shoppingLabel";
-import {ShoppingList} from "./shoppingList";
-import {Unit} from "./unit";
 import {ShoppingListDto} from "./shoppingList";
 import {OrderType} from "./orderType";
 
@@ -26,14 +24,8 @@ export class ItemDto {
   digitalStorage?: DigitalStorageDto;
 }
 
-export class ItemFieldSearchDto {
-  generalName?: string;
-  brand?: string;
-  boughtAt?: string;
-}
-
 export class ShoppingItemDto extends ItemDto {
-  shoppingList?: ShoppingList;
+  shoppingList?: ShoppingListDto;
   labels?: [ShoppingLabelDto];
   check?: boolean;
 }

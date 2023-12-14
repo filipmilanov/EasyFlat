@@ -93,7 +93,6 @@ public class ApplicationUser {
         return sharedFlat;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -110,4 +109,5 @@ public class ApplicationUser {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

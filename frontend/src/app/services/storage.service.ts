@@ -1,10 +1,9 @@
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import { Injectable } from '@angular/core';
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
 import {ItemSearchDto, StorageItem, StorageItemListDto} from "../dtos/storageItem";
 import {DigitalStorageDto} from "../dtos/digitalStorageDto";
-import {ItemDto} from "../dtos/item";
-import {AuthService} from "./auth.service";
 import {ItemDto, ShoppingItemDto} from "../dtos/item";
 
 @Injectable({
@@ -14,11 +13,10 @@ export class StorageService {
 
   private storageBaseUri: string = 'http://localhost:8080/api/v1/storage';
 
-  constructor(private httpClient: HttpClient,
-              private authService: AuthService) {
+  constructor(private httpClient: HttpClient, private globals: Globals) {
   }
 
-  getItems( searchParameters: ItemSearchDto): Observable<StorageItemListDto[]> {
+  getItems(id: string, searchParameters: ItemSearchDto): Observable<StorageItemListDto[]> {
     let params = new HttpParams();
     if (searchParameters.productName) {
       params = params.append('productName', searchParameters.productName);
@@ -30,11 +28,8 @@ export class StorageService {
       console.log(searchParameters)
       params = params.append('alwaysInStock', searchParameters.alwaysInStock);
     }
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
     params = params.append('orderType', searchParameters.orderBy);
-    return this.httpClient.get<StorageItemListDto[]>(this.storageBaseUri + '/items' , {params,headers});
+    return this.httpClient.get<StorageItemListDto[]>(this.storageBaseUri + '/' + id, {params});
   }
 
   findAll(titleSearch: string, limit: number): Observable<DigitalStorageDto[]> {
@@ -42,22 +37,22 @@ export class StorageService {
     let params = new HttpParams();
     params = params.append('title', titleSearch);
     params = params.append('limit', limit);
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
     return this.httpClient.get<DigitalStorageDto[]>(
       this.storageBaseUri,
-      {params, headers}
+      {params}
     );
   }
 
-  getItemsWithGenaralName(generalName:string): Observable<StorageItem[]> {
+  getItemsWithGenaralName(generalName:string, storId:string): Observable<StorageItem[]> {
+    let params = new HttpParams();
 
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
 
-    return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName,{headers});
+    if (storId) {
+      params = params.append('storId', storId);
+    }
+
+
+    return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName , {params});
   }
 
   /**

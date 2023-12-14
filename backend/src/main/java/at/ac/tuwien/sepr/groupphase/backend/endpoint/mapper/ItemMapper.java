@@ -56,9 +56,6 @@ public abstract class ItemMapper {
     public abstract ShoppingItemDto entityToShopping(ShoppingItem item,
                                                      @Context ShoppingListDto shoppingList);
 
-    public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItemDto> items);
-
-    public abstract List<ItemDto> entityListToItemDtoList(List<Item> items);
     public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItem> items);
 
     public ShoppingItem itemDtoToShoppingItem(ItemDto itemDto, DigitalStorage digitalStorage, List<Ingredient> ingredients) {
