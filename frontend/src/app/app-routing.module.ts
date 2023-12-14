@@ -9,7 +9,6 @@ import {
 } from "./components/digital-storage/item-create-edit/item-create-edit.component";
 import {ItemDetailComponent} from "./components/digital-storage/item-detail/item-detail.component";
 import {ItemDetailListComponent} from "./components/digital-storage/item-detail-list/item-detail-list.component";
-import {StorageItemListDto} from "./dtos/storageItem";
 import {AuthGuard} from './guards/auth.guard';
 import {MessageComponent} from './components/message/message.component';
 import {RegisterComponent} from "./components/register/register.component";
@@ -30,6 +29,7 @@ import {CookbookCreateComponent, CookbookMode} from "./components/cookbook/cookb
 import {RecipeDetailComponent} from "./components/cooking/recipe-detail/recipe-detail.component";
 import {CookbookDetailComponent} from "./components/cookbook/cookbook-detail/cookbook-detail.component";
 import {ShoppingListsComponent} from "./components/shopping-list/shopping-lists/shopping-lists.component";
+import {ExpenseCreateEditComponent} from "./components/finance/expense-create-edit/expense-create-edit.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -77,6 +77,12 @@ const routes: Routes = [
   {path: 'account', component: AccountComponent},
   {path: 'wgLogin', component: LoginFlatComponent},
   {path: 'wgCreate', component: CreateFlatComponent},
+  {
+    path: 'finance', children: [
+      {path: '', component: DigitalStorageComponent},
+      {path: 'expense/create', component: ExpenseCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
+    ]
+  },
   {
     path: 'cooking', children: [
       {path: '', component: CookingComponent},
