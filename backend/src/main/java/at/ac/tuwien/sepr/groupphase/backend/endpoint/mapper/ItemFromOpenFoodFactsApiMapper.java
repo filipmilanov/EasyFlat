@@ -32,8 +32,24 @@ public class ItemFromOpenFoodFactsApiMapper {
         if (openFoodFactsResponseDto.status()) {
 
             String ean = openFoodFactsResponseDto.eanCode();
-            String generalName = Optional.of(openFoodFactsResponseDto.product().genericName()).orElse(Optional.of(openFoodFactsResponseDto.product().genericNameEn()).orElse(openFoodFactsResponseDto.product().genericNameDe()));
-            String productName = Optional.of(openFoodFactsResponseDto.product().productName()).orElse(Optional.of(openFoodFactsResponseDto.product().productNameEn()).orElse(openFoodFactsResponseDto.product().productNameEn()));
+            String generalName = Optional.ofNullable(
+                openFoodFactsResponseDto.product().genericName()
+            ).orElse(
+                Optional.ofNullable(
+                    openFoodFactsResponseDto.product().genericNameEn()
+                ).orElse(
+                    openFoodFactsResponseDto.product().genericNameDe()
+                )
+            );
+            String productName = Optional.ofNullable(
+                openFoodFactsResponseDto.product().productName()
+            ).orElse(
+                Optional.ofNullable(
+                    openFoodFactsResponseDto.product().productNameEn()
+                ).orElse(
+                    openFoodFactsResponseDto.product().productNameEn()
+                )
+            );
             String brand = openFoodFactsResponseDto.product().brands();
             Long totalQuantity = openFoodFactsResponseDto.product().productQuantity();
             String unit = openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging().packagings().get(0).unit();
