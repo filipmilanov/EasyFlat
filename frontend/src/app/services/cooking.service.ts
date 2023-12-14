@@ -95,4 +95,12 @@ export class CookingService {
     });
     return this.httpClient.put<RecipeSuggestion>(this.baseUri + "/cook",recipe,{headers})
   }
+
+  addToShoppingList(recipe:RecipeSuggestion):Observable<RecipeSuggestion>{
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.post<RecipeSuggestion>(this.baseUri + '/shopping', recipe, {headers});
+  }
+
 }

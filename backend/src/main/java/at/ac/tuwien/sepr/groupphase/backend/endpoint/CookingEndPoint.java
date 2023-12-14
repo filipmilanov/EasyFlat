@@ -91,4 +91,11 @@ public class CookingEndPoint {
         return cookingService.cookRecipe(recipeToCook, jwt);
     }
 
+    @PermitAll
+    @PostMapping("/shopping")
+    public RecipeSuggestionDto addToShoppingList(@RequestBody RecipeSuggestionDto recipeToCook, @RequestHeader("Authorization") String jwt) {
+        return cookingService.addToShoppingList(recipeToCook,jwt);
+    }
+
+
 }

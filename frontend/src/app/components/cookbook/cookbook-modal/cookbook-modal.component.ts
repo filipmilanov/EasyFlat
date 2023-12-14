@@ -42,6 +42,21 @@ export class CookbookModalComponent implements OnInit{
     this.cookingService.cookRecipe(this.recipeWithMissing).subscribe({
       next: res => {
         console.log("cooked");
+        this.notification.success(`Recipe ${this.recipeWithMissing.title} successfully cooked.`, "Success");
+
+      },
+      error: err => {
+        console.error("Error loading recipes:", err);
+        this.notification.error("Error loading recipes");
+      }
+    })
+  }
+
+  addToShoppingList() {
+    this.activeModal.dismiss();
+    this.cookingService.addToShoppingList(this.recipeWithMissing).subscribe({
+      next: res => {
+        console.log("added to list");
 
       },
       error: err => {

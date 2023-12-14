@@ -87,4 +87,6 @@ public interface CookingService {
     RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthenticationException, ValidationException, ConflictException;
 
     RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthenticationException;
+
+    RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt);
 }

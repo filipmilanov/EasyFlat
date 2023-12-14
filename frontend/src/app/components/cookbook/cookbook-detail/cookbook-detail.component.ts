@@ -57,4 +57,8 @@ export class CookbookDetailComponent implements OnInit{
   edit() {
     this.router.navigate(['cookbook/' + this.recipe.id + '/edit']);
   }
+
+  cook() {
+
+  }
 }
