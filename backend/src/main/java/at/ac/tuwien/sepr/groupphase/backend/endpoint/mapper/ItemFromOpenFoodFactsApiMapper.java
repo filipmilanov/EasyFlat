@@ -3,16 +3,19 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.OpenFoodFactsItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.openfoodfactsapi.OpenFoodFactsIngredientDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.openfoodfactsapi.OpenFoodFactsResponseDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 public class ItemFromOpenFoodFactsApiMapper {
@@ -23,52 +26,41 @@ public class ItemFromOpenFoodFactsApiMapper {
         this.ingredientService = ingredientService;
     }
 
-    public OpenFoodFactsItemDto mapFromJsonNode(JsonNode rootNode) throws ConflictException {
+    public OpenFoodFactsItemDto mapFromJsonNode(OpenFoodFactsResponseDto openFoodFactsResponseDto) throws ConflictException {
 
-        long status = rootNode.path("status").asLong();
 
-        if (status != 0) {
-            String eanCode = Optional.ofNullable(rootNode.path("code").asText()).orElse("");
+        if (openFoodFactsResponseDto.status()) {
 
-            String generalName = Optional.of(rootNode.path("product").path("generic_name_en").asText().toLowerCase()).orElse("");
-
-            String productName = Optional.ofNullable(rootNode.path("product").path("product_name_en").asText()).orElse("");
-
-            String brand = Optional.ofNullable(rootNode.path("product").path("brands").asText()).orElse("");
-
-            Long totalQuantity = Optional.of(rootNode.path("product").path("product_quantity").asLong()).orElse(-1L);
-
-            JsonNode unitPath = rootNode.path("product").path("ecoscore_data").path("adjustments").path("packaging").path("packagings");
-            String unit = "";
-            if (unitPath.isArray() && !unitPath.isEmpty()) {
-                JsonNode firstPackagingNode = unitPath.get(0);
-                if (firstPackagingNode != null) {
-                    unit = firstPackagingNode.path("quantity_per_unit_unit").asText();
-                }
-            }
-
-            String description = Optional.ofNullable(rootNode.path("product").path("category_properties").path("ciqual_food_name:en").asText()).orElse("");
-
-            String boughtAt = Optional.ofNullable(rootNode.path("product").path("stores").asText()).orElse("");
-
-            String ingredientList = Optional.ofNullable(rootNode.path("product").path("ingredients_text_en").asText()).orElse("");
+            String ean = openFoodFactsResponseDto.eanCode();
+            String generalName = Optional.of(openFoodFactsResponseDto.product().genericName()).orElse(Optional.of(openFoodFactsResponseDto.product().genericNameEn()).orElse(openFoodFactsResponseDto.product().genericNameDe()));
+            String productName = Optional.of(openFoodFactsResponseDto.product().productName()).orElse(Optional.of(openFoodFactsResponseDto.product().productNameEn()).orElse(openFoodFactsResponseDto.product().productNameEn()));
+            String brand = openFoodFactsResponseDto.product().brands();
+            Long totalQuantity = openFoodFactsResponseDto.product().productQuantity();
+            String unit = openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging().packagings().get(0).unit();
+            String description = openFoodFactsResponseDto.product().categoryProperties().description();
+            String boughtAt = openFoodFactsResponseDto.product().boughtAt();
+            List<OpenFoodFactsIngredientDto> ingredientList = openFoodFactsResponseDto.product().ingredients();
 
             List<Ingredient> ingredients = null;
 
             if (!ingredientList.isEmpty()) {
-                List<IngredientDto> ingredientDtoList = Arrays.stream(ingredientList.split(","))
-                    .map(String::trim)
-                    .map(ingredientName -> IngredientDtoBuilder.builder()
-                        .name(ingredientName)
+                // Create a pattern to match non-letter characters - because every ingredient should only consist of letters
+                Pattern nonLetterPattern = Pattern.compile("[^\\p{L}]+");
+
+                List<IngredientDto> ingredientDtoList = ingredientList.stream()
+                    .map(OpenFoodFactsIngredientDto::text) // Extract text
+                    .map(text -> nonLetterPattern.matcher(text).replaceAll("")) // Remove non-letter characters
+                    .map(cleanedText -> IngredientDtoBuilder.builder()
+                        .name(cleanedText)
                         .build())
-                    .toList();
+                    .collect(Collectors.toList());
 
                 ingredients = ingredientService.findIngredientsAndCreateMissing(ingredientDtoList);
             }
 
             return new OpenFoodFactsItemDto(
-                eanCode,
-                !Objects.equals(generalName, "") ? generalName : productName.toLowerCase(),
+                ean,
+                !Objects.equals(generalName, "") ? generalName : productName,
                 productName,
                 brand,
                 totalQuantity,
@@ -78,7 +70,7 @@ public class ItemFromOpenFoodFactsApiMapper {
                 ingredients
             );
         } else {
-            return null;
+            throw new NotFoundException("EAN not found in API");
         }
     }
 }

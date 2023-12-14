@@ -1,12 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.OpenFoodFactsItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.openfoodfactsapi.OpenFoodFactsResponseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemFromOpenFoodFactsApiMapper;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.service.OpenFoodFactsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,15 +21,12 @@ public class OpenFoodFactsServiceImpl implements OpenFoodFactsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
     private final ItemFromOpenFoodFactsApiMapper itemFromApiMapper;
     private final String openFoodFactsApi = "https://world.openfoodfacts.net/api/v2/product/";
 
     public OpenFoodFactsServiceImpl(RestTemplate restTemplate,
-                                    ObjectMapper objectMapper,
                                     ItemFromOpenFoodFactsApiMapper itemFromApiMapper) {
         this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
         this.itemFromApiMapper = itemFromApiMapper;
     }
 
@@ -41,11 +38,13 @@ public class OpenFoodFactsServiceImpl implements OpenFoodFactsService {
         String requestString = openFoodFactsApi + ean;
 
         // Get data from API using EAN code
-        String jsonResponse = restTemplate.getForObject(requestString, String.class);
+        OpenFoodFactsResponseDto jsonResponse = restTemplate.getForObject(requestString, OpenFoodFactsResponseDto.class);
 
-        // Use JsonNode to get the values we need
-        JsonNode rootNode = objectMapper.readTree(jsonResponse);
+        if (jsonResponse == null) {
+            throw new NotFoundException("JSON could not be obtained from API");
+        }
 
-        return itemFromApiMapper.mapFromJsonNode(rootNode);
+        // Map the data to an ItemDto
+        return itemFromApiMapper.mapFromJsonNode(jsonResponse);
     }
 }
