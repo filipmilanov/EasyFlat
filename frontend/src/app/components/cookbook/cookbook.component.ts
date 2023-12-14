@@ -33,4 +33,8 @@ export class CookbookComponent implements OnInit{
     const modalRef = this.modalService.open(CookbookModalComponent, { size: 'lg' });
     modalRef.componentInstance.recipe = recipe;
   }
+
+  handleRecipeIsCooked(recipeTitle: string) {
+    this.notification.success(`Recipe ${recipeTitle} successfully cooked.`, "Success");
+  }
 }

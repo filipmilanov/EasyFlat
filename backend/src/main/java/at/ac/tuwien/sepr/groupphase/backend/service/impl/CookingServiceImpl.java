@@ -95,7 +95,6 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwp) throws ValidationException, ConflictException, AuthenticationException {
 
-        Long storId = 1L;
 
         List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, true, null, null, null), jwp);
         List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, false, null, null, null), jwp);

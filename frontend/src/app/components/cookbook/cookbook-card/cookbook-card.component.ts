@@ -13,7 +13,7 @@ export class CookbookCardComponent {
 
   @Input() recipe: RecipeSuggestion;
   @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
-
+  @Output() recipeCooked: EventEmitter<string> = new EventEmitter();
   constructor(private cookingService: CookingService, private router: Router) {
   }
 
@@ -49,10 +49,10 @@ export class CookbookCardComponent {
         }else {
           this.cookingService.cookRecipe(this.recipe).subscribe({
             next: res => {
-
+              this.recipeCooked.emit(this.recipe.title);
             },
             error: error => {
-              console.error('Error checking missing ingredients:', error);
+              console.error('Error cooking recipe', error);
             }
 
           });
