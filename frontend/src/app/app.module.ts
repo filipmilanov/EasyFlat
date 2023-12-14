@@ -44,6 +44,10 @@ import { ShoppingListsComponent } from './components/shopping-list/shopping-list
 import {CreateFlatComponent} from './components/create-flat/create-flat.component';
 import {FinanceComponent} from './components/finance/finance.component';
 import {ExpenseCreateEditComponent} from './components/finance/expense-create-edit/expense-create-edit.component';
+import {
+  RadioButtonsComponentComponent
+} from './components/utils/radio-buttons-component/radio-buttons-component.component';
+import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expense/show-user-for-expense.component';
 
 
 import { ShoppingListCardComponent } from './components/shopping-list/shopping-list-card/shopping-list-card.component';
@@ -84,6 +88,9 @@ LOAD_WASM().subscribe();
     ShoppingListCardComponent
     FinanceComponent,
     ExpenseCreateEditComponent,
+    RadioButtonsComponentComponent,
+    RadioButtonsComponentComponent,
+    ShowUserForExpenseComponent,
   ],
   imports: [
     BrowserModule,
