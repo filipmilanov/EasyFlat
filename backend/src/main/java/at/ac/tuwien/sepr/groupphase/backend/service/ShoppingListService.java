@@ -66,6 +66,6 @@ public interface ShoppingListService {
      * @param shoppingItemDto a DTO of type shopping item with existing ID
      * @return an object of type {@link ShoppingItem} which is updated
      */
-    ShoppingItem update(ShoppingItemDto shoppingItemDto, String jwt) throws ConflictException;
+    ShoppingItem update(ShoppingItemDto shoppingItemDto, String jwt) throws ConflictException, AuthenticationException, ValidationException;
 }
 

@@ -5,7 +5,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.LabelMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -21,7 +20,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
@@ -43,7 +42,7 @@ import java.util.Optional;
 @Service
 public class ShoppingListServiceImpl implements ShoppingListService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private final ShoppingRepository shoppingRepository;
+    private final ShoppingItemRepository shoppingItemRepository;
     private final ShoppingListRepository shoppingListRepository;
     private final ShoppingListMapper shoppingListMapper;
     private final LabelService labelService;
@@ -60,12 +59,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final ShoppingItemValidator shoppingItemValidator;
     private final UnitService unitService;
 
-    public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, ShoppingListRepository shoppingListRepository,
+    public ShoppingListServiceImpl(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
                                    ItemService itemService, CustomUserDetailService customUserDetailService, Authorization authorization,
                                    SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository, ShoppingItemValidator shoppingItemValidator, UnitService unitService) {
-        this.shoppingRepository = shoppingRepository;
+        this.shoppingItemRepository = shoppingItemRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
         this.shoppingListRepository = shoppingListRepository;
@@ -97,7 +96,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         List<ItemLabel> labels = findLabelsAndCreateMissing(itemDto.labels());
 
-        ShoppingItem createdItem = shoppingRepository.save(itemMapper.dtoToShopping(itemDto, labels, shoppingListMapper.dtoToEntity(itemDto.shoppingList())));
+        ShoppingItem createdItem = shoppingItemRepository.save(itemMapper.dtoToShopping(itemDto, labels, shoppingListMapper.dtoToEntity(itemDto.shoppingList())));
         createdItem.setLabels(labels);
         return createdItem;
     }
@@ -112,7 +111,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (itemId == null) {
             return Optional.empty();
         }
-        Optional<ShoppingItem> itemOptional = shoppingRepository.findById(itemId);
+        Optional<ShoppingItem> itemOptional = shoppingItemRepository.findById(itemId);
         if (itemOptional.isPresent()) {
             ShoppingItem item = itemOptional.get();
             if (!item.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
@@ -120,7 +119,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             }
         }
 
-        return shoppingRepository.findById(itemId);
+        return shoppingItemRepository.findById(itemId);
     }
 
     @Override
@@ -156,7 +155,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        List<ShoppingItem> shoppingItems = shoppingRepository.searchItems(name,
+        List<ShoppingItem> shoppingItems = shoppingItemRepository.searchItems(name,
             (itemSearchDto.productName() != null) ? itemSearchDto.productName() : null,
             (itemSearchDto.label() != null) ? itemSearchDto.label() : null);
         List<ShoppingItem> ret = new ArrayList<>();
@@ -192,14 +191,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        Optional<ShoppingItem> toDeleteOptional = shoppingRepository.findById(itemId);
+        Optional<ShoppingItem> toDeleteOptional = shoppingItemRepository.findById(itemId);
 
         if (toDeleteOptional.isPresent()) {
             ShoppingItem toDelete = toDeleteOptional.get();
             if (!toDelete.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
                 throw new AuthenticationException("Authentication wrong", List.of("User can not delete this item"));
             }
-            shoppingRepository.deleteById(itemId);
+            shoppingItemRepository.deleteById(itemId);
             return toDelete;
         } else {
             throw new NoSuchElementException("Item with this id does not exist!");
@@ -222,8 +221,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             if (toDelete.getName().equals("Default")) {
                 throw new ValidationException("Default list can not be deleted!", null);
             }
-            List<ShoppingItem> items = shoppingRepository.findByShoppingListId(shopId);
-            shoppingRepository.deleteAll(items);
+            List<ShoppingItem> items = shoppingItemRepository.findByShoppingListId(shopId);
+            shoppingItemRepository.deleteAll(items);
             shoppingListRepository.deleteById(shopId);
             return toDelete;
         } else {
@@ -258,15 +257,21 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 item = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), storage.get(0));
             }
             itemRepository.save(item);
-            shoppingRepository.deleteById(itemDto.itemId());
+            shoppingItemRepository.deleteById(itemDto.itemId());
             itemsList.add(item);
         }
         return itemsList;
     }
 
     @Override
-    public ShoppingItem update(ShoppingItemDto itemDto, String jwt) throws ConflictException {
+    public ShoppingItem update(ShoppingItemDto itemDto, String jwt) throws ConflictException, AuthenticationException, ValidationException {
         LOGGER.trace("update({})", itemDto);
+
+        List<ShoppingList> shoppingLists = this.getShoppingLists(jwt);
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
+        List<Unit> unitList = unitService.findAll();
+        shoppingItemValidator.validateForUpdate(itemDto, shoppingLists, digitalStorageList, unitList);
+
         List<ItemLabel> labels = null;
         if (itemDto.labels() != null) {
             labels = findLabelsAndCreateMissing(itemDto.labels());
@@ -276,7 +281,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ShoppingItem item = itemMapper.dtoToShopping(itemDto, labels,
             shoppingListMapper.dtoToEntity(itemDto.shoppingList()));
 
-        ShoppingItem updatedItem = shoppingRepository.save(item);
+        ShoppingItem updatedItem = shoppingItemRepository.save(item);
         updatedItem.setIngredientList(ingredientList);
         updatedItem.setLabels(labels);
         return updatedItem;

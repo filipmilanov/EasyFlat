@@ -63,7 +63,7 @@ public class ShoppingListEndpoint {
     @Secured("ROLE_USER")
     @PutMapping("{id}")
     public ShoppingItemDto update(@PathVariable long id, @RequestBody ShoppingItemDto itemDto,
-                                  @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException {
+                                  @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("update({},{},{})", id, itemDto, jwt);
         ShoppingItem item = shoppingService.update(itemDto.withId(id), jwt);
         return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));

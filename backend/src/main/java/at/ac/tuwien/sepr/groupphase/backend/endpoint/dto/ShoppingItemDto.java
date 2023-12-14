@@ -19,7 +19,6 @@ public record ShoppingItemDto(
     String ean,
     String generalName,
     String productName,
-    @NotEmpty(message = "The brand name cannot be empty")
     String brand,
     @Min(value = 0, message = "The actual quantity must be positive")
     Long quantityCurrent,
