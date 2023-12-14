@@ -504,6 +504,11 @@ public class CookingServiceImpl implements CookingService {
         return recipeToCook;
     }
 
+    @Override
+    public RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt) {
+        return null;
+    }
+
     private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
         List<String> ingredients = new LinkedList<>();
         for (ItemListDto item : items) {
