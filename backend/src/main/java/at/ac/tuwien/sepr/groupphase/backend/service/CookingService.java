@@ -1,8 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookbookDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -29,6 +31,10 @@ public interface CookingService {
      * @return The details of the recipe.
      */
     RecipeDetailDto getRecipeDetails(Long recipeId);
+
+    Cookbook createCookbook(CookbookDto cookbook, String jwt) throws ValidationException, ConflictException, AuthenticationException;
+
+    List<Cookbook> findAllCookbooks(String jwt) throws AuthenticationException;
 
     /**
      * Get a list of recipes from the cookbook.

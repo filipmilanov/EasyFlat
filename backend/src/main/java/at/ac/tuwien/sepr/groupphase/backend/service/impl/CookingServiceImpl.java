@@ -4,15 +4,20 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookbookDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookingSteps;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.CookbookMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeIngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
@@ -21,12 +26,16 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.RecipeIngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
+import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.CookbookValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.RecipeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +72,12 @@ public class CookingServiceImpl implements CookingService {
     private final ItemService itemService;
     private final ItemMapper itemMapper;
     private final RecipeValidator recipeValidator;
+    private final CookbookValidator cookbookValidator;
+    private final SharedFlatService sharedFlatService;
+    private final Authorization authorization;
+    private final CookbookMapper cookbookMapper;
+    private final CookbookRepository cookbookRepository;
+    private final UserService userService;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
     public CookingServiceImpl(RestTemplate restTemplate,
@@ -76,7 +91,10 @@ public class CookingServiceImpl implements CookingService {
                               UnitService unitService,
                               UnitMapper unitMapper,
                               ItemService itemService,
-                              ItemMapper itemMapper, RecipeValidator recipeValidator) {
+                              ItemMapper itemMapper, RecipeValidator recipeValidator,
+                              CookbookValidator cookbookValidator, SharedFlatService sharedFlatService,
+                              Authorization authorization, CookbookMapper cookbookMapper,
+                              CookbookRepository cookbookRepository, UserService userService) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
@@ -90,6 +108,12 @@ public class CookingServiceImpl implements CookingService {
         this.itemService = itemService;
         this.itemMapper = itemMapper;
         this.recipeValidator = recipeValidator;
+        this.cookbookValidator = cookbookValidator;
+        this.sharedFlatService = sharedFlatService;
+        this.authorization = authorization;
+        this.cookbookMapper = cookbookMapper;
+        this.cookbookRepository = cookbookRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -273,6 +297,38 @@ public class CookingServiceImpl implements CookingService {
             );
         }
         return null;
+    }
+
+    @Override
+    public Cookbook createCookbook(CookbookDto cookbookDto, String jwt) throws ValidationException, ConflictException, AuthenticationException {
+
+        cookbookValidator.validateForCreate(cookbookDto);
+
+
+        List<Long> allowedUser = sharedFlatService.findById(
+                cookbookDto.sharedFlat().getId(),
+                jwt
+            ).getUsers().stream()
+            .map(ApplicationUser::getId)
+            .toList();
+        authorization.authenticateUser(
+            jwt,
+            allowedUser,
+            "The given cookbook does not belong to the user's shared flat!"
+        );
+
+        Cookbook cookbook = cookbookMapper.dtoToEntity(cookbookDto);
+
+        return cookbookRepository.save(cookbook);
+    }
+
+    @Override
+    public List<Cookbook> findAllCookbooks(String jwt) throws AuthenticationException {
+        ApplicationUser applicationUser = userService.getUser(jwt);
+        if (applicationUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exists"));
+        }
+        return cookbookRepository.findBySharedFlatIs(applicationUser.getSharedFlat());
     }
 
     @Override
@@ -528,6 +584,34 @@ public class CookingServiceImpl implements CookingService {
 
         return minimizedItems;
 
+    }
+
+    private Long getIdForUser(String jwt) throws AuthenticationException {
+        List<Cookbook> cookbookList = findAllCookbooks(jwt);
+        Cookbook matchingCookbook = null;
+        if (!cookbookList.isEmpty()) {
+            matchingCookbook = cookbookList.stream().toList().get(0);
+        }
+        if (matchingCookbook != null) {
+            List<Long> allowedUser = sharedFlatService.findById(
+                    matchingCookbook.getSharedFlat().getId(),
+                    jwt
+                ).getUsers().stream()
+                .map(ApplicationUser::getId)
+                .toList();
+
+
+            authorization.authenticateUser(
+                jwt,
+                allowedUser,
+                "The given cookbook does not belong to the user's shared flat!"
+            );
+
+
+            return matchingCookbook.getId();
+        } else {
+            return null;
+        }
     }
 
 }

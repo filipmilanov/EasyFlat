@@ -11,9 +11,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -42,6 +44,10 @@ public class RecipeSuggestion {
     private List<RecipeIngredient> missingIngredients;
     @Column(columnDefinition = "TEXT")
     private String summary;
+
+    @ManyToOne
+    @NotNull(message = "A Item need to be linked to a cookbook")
+    private Cookbook cookbook;
 
     public void setId(Long id) {
         this.id = id;

@@ -30,6 +30,9 @@ public class SharedFlat {
     @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
     private DigitalStorage digitalStorage;
 
+    @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
+    private Cookbook cookbook;
+
     public SharedFlat() {
     }
 
@@ -75,6 +78,15 @@ public class SharedFlat {
         if (digitalStorage != null) {
             digitalStorage.setSharedFlat(this);
         }
+    }
+
+    @JsonManagedReference
+    public Cookbook getCookbook() {
+        return cookbook;
+    }
+
+    public void setCookbook(Cookbook cookbook) {
+        this.cookbook = cookbook;
     }
 
     @Override
