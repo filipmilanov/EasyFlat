@@ -2,22 +2,27 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
+import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
+import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -42,11 +47,15 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final SharedFlatService sharedFlatService;
     private final Authorization authorization;
     private final CustomUserDetailService customUserDetailService;
+    private final Validator validator;
+    private final ItemMapper itemMapper;
+    private final UnitService unitService;
+
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      DigitalStorageMapper digitalStorageMapper,
-                                     DigitalStorageValidator digitalStorageValidator,
-                                     SharedFlatService sharedFlatService,
+                                     DigitalStorageValidator digitalStorageValidator, Validator validator, ItemMapper itemMapper,
+                                     UnitService unitService, SharedFlatService sharedFlatService,
                                      Authorization authorization,
                                      CustomUserDetailService customUserDetailService) {
         this.digitalStorageRepository = digitalStorageRepository;
@@ -55,6 +64,9 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         this.sharedFlatService = sharedFlatService;
         this.authorization = authorization;
         this.customUserDetailService = customUserDetailService;
+        this.validator = validator;
+        this.itemMapper = itemMapper;
+        this.unitService = unitService;
     }
 
     @Override
@@ -191,32 +203,41 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         return digitalStorageRepository.updateItemQuantity(storageId, itemId, quantity);
     }
 
+
     @Override
     public List<Item> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException {
         Long storId = getStorIdForUser(jwt);
         return digitalStorageRepository.getItemWithGeneralName(storId, name);
     }
 
-    private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) {
-        Map<String, Long[]> items = new HashMap<>();
-        Map<String, String> itemUnits = new HashMap<>();
+
+    private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) throws ValidationException, ConflictException {
+        Map<String, Double[]> items = new HashMap<>();
+        Map<String, Unit> itemUnits = new HashMap<>();
+        Unit unit = null;
         for (Item item : allItems) {
-            itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit().getName());
-            long currentQ = 0;
-            long totalQ = 0;
+            itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit());
+
+            double currentQ = 0;
+            double totalQ = 0;
             if (items.get(item.getGeneralName()) != null) {
                 currentQ = items.get(item.getGeneralName())[0];
                 totalQ = items.get(item.getGeneralName())[2];
             }
-            Long[] quantityStorId = new Long[3];
-            quantityStorId[0] = currentQ + item.getQuantityCurrent();
-            quantityStorId[1] = item.getStorage().getStorId();
-            quantityStorId[2] = totalQ + item.getQuantityTotal();
+
+            Double updatedQuantityCurrent = unitService.convertUnits(item.getUnit(), itemUnits.get(item.getGeneralName()), item.getQuantityCurrent());
+            Double updatedQuantityTotal = unitService.convertUnits(item.getUnit(), itemUnits.get(item.getGeneralName()), item.getQuantityTotal());
+
+
+            Double[] quantityStorId = new Double[3];
+            quantityStorId[0] = currentQ + updatedQuantityCurrent;
+            quantityStorId[1] = item.getStorage().getStorId().doubleValue();
+            quantityStorId[2] = totalQ + updatedQuantityTotal;
             items.put(item.getGeneralName(), quantityStorId);
         }
         List<ItemListDto> toRet = new LinkedList<>();
-        for (Map.Entry<String, Long[]> item : items.entrySet()) {
-            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1], UnitDtoBuilder.builder().name(itemUnits.get(item.getKey())).build()));
+        for (Map.Entry<String, Double[]> item : items.entrySet()) {
+            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1].longValue(), UnitDtoBuilder.builder().name(itemUnits.get(item.getKey()).getName()).build()));
         }
         return toRet;
     }
@@ -254,3 +275,4 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
 
 }
+

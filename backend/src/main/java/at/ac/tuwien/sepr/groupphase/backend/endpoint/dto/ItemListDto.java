@@ -8,9 +8,9 @@ public record ItemListDto(
     @NotEmpty
     String generalName,
     @NotEmpty
-    Long quantityCurrent,
+    Double quantityCurrent,
     @NotEmpty
-    Long quantityTotal,
+    Double quantityTotal,
     @NotEmpty
     Long storId,
     UnitDto unit

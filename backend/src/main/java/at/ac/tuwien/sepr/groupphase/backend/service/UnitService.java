@@ -32,7 +32,7 @@ public interface UnitService {
      * @param value value of source unit
      * @return the converted value
      */
-    Long convertUnits(Unit from, Unit to, Long value) throws ValidationException, ConflictException;
+    Double convertUnits(Unit from, Unit to, Double value);
 
 
     /**
@@ -42,5 +42,7 @@ public interface UnitService {
      * @return the created unit
      */
     Unit create(UnitDto unit) throws ValidationException, ConflictException;
+
+    Unit getMinUnit(Unit unit);
 
 }

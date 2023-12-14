@@ -205,9 +205,9 @@ class StorageEndpointTest {
                     .split("\\{\"generalName\""))
                 .filter(s -> !s.isEmpty())
                 .map((s) -> {
-                    return Integer.parseInt(s.substring(s.indexOf("\"quantityCurrent\"") + 18, s.indexOf(",\"quantityTotal\"")));
+                    return Double.parseDouble(s.substring(s.indexOf("\"quantityCurrent\"") + 18, s.indexOf(",\"quantityTotal\"")));
                 })
-                .toArray(Integer[]::new)
+                .toArray(Double[]::new)
             ).isSorted()
         );
     }

@@ -3,10 +3,12 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
@@ -36,13 +38,16 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     private final Authorization authorization;
 
     private final DigitalStorageRepository digitalStorageRepository;
+    private final CookbookRepository cookbookRepository;
 
 
     @Autowired
     public SharedFlatService(SharedFlatRepository sharedFlatRepository,
                              PasswordEncoder passwordEncoder,
                              SharedFlatMapper sharedFlatMapper,
-                             JwtTokenizer jwtTokenizer, UserRepository userRepository, Authorization authorization, DigitalStorageRepository digitalStorageRepository) {
+                             JwtTokenizer jwtTokenizer, UserRepository userRepository, Authorization authorization,
+                             DigitalStorageRepository digitalStorageRepository,
+                             CookbookRepository cookbookRepository) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.sharedFlatMapper = sharedFlatMapper;
@@ -52,6 +57,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         this.digitalStorageRepository = digitalStorageRepository;
 
 
+        this.cookbookRepository = cookbookRepository;
     }
 
     @Override
@@ -87,11 +93,19 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         user.setAdmin(true);
         userRepository.save(user);
         DigitalStorage digitalStorage = new DigitalStorage();
-        digitalStorage.setTitle("Storage");
+        digitalStorage.setTitle("Storage " + newSharedFlat.getName());
         digitalStorage.setSharedFlat(newSharedFlat);
         newSharedFlat.setDigitalStorage(digitalStorage);
 
         digitalStorageRepository.save(digitalStorage);
+
+        Cookbook cookbook = new Cookbook();
+        cookbook.setTitle("Cookbook " + newSharedFlat.getName());
+        cookbook.setSharedFlat(newSharedFlat);
+        newSharedFlat.setCookbook(cookbook);
+
+        cookbookRepository.save(cookbook);
+
         return sharedFlatMapper.entityToWgDetailDto(newSharedFlat);
     }
 
