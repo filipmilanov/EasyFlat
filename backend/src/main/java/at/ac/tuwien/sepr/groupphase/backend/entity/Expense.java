@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +33,9 @@ public class Expense {
 
     @Column
     private Long amountInCents;
+
+    @Column
+    private LocalDateTime createdAt;
 
     @ManyToOne
     private ApplicationUser paidBy;
