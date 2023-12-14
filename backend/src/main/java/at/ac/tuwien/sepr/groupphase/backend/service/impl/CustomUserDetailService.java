@@ -183,8 +183,6 @@ public class CustomUserDetailService implements UserService {
 
         ApplicationUser user = this.getUser(jwt);
         SharedFlat flat = user.getSharedFlat();
-        return flat.getUsers().stream()
-            .filter((flatmate) -> !flatmate.getId().equals(user.getId()))
-            .toList();
+        return flat.getUsers().stream().toList();
     }
 }
