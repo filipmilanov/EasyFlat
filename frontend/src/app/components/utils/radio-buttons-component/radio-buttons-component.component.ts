@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
   selector: 'app-radio-buttons-component',
@@ -6,6 +6,13 @@ import {Component} from '@angular/core';
   styleUrls: ['./radio-buttons-component.component.scss']
 })
 export class RadioButtonsComponentComponent {
-  @Input() form: FormGroup;
+  @Input() bindingObject: any;
   @Input() options: { value: any; label: string }[];
+
+  @Output() bindingObjectChange = new EventEmitter<any>();
+
+  onBindingObjectChange() {
+    this.bindingObjectChange.emit(this.bindingObject);
+  }
+
 }
