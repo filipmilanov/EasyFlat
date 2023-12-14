@@ -5,6 +5,8 @@ import {FinanceService} from "../../../services/finance.service";
 import {Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {UserService} from "../../../services/user.service";
+import {UserListDto} from "../../../dtos/user";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-expense-create-edit',
@@ -18,10 +20,12 @@ export class ExpenseCreateEditComponent implements OnInit {
   splitByOptions = Object.keys(SplitBy).map(key => ({value: key, label: SplitBy[key]}));
   selectedSplitBy: SplitBy = SplitBy.EQUAL;
   submitButtonText: string = 'Create';
+  users: UserListDto[] = [];
 
   constructor(
     private userService: UserService,
     private financeService: FinanceService,
+    private authService: AuthService,
     private router: Router,
     private notification: ToastrService,
   ) {
@@ -37,13 +41,26 @@ export class ExpenseCreateEditComponent implements OnInit {
             value: 0
           }
         });
+        this.users = users;
+        this.onSplitByChange();
+
+        this.authService.getUser(this.authService.getToken()).subscribe({
+          next: (user) => {
+            // TODO: this is a quickfix. The UserDetail should contain the ID of the user, but that's not the case
+            this.expense.paidBy = this.users.find(u => u.firstName === user.firstName && u.lastName === user.lastName);
+          },
+          error: (error) => {
+            console.log(error);
+            this.notification.error("Could not load user data", "Error");
+          }
+        });
       },
       error: (error) => {
         console.log(error);
         this.notification.error("Could not load flatmates", "Error");
       }
     });
-    this.onSplitByChange();
+    this.expense.createdAt = new Date();
   }
 
   onSubmit(form: NgForm) {
@@ -67,8 +84,6 @@ export class ExpenseCreateEditComponent implements OnInit {
   }
 
   onSplitByChange() {
-    console.log("Split by change: " + this.selectedSplitBy);
-    console.log(this.expense.debitUsers);
     this.expense.debitUsers.forEach(user => {
       user.splitBy = this.selectedSplitBy;
     });

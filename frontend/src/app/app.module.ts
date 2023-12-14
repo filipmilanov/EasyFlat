@@ -30,6 +30,7 @@ import {
   RadioButtonsComponentComponent
 } from './components/utils/radio-buttons-component/radio-buttons-component.component';
 import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expense/show-user-for-expense.component';
+import {UserDropdownComponent} from './components/utils/user-dropdown/user-dropdown.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expe
     RadioButtonsComponentComponent,
     RadioButtonsComponentComponent,
     ShowUserForExpenseComponent,
+    UserDropdownComponent,
   ],
   imports: [
     BrowserModule,
