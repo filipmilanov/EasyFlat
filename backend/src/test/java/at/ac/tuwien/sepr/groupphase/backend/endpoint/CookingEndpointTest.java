@@ -216,4 +216,24 @@ public class CookingEndpointTest {
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
     }
 
+    @Test
+    @Disabled
+    void testGetRecipeSuggestions() throws Exception {
+        // given
+        String type = "breakfast"; // specify a valid type
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI)
+                .param("type", type)
+                .header(HttpHeaders.AUTHORIZATION, jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
+
+
+    }
+
+
 }

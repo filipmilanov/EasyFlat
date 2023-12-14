@@ -23,7 +23,7 @@ export class RecipeDetailComponent implements OnInit{
   }
 
   ngOnInit(): void {
-   this.addTestItems()
+   this.load()
   }
 
   load(){
