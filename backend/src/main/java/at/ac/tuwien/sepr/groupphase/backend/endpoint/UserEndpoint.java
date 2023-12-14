@@ -37,14 +37,4 @@ public class UserEndpoint {
             userService.findFlatmates(jwt)
         );
     }
-
-    @Secured("ROLE_USER")
-    @GetMapping()
-    public UserListDto findUser(@RequestHeader("Authorization") String jwt) {
-        LOGGER.info("findUser()");
-
-        return userMapper.entityToUserListDto(
-            userService.getUser(jwt)
-        );
-    }
 }
