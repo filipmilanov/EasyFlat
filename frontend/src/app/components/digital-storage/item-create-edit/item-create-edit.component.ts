@@ -7,8 +7,7 @@ import {DigitalStorageDto} from "../../../dtos/digitalStorageDto";
 import {Observable, of} from "rxjs";
 import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {NgxScannerQrcodeComponent} from "ngx-scanner-qrcode";
-import {ScannerQRCodeResult} from "ngx-scanner-qrcode/lib/ngx-scanner-qrcode.options";
+import {NgxScannerQrcodeComponent, ScannerQRCodeResult} from "ngx-scanner-qrcode";
 import {OpenFoodFactService} from "../../../services/open-food-fact.service";
 
 export enum ItemCreateEditMode {
@@ -188,6 +187,8 @@ export class ItemCreateEditComponent implements OnInit {
   updateEAN(ean: ScannerQRCodeResult[]) {
     this.scanner.pause();
     this.item.ean = this.scanner.data.value[0].value;
+
+    this.notification.success(`EAN number ${this.item.ean} successfully scanned.`, "Success");
     this.searchForEan(this.item.ean);
   }
 
