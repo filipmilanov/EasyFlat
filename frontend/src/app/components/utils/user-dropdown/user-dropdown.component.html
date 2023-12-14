@@ -1,0 +1,9 @@
+<select class="form-select"
+        aria-label="Default select example"
+        [ngModel]="activatedUser"
+        (change)="onActivatedUserChange($event)">
+  <option *ngFor="let user of users"
+          [ngValue]="user">
+    {{ user.firstName + ' ' + user.lastName }}
+  </option>
+</select>
