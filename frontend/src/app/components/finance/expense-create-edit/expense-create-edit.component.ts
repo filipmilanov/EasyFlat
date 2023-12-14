@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DebitDto, ExpenseDto, SplitBy} from "../../../dtos/expenseDto";
 import {NgForm} from "@angular/forms";
-import {SharedFlat} from "../../../dtos/sharedFlat";
 import {SharedFlatService} from "../../../services/sharedFlat.service";
 import {FinanceService} from "../../../services/finance.service";
 import {Router} from "@angular/router";
@@ -52,6 +51,7 @@ export class ExpenseCreateEditComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.onSplitByChange();
   }
 
   onSubmit(form: NgForm) {
