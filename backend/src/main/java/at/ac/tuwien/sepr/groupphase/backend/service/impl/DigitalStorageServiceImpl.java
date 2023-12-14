@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
@@ -14,6 +15,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -223,8 +225,9 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     @Override
     public ShoppingItem addItemToShopping(ItemDto itemDto) {
         LOGGER.trace("addItemToShopping({})", itemDto);
-        ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto, digitalStorageMapper.dtoToEntity(itemDto.digitalStorage()),
-            ingredientMapper.dtoListToEntityList(itemDto.ingredients()));
+        ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto,
+            ingredientMapper.dtoListToEntityList(itemDto.ingredients()),
+            new ShoppingList());
         return shoppingRepository.save(shoppingItem);
     }
 
@@ -232,7 +235,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         Map<String, Long[]> items = new HashMap<>();
         Map<String, String> itemUnits = new HashMap<>();
         for (Item item : allItems) {
-            itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit());
+            itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit().getName());
             long currentQ = 0;
             long totalQ = 0;
             if (items.get(item.getGeneralName()) != null) {
@@ -247,7 +250,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
         List<ItemListDto> toRet = new LinkedList<>();
         for (Map.Entry<String, Long[]> item : items.entrySet()) {
-            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1], itemUnits.get(item.getKey())));
+            toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1], UnitDtoBuilder.builder().name(itemUnits.get(item.getKey())).build()));
         }
         return toRet;
     }

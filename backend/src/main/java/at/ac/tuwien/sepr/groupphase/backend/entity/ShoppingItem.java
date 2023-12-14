@@ -51,9 +51,8 @@ public class ShoppingItem {
     @Column
     private Boolean alwaysInStock;
 
-    @Column
-    @NotEmpty(message = "The unit cannot be empty")
-    private String unit;
+    @ManyToOne
+    private Unit unit;
 
     @Column
     private LocalDate expireDate;
@@ -159,12 +158,12 @@ public class ShoppingItem {
         this.quantityTotal = quantityTotal;
     }
 
-    public String getUnit() {
-        return unit;
+    public void setUnit(Unit unit) {
+        this.unit = unit;
     }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
+    public Unit getUnit() {
+        return unit;
     }
 
     public LocalDate getExpireDate() {

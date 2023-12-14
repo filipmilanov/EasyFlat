@@ -55,9 +55,8 @@ public class Item {
     @Min(value = 0, message = "The total quantity must be positive")
     private Long quantityTotal;
 
-    @Column
-    @NotEmpty(message = "The unit cannot be empty")
-    private String unit;
+    @ManyToOne
+    private Unit unit;
 
     @Column
     @FutureOrPresent(message = "You cannot store products which are over the expire date")
@@ -143,11 +142,11 @@ public class Item {
         this.quantityTotal = quantityTotal;
     }
 
-    public String getUnit() {
+    public Unit getUnit() {
         return unit;
     }
 
-    public void setUnit(String unit) {
+    public void setUnit(Unit unit) {
         this.unit = unit;
     }
 
