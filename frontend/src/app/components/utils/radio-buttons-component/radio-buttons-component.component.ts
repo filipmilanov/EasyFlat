@@ -11,8 +11,9 @@ export class RadioButtonsComponentComponent {
 
   @Output() bindingObjectChange = new EventEmitter<any>();
 
-  onBindingObjectChange() {
-    this.bindingObjectChange.emit(this.bindingObject);
+  onBindingObjectChange(value: any) {
+    console.log(value);
+    this.bindingObjectChange.emit(value);
   }
 
 }
