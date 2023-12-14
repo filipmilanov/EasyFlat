@@ -47,7 +47,10 @@
     <div class="row row-cols-4">
       <div class="col" *ngFor="let recipe of recipes" style="margin-right: 2rem">
         <app-recipe-card [recipe]="recipe"
-                         (recipeAddedToCookbook)="handleRecipeAddedToCookbook($event)" (cookClicked)="openRecipeModal($event)"></app-recipe-card>
+                         (recipeAddedToCookbook)="handleRecipeAddedToCookbook($event)"
+                         (cookClicked)="openRecipeModal($event)"
+                          >
+        </app-recipe-card>
       </div>
     </div>
 

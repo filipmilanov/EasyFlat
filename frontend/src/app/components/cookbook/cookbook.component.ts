@@ -37,4 +37,8 @@ export class CookbookComponent implements OnInit{
   handleRecipeIsCooked(recipeTitle: string) {
     this.notification.success(`Recipe ${recipeTitle} successfully cooked.`, "Success");
   }
+
+  handleRecipeDeleted(deletedRecipe: RecipeSuggestion) {
+    this.recipes = this.recipes.filter(recipe => recipe.id !== deletedRecipe.id);
+  }
 }

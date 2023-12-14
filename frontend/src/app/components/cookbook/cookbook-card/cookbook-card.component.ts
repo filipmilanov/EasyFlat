@@ -14,6 +14,7 @@ export class CookbookCardComponent {
   @Input() recipe: RecipeSuggestion;
   @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
   @Output() recipeCooked: EventEmitter<string> = new EventEmitter();
+  @Output() recipeDeleted: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
   constructor(private cookingService: CookingService, private router: Router) {
   }
 
@@ -33,6 +34,7 @@ export class CookbookCardComponent {
       this.cookingService.deleteCookbookRecipe(this.recipe.id).subscribe({
         next: (deletedRecipe: RecipeSuggestion) => {
           console.log('Recipe deleted:', deletedRecipe);
+          this.recipeDeleted.emit(deletedRecipe);
         },
         error: error => {
           console.error(error.message, error);
