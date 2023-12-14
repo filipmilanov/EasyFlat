@@ -39,7 +39,6 @@ class DigitalStorageServiceTest {
     @Autowired
     private DigitalStorageService service;
 
-
     @Autowired
     private TestDataGenerator testDataGenerator;
 

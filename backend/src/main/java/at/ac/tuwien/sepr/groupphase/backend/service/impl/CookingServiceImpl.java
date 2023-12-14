@@ -93,11 +93,11 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwp) throws ValidationException, ConflictException, AuthenticationException {
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt) throws ValidationException, ConflictException, AuthenticationException {
 
 
-        List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, true, null, null, null), jwp);
-        List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, false, null, null, null), jwp);
+        List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, true, null, null, null), jwt);
+        List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, false, null, null, null), jwt);
 
         List<ItemListDto> items = new LinkedList<>();
         items.addAll(alwaysInStockItems);
@@ -462,7 +462,7 @@ public class CookingServiceImpl implements CookingService {
                 requestString += ",+" + ingredient;
             }
         }
-        requestString += "&number=1";
+        requestString += "&number=2";
         return requestString + "&ranking=2";
     }
 
