@@ -16,6 +16,8 @@ public abstract class UserMapper {
     @Mapping(source = "applicationUser.sharedFlat.name", target = "flatName")
     public abstract UserDetailDto entityToUserDetailDto(ApplicationUser applicationUser);
 
+    public abstract UserListDto entityToUserListDto(ApplicationUser applicationUser);
+
     public abstract List<UserListDto> entityListToUserListDto(List<ApplicationUser> applicationUsers);
 
 }
