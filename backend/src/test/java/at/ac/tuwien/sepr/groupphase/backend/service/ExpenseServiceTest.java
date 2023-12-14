@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -116,6 +117,7 @@ class ExpenseServiceTest {
             .title("Test")
             .description("Test")
             .amountInCents(100L)
+            .createdAt(LocalDateTime.now())
             .paidBy(paidBy)
             .debitUsers(debitUsers)
             .sharedFlat(sharedFlat)
@@ -265,6 +267,7 @@ class ExpenseServiceTest {
             .title("Test")
             .description("Test")
             .amountInCents(totalAmount)
+            .createdAt(LocalDateTime.now())
             .paidBy(paidBy)
             .debitUsers(debitDtos)
             .sharedFlat(sharedFlat)
@@ -347,6 +350,7 @@ class ExpenseServiceTest {
             .title("Test")
             .description("Test")
             .amountInCents(100L)
+            .createdAt(LocalDateTime.now())
             .paidBy(paidBy)
             .debitUsers(
                 List.of(
