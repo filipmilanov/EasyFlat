@@ -107,4 +107,12 @@ export class AuthService {
     });
     return this.httpClient.put<string>(this.authBaseUri + "/signOut", flatName, {headers});
   }
+
+  isInWg(event: boolean) {
+    if (!!this.getToken() && event){
+      return true;
+    }else {
+      return false;
+    }
+  }
 }

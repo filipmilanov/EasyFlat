@@ -56,4 +56,8 @@ export class CreateFlatComponent implements OnInit{
   vanishError() {
     this.error = false;
   }
+
+  changeEventToTrue() {
+    this.sharedFlatService.changeEvent();
+  }
 }

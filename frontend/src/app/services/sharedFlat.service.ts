@@ -12,6 +12,8 @@ export class SharedFlatService {
   private sharedFlatBaseUri: string = this.globals.backendUri + '/wgLogin';
   private createFlatBaseUri: string = this.globals.backendUri + '/wgCreate';
 
+  event: boolean = false;
+
 
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
@@ -36,4 +38,11 @@ export class SharedFlatService {
   }
 
 
+  changeEvent() {
+    this.event = true;
+  }
+
+  isLoggInWg(): boolean {
+    return this.event;
+  }
 }

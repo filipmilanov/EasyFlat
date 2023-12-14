@@ -3,6 +3,7 @@ import {AuthService} from '../../services/auth.service';
 import {UserDetail} from "../../dtos/auth-request";
 import {ShoppingListService} from "../../services/shopping-list.service";
 import {Router} from "@angular/router";
+import {SharedFlatService} from "../../services/sharedFlat.service";
 
 @Component({
   selector: 'app-header',
@@ -11,14 +12,15 @@ import {Router} from "@angular/router";
 })
 export class HeaderComponent implements OnInit {
   user: UserDetail;
+  event: boolean = false;
 
-  constructor(public authService: AuthService) {
+  constructor(public authService: AuthService, private sharedFlatService: SharedFlatService) {
   }
 
   ngOnInit() {
   }
 
   isInWg() {
-    return this.user.flatName != null;
+    return this.sharedFlatService.isLoggInWg();
   }
 }

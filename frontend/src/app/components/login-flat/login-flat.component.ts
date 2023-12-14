@@ -5,6 +5,7 @@ import {SharedFlatService} from "../../services/sharedFlat.service";
 import {SharedFlat} from "../../dtos/sharedFlat";
 import {UserDetail} from "../../dtos/auth-request";
 import {AuthService} from "../../services/auth.service";
+import {getTokenAtPosition} from "@angular/compiler-cli/src/ngtsc/util/src/typescript";
 
 @Component({
   selector: 'app-login-flat',
@@ -96,4 +97,7 @@ export class LoginFlatComponent implements OnInit{
   }
 
 
+  changeEventToTrue() {
+    this.sharedFlatService.changeEvent();
+  }
 }

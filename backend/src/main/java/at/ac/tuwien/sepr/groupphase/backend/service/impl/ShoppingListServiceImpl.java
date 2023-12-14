@@ -58,7 +58,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
-                                   ItemService itemService, LabelMapper labelMapper, CustomUserDetailService customUserDetailService, Authorization authorization, SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository) {
+                                   ItemService itemService, LabelMapper labelMapper, CustomUserDetailService customUserDetailService, Authorization authorization,
+                                   SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository) {
         this.shoppingRepository = shoppingRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -239,7 +240,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         for (ShoppingItemDto itemDto : items) {
             Item item;
             if (itemDto.alwaysInStock() != null && itemDto.alwaysInStock()) {
-                item = shoppingListMapper.shoppingItemDtoToAis(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()),storage.get(0));
+                item = shoppingListMapper.shoppingItemDtoToAis(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), storage.get(0));
             } else {
                 item = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), storage.get(0));
             }
