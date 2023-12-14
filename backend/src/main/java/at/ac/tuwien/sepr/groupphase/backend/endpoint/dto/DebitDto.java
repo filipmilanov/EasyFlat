@@ -8,7 +8,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  */
 @RecordBuilder
 public record DebitDto(
-    UserDetailDto user,
+    UserListDto user,
     SplitBy splitBy,
     Long value
 ) {

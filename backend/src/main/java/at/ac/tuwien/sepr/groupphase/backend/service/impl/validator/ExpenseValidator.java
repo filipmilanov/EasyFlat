@@ -60,7 +60,7 @@ public class ExpenseValidator {
             errors.add("The payerId must not be null");
         } else if (applicationUsers.stream()
             .noneMatch(user ->
-                user.getId().equals(expenseDto.paidBy().getId())
+                user.getId().equals(expenseDto.paidBy().id())
             )) {
             errors.add("The payerId must be one of the flat members");
         }
@@ -74,7 +74,7 @@ public class ExpenseValidator {
             .anyMatch(user ->
                 applicationUsers.stream()
                     .noneMatch(applicationUser ->
-                        applicationUser.getId().equals(user.user().getId())
+                        applicationUser.getId().equals(user.user().id())
                     )
             )) {
             errors.add("The debitUsers must be one of the flat members");
