@@ -68,3 +68,4 @@ public interface ShoppingListService {
      */
     ShoppingItem update(ShoppingItemDto shoppingItemDto, String jwt) throws ConflictException;
 }
+

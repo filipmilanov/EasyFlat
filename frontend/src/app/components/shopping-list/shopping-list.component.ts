@@ -176,7 +176,7 @@ export class ShoppingListComponent implements OnInit {
   transferToStorage() {
     this.shoppingListService.transferToStorage(this.checkedItems).subscribe({
         next: data => {
-          this.router.navigate([`/digital-storage/1`])
+          this.router.navigate([`/digital-storage`])
         }
       }
     );

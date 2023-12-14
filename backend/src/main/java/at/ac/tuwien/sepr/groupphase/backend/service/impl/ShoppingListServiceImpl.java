@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.LabelMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
@@ -16,6 +17,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingRepository;
@@ -51,11 +53,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     private final Authorization authorization;
     private final SharedFlatService sharedFlatService;
+    private final DigitalStorageRepository digitalStorageRepository;
 
     public ShoppingListServiceImpl(ShoppingRepository shoppingRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
-                                   ItemService itemService, LabelMapper labelMapper, CustomUserDetailService customUserDetailService, Authorization authorization, SharedFlatService sharedFlatService) {
+                                   ItemService itemService, LabelMapper labelMapper, CustomUserDetailService customUserDetailService, Authorization authorization, SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository) {
         this.shoppingRepository = shoppingRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -68,6 +71,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.customUserDetailService = customUserDetailService;
         this.authorization = authorization;
         this.sharedFlatService = sharedFlatService;
+        this.digitalStorageRepository = digitalStorageRepository;
     }
 
     @Override
@@ -230,13 +234,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
+        List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage", applicationUser.getSharedFlat());
         List<Item> itemsList = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
             Item item;
             if (itemDto.alwaysInStock() != null && itemDto.alwaysInStock()) {
-                item = shoppingListMapper.shoppingItemDtoToAis(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), applicationUser.getSharedFlat().getDigitalStorage());
+                item = shoppingListMapper.shoppingItemDtoToAis(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()),storage.get(0));
             } else {
-                item = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), applicationUser.getSharedFlat().getDigitalStorage());
+                item = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), storage.get(0));
             }
             itemRepository.save(item);
             shoppingRepository.deleteById(itemDto.itemId());
