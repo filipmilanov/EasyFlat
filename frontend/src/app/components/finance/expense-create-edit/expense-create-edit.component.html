@@ -94,8 +94,9 @@
           <div class="col-8">
             <app-radio-buttons-component
               id="splitBy"
-              [bindingObject]="expense.splitBy"
+              [(bindingObject)]="selectedSplitBy"
               [options]="splitByOptions"
+              (change)="onSplitByChange()"
             >
             </app-radio-buttons-component>
           </div>
