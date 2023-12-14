@@ -12,6 +12,7 @@ import {ShoppingListService} from "../../../services/shopping-list.service";
 import {switchMap} from 'rxjs/operators';
 import {Unit} from "../../../dtos/unit";
 import {UnitService} from "../../../services/unit.service";
+import {ShoppingListDto} from "../../../dtos/shoppingList";
 
 
 @Component({
@@ -94,47 +95,43 @@ export class ShoppingItemCreateEditComponent implements OnInit {
       }
     });
 
-    this.route.data
-      .pipe(
-        switchMap(data => {
-          this.mode = data.mode;
-          return this.route.params;
-        }),
-        switchMap(params => {
-          this.shoppingListName = params['name'];
-          return this.shoppingService.getShoppingListByName(this.shoppingListName);
-        })
-      )
-      .subscribe({
-        next: res => {
-          this.item.shoppingList = res;
+    this.route.data.subscribe(data => {
+      this.mode = data.mode;
+      this.route.params.subscribe(params => {
+        // Extract the 'id' parameter from the route
+        const name = params['name'];
+        this.shoppingService.getShoppingListByName(name).subscribe({
+          next: res => {
+            this.item.shoppingList = res;
+            console.log(this.item.shoppingList)
+          }
+        });
+
+      });
+    });
+
+    if (this.mode === ItemCreateEditMode.edit) {
+      this.route.params.subscribe({
+        next: params => {
+          const itemId = params.id;
+          this.shoppingService.getById(itemId).subscribe({
+            next: res => {
+              this.item = res;
+            },
+            error: error => {
+              console.error(`Item could not be retrieved from the backend: ${error}`);
+              this.router.navigate(['shopping-list', this.item.shoppingList.listName]);
+              this.notification.error('Item could not be retrieved', "Error");
+            }
+          })
         },
         error: error => {
-          console.error(`Error fetching shopping list: ${error}`);
-          this.router.navigate(['/shopping-list/' + this.shoppingListName]);
-        },
-        complete: () => {
-          if (this.mode === ItemCreateEditMode.edit) {
-            this.route.params
-              .pipe(
-                switchMap(params => {
-                  const itemId = params.id;
-                  return this.shoppingService.getById(itemId);
-                })
-              )
-              .subscribe({
-                next: res => {
-                  this.item = res;
-                },
-                error: error => {
-                  console.error(`Error fetching item: ${error}`);
-                  this.router.navigate(['/shopping-list/' + this.shoppingListName]);
-                  this.notification.error('Item could not be retrieved', 'Error');
-                },
-              });
-          }
+          console.error(`Item could not be retrieved using the ID from the URL: ${error}`);
+          this.router.navigate(['shopping-list', this.item.shoppingList.listName]);
+          this.notification.error('No item provided for editing', "Error");
         }
-      });
+      })
+    }
   }
 
 

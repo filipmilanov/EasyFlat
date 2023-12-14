@@ -64,7 +64,7 @@
     </td>
     <td>{{ item.quantityTotal}}{{item.unit.name}}</td>
     <td>
-      <button *ngIf="item.productName !== null" (click)="navigateToEditItem(item.itemId)" class="btn btn-danger" >
+      <button *ngIf="item.productName !== null" (click)="navigateToEditItem(item.itemId + '')" class="btn btn-danger" >
         <i class="bi-trash">Details</i>
       </button>
     </td>
