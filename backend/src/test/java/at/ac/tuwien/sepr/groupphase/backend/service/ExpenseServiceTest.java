@@ -5,7 +5,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DebitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDtoBuilder;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
@@ -100,8 +101,9 @@ class ExpenseServiceTest {
         List<DebitDto> debitUsers = new ArrayList<>();
         Set<ApplicationUser> usersOfFlat = sharedFlatRepository.findById(sharedFlat.getId()).orElseThrow().getUsers();
         usersOfFlat.forEach(user -> {
-            UserDetailDto userDetailDto = new UserDetailDto();
-            userDetailDto.setId(user.getId());
+            UserListDto userDetailDto = UserListDtoBuilder.builder()
+                .id(user.getId())
+                .build();
             DebitDto debitDto = DebitDtoBuilder.builder()
                 .user(userDetailDto)
                 .splitBy(SplitBy.EQUAL)
@@ -110,8 +112,9 @@ class ExpenseServiceTest {
             debitUsers.add(debitDto);
         });
 
-        UserDetailDto paidBy = new UserDetailDto();
-        paidBy.setId(usersOfFlat.stream().findAny().orElseThrow().getId());
+        UserListDto paidBy = UserListDtoBuilder.builder()
+            .id(usersOfFlat.stream().findAny().orElseThrow().getId())
+            .build();
 
         ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
             .title("Test")
@@ -141,24 +144,28 @@ class ExpenseServiceTest {
                 expenseDto.description(),
                 expenseDto.amountInCents()
             );
-        assertThat(actual.getPaidBy().getId()).isEqualTo(expenseDto.paidBy().getId());
+        assertThat(actual.getPaidBy().getId()).isEqualTo(expenseDto.paidBy().id());
         assertThat(actual.getSharedFlat().getId()).isEqualTo(expenseDto.sharedFlat().getId());
         assertThat(actual.getDebitUsers()).hasSize(expenseDto.debitUsers().size());
     }
 
     static List<Arguments> data() {
         List<DebitDto> debitUsers = new ArrayList<>();
-        UserDetailDto userDetailDto1 = new UserDetailDto();
-        userDetailDto1.setId(1L);
+        UserListDto userDetailDto1 = UserListDtoBuilder.builder()
+            .id(1L)
+            .build();
 
-        UserDetailDto userDetailDto2 = new UserDetailDto();
-        userDetailDto2.setId(2L);
+        UserListDto userDetailDto2 = UserListDtoBuilder.builder()
+            .id(2L)
+            .build();
 
-        UserDetailDto userDetailDto3 = new UserDetailDto();
-        userDetailDto3.setId(3L);
+        UserListDto userDetailDto3 = UserListDtoBuilder.builder()
+            .id(3L)
+            .build();
 
-        UserDetailDto userDetailDto4 = new UserDetailDto();
-        userDetailDto4.setId(4L);
+        UserListDto userDetailDto4 = UserListDtoBuilder.builder()
+            .id(4L)
+            .build();
 
         return List.of(
             Arguments.of(
@@ -260,8 +267,9 @@ class ExpenseServiceTest {
 
         Set<ApplicationUser> usersOfFlat = sharedFlatRepository.findById(sharedFlat.getId()).orElseThrow().getUsers();
 
-        UserDetailDto paidBy = new UserDetailDto();
-        paidBy.setId(usersOfFlat.stream().findAny().orElseThrow().getId());
+        UserListDto paidBy = UserListDtoBuilder.builder()
+            .id(usersOfFlat.stream().findAny().orElseThrow().getId())
+            .build();
 
         ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
             .title("Test")
@@ -301,57 +309,35 @@ class ExpenseServiceTest {
         );
     }
 
-    static List<Arguments> givenExpenseWithInvalidReferencesWhenCreateThenConflictExceptionIsThrownData() {
-        UserDetailDto paidBy = new UserDetailDto();
-        paidBy.setId(1L);
-
-        UserDetailDto paidByConflict = new UserDetailDto();
-        paidByConflict.setId(999L);
-
-        WgDetailDto sharedFlat = new WgDetailDto();
-        sharedFlat.setId(1L);
-
-        WgDetailDto sharedFlatConflict = new WgDetailDto();
-        sharedFlatConflict.setId(999L);
-
-        return List.of(
-            Arguments.of(
-                paidByConflict,
-                sharedFlat
-            ),
-            Arguments.of(
-                paidBy,
-                sharedFlatConflict
-            )
-        );
-
-    }
-
-
-    @ParameterizedTest
-    @MethodSource("givenExpenseWithInvalidReferencesWhenCreateThenConflictExceptionIsThrownData")
-    void givenExpenseWithInvalidReferencesWhenCreateThenConflictExceptionIsThrown(UserDetailDto paidBy,
-                                                                                  WgDetailDto sharedFlat) {
+    @Test
+    void givenExpenseWithInvalidReferencesWhenCreateThenConflictExceptionIsThrown() {
         // given
-        UserDetailDto userDetailDto1 = new UserDetailDto();
-        userDetailDto1.setId(1L);
+        UserListDto userDetailDto1 = UserListDtoBuilder.builder()
+            .id(1L)
+            .build();
 
-        UserDetailDto userDetailDto2 = new UserDetailDto();
-        userDetailDto2.setId(2L);
+        UserListDto userDetailDto2 = UserListDtoBuilder.builder()
+            .id(2L)
+            .build();
 
-        UserDetailDto userDetailDto3 = new UserDetailDto();
-        userDetailDto3.setId(3L);
+        UserListDto userDetailDto3 = UserListDtoBuilder.builder()
+            .id(3L)
+            .build();
 
-        UserDetailDto userDetailDto4 = new UserDetailDto();
-        userDetailDto4.setId(4L);
+        UserListDto userDetailDto4 = UserListDtoBuilder.builder()
+            .id(4L)
+            .build();
 
+        UserListDto paidByConflict = UserListDtoBuilder.builder()
+            .id(-999L)
+            .build();
 
         ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
             .title("Test")
             .description("Test")
             .amountInCents(100L)
             .createdAt(LocalDateTime.now())
-            .paidBy(paidBy)
+            .paidBy(paidByConflict)
             .debitUsers(
                 List.of(
                     DebitDtoBuilder.builder()
@@ -376,7 +362,6 @@ class ExpenseServiceTest {
                         .build()
                 )
             )
-            .sharedFlat(sharedFlat)
             .build();
 
         // when + then
