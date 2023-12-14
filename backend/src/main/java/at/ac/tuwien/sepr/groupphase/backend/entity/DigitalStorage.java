@@ -82,5 +82,4 @@ public class DigitalStorage {
     public int hashCode() {
         return Objects.hash(storId);
     }
-
 }

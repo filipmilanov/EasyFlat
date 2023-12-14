@@ -20,7 +20,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,6 +55,9 @@ public class Item {
     @Min(value = 0, message = "The total quantity must be positive")
     private Long quantityTotal;
 
+    @ManyToOne
+    private Unit unit;
+
     @Column
     @FutureOrPresent(message = "You cannot store products which are over the expire date")
     private LocalDate expireDate;
@@ -70,17 +72,14 @@ public class Item {
     private String boughtAt;
 
     @ManyToOne
-    private Unit unit;
-
-    @ManyToOne
     @NotNull(message = "A Item need to be linked to a storage")
     private DigitalStorage digitalStorage;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Ingredient> ingredientList = new ArrayList<>();
+    private List<Ingredient> ingredientList;
 
     @OneToMany
-    private List<ItemStats> itemStats = new ArrayList<>();
+    private List<ItemStats> itemStats;
 
     @AssertTrue(message = "The current quantity cannot be larger then the total")
     private boolean quantityCurrentLessThenTotal() {
@@ -189,11 +188,6 @@ public class Item {
 
     public void setStorage(DigitalStorage digitalStorage) {
         this.digitalStorage = digitalStorage;
-        if (digitalStorage.getItemList() == null) {
-            List<Item> itemList = digitalStorage.getItemList();
-            itemList.add(this);
-            digitalStorage.setItemList(itemList);
-        }
     }
 
     public List<Ingredient> getIngredientList() {

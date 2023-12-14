@@ -7,13 +7,14 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Mapper
+@Mapper(uses = {UnitMapper.class})
 public abstract class ShoppingListMapper {
 
     @Mapping(target = "id", source = "shopListId")
@@ -26,47 +27,16 @@ public abstract class ShoppingListMapper {
 
     public abstract List<ShoppingListDto> entityListToDtoList(List<ShoppingList> shoppingList);
 
-    public Item shoppingItemDtoToItem(ShoppingItemDto shoppingItem, List<Ingredient> ingredients) {
-        if (shoppingItem == null) {
-            return null;
-        }
-        Item item = new Item();
-        item.setEan(shoppingItem.ean());
-        item.setGeneralName(shoppingItem.generalName());
-        item.setProductName(shoppingItem.productName());
-        item.setBrand(shoppingItem.brand());
-        item.setQuantityCurrent(shoppingItem.quantityCurrent());
-        item.setQuantityTotal(shoppingItem.quantityTotal());
-        item.setUnit(shoppingItem.unit());
-        item.setExpireDate(null);
-        item.setDescription(shoppingItem.description());
-        item.setPriceInCent(shoppingItem.priceInCent());
-        item.setBoughtAt(shoppingItem.boughtAt());
-        item.setStorage(new DigitalStorage());
-        item.setIngredientList(ingredients);
-        return item;
-    }
+    @Mapping(target = "ingredientList", expression = "java( ingredients )")
+    @Mapping(target = "digitalStorage", expression = "java( digitalStorage )")
+    public abstract Item shoppingItemDtoToItem(ShoppingItemDto shoppingItem,
+                                      @Context List<Ingredient> ingredients,
+                                      @Context DigitalStorage digitalStorage);
 
-    public AlwaysInStockItem shoppingItemDtoToAis(ShoppingItemDto shoppingItem, List<Ingredient> ingredients) {
-        if (shoppingItem == null) {
-            return null;
-        }
-        AlwaysInStockItem item = new AlwaysInStockItem();
-        item.setEan(shoppingItem.ean());
-        item.setGeneralName(shoppingItem.generalName());
-        item.setProductName(shoppingItem.productName());
-        item.setBrand(shoppingItem.brand());
-        item.setQuantityCurrent(shoppingItem.quantityCurrent());
-        item.setQuantityTotal(shoppingItem.quantityTotal());
-        item.setUnit(shoppingItem.unit());
-        item.setExpireDate(null);
-        item.setDescription(shoppingItem.description());
-        item.setPriceInCent(shoppingItem.priceInCent());
-        item.setBoughtAt(shoppingItem.boughtAt());
-        item.setStorage(new DigitalStorage());
-        item.setIngredientList(ingredients);
-        item.setMinimumQuantity(shoppingItem.minimumQuantity());
-        return item;
-    }
+    @Mapping(target = "ingredientList", expression = "java( ingredients )")
+    @Mapping(target = "digitalStorage", expression = "java( digitalStorage )")
+    public abstract AlwaysInStockItem shoppingItemDtoToAis(ShoppingItemDto shoppingItem,
+                                                  @Context List<Ingredient> ingredients,
+                                                  @Context DigitalStorage digitalStorage);
 
 }
