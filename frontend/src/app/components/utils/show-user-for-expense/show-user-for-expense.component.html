@@ -1,0 +1,20 @@
+<div *ngFor="let user of users"
+     class="row w-50 p-2 align-items-center align-content-center border rounded m-1">
+  <div class="form-check col-2">
+    <input class="form-check-input"
+           type="checkbox"
+           id="target"
+           [(ngModel)]="user.isTarget">
+  </div>
+  <div class="col-6">
+    {{user.user.firstName + " " + user.user.lastName}}
+  </div>
+  <div class="col-4">
+    <input type="number"
+           class="form-control"
+           aria-label="value"
+           placeholder="{{kindOfValue(user)}}"
+           [(ngModel)]="user.value">
+  </div>
+</div>
+
