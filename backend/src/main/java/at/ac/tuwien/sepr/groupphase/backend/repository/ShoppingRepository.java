@@ -16,10 +16,10 @@ public interface ShoppingRepository extends JpaRepository<ShoppingItem, Long> {
     @Query("SELECT e FROM ShoppingItem e WHERE e.shoppingList.shopListId = :listId")
     List<ShoppingItem> findByShoppingListId(@Param("listId") Long listId);
 
-    @Query("SELECT i FROM ShoppingItem i LEFT JOIN i.labels il WHERE i.shoppingList.shopListId = :shopListId AND "
+    @Query("SELECT i FROM ShoppingItem i LEFT JOIN i.labels il WHERE i.shoppingList.name = :name AND "
         + "(:productName IS NULL OR LOWER(i.generalName) LIKE LOWER(CONCAT('%', :productName, '%'))) AND "
         + "(:label IS NULL OR LOWER(il.labelValue) LIKE LOWER(CONCAT('%', :label, '%')))")
-    List<ShoppingItem> searchItems(@Param("shopListId") Long shopListId,
+    List<ShoppingItem> searchItems(@Param("name") String name,
                                    @Param("productName") String productName,
                                    @Param("label") String label);
 }

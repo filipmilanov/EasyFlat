@@ -49,12 +49,12 @@ export class ShoppingListService {
   /**
    * Find existing shopping items in the system
    *
-   * @param shopId the id of the shopping list to which the shopping items are connected in the system
+   * @param shopName the id of the shopping list to which the shopping items are connected in the system
    * @param searchParams search parameters consisting of the products' name and their labels' value
    * @return an Observable for the existing shopping items in the system
    */
-  getItemsWithShopId(shopId: string, searchParams: ShoppingItemSearchDto):Observable<ShoppingItemDto[]> {
-    console.log('Get items with shopId ' + shopId + ' and search parameters ' + searchParams);
+  getItemsWithShopId(shopName: string, searchParams: ShoppingItemSearchDto):Observable<ShoppingItemDto[]> {
+    console.log('Get items with shopId ' + shopName + ' and search parameters ' + searchParams);
     let params = new HttpParams();
     if (searchParams.productName) {
       params = params.append('productName', searchParams.productName);
@@ -62,7 +62,7 @@ export class ShoppingListService {
     if (searchParams.label) {
       params = params.append('label', searchParams.label);
     }
-    return this.http.get<ShoppingItemDto[]>(this.baseUri + "/list-items/" + shopId, {params});
+    return this.http.get<ShoppingItemDto[]>(this.baseUri + "/list-items/" + shopName, {params});
   }
 
   /**
@@ -76,6 +76,13 @@ export class ShoppingListService {
       'Authorization': this.authService.getToken()
     });
     return this.http.get<ShoppingListDto>(this.baseUri + '/list/' + shoppingListName, {headers});
+  }
+
+  getShoppingListById(shoppingListId: string): Observable<ShoppingListDto> {
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.http.get<ShoppingListDto>(this.baseUri + '/listId/' + shoppingListId, {headers});
   }
 
   createList(listName: string): Observable<ShoppingListDto> {

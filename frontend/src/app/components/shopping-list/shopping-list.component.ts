@@ -40,32 +40,31 @@ export class ShoppingListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.checkedItems = this.getCheckedItems();
     console.log('Checked Items:', this.checkedItems);
     this.shoppingListService.getShoppingLists().subscribe({
         next: res => {
           this.shoppingLists = res;
-          this.shopId = this.shoppingList.id + '';
-          this.getItems();
         }
       }
     );
     this.route.params.subscribe({
       next: params => {
         this.shopName = params.name;
+        console.log(params.name)
         console.log(this.shopName)
         this.shoppingListService.getShoppingListByName(this.shopName).subscribe({
           next: (res: ShoppingListDto) => {
             this.shoppingList = res;
             this.shopId = res.id + "";
+            this.getItems();
+            console.log(this.items)
           },
           error: (error: any) => {
             console.error('Error fetching shopping list:', error);
           }
         });
 
-        this.getItems();
       },
       error: error => {
         console.error("Error fetching parameters:", error);
@@ -75,7 +74,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   getItems() {
-    this.shoppingListService.getItemsWithShopId(this.shopId, this.searchParams).subscribe({
+    this.shoppingListService.getItemsWithShopId(this.shopName, this.searchParams).subscribe({
       next: res => {
         this.items = res;
         console.log(this.items)
@@ -113,7 +112,7 @@ export class ShoppingListComponent implements OnInit {
       this.shoppingListService.deleteList(this.shopId).subscribe({
         next: (deletedList: ShoppingListDto) => {
           console.log(deletedList.listName, ' was deleted successfully');
-          this.router.navigate(['shopping-list' + this.shopId]);
+          this.router.navigate(['shopping-list' + this.shoppingList.listName]);
         },
         error: error => {
           console.error(error.message, error);
@@ -160,9 +159,17 @@ export class ShoppingListComponent implements OnInit {
   }
 
   onShoppingListChange() {
-    console.log('Selected Shopping List:', this.selectedShoppingList);
+    console.log('Selected Shopping List:', this.shopName);
     if (this.selectedShoppingList) {
-      this.router.navigate(['/shopping-list', this.selectedShoppingList]);
+      this.shoppingListService.getShoppingListById(this.selectedShoppingList + '').subscribe({
+        next: res => {
+          this.shoppingList = res;
+          this.shopName = res.listName;
+          this.shopId = res.id + '';
+          this.getItems();
+          this.router.navigate(['/shopping-list', this.shopName]);
+        }
+      })
     }
   }
 
@@ -180,11 +187,11 @@ export class ShoppingListComponent implements OnInit {
   }
 
   checkId() {
-    return this.shoppingList.listName != "Default";
+    return this.shoppingList.listName == "Default";
   }
 
   navigateToEditItem(itemId: string) {
-    this.router.navigate(['shopping-list', this.shopId, 'item', itemId, 'edit']);
+    this.router.navigate(['shopping-list', this.shopName, 'item', itemId, 'edit']);
   }
 
 }

@@ -81,19 +81,27 @@ public class ShoppingListEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("/list/{name}")
-    public Optional<ShoppingListDto> getShoppingListById(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public Optional<ShoppingListDto> getShoppingListByName(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("getShoppingListById({},{})", name, jwt);
-        Optional<ShoppingList> ret = shoppingService.getShoppingListById(name, jwt);
+        Optional<ShoppingList> ret = shoppingService.getShoppingListByName(name, jwt);
+        return ret.flatMap(shoppingList -> Optional.ofNullable(shoppingListMapper.entityToDto(shoppingList)));
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/listId/{id}")
+    public Optional<ShoppingListDto> getShoppingListById(@PathVariable Long id, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+        LOGGER.info("getShoppingListById({},{})", id, jwt);
+        Optional<ShoppingList> ret = shoppingService.getShoppingListById(id, jwt);
         return ret.flatMap(shoppingList -> Optional.ofNullable(shoppingListMapper.entityToDto(shoppingList)));
 
     }
 
     @PermitAll
-    @GetMapping("/list-items/{listId}")
-    public List<ShoppingItemDto> getItemsById(@PathVariable Long listId, ShoppingItemSearchDto itemSearchDto,
+    @GetMapping("/list-items/{name}")
+    public List<ShoppingItemDto> getItemsById(@PathVariable String name, ShoppingItemSearchDto itemSearchDto,
                                               @RequestHeader("Authorization") String jwt) throws AuthenticationException {
-        LOGGER.info("getItemsById({},{})", listId, jwt);
-        List<ShoppingItem> items = shoppingService.getItemsById(listId, itemSearchDto, jwt);
+        LOGGER.info("getItemsById({},{})", name, jwt);
+        List<ShoppingItem> items = shoppingService.getItemsByName(name, itemSearchDto, jwt);
         List<ShoppingItemDto> ret = new ArrayList<>();
         for (ShoppingItem item : items) {
             ret.add(itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList())));

@@ -36,16 +36,19 @@ public interface ShoppingListService {
      * @param name a valid listName
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
      */
-    Optional<ShoppingList> getShoppingListById(String name, String jwt) throws AuthenticationException;
+    Optional<ShoppingList> getShoppingListByName(String name, String jwt) throws AuthenticationException;
+
+    Optional<ShoppingList> getShoppingListById(Long id, String jwt) throws AuthenticationException;
+
 
     /**
      * Search for a shopping list in the database with given ID.
      *
-     * @param listId a valid ID of a ShoppingList
+     * @param name a valid ID of a ShoppingList
      * @param itemSearchDto search parameters consisting of the product's name and its label's value
      * @return if the id exists in the DB, a List of a persisted ShoppingItems with the given ID, an empty Optional otherwise
      */
-    List<ShoppingItem> getItemsById(Long listId, ShoppingItemSearchDto itemSearchDto, String jwt) throws AuthenticationException;
+    List<ShoppingItem> getItemsByName(String name, ShoppingItemSearchDto itemSearchDto, String jwt) throws AuthenticationException;
 
     ShoppingList createList(String listName, String jwt) throws ValidationException, AuthenticationException;
 
