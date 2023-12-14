@@ -12,7 +12,7 @@ public record OpenFoodFactsItemDto(
     String productName,
     String brand,
     Long quantityTotal,
-    String unit,
+    UnitDto unit,
     String description,
     String boughtAt,
     List<Ingredient> ingredients

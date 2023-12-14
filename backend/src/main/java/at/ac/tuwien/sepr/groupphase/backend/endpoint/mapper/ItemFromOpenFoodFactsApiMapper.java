@@ -3,14 +3,19 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.OpenFoodFactsItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.openfoodfactsapi.OpenFoodFactsIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.openfoodfactsapi.OpenFoodFactsResponseDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
+import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,14 +25,21 @@ import java.util.stream.Collectors;
 @Component
 public class ItemFromOpenFoodFactsApiMapper {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final IngredientService ingredientService;
+    private final UnitService unitService;
+    private final UnitMapper unitMapper;
 
-    public ItemFromOpenFoodFactsApiMapper(IngredientService ingredientService) {
+    public ItemFromOpenFoodFactsApiMapper(IngredientService ingredientService,
+                                          UnitService unitService,
+                                          UnitMapper unitMapper) {
         this.ingredientService = ingredientService;
+        this.unitService = unitService;
+        this.unitMapper = unitMapper;
     }
 
     public OpenFoodFactsItemDto mapFromJsonNode(OpenFoodFactsResponseDto openFoodFactsResponseDto) throws ConflictException {
-
+        LOGGER.trace("mapFromJsonNode({})", openFoodFactsResponseDto);
 
         if (openFoodFactsResponseDto.status()) {
 
@@ -74,13 +86,20 @@ public class ItemFromOpenFoodFactsApiMapper {
                 ingredients = ingredientService.findIngredientsAndCreateMissing(ingredientDtoList);
             }
 
+            UnitDto unitDto = null;
+            try {
+                unitDto = unitMapper.entityToUnitDto(unitService.findByName(unit));
+            } catch (NotFoundException e) {
+                LOGGER.info("Unit {} not found in database", unit);
+            }
+
             return new OpenFoodFactsItemDto(
                 ean,
                 !Objects.equals(generalName, "") ? generalName : productName,
                 productName,
                 brand,
                 totalQuantity,
-                unit,
+                unitDto,
                 description,
                 boughtAt,
                 ingredients
