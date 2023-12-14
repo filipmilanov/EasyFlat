@@ -6,12 +6,15 @@ export class ExpenseDto {
   title?: string;
   description?: string;
   amountInCents?: number;
+  splitBy?: SplitBy;
+  createdAt?: Date;
   paidBy?: UserDetail;
   debitUsers?: DebitDto[];
   sharedFlat?: SharedFlat;
 }
 
 export class DebitDto {
+  isTarget: boolean;
   user?: UserDetail;
   splitBy?: SplitBy;
   value?: number;
