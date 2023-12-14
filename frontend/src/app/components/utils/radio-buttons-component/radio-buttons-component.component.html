@@ -1,0 +1,4 @@
+<div *ngFor="let option of options">
+  <input type="radio" [value]="option.value" [formControl]="form.get('selectedOption')"/>
+  {{ option.label }}
+</div>
