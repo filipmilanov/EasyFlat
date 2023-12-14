@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
@@ -35,6 +36,16 @@ public class UserEndpoint {
 
         return userMapper.entityListToUserListDto(
             userService.findFlatmates(jwt)
+        );
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping()
+    public UserDetailDto findUser(@RequestHeader("Authorization") String jwt) {
+        LOGGER.info("findUser()");
+
+        return userMapper.entityToUserDetailDto(
+            userService.getUser(jwt)
         );
     }
 }
