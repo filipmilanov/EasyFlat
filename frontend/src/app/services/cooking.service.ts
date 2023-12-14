@@ -30,7 +30,10 @@ export class CookingService {
   }
 
   getCookbook(): Observable<RecipeSuggestion[]> {
-    return this.httpClient.get<RecipeSuggestion[]>(this.cookbookUri);
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.get<RecipeSuggestion[]>(this.cookbookUri,{headers});
   }
 
   createCookbookRecipe(recipe: RecipeSuggestion): Observable<RecipeSuggestion> {
@@ -44,28 +47,46 @@ export class CookingService {
         }
       });
     }
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
 
-    return this.httpClient.post<RecipeSuggestion>(this.cookbookUri, recipe);
+    return this.httpClient.post<RecipeSuggestion>(this.cookbookUri, recipe, {headers});
   }
 
   updateCookbookRecipe(recipe: RecipeSuggestion): Observable<RecipeSuggestion> {
-    return this.httpClient.put<RecipeSuggestion>(this.cookbookUri + '/' + recipe.id, recipe);
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.put<RecipeSuggestion>(this.cookbookUri + '/' + recipe.id, recipe, {headers});
   }
 
   getCookbookRecipe(id: string): Observable<RecipeSuggestion> {
-    return this.httpClient.get<RecipeSuggestion>(this.cookbookUri + '/' + id);
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.get<RecipeSuggestion>(this.cookbookUri + '/' + id, {headers});
   }
 
   deleteCookbookRecipe(id: string): Observable<RecipeSuggestion> {
-    return this.httpClient.delete<RecipeSuggestion>(this.cookbookUri + '/' + id);
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.delete<RecipeSuggestion>(this.cookbookUri + '/' + id, {headers});
   }
 
   getRecipeDetails(id: string): Observable<RecipeDetailDto> {
-    return this.httpClient.get<RecipeDetailDto>(this.baseUri + '/detail/' + id);
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.get<RecipeDetailDto>(this.baseUri + '/detail/' + id, {headers});
   }
 
   getMissingIngredients(id:string): Observable<RecipeSuggestion> {
-    return this.httpClient.get<RecipeSuggestion>(this.cookbookUri + '/missing/' + id);
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.get<RecipeSuggestion>(this.cookbookUri + '/missing/' + id, {headers});
   }
 
   cookRecipe(recipe:RecipeSuggestion):Observable<RecipeSuggestion>{

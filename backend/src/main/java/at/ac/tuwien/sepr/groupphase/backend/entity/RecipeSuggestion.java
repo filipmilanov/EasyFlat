@@ -112,4 +112,12 @@ public class RecipeSuggestion {
     public void setMissingIngredients(List<RecipeIngredient> missingIngredients) {
         this.missingIngredients = missingIngredients;
     }
+
+    public Cookbook getCookbook() {
+        return cookbook;
+    }
+
+    public void setCookbook(Cookbook cookbook) {
+        this.cookbook = cookbook;
+    }
 }

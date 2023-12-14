@@ -332,9 +332,11 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<RecipeSuggestionDto> getCookbook() throws ValidationException {
+    public List<RecipeSuggestionDto> getCookbook(String jwt) throws ValidationException, AuthenticationException {
         List<RecipeSuggestionDto> recipesDto = new LinkedList<>();
-        List<RecipeSuggestion> recipes = repository.findAll();
+        Long cookbookId = this.getCookbookIdForUser(jwt);
+        Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
+        List<RecipeSuggestion> recipes = cookbook.getRecipes();
         for (RecipeSuggestion recipe : recipes) {
             recipesDto.add(recipeMapper.entityToRecipeSuggestionDto(recipe));
         }
@@ -342,17 +344,21 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException, ValidationException {
+    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe, String jwt) throws ConflictException, ValidationException,
+        AuthenticationException {
         recipeValidator.validateForCreate(recipe);
         List<RecipeIngredient> ingredientList = ingredientService.createAll(recipe.extendedIngredients());
         RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipe, ingredientList);
+        Long cookbookId = this.getCookbookIdForUser(jwt);
+        Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
+        recipeEntity.setCookbook(cookbook);
         RecipeSuggestion createdRecipe = repository.save(recipeEntity);
         createdRecipe.setExtendedIngredients(ingredientList);
         return createdRecipe;
     }
 
     @Override
-    public Optional<RecipeSuggestion> getCookbookRecipe(Long id) {
+    public Optional<RecipeSuggestion> getCookbookRecipe(Long id, String jwt) {
         if (id == null) {
             return Optional.empty();
         }
@@ -361,15 +367,18 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException {
+    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe, String jwt) throws ValidationException, AuthenticationException {
         recipeValidator.validateForUpdate(recipe);
-        RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id())
+        RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id(), jwt)
             .orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
+        Long cookbookId = this.getCookbookIdForUser(jwt);
+        Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
 
         oldRecipe.setTitle(recipe.title());
         oldRecipe.setSummary(recipe.summary());
         oldRecipe.setReadyInMinutes(recipe.readyInMinutes());
         oldRecipe.setServings(recipe.servings());
+        oldRecipe.setCookbook(cookbook);
 
         List<RecipeIngredient> ingredientList = ingredientService.createAll(recipe.extendedIngredients());
         oldRecipe.getExtendedIngredients().clear();
@@ -382,21 +391,23 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion deleteCookbookRecipe(Long id) {
-        RecipeSuggestion deletedRecipe = this.getCookbookRecipe(id).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+    public RecipeSuggestion deleteCookbookRecipe(Long id, String jwt) throws AuthenticationException {
+        RecipeSuggestion deletedRecipe = this.getCookbookRecipe(id, jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        this.getCookbookIdForUser(jwt);
         repository.delete(deletedRecipe);
         return deletedRecipe;
     }
 
     @Override
-    public RecipeSuggestionDto getMissingIngredients(Long id) {
+    public RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthenticationException, ValidationException, ConflictException {
+        Long storId = this.getStorIdForUser(jwt);
         Optional<RecipeSuggestion> recipeEntity = repository.findById(id);
         Optional<RecipeSuggestionDto> recipeDto = recipeEntity.map(currentRecipe -> {
             RecipeSuggestionDto recipeSuggestionDto = recipeMapper.entityToRecipeSuggestionDto(currentRecipe);
             if (recipeSuggestionDto != null) {
                 List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
                 for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
-                    List<Item> items = storageRepository.getItemWithGeneralName(1L, ingredient.name());
+                    List<Item> items = storageRepository.getItemWithGeneralName(storId, ingredient.name());
                     if (items.isEmpty()) {
                         missingIngredients.add(ingredient);
                         continue;
@@ -458,9 +469,10 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthenticationException {
+        Long storId = this.getStorIdForUser(jwt);
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
-            List<Item> items = storageRepository.getItemWithGeneralName(1L, recipeIngredientDto.name());
+            List<Item> items = storageRepository.getItemWithGeneralName(storId, recipeIngredientDto.name());
             Unit ingredientUnit = unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum());
             Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), recipeIngredientDto.amount());
             List<Item> itemsWithMinUnits = minimizeUnits(items);
@@ -586,7 +598,7 @@ public class CookingServiceImpl implements CookingService {
 
     }
 
-    private Long getIdForUser(String jwt) throws AuthenticationException {
+    private Long getCookbookIdForUser(String jwt) throws AuthenticationException {
         List<Cookbook> cookbookList = findAllCookbooks(jwt);
         Cookbook matchingCookbook = null;
         if (!cookbookList.isEmpty()) {
@@ -609,6 +621,34 @@ public class CookingServiceImpl implements CookingService {
 
 
             return matchingCookbook.getId();
+        } else {
+            return null;
+        }
+    }
+
+    private Long getStorIdForUser(String jwt) throws AuthenticationException, ValidationException, ConflictException {
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
+        DigitalStorage matchingDigitalStorage = null;
+        if (!digitalStorageList.isEmpty()) {
+            matchingDigitalStorage = digitalStorageList.stream().toList().get(0);
+        }
+        if (matchingDigitalStorage != null) {
+            List<Long> allowedUser = sharedFlatService.findById(
+                    matchingDigitalStorage.getSharedFlat().getId(),
+                    jwt
+                ).getUsers().stream()
+                .map(ApplicationUser::getId)
+                .toList();
+
+
+            authorization.authenticateUser(
+                jwt,
+                allowedUser,
+                "The given digital storage does not belong to the user's shared flat!"
+            );
+
+
+            return matchingDigitalStorage.getStorId();
         } else {
             return null;
         }
