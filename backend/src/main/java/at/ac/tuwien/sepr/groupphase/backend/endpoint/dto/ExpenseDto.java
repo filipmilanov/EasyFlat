@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.List;
 
 @RecordBuilder
@@ -24,7 +23,7 @@ public record ExpenseDto(
     @NotNull(message = "The shared flat cannot be empty") WgDetailDto sharedFlat,
     List<ItemDto> items,
     Boolean isRepeating,
-    Period interval
+    LocalDateTime interval
 ) {
 
     @AssertTrue(message = "Interval must be present if isRepeating is true")
