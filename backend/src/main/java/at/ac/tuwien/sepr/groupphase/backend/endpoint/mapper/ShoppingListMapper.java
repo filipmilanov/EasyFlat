@@ -14,7 +14,7 @@ import org.mapstruct.Mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mapper(uses = {UnitMapper.class})
+@Mapper(uses = {UnitMapper.class, IngredientMapper.class, DigitalStorageMapper.class})
 public abstract class ShoppingListMapper {
 
     @Mapping(target = "id", source = "shopListId")
@@ -27,16 +27,16 @@ public abstract class ShoppingListMapper {
 
     public abstract List<ShoppingListDto> entityListToDtoList(List<ShoppingList> shoppingList);
 
-    @Mapping(target = "ingredientList", expression = "java( ingredients )")
-    @Mapping(target = "digitalStorage", expression = "java( digitalStorage )")
-    public abstract Item shoppingItemDtoToItem(ShoppingItemDto shoppingItem,
-                                      @Context List<Ingredient> ingredients,
-                                      @Context DigitalStorage digitalStorage);
 
-    @Mapping(target = "ingredientList", expression = "java( ingredients )")
-    @Mapping(target = "digitalStorage", expression = "java( digitalStorage )")
+    @Mapping(target = "ingredientList", source = "ingredients")
+    @Mapping(target = "storage", source = "digitalStorage")
+    public abstract Item shoppingItemDtoToItem(ShoppingItemDto shoppingItemDto,
+                                               List<Ingredient> ingredients,
+                                               DigitalStorage digitalStorage);
+
+    @Mapping(target = "ingredientList", source = "ingredients")
+    @Mapping(target = "storage", source = "digitalStorage")
     public abstract AlwaysInStockItem shoppingItemDtoToAis(ShoppingItemDto shoppingItem,
-                                                  @Context List<Ingredient> ingredients,
-                                                  @Context DigitalStorage digitalStorage);
-
+                                                           List<Ingredient> ingredients,
+                                                           DigitalStorage digitalStorage);
 }

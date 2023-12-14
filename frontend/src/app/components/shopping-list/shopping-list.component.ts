@@ -1,5 +1,5 @@
 import {Component, ElementRef, NgIterable, OnInit} from '@angular/core';
-import {ToastrService} from "ngx-toastr";
+import {DefaultGlobalConfig, ToastrService} from "ngx-toastr";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ShoppingItemDto, ShoppingItemSearchDto} from "../../dtos/item";
 import {ItemService} from "../../services/item.service";
@@ -137,7 +137,7 @@ export class ShoppingListComponent implements OnInit {
 
     if (confirm("Are you sure you want to delete the checked items?")) {
       checkedItems.forEach(item => {
-        this.shoppingListService.deleteItem(parseInt(item.itemId)).subscribe({
+        this.shoppingListService.deleteItem(item.itemId).subscribe({
           next: (deletedItem: ShoppingItemDto) => {
             console.log(deletedItem.generalName, ' was deleted from the list');
 
@@ -175,7 +175,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   checkId() {
-    return this.shopId == '1';
+    return this.shoppingList.listName != "Default";
   }
 
   navigateToEditItem(itemId: string) {
