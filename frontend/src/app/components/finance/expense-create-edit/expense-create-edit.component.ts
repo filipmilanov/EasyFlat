@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {DebitDto, ExpenseDto, SplitBy} from "../../../dtos/expenseDto";
 import {NgForm} from "@angular/forms";
-import {SharedFlatService} from "../../../services/sharedFlat.service";
 import {FinanceService} from "../../../services/finance.service";
 import {Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-expense-create-edit',
@@ -18,31 +18,10 @@ export class ExpenseCreateEditComponent implements OnInit {
   splitByOptions = Object.keys(SplitBy).map(key => ({value: key, label: SplitBy[key]}));
   selectedSplitBy: SplitBy = SplitBy.EQUAL;
   submitButtonText: string = 'Create';
-  users: DebitDto[] = [
-    {
-      user: {
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        email: 'a@a.c',
-        flatName: 'WG',
-        password: '123',
-        admin: true
-      }
-    },
-    {
-      user: {
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        email: 'a@a.c',
-        flatName: 'WG',
-        password: '123',
-        admin: true
-      }
-    }
-  ];
+  users: DebitDto[] = [];
 
   constructor(
-    private sharedFlatService: SharedFlatService,
+    private userService: UserService,
     private financeService: FinanceService,
     private router: Router,
     private notification: ToastrService,
@@ -50,7 +29,20 @@ export class ExpenseCreateEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.userService.findFlatmates().subscribe({
+      next: (users) => {
+        this.users = users.map(user => {
+          return {
+            user: user,
+            splitBy: this.selectedSplitBy
+          }
+        });
+      },
+      error: (error) => {
+        console.log(error);
+        this.notification.error("Could not load flatmates", "Error");
+      }
+    });
     this.onSplitByChange();
   }
 
