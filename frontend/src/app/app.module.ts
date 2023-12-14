@@ -19,9 +19,9 @@ import {ItemDetailComponent} from './components/digital-storage/item-detail/item
 import {ToastrModule} from "ngx-toastr";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AutocompleteComponent} from './components/utils/autocomplete/autocomplete.component';
-import { ItemDetailListComponent } from './components/digital-storage/item-detail-list/item-detail-list.component';
-import { RegisterComponent } from './components/register/register.component';
-import { AccountComponent } from './components/account/account.component';
+import {ItemDetailListComponent} from './components/digital-storage/item-detail-list/item-detail-list.component';
+import {RegisterComponent} from './components/register/register.component';
+import {AccountComponent} from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import { CreateFlatComponent } from './components/create-flat/create-flat.component';
 import { CookingComponent } from './components/cooking/cooking.component';
@@ -34,6 +34,12 @@ import { CookbookCreateComponent } from './components/cookbook/cookbook-create/c
 import { CookbookDetailComponent } from './components/cookbook/cookbook-detail/cookbook-detail.component';
 import { CookbookModalComponent } from './components/cookbook/cookbook-modal/cookbook-modal.component';
 import { CookingModalComponent } from './components/cooking/cooking-modal/cooking-modal.component';
+import {CreateFlatComponent} from './components/create-flat/create-flat.component';
+import {LOAD_WASM, NgxScannerQrcodeModule} from "ngx-scanner-qrcode";
+
+
+LOAD_WASM().subscribe();
+
 
 @NgModule({
   declarations: [
@@ -73,6 +79,7 @@ import { CookingModalComponent } from './components/cooking/cooking-modal/cookin
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
     NgOptimizedImage,
+    NgxScannerQrcodeModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

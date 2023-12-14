@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.OpenFoodFactsItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
@@ -43,4 +44,7 @@ public abstract class ItemMapper {
     }
 
     public abstract List<ItemDto> entityListToItemDtoList(List<Item> items);
+
+    @Mapping(target = "ean", source = "eanCode")
+    public abstract ItemDto openFoodFactItemDtoToItemDto(OpenFoodFactsItemDto openFoodFactsItemDto);
 }

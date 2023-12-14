@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ItemDto} from "../../../dtos/item";
 import {NgForm} from "@angular/forms";
 import {ItemService} from "../../../services/item.service";
@@ -9,6 +9,8 @@ import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Unit} from "../../../dtos/unit";
 import {UnitService} from "../../../services/unit.service";
+import {NgxScannerQrcodeComponent, ScannerQRCodeResult} from "ngx-scanner-qrcode";
+import {OpenFoodFactService} from "../../../services/open-food-fact.service";
 
 export enum ItemCreateEditMode {
   create,
@@ -21,6 +23,9 @@ export enum ItemCreateEditMode {
   styleUrls: ['./item-create-edit.component.scss']
 })
 export class ItemCreateEditComponent implements OnInit {
+
+  @ViewChild('action')
+  scanner: NgxScannerQrcodeComponent;
 
   mode: ItemCreateEditMode = ItemCreateEditMode.create;
   item: ItemDto = {
@@ -37,7 +42,8 @@ export class ItemCreateEditComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
-    private unitServ: UnitService
+    private unitServ: UnitService,
+    private openFoodFactService: OpenFoodFactService
   ) {
   }
 
@@ -233,5 +239,40 @@ export class ItemCreateEditComponent implements OnInit {
     this.item.unit = unit;
   }
 
+  toggleScanning() {
+    this.scanner.isStart ? this.scanner.stop() : this.scanner.start()
+  }
 
+  updateEAN(ean: ScannerQRCodeResult[]) {
+    this.scanner.pause();
+    this.item.ean = this.scanner.data.value[0].value;
+
+    this.notification.success(`EAN number ${this.item.ean} successfully scanned.`, "Success");
+    this.searchForEan(this.item.ean);
+  }
+
+  searchForEan(ean: string) {
+    let o = this.openFoodFactService.findByEan(ean);
+    o.subscribe({
+      next: data => {
+        console.log("Loaded EAN number:", data)
+        if (data != null) {
+          this.item = data;
+        } else {
+          console.log("No data found for EAN number:", ean)
+        }
+      },
+      error: error => {
+        console.log("Failed at loading EAN number:", error);
+      }
+    })
+  }
+
+  togglePlayPause() {
+    if (this.scanner.isPause) {
+      this.scanner.play();
+    } else {
+      this.scanner.pause();
+    }
+  }
 }
