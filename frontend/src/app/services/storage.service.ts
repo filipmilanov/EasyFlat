@@ -55,8 +55,9 @@ export class StorageService {
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });
+    const params = new HttpParams().set('generalName', generalName);
 
-    return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName,{headers});
+    return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info',{params, headers});
   }
 
   /**

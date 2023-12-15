@@ -56,6 +56,9 @@ public class ShoppingListValidator {
         if (shoppingList.getName().length() > 120) {
             errors.add("Shopping List name is too long");
         }
+        if (shoppingList.getName().contains(" ")) {
+            errors.add("Shopping List name should not contain whitespaces");
+        }
 
         if (!errors.isEmpty()) {
             throw new ConflictException("There is a conflict with persisted data", errors);

@@ -7,7 +7,6 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/message" routerLinkActive="active">Message</a>
       <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/account" routerLinkActive="active">Account</a>
     </ul>
     <ul class="navbar-nav mr-auto">
@@ -20,10 +19,10 @@
     </ul>
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/cooking" routerLinkActive="active">Cooking</a>
+        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/cooking" routerLinkActive="active">Cooking</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/cookbook" routerLinkActive="active">Cookbook</a>
+        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/cookbook" routerLinkActive="active">Cookbook</a>
       </li>
     </ul>
 

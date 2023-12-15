@@ -42,6 +42,10 @@ export class ItemCardComponent {
       this.customModalOpen1 = false;
     }
   }
+  getTruncatedTitle(): string {
+    const maxLength = 35; // Set the maximum length
+    return this.title.length > maxLength ? this.title.substring(0, maxLength) + '...' : this.title;
+  }
 
   onSave(value: string, mode: number) {
     const quantity = parseInt(value);
