@@ -68,10 +68,7 @@ export class CookbookCardComponent {
       }
     });
   }
-  getTruncatedRecipeTitle(): string {
-    const maxLength = 40; // Set the maximum length
-    return this.recipe.title.length > maxLength ? this.recipe.title.substring(0, maxLength) + '...' : this.recipe.title;
-  }
+
   detail() {
     this.detailsClicked.emit(this.recipe);
   }

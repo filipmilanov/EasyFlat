@@ -3,7 +3,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ public class UserServiceTest implements TestData {
 
     @Test
     @DisplayName("Positive test for registering a valid user")
-    public void registerValidUserAndCheckIfSuccessfullyRegistered() throws ConflictException {
+    public void registerValidUserAndCheckIfSuccessfullyRegistered() {
         UserDetailDto userDetailDto = new UserDetailDto();
         userDetailDto.setFirstName("John");
         userDetailDto.setLastName("Doe");
@@ -52,7 +51,7 @@ public class UserServiceTest implements TestData {
 
     @Test
     @DisplayName("Negative test for registering a user with an existing email")
-    public void registerUserWithExistingEmailShouldThrowException() throws ConflictException {
+    public void registerUserWithExistingEmailShouldThrowException() {
         UserDetailDto existingUser = new UserDetailDto();
         existingUser.setFirstName("Alice");
         existingUser.setLastName("Smith");
@@ -71,7 +70,7 @@ public class UserServiceTest implements TestData {
 
     @Test
     @DisplayName("Positive test for updating an existing user with valid data")
-    public void updateExistingUserWithValidData() throws ConflictException {
+    public void updateExistingUserWithValidData() {
         UserDetailDto userDetailDto = new UserDetailDto();
         userDetailDto.setFirstName("John");
         userDetailDto.setLastName("Doe");
@@ -93,7 +92,7 @@ public class UserServiceTest implements TestData {
 
     @Test
     @DisplayName("Positive test for deleting an existing user")
-    public void deleteExistingUserAndEnsureDeletion() throws ConflictException {
+    public void deleteExistingUserAndEnsureDeletion() {
         UserDetailDto userDetailDto = new UserDetailDto();
         userDetailDto.setFirstName("ToDelete");
         userDetailDto.setLastName("User");

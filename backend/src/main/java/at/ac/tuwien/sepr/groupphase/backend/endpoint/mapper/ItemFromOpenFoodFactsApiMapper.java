@@ -41,10 +41,10 @@ public class ItemFromOpenFoodFactsApiMapper {
     public OpenFoodFactsItemDto mapFromJsonNode(OpenFoodFactsResponseDto openFoodFactsResponseDto) throws ConflictException {
         LOGGER.trace("mapFromJsonNode({})", openFoodFactsResponseDto);
 
-        if (openFoodFactsResponseDto.status() && openFoodFactsResponseDto.product() != null) {
-            final String ean = openFoodFactsResponseDto.eanCode();
+        if (openFoodFactsResponseDto.status()) {
 
-            final String generalName = Optional.ofNullable(
+            String ean = openFoodFactsResponseDto.eanCode();
+            String generalName = Optional.ofNullable(
                 openFoodFactsResponseDto.product().genericName()
             ).orElse(
                 Optional.ofNullable(
@@ -53,8 +53,7 @@ public class ItemFromOpenFoodFactsApiMapper {
                     openFoodFactsResponseDto.product().genericNameDe()
                 )
             );
-
-            final String productName = Optional.ofNullable(
+            String productName = Optional.ofNullable(
                 openFoodFactsResponseDto.product().productName()
             ).orElse(
                 Optional.ofNullable(
@@ -63,31 +62,16 @@ public class ItemFromOpenFoodFactsApiMapper {
                     openFoodFactsResponseDto.product().productNameEn()
                 )
             );
-
-            final String brand = openFoodFactsResponseDto.product().brands();
-
-            final Long totalQuantity = openFoodFactsResponseDto.product().productQuantity();
-
-            String unit = "";
-            if (openFoodFactsResponseDto.product().ecoscoreData() != null
-                && openFoodFactsResponseDto.product().ecoscoreData().adjustments() != null
-                && openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging() != null
-                && openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging().packagings() != null
-                && openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging().packagings().get(0) != null
-                && openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging().packagings().get(0).unit() != null) {
-
-                unit = openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging().packagings().get(0).unit();
-            }
-
-            String description = "";
-            if (openFoodFactsResponseDto.product().categoryProperties() != null) {
-                description = (openFoodFactsResponseDto.product().categoryProperties().description());
-            }
-
+            String brand = openFoodFactsResponseDto.product().brands();
+            Long totalQuantity = openFoodFactsResponseDto.product().productQuantity();
+            String unit = openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging().packagings().get(0).unit();
+            String description = openFoodFactsResponseDto.product().categoryProperties().description();
             String boughtAt = openFoodFactsResponseDto.product().boughtAt();
             List<OpenFoodFactsIngredientDto> ingredientList = openFoodFactsResponseDto.product().ingredients();
+
             List<Ingredient> ingredients = null;
-            if (ingredientList != null && !ingredientList.isEmpty()) {
+
+            if (!ingredientList.isEmpty()) {
                 // Create a pattern to match non-letter characters - because every ingredient should only consist of letters
                 Pattern nonLetterPattern = Pattern.compile("[^\\p{L}]+");
 
@@ -101,12 +85,14 @@ public class ItemFromOpenFoodFactsApiMapper {
 
                 ingredients = ingredientService.findIngredientsAndCreateMissing(ingredientDtoList);
             }
+
             UnitDto unitDto = null;
             try {
                 unitDto = unitMapper.entityToUnitDto(unitService.findByName(unit));
             } catch (NotFoundException e) {
                 LOGGER.info("Unit {} not found in database", unit);
             }
+
             return new OpenFoodFactsItemDto(
                 ean,
                 !Objects.equals(generalName, "") ? generalName : productName,

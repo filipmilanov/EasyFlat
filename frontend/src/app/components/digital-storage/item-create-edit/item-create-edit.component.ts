@@ -160,7 +160,6 @@ export class ItemCreateEditComponent implements OnInit {
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}: ${error}`);
-          this.notification.error(`Error item was not ${this.modeActionFinished}`);
           console.error(error);
           let firstBracket = error.error.indexOf('[');
           let lastBracket = error.error.indexOf(']');
@@ -274,7 +273,6 @@ export class ItemCreateEditComponent implements OnInit {
       },
       error: error => {
         console.log("Failed at loading EAN number:", error);
-        this.notification.error(error.error);
       }
     })
   }

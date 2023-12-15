@@ -35,10 +35,7 @@ export class RecipeCardComponent {
       this.recipe.summary.slice(0, maxLength) + '...' :
       this.recipe.summary;
   }
-  getTruncatedRecipeTitle(): string {
-    const maxLength = 40; // Set the maximum length
-    return this.recipe.title.length > maxLength ? this.recipe.title.substring(0, maxLength) + '...' : this.recipe.title;
-  }
+
   addToCookBook() {
 
     this.cookingService.createCookbookRecipe(this.recipe).subscribe({

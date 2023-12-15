@@ -69,19 +69,19 @@ public class ShoppingItem {
     @Column
     private String boughtAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private DigitalStorage digitalStorage;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Ingredient> ingredientList;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany
     private List<ItemStats> itemStats;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<ItemLabel> labels;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private ShoppingList shoppingList;
 
     public void setAlwaysIsStock(Boolean alwaysIsStock) {
