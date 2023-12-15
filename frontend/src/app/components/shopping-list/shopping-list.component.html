@@ -9,7 +9,7 @@
         <ng-container *ngIf="!selectedShoppingList">
           <option value="" disabled selected hidden>Select Shopping List</option>
         </ng-container>
-        <option *ngFor="let list of shoppingLists" [value]="list.id">
+        <option *ngFor="let list of shoppingLists" [value]="list.id" >
           {{ list.listName }}
         </option>
       </select>
@@ -18,12 +18,7 @@
   </div>
 </form>
 
-
-
 <br>
-
-
-
 
 <form class="d-flex flex-row w-auto mb-3">
   <div class="mt-3">
