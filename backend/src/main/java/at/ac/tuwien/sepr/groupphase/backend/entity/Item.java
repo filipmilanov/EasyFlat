@@ -77,7 +77,7 @@ public class Item {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Ingredient> ingredientList;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<ItemStats> itemStats;
 
     @AssertTrue(message = "The current quantity cannot be larger then the total")
