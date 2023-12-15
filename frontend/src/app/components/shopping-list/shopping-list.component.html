@@ -14,7 +14,7 @@
         </option>
       </select>
     </div>
-    <button style="margin-left: 625px;" type="button" (click)="navigateToCreateList()">Add new list</button>
+    <button type="button" class="btn btn-primary m-3" (click)="navigateToCreateList()">Add new list</button>
   </div>
 </form>
 
@@ -80,14 +80,27 @@
 
   </tbody>
 </table>
+
 <button style="margin-top: 30px; margin-right: 20px;" type="button"
-        class="btn btn-primary float-end m-3" (click)="navigateToCreateItem()">Add item</button>
+        class="btn btn-primary  m-3" (click)="navigateToCreateItem()">Add item</button>
+
 <button *ngIf="!checkId()"
         style="margin-top: 30px; margin-right: 20px;"
-        type="button" (click)="deleteList()">
+        type="button" class="btn btn-primary  m-3" (click)="deleteList()">
   Delete List
 </button>
+
 <button *ngIf="!checkIsEmpty()"
-        style="margin-top: 30px; margin-right: 20px;" type="button" (click)="deleteCheckedItems()">Delete</button>
+        style="margin-top: 30px; margin-right: 20px;" type="button" class="btn btn-primary  m-3" (click)="deleteCheckedItems()">Delete</button>
+
 <button *ngIf="!checkIsEmpty()"
-        style="margin-top: 30px; margin-right: 20px;" type="button" (click)="transferToStorage()">Bought</button>
+        style="margin-top: 30px; margin-right: 20px;" type="button" class="btn btn-primary  m-3" (click)="transferToStorage()">Bought</button>
+
+
+
+
+
+
+
+
+
