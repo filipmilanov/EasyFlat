@@ -28,6 +28,8 @@ import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingItemValidator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListValidator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -58,12 +60,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final DigitalStorageRepository digitalStorageRepository;
     private final ShoppingItemValidator shoppingItemValidator;
     private final UnitService unitService;
+    private final ShoppingListValidator validator;
 
     public ShoppingListServiceImpl(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
                                    ItemService itemService, CustomUserDetailService customUserDetailService, Authorization authorization,
-                                   SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository, ShoppingItemValidator shoppingItemValidator, UnitService unitService) {
+                                   SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository, ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidator validator) {
         this.shoppingItemRepository = shoppingItemRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -79,12 +82,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.digitalStorageRepository = digitalStorageRepository;
         this.shoppingItemValidator = shoppingItemValidator;
         this.unitService = unitService;
+        this.validator = validator;
     }
 
     @Override
     public ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.trace("create({},{})", itemDto, jwt);
-
         List<ShoppingList> shoppingLists = this.getShoppingLists(jwt);
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
         List<Unit> unitList = unitService.findAll();
@@ -168,19 +171,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public ShoppingList createList(String listName, String jwt) throws ValidationException, AuthenticationException {
+    public ShoppingList createList(String listName, String jwt) throws ValidationException, AuthenticationException, ConflictException {
         LOGGER.trace("createList({},{})", listName, jwt);
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
 
-        if (Objects.equals(listName, "Default")) {
-            throw new ValidationException("List names can not be Default!", null);
-        }
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setName(listName);
         shoppingList.setSharedFlat(applicationUser.getSharedFlat());
+        if (shoppingListRepository.findByNameAndSharedFlatIs(listName,applicationUser.getSharedFlat()) != null){
+            throw new ValidationException("Validation error",List.of("List name already exists"));
+        }
+        validator.validateForCreate(shoppingList);
         return shoppingListRepository.save(shoppingList);
     }
 

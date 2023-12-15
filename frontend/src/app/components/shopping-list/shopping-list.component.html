@@ -6,7 +6,9 @@
               name="selectedShoppingList"
               [(ngModel)]="selectedShoppingList"
               (change)="onShoppingListChange()">
-        <option value="" disabled selected>Select Shopping List</option>
+        <ng-container *ngIf="!selectedShoppingList">
+          <option value="" disabled selected hidden>Select Shopping List</option>
+        </ng-container>
         <option *ngFor="let list of shoppingLists" [value]="list.id">
           {{ list.listName }}
         </option>

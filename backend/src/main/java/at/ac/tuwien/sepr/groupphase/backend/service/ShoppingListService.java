@@ -62,7 +62,7 @@ public interface ShoppingListService {
      * @param listName a valid name for the new ShoppingList
      * @return an object of type {@link ShoppingList} which is persisted and has an ID
      */
-    ShoppingList createList(String listName, String jwt) throws ValidationException, AuthenticationException;
+    ShoppingList createList(String listName, String jwt) throws ValidationException, AuthenticationException, ConflictException;
 
     /**
      * Delete a ShoppingItem from the db based on its ID.

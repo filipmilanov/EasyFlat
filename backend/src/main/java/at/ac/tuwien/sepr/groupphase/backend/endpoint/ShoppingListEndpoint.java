@@ -111,7 +111,7 @@ public class ShoppingListEndpoint {
 
     @PermitAll
     @PostMapping("/list-create")
-    public ShoppingListDto createList(@RequestBody String listName, @RequestHeader("Authorization") String jwt) throws ValidationException, AuthenticationException {
+    public ShoppingListDto createList(@RequestBody String listName, @RequestHeader("Authorization") String jwt) throws ValidationException, AuthenticationException, ConflictException {
         LOGGER.info("createList({},{})", listName, jwt);
         ShoppingList shoppingList = shoppingService.createList(listName, jwt);
         return shoppingListMapper.entityToDto(shoppingList);

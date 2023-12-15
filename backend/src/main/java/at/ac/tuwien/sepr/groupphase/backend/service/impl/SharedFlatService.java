@@ -7,12 +7,15 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.SharedFlatValidator;
 import jakarta.transaction.Transactional;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import org.slf4j.Logger;
@@ -37,11 +40,18 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     private final DigitalStorageRepository digitalStorageRepository;
     private final ShoppingListRepository shoppingListRepository;
 
+    private final SharedFlatValidator validator;
+
     @Autowired
     public SharedFlatService(SharedFlatRepository sharedFlatRepository,
                              PasswordEncoder passwordEncoder,
                              SharedFlatMapper sharedFlatMapper,
-                             JwtTokenizer jwtTokenizer, UserRepository userRepository, Authorization authorization, DigitalStorageRepository digitalStorageRepository, ShoppingListRepository shoppingListRepository) {
+                             JwtTokenizer jwtTokenizer,
+                             UserRepository userRepository,
+                             Authorization authorization,
+                             DigitalStorageRepository digitalStorageRepository,
+                             ShoppingListRepository shoppingListRepository,
+                             SharedFlatValidator validator) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.sharedFlatMapper = sharedFlatMapper;
@@ -50,6 +60,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         this.authorization = authorization;
         this.digitalStorageRepository = digitalStorageRepository;
         this.shoppingListRepository = shoppingListRepository;
+        this.validator = validator;
     }
 
     @Override
@@ -68,11 +79,13 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         return sharedFlat;
     }
 
-    public WgDetailDto create(SharedFlat sharedFlat, String authToken) throws Exception {
+    public WgDetailDto create(SharedFlat sharedFlat, String authToken) throws ConflictException, ValidationException {
+        LOGGER.trace("create({}, {})", sharedFlat, authToken);
         LOGGER.debug("Create a new shared flat");
+        validator.validateForCreate(sharedFlat);
         SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(sharedFlat.getName());
         if (existingSharedFlat != null) {
-            throw new Exception("A flat with this name already exists.");
+            throw new ConflictException("A flat with this name already exists.");
         }
 
         SharedFlat newSharedFlat = new SharedFlat();
@@ -100,6 +113,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
 
     @Override
     public WgDetailDto loginWg(SharedFlat wgDetailDto, String authToken) {
+        LOGGER.trace("loginWg({}, {})", wgDetailDto, authToken);
         String name = wgDetailDto.getName();
         String rawPassword = wgDetailDto.getPassword();
         String userEmail = jwtTokenizer.getEmailFromToken(authToken);
@@ -129,6 +143,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     @Override
     @Transactional
     public WgDetailDto delete(String email) {
+        LOGGER.trace("delete({})", email);
         ApplicationUser user = userRepository.findUserByEmail(email);
         if (!user.getAdmin()) {
             throw new BadCredentialsException("User is not admin, so he can not delete the flat");

@@ -52,6 +52,16 @@ public class ShoppingItemValidator {
         LOGGER.trace("checkItemForCreate({}, {}, {})", itemDto, digitalStorageList, unitList);
 
         List<String> errors = new ArrayList<>();
+
+        if (itemDto.generalName().isEmpty()) {
+            errors.add("Tha name should not be empty!");
+        }
+        if (itemDto.generalName().length() > 120) {
+            errors.add("The name is too long");
+        }
+        if (itemDto.generalName().isBlank()) {
+            errors.add("The given name is blank");
+        }
         if (itemDto.itemId() != null) {
             errors.add("The Id must be null");
         }
@@ -105,6 +115,15 @@ public class ShoppingItemValidator {
         LOGGER.trace("checkItemForUpdate({}, {}, {})", itemDto, digitalStorageList, unitList);
 
         List<String> errors = new ArrayList<>();
+        if (itemDto.generalName().isEmpty()) {
+            errors.add("Tha name should not be empty!");
+        }
+        if (itemDto.generalName().length() > 120) {
+            errors.add("The name is too long");
+        }
+        if (itemDto.generalName().isBlank()) {
+            errors.add("The given name is blank");
+        }
         if (itemDto.itemId() == null) {
             errors.add("The Id can not be null");
         }
