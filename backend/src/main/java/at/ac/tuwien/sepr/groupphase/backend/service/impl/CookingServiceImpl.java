@@ -138,6 +138,9 @@ public class CookingServiceImpl implements CookingService {
         items.addAll(alwaysInStockItems);
         items.addAll(notAlwaysInStockItems);
 
+        if (items.isEmpty()) {
+            return new LinkedList<RecipeSuggestionDto>();
+        }
         String requestString = getRequestStringForRecipeSearch(items);
         ResponseEntity<List<RecipeDto>> exchange = restTemplate.exchange(requestString, HttpMethod.GET, null, new ParameterizedTypeReference<List<RecipeDto>>() {
         });
@@ -247,7 +250,12 @@ public class CookingServiceImpl implements CookingService {
                 if (recipeIngredient.unit().isEmpty()) {
                     unitDto = unitMapper.entityToUnitDto(unitService.findByName("pcs"));
                 } else {
-                    unitDto = unitMapper.entityToUnitDto(unitService.findByName(recipeIngredient.unit()));
+                    try {
+                        unitDto = unitMapper.entityToUnitDto(unitService.findByName(recipeIngredient.unit()));
+                    } catch (NotFoundException exception) {
+                        unitDto = unitMapper.entityToUnitDto(unitService.findByName("pcs"));
+                    }
+
                 }
                 updatedIngredients.add(new RecipeIngredientDto(recipeIngredient.id(),
                     recipeIngredient.name(),
@@ -260,7 +268,12 @@ public class CookingServiceImpl implements CookingService {
                 if (recipeIngredient.unit().isEmpty()) {
                     unitDto = unitMapper.entityToUnitDto(unitService.findByName("pcs"));
                 } else {
-                    unitDto = unitMapper.entityToUnitDto(unitService.findByName(recipeIngredient.unit()));
+                    try {
+                        unitDto = unitMapper.entityToUnitDto(unitService.findByName(recipeIngredient.unit()));
+                    } catch (NotFoundException exception) {
+                        unitDto = unitMapper.entityToUnitDto(unitService.findByName("pcs"));
+                    }
+
                 }
                 updatedMissedIngredients.add(new RecipeIngredientDto(recipeIngredient.id(),
                     recipeIngredient.name(),

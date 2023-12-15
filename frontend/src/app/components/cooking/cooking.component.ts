@@ -19,8 +19,8 @@ import {OrderType} from "../../dtos/orderType";
 export class CookingComponent implements OnInit {
   recipes: RecipeSuggestion[];
   empty: boolean = true;
-  type:string;
-  noItems: boolean;
+  type: string;
+  noItems: boolean = false;
   @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
   searchParametersAIS: ItemSearchDto = {alwaysInStock: true, orderBy: OrderType.PRODUCT_NAME, fillLevel: ''};
   searchParametersIS: ItemSearchDto = {alwaysInStock: false, orderBy: OrderType.PRODUCT_NAME, fillLevel: ''};
@@ -40,21 +40,22 @@ export class CookingComponent implements OnInit {
   onTypeChange(): void {
     console.log(`Type changed to: ${this.type}`);
   }
+
   reloadRecipes() {
 
-    this.storageService.getItems(this.searchParametersAIS)
 
     this.storageService.getItems(this.searchParametersAIS).subscribe({
 
       next: res => {
         console.log(this.type)
-        if (!res || Object.keys(res).length === 0) {
-          console.log(res)
+        if (res.length == 0) {
+
           this.storageService.getItems(this.searchParametersIS).subscribe({
 
             next: res1 => {
-              console.log(this.type)
-              if (!res1 || Object.keys(res1).length === 0) {
+
+              if (res1.length == 0) {
+
                 this.noItems = true;
 
               }
@@ -73,31 +74,35 @@ export class CookingComponent implements OnInit {
       }
     })
 
-    if(this.noItems == false) {
+    if (this.noItems == false) {
       this.cookingService.loadRecipes(this.type).subscribe({
 
         next: res => {
-          console.log(this.type)
-          this.recipes = res;
-          this.empty = false;
+
+          if (!this.noItems) {
+            this.recipes = res;
+            this.empty = false;
+          }
         },
         error: err => {
           console.error("Error loading recipes:", err);
           this.notification.error("Error loading recipes");
         }
       })
-    }else{
+    } else {
       this.notification.error("The Storage is empty");
     }
 
   }
+
   openRecipeModal(recipe: RecipeSuggestion) {
-    const modalRef = this.modalService.open(CookingModalComponent, { size: 'lg' });
+    const modalRef = this.modalService.open(CookingModalComponent, {size: 'lg'});
     console.log(recipe + "from Modal");
     modalRef.componentInstance.recipe = recipe;
   }
-   openDetailModal(recipe: RecipeSuggestion) {
-    const modalRef = this.modalService.open(RecipeDetailComponent, { size: 'lg' });
+
+  openDetailModal(recipe: RecipeSuggestion) {
+    const modalRef = this.modalService.open(RecipeDetailComponent, {size: 'lg'});
 
     modalRef.componentInstance.recipe = recipe;
   }
@@ -105,7 +110,6 @@ export class CookingComponent implements OnInit {
   handleRecipeAddedToCookbook(recipeTitle: string) {
     this.notification.success(`Recipe ${recipeTitle} successfully added to the cookbook.`, "Success");
   }
-
 
 
   public addTestData() {
@@ -118,12 +122,12 @@ export class CookingComponent implements OnInit {
         servings: 4,
         readyInMinutes: 30,
         extendedIngredients: [
-          { id: 1, name: 'Ground beef', unit: 'g', amount: 500 },
-          { id: 2, name: 'Tomato sauce', unit: 'ml', amount: 400 },
+          {id: 1, name: 'Ground beef', unit: 'g', amount: 500},
+          {id: 2, name: 'Tomato sauce', unit: 'ml', amount: 400},
           // Add more ingredients as needed
         ],
-        missedIngredients:[
-          { id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2 },
+        missedIngredients: [
+          {id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2},
         ]
       },
       {
@@ -133,18 +137,17 @@ export class CookingComponent implements OnInit {
         servings: 3,
         readyInMinutes: 20,
         extendedIngredients: [
-          { id: 3, name: 'Chicken breast', unit: 'g', amount: 300 },
-          { id: 4, name: 'Broccoli', unit: 'g', amount: 200 },
+          {id: 3, name: 'Chicken breast', unit: 'g', amount: 300},
+          {id: 4, name: 'Broccoli', unit: 'g', amount: 200},
           // Add more ingredients as needed
         ],
-        missedIngredients:[
-          { id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2 },
+        missedIngredients: [
+          {id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2},
         ]
       },
       // Add more recipes as needed
     ];
   }
-
 
 
 }

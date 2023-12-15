@@ -52,6 +52,14 @@ export class ItemDetailListComponent implements OnInit {
       }
     });
   }
+  getTruncatedProductName(productName: string): string {
+    const maxLength = 15; // Set the maximum length
+    return productName.length > maxLength ? productName.substring(0, maxLength) + '...' : productName;
+  }
+  getTruncatedProductName1(productName: string): string {
+    const maxLength = 40; // Set the maximum length
+    return productName.length > maxLength ? productName.substring(0, maxLength) + '...' : productName;
+  }
 
   checkModal(id: string, mode: number): boolean {
     if (mode == 0) {
