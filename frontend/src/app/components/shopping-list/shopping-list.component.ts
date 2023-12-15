@@ -176,6 +176,7 @@ export class ShoppingListComponent implements OnInit {
   transferToStorage() {
     this.shoppingListService.transferToStorage(this.checkedItems).subscribe({
         next: data => {
+          this.notification.success(`Items successfully added to the storage.`);
           this.router.navigate([`/digital-storage`])
         }
       }
