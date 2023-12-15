@@ -7,6 +7,9 @@ import {CookbookModalComponent} from "../cookbook/cookbook-modal/cookbook-modal.
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CookingModalComponent} from "./cooking-modal/cooking-modal.component";
 import {RecipeDetailComponent} from "./recipe-detail/recipe-detail.component";
+import {StorageService} from "../../services/storage.service";
+import {ItemSearchDto} from "../../dtos/storageItem";
+import {OrderType} from "../../dtos/orderType";
 
 @Component({
   selector: 'app-cooking',
@@ -17,11 +20,15 @@ export class CookingComponent implements OnInit {
   recipes: RecipeSuggestion[];
   empty: boolean = true;
   type:string;
+  noItems: boolean;
   @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
+  searchParametersAIS: ItemSearchDto = {alwaysInStock: true, orderBy: OrderType.PRODUCT_NAME, fillLevel: ''};
+  searchParametersIS: ItemSearchDto = {alwaysInStock: false, orderBy: OrderType.PRODUCT_NAME, fillLevel: ''};
 
   constructor(private cookingService: CookingService,
               private notification: ToastrService,
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private storageService: StorageService) {
 
 
   }
@@ -34,18 +41,54 @@ export class CookingComponent implements OnInit {
     console.log(`Type changed to: ${this.type}`);
   }
   reloadRecipes() {
-    this.cookingService.loadRecipes(this.type).subscribe({
+
+    this.storageService.getItems(this.searchParametersAIS)
+
+    this.storageService.getItems(this.searchParametersAIS).subscribe({
 
       next: res => {
         console.log(this.type)
-        this.recipes = res;
-        this.empty = false;
+        if (!res || Object.keys(res).length === 0) {
+          console.log(res)
+          this.storageService.getItems(this.searchParametersIS).subscribe({
+
+            next: res1 => {
+              console.log(this.type)
+              if (!res1 || Object.keys(res1).length === 0) {
+                this.noItems = true;
+
+              }
+            },
+            error: err => {
+              console.error("Error loading recipes:", err);
+              this.notification.error("Error loading recipes");
+            }
+          })
+
+        }
       },
       error: err => {
         console.error("Error loading recipes:", err);
         this.notification.error("Error loading recipes");
       }
     })
+
+    if(this.noItems == false) {
+      this.cookingService.loadRecipes(this.type).subscribe({
+
+        next: res => {
+          console.log(this.type)
+          this.recipes = res;
+          this.empty = false;
+        },
+        error: err => {
+          console.error("Error loading recipes:", err);
+          this.notification.error("Error loading recipes");
+        }
+      })
+    }else{
+      this.notification.error("The Storage is empty");
+    }
 
   }
   openRecipeModal(recipe: RecipeSuggestion) {

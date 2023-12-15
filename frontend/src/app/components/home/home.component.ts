@@ -9,7 +9,6 @@ import {UserDetail} from "../../dtos/auth-request";
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  userSubscription;
 
   user: UserDetail;
 
@@ -18,9 +17,9 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.authService.getUser(this.authService.getToken())
       .subscribe(
-        (user) => {
+        (user : UserDetail) => {
           this.user = user;
-          console.log(user); // Handle the received user data here
+          console.log(user);
         },
         (error) => {
           console.error('Error fetching user:', error);

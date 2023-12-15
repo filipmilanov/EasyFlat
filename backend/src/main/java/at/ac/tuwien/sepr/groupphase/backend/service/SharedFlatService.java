@@ -1,8 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+
 
 public interface SharedFlatService {
 
@@ -21,3 +23,4 @@ public interface SharedFlatService {
 
     WgDetailDto delete(String email);
 }
+

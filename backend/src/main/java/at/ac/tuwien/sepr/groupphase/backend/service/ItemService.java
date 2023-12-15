@@ -1,7 +1,9 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -33,6 +35,7 @@ public interface ItemService {
      */
     List<Item> findByFields(ItemFieldSearchDto itemFieldSearchDto);
 
+
     /**
      * Validates and Creates a new {@link Item} in the db.
      *
@@ -58,4 +61,12 @@ public interface ItemService {
      * @param jwt a valid JWT of a user
      */
     void delete(Long id, String jwt) throws AuthenticationException;
+
+    /**
+     * Finds existing and creates non-existing objects of type {@link Ingredient} in the db.
+     *
+     * @param ingredientDtoList list of objects of type {@link IngredientDto} which should already be stored in or saved to the db
+     * @return a list of objects of type {@link Ingredient} which represent all existing and newly saved ingredients
+     */
+    List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException;
 }

@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {ItemSearchDto, StorageItem, StorageItemListDto} from "../dtos/storageItem";
 import {DigitalStorageDto} from "../dtos/digitalStorageDto";
-import {ItemDto} from "../dtos/item";
+import {ItemDto, ShoppingItemDto} from "../dtos/item";
 import {AuthService} from "./auth.service";
 
 @Injectable({
@@ -36,10 +36,6 @@ export class StorageService {
     return this.httpClient.get<StorageItemListDto[]>(this.storageBaseUri + '/items' , {params,headers});
   }
 
-  updateItemQuantity(storageId: string, value: string, item: ItemDto) {
-    return this.httpClient.patch<ItemDto>(this.storageBaseUri + '/' + storageId + '/' + item.itemId, item.quantityCurrent)
-  }
-
   findAll(titleSearch: string, limit: number): Observable<DigitalStorageDto[]> {
     console.log(titleSearch);
     let params = new HttpParams();
@@ -55,11 +51,27 @@ export class StorageService {
   }
 
   getItemsWithGenaralName(generalName:string): Observable<StorageItem[]> {
-
+    console.log('Get all items with general name ' + generalName);
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });
 
     return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName,{headers});
   }
+
+  /**
+   * Save a shopping item in the system.
+   *
+   * @param item the data for the shopping item that should be saved
+   * @return an Observable for the saved shopping item
+   */
+  addItemToShoppingList(item: ItemDto): Observable<ShoppingItemDto> {
+    console.log('Add item ' + item + ' to shopping list')
+
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.post<ShoppingItemDto>(this.storageBaseUri + '/shop', item, {headers});
+  }
+
 }

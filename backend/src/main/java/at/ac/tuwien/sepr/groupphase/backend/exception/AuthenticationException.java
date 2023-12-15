@@ -4,7 +4,6 @@ import java.util.List;
 
 public class AuthenticationException extends ErrorListException {
 
-
     /**
      * Creates an Object of typ {@link ErrorListException}.
      *
@@ -14,4 +13,5 @@ public class AuthenticationException extends ErrorListException {
     public AuthenticationException(String messageSummary, List<String> errors) {
         super(messageSummary, errors);
     }
+
 }

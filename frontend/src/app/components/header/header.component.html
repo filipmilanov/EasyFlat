@@ -12,7 +12,10 @@
     </ul>
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/digital-storage" routerLinkActive="active">Storage</a>
+        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/digital-storage" routerLinkActive="active">Storage</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/shopping-list/Default" routerLinkActive="active">Shopping List</a>
       </li>
     </ul>
     <ul class="navbar-nav mr-auto">
@@ -27,7 +30,7 @@
     <ul class="navbar-nav mr-5">
       <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/login" routerLinkActive="active">Login</a>
       <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/register" routerLinkActive="active">Register</a>
-      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/" (click)="authService.logoutUser()">Logout</a>
+      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/" (click)="logoutUser()">Logout</a>
     </ul>
   </div>
 </nav>

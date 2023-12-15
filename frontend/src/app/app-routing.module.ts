@@ -16,6 +16,13 @@ import {RegisterComponent} from "./components/register/register.component";
 import {AccountComponent} from "./components/account/account.component";
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import {CreateFlatComponent} from "./components/create-flat/create-flat.component";
+import {ShoppingListComponent} from "./components/shopping-list/shopping-list.component";
+import {
+  ShoppingItemCreateEditComponent
+} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
+import {
+  ShoppingListCreateComponent
+} from "./components/shopping-list/shopping-list-create/shopping-list-create.component";
 import computeOffsets from "@popperjs/core/lib/utils/computeOffsets";
 import {CookingComponent} from "./components/cooking/cooking.component";
 import {CookbookComponent} from "./components/cookbook/cookbook.component";
@@ -38,6 +45,16 @@ const routes: Routes = [
         ]}
   ]},
   {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
+  {path: 'shopping-list/:name', children: [
+      {path: '', component: ShoppingListComponent},
+      {path: 'item', children: [
+          {path: 'create', component: ShoppingItemCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
+          {path: ':id/edit', component: ShoppingItemCreateEditComponent, data: {mode: ItemCreateEditMode.edit}},
+        ]},
+      {path: 'list', children: [
+          {path: 'create', component: ShoppingListCreateComponent}
+        ]},
+    ]},
   {path: 'register', component: RegisterComponent},
   {path: 'account', component: AccountComponent},
   {path: 'wgLogin', component: LoginFlatComponent},

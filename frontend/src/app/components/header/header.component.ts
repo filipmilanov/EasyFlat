@@ -1,5 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
+import {UserDetail} from "../../dtos/auth-request";
+import {ShoppingListService} from "../../services/shopping-list.service";
+import {Router} from "@angular/router";
+import {SharedFlatService} from "../../services/sharedFlat.service";
 
 @Component({
   selector: 'app-header',
@@ -8,9 +12,18 @@ import {AuthService} from '../../services/auth.service';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(public authService: AuthService) { }
+  constructor(public authService: AuthService, private sharedFlatService: SharedFlatService) {
+  }
 
   ngOnInit() {
   }
 
+  isInWg() {
+    return this.sharedFlatService.isLoggInWg();
+  }
+
+  logoutUser() {
+    this.sharedFlatService.changeEventToFalse();
+    this.authService.logoutUser();
+  }
 }

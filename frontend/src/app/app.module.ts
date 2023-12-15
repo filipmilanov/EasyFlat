@@ -2,6 +2,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
+
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HeaderComponent} from './components/header/header.component';
@@ -22,7 +23,11 @@ import {ItemDetailListComponent} from './components/digital-storage/item-detail-
 import {RegisterComponent} from './components/register/register.component';
 import {AccountComponent} from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
-import {CreateFlatComponent} from './components/create-flat/create-flat.component';
+import { CreateFlatComponent } from './components/create-flat/create-flat.component';
+import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
+import {ShoppingItemCreateEditComponent} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
+import {ColorPickerModule} from "ngx-color-picker";
+import { ShoppingListCreateComponent } from './components/shopping-list/shopping-list-create/shopping-list-create.component';
 import {CookingComponent} from './components/cooking/cooking.component';
 import {RecipeCardComponent} from './components/cooking/recipe-card/recipe-card.component';
 import {NgOptimizedImage} from "@angular/common";
@@ -57,6 +62,9 @@ LOAD_WASM().subscribe();
     AccountComponent,
     LoginFlatComponent,
     CreateFlatComponent,
+    ShoppingListComponent,
+    ShoppingItemCreateEditComponent,
+    ShoppingListCreateComponent,
     CookingComponent,
     RecipeCardComponent,
     CookbookComponent,
@@ -76,6 +84,7 @@ LOAD_WASM().subscribe();
     FormsModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
+    ColorPickerModule,
     NgOptimizedImage,
     NgxScannerQrcodeModule
   ],

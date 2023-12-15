@@ -12,6 +12,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
@@ -19,13 +20,13 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
+@GroupSequence({Item.class, ShoppingItem.class}) // Define the order of group validation
 public class Item {
 
     @Id
@@ -53,6 +54,9 @@ public class Item {
     @Min(value = 0, message = "The total quantity must be positive")
     private Double quantityTotal;
 
+    @ManyToOne
+    private Unit unit;
+
     @Column
     @FutureOrPresent(message = "You cannot store products which are over the expire date")
     private LocalDate expireDate;
@@ -67,17 +71,14 @@ public class Item {
     private String boughtAt;
 
     @ManyToOne
-    private Unit unit;
-
-    @ManyToOne
     @NotNull(message = "A Item need to be linked to a storage")
     private DigitalStorage digitalStorage;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Ingredient> ingredientList = new ArrayList<>();
+    private List<Ingredient> ingredientList;
 
     @OneToMany
-    private List<ItemStats> itemStats = new ArrayList<>();
+    private List<ItemStats> itemStats;
 
     @AssertTrue(message = "The current quantity cannot be larger then the total")
     private boolean quantityCurrentLessThenTotal() {
@@ -186,11 +187,6 @@ public class Item {
 
     public void setStorage(DigitalStorage digitalStorage) {
         this.digitalStorage = digitalStorage;
-        if (digitalStorage.getItemList() == null) {
-            List<Item> itemList = digitalStorage.getItemList();
-            itemList.add(this);
-            digitalStorage.setItemList(itemList);
-        }
     }
 
     public List<Ingredient> getIngredientList() {

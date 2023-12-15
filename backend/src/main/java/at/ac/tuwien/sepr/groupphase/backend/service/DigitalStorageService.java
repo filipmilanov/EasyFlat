@@ -2,11 +2,13 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -31,7 +33,7 @@ public interface DigitalStorageService {
      * Search for all Storages stored in the database which matches with the given search criteria.
      *
      * @param digitalStorageSearchDto search criteria
-     * @param jwt                     a valid jwt
+     * @param jwt  A valid JWT token for user authentication.
      * @return a List of all persisted Storages
      */
     List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto, String jwt) throws AuthenticationException;
@@ -57,7 +59,7 @@ public interface DigitalStorageService {
      * Search for all Items of a DigitalStorage stored in the database filtered by search parameters.
      *
      * @param itemSearchDto search parameters
-     * @param jwt           a valid jwt
+     * @param jwt  A valid JWT token for user authentication.
      * @return a List of filtered items
      */
     List<ItemListDto> searchItems(ItemSearchDto itemSearchDto, String jwt) throws ValidationException, AuthenticationException, ConflictException;
@@ -66,7 +68,7 @@ public interface DigitalStorageService {
      * Validates and Creates a new {@link DigitalStorage} in the db.
      *
      * @param storageDto a storage without ID
-     * @param jwt        a valid jwt
+     * @param jwt  A valid JWT token for user authentication.
      * @return an object of type {@link DigitalStorage} which is persisted and has an ID
      */
     DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthenticationException;
@@ -96,6 +98,7 @@ public interface DigitalStorageService {
      */
     Item updateItemQuantity(long storageId, long itemId, long quantity);
 
+
     /**
      * Retrieves a list of items with a specific general name
      * and associated with the user identified by the provided JWT.
@@ -106,4 +109,14 @@ public interface DigitalStorageService {
      * @throws AuthenticationException If authentication fails or the user does not exist.
      */
     List<Item> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException;
+
+
+    /**
+     * Gets an item from digital storage and adds it to the main shopping list.
+     *
+     * @param itemDto existing ID of a storage
+     * @param jwt  A valid JWT token for user authentication.
+     * @return the added item of type {@link ShoppingItem}
+     */
+    ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException;
 }

@@ -1,0 +1,156 @@
+<div class="container">
+  <h1 class="display-4">{{ heading }}</h1>
+  <div style="width: 100%; height: 100%; border: 1px black solid"></div>
+
+  <form #form="ngForm" [class.was-validated]="form.submitted" (submit)="onSubmit(form)">
+
+    <div class="row row-cols-1">
+
+      <div class="row p-2">
+        <label for="generalName"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          General Name
+        </label>
+        <div class="col-md-10 col-lg-8">
+          <input type="text"
+                 class="form-control"
+                 id="generalName"
+                 name="generalName"
+                 placeholder="General Name"
+                 [(ngModel)]="item.productName">
+        </div>
+      </div>
+
+      <div class="row p-2"
+           *ngIf="modeIsEdit">
+        <label for="brand"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Brand
+        </label>
+        <div class="col-md-10 col-lg-8">
+          <input type="text"
+                 class="form-control"
+                 id="brand"
+                 name="brand"
+                 placeholder="Brand"
+                 [(ngModel)]="item.brand">
+        </div>
+      </div>
+
+      <div class="row p-2">
+        <label for="totalQuantityAndUnit"
+               class="col-form-label text-muted col-md-2 col-lg-4 mt-2"
+        >
+          Quantity
+        </label>
+        <div class="col-md-8 col-lg-5 mt-2">
+          <input type="number"
+                 class="form-control"
+                 id="totalQuantityAndUnit"
+                 name="totalQuantityAndUnit"
+                 placeholder="Quantity"
+                 min=1
+                 [(ngModel)]="item.quantityTotal">
+        </div>
+        <div class="col-md-2 col-lg-2 mt-2">
+          <select class="form-select form-select-md"
+                  name="unit"
+                  [(ngModel)]="item.unit">
+            <option *ngFor="let unit of availableUnits"
+                    [ngValue]="unit">
+              {{formatUnitName(unit)}}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row p-2"
+           *ngIf="modeIsEdit">
+        <label for="description"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Description
+        </label>
+        <div class="col-md-10 col-lg-8">
+          <input type="textfield"
+                 class="form-control"
+                 id="description"
+                 name="description"
+                 placeholder="Description"
+                 [(ngModel)]="item.description">
+        </div>
+      </div>
+
+      <div class="row p-2"
+           *ngIf="modeIsEdit">
+        <label for="alwaysInStock"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Always In Stock
+        </label>
+        <div class="form-check form-switch col-md-2 col-lg-2">
+          <input class="form-check-input"
+                 type="checkbox"
+                 role="switch"
+                 id="alwaysInStock"
+                 name="alwaysInStock"
+                 [(ngModel)]="item.alwaysInStock">
+        </div>
+        <div class="col-md-8 col-lg-6">
+          <input class="form-control"
+                 [disabled]="!item.alwaysInStock"
+                 type="text"
+                 id="minimumQuantity"
+                 name="minimumQuantity"
+                 [(ngModel)]="item.minimumQuantity"
+                 placeholder="Minimum Quantity">
+        </div>
+      </div>
+
+      <div class="row p-2">
+        <label for="labels" class="col-form-label text-muted col-md-2 col-lg-4">Labels</label>
+        <div class="col-md-10 col-lg-8" id="labels">
+    <span *ngFor="let labelDto of item.labels; let i = index" class="p-2">
+      <div class="border-bottom" [style.color]="labelDto.labelColour">
+
+        <button type="button" class="btn btn-secondary p-1" (click)="removeLabel(i)">
+          <i>Remove</i>
+        </button>
+        {{labelDto.labelValue}}
+      </div>
+    </span>
+
+          <div class="row align-items-center">
+
+            <div class="col-md-1">
+              <a [(colorPicker)]="selectedLabelColor" [style.background]="selectedLabelColor"
+                 class="btn btn-light ">
+                <i class="form-control"></i>
+              </a>
+            </div>
+            <div class="col-md-7">
+              <input type="text" class="form-control" placeholder="Label" #labelInput>
+            </div>
+            <div class="col">
+              <a class="btn btn-secondary p-1" (click)="addLabel(labelInput.value, selectedLabelColor)">
+                <i>Save</i>
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <button type="submit"
+            class="btn btn-primary float-end p-2"
+            [disabled] = "!form.valid"
+    >
+      {{ submitButtonText }}
+    </button>
+
+  </form>
+</div>
+

@@ -2,10 +2,15 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -33,10 +38,14 @@ public class StorageEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final DigitalStorageService digitalStorageService;
     private final DigitalStorageMapper digitalStorageMapper;
+    private final ItemMapper itemMapper;
+    private final ShoppingListMapper shoppingListMapper;
 
-    public StorageEndpoint(DigitalStorageService digitalStorageService, DigitalStorageMapper digitalStorageMapper) {
+    public StorageEndpoint(DigitalStorageService digitalStorageService, DigitalStorageMapper digitalStorageMapper, ItemMapper itemMapper, ShoppingListMapper shoppingListMapper) {
         this.digitalStorageService = digitalStorageService;
         this.digitalStorageMapper = digitalStorageMapper;
+        this.itemMapper = itemMapper;
+        this.shoppingListMapper = shoppingListMapper;
     }
 
     @PermitAll
@@ -49,6 +58,7 @@ public class StorageEndpoint {
             digitalStorageService.findAll(digitalStorageDto, jwt)
         );
     }
+
 
     @Secured("ROLE_USER")
     @PostMapping
@@ -72,6 +82,16 @@ public class StorageEndpoint {
     @GetMapping("/info/{name}")
     public List<Item> getItemWithGeneralName(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.info("getItemWithGeneralName");
+        List<Item> items = digitalStorageService.getItemWithGeneralName(name, jwt);
         return digitalStorageService.getItemWithGeneralName(name, jwt);
+    }
+
+    @PermitAll
+    @PostMapping("/shop")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws AuthenticationException, ValidationException, ConflictException {
+        LOGGER.info("addItemToShopping({})", itemDto);
+        ShoppingItem item = digitalStorageService.addItemToShopping(itemDto, jwt);
+        return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
     }
 }

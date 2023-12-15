@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
@@ -55,9 +56,7 @@ public class ItemServiceImpl implements ItemService {
                            ItemValidator itemValidator,
                            ItemStatsRepository itemStatsRepository,
                            Authorization authorization,
-                           CustomUserDetailService customUserDetailService,
-                           UnitService unitService,
-                           SharedFlatService sharedFlatService) {
+                           SharedFlatService sharedFlatService, CustomUserDetailService customUserDetailService, UnitService unitService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
@@ -228,5 +227,30 @@ public class ItemServiceImpl implements ItemService {
         );
 
         itemRepository.deleteById(id);
+    }
+
+    public List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException {
+        if (ingredientDtoList == null) {
+            return List.of();
+        }
+        List<Ingredient> ingredientList = ingredientService.findByTitle(
+            ingredientDtoList.stream()
+                .map(IngredientDto::name)
+                .toList()
+        );
+
+        List<IngredientDto> missingIngredients = ingredientDtoList.stream()
+            .filter(ingredientDto ->
+                ingredientList.stream()
+                    .noneMatch(ingredient ->
+                        ingredient.getTitle().equals(ingredientDto.name())
+                    )
+            ).toList();
+
+        if (!missingIngredients.isEmpty()) {
+            List<Ingredient> createdIngredients = ingredientService.createAll(missingIngredients);
+            ingredientList.addAll(createdIngredients);
+        }
+        return ingredientList;
     }
 }
