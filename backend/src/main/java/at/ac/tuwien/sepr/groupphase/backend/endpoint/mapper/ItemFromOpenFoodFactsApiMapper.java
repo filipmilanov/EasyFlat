@@ -87,7 +87,7 @@ public class ItemFromOpenFoodFactsApiMapper {
             String boughtAt = openFoodFactsResponseDto.product().boughtAt();
             List<OpenFoodFactsIngredientDto> ingredientList = openFoodFactsResponseDto.product().ingredients();
             List<Ingredient> ingredients = null;
-            if (!ingredientList.isEmpty()) {
+            if (ingredientList != null && !ingredientList.isEmpty()) {
                 // Create a pattern to match non-letter characters - because every ingredient should only consist of letters
                 Pattern nonLetterPattern = Pattern.compile("[^\\p{L}]+");
 
