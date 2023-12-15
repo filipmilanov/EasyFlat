@@ -70,7 +70,7 @@ public class UserEndpointTest implements TestData {
 
     @Test
     @DisplayName("Negative test for registering an already existing user")
-    public void registerUserWithDuplicateDataShouldResultStatus403() throws Exception {
+    public void registerUserWithDuplicateDataShouldResultStatus409() throws Exception {
         UserDetailDto existingUser = new UserDetailDto();
         existingUser.setFirstName("Existing");
         existingUser.setLastName("User");
@@ -82,7 +82,7 @@ public class UserEndpointTest implements TestData {
         mockMvc.perform(post(REGISTER_BASE_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(existingUser)))
-            .andExpect(status().isForbidden());
+            .andExpect(status().isConflict());
     }
 
 

@@ -9,7 +9,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -80,10 +79,11 @@ public class StorageEndpoint {
 
     @PermitAll
     @GetMapping("/info/{name}")
-    public List<Item> getItemWithGeneralName(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthenticationException, ValidationException, ConflictException {
+    public List<ItemDto> getItemWithGeneralName(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.info("getItemWithGeneralName");
-        List<Item> items = digitalStorageService.getItemWithGeneralName(name, jwt);
-        return digitalStorageService.getItemWithGeneralName(name, jwt);
+        return itemMapper.entityListToItemDtoList(
+            digitalStorageService.getItemWithGeneralName(name, jwt)
+        );
     }
 
     @PermitAll
