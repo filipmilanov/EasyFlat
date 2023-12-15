@@ -14,8 +14,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 @Component
 public class ShoppingListValidator {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final Validator validator;
 
@@ -41,7 +43,7 @@ public class ShoppingListValidator {
         LOGGER.trace("checkConflictForCreate({})", shoppingList);
         List<String> errors = new ArrayList<>();
 
-        if (shoppingList.getName() == "Default"){
+        if (shoppingList.getName() == "Default") {
             errors.add("Shopping List can not have 'Default' name");
         }
 

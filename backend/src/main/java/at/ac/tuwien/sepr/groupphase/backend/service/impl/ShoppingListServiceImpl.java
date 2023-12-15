@@ -181,8 +181,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setName(listName);
         shoppingList.setSharedFlat(applicationUser.getSharedFlat());
-        if (shoppingListRepository.findByNameAndSharedFlatIs(listName,applicationUser.getSharedFlat()) != null){
-            throw new ValidationException("Validation error",List.of("List name already exists"));
+        if (shoppingListRepository.findByNameAndSharedFlatIs(listName, applicationUser.getSharedFlat()) != null) {
+            throw new ValidationException("Validation error", List.of("List name already exists"));
         }
         validator.validateForCreate(shoppingList);
         return shoppingListRepository.save(shoppingList);
