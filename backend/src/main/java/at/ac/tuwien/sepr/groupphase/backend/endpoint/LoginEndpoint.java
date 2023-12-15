@@ -6,6 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,7 +35,7 @@ public class LoginEndpoint {
 
     @PermitAll
     @PostMapping
-    public String login(@RequestBody UserLoginDto userLoginDto) {
+    public String login(@RequestBody UserLoginDto userLoginDto) throws ConflictException {
         return userService.login(userLoginDto);
     }
 
@@ -48,13 +49,13 @@ public class LoginEndpoint {
 
     @PermitAll
     @PutMapping
-    public UserDetailDto update(@RequestBody UserDetailDto userDetailDto) {
+    public UserDetailDto update(@RequestBody UserDetailDto userDetailDto) throws ConflictException {
         return userService.update(userDetailDto);
     }
 
     @PermitAll
     @DeleteMapping("/{email}")
-    public UserDetailDto delete(@PathVariable String email) {
+    public UserDetailDto delete(@PathVariable String email) throws ConflictException {
         return userService.delete(email);
     }
 

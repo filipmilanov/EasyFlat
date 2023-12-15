@@ -112,7 +112,7 @@ export class AccountComponent implements OnInit {
         this.router.navigate(['']);
       },
       error: error => {
-        console.log('Could not register due to:');
+        console.log('Could not sign out due to:');
         console.log(error);
         this.error = true;
         if (typeof error.error === 'object') {
