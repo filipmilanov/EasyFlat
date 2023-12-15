@@ -33,7 +33,7 @@ public class SecurityConfig {
         filterRegistrationBean.setFilter(jwtAuthorizationFilter);
         filterRegistrationBean.addUrlPatterns("/api/v1/shopping/*", "/api/v1/wgCreate/*",
             "/api/v1/register/*", "/api/v1/storage/*", "/api/v1/unit/", "/api/v1/messages/*",
-            "/api/v1/wgLogin/*", "/api/v1/authentication/*", "/api/v1/item/*", "/health/*");
+            "/api/v1/wgLogin/*", "/api/v1/authentication/*", "/api/v1/item/*", "/health/*", "/api/v1/cooking/*");
         return filterRegistrationBean;
     }
 
