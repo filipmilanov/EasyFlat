@@ -6,6 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
@@ -76,7 +77,7 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public String login(UserLoginDto userLoginDto) {
+    public String login(UserLoginDto userLoginDto) throws ConflictException {
         UserDetails userDetails = loadUserByUsername(userLoginDto.getEmail());
         if (userDetails != null
             && userDetails.isAccountNonExpired()
@@ -90,15 +91,15 @@ public class CustomUserDetailService implements UserService {
                 .toList();
             return jwtTokenizer.getAuthToken(userDetails.getUsername(), roles);
         }
-        throw new BadCredentialsException("Username or password is incorrect or account is locked");
+        throw new ConflictException("Username or password is incorrect or account is locked");
     }
 
     @Override
-    public String register(UserDetailDto userDetailDto) {
+    public String register(UserDetailDto userDetailDto) throws ConflictException {
         LOGGER.debug("Registering a new user");
 
         if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
-            throw new BadCredentialsException("User with this email already exists");
+            throw new ConflictException(String.format("User %s already exists", userDetailDto.getEmail()));
         }
 
         ApplicationUser newUser = new ApplicationUser();
@@ -118,7 +119,7 @@ public class CustomUserDetailService implements UserService {
             return jwtTokenizer.getAuthToken(userDetails.getUsername(), roles);
         }
 
-        throw new BadCredentialsException("Failed to register the user");
+        throw new ConflictException(String.format("Failed to register the user %s", userDetailDto.getEmail()));
     }
 
     @Override
@@ -128,7 +129,7 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public UserDetailDto update(UserDetailDto userDetailDto) {
+    public UserDetailDto update(UserDetailDto userDetailDto) throws ConflictException {
         if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
             ApplicationUser user = userRepository.findUserByEmail(userDetailDto.getEmail());
             user.setFirstName(userDetailDto.getFirstName());
@@ -141,17 +142,17 @@ public class CustomUserDetailService implements UserService {
             ApplicationUser returnUser = userRepository.save(user);
             return userMapper.entityToUserDetailDto(returnUser);
         }
-        throw new BadCredentialsException("User with this email doesn't exists");
+        throw new ConflictException(String.format("User %s doesn't exist", userDetailDto.getEmail()));
     }
 
     @Override
-    public UserDetailDto delete(String email) {
+    public UserDetailDto delete(String email) throws ConflictException {
         if (userRepository.findUserByEmail(email) != null) {
             ApplicationUser deletedUser = userRepository.findUserByEmail(email);
             userRepository.delete(deletedUser);
             return userMapper.entityToUserDetailDto(deletedUser);
         }
-        throw new BadCredentialsException("User with this email doesn't exists");
+        throw new ConflictException(String.format("User %s doesn't exist", email));
     }
 
     @Override
