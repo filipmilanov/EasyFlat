@@ -1,9 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.repository;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ShoppingRepository extends JpaRepository<ShoppingItem, Long> {
+public interface ShoppingItemRepository extends JpaRepository<ShoppingItem, Long> {
     /**
      * Finds ShoppingItems by ShoppingList ID.
      *
@@ -36,4 +33,8 @@ public interface ShoppingRepository extends JpaRepository<ShoppingItem, Long> {
     List<ShoppingItem> searchItems(@Param("name") String name,
                                    @Param("productName") String productName,
                                    @Param("label") String label);
+
+    ShoppingItem findFirstByProductName(String productName);
+
+    List<ShoppingItem> searchItemsByShoppingListNameAndShoppingListSharedFlatIdAndProductName(String shoppingListName, Long shardFlatId, String banana);
 }

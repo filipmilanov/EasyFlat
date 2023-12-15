@@ -38,8 +38,9 @@ public class SharedFlat {
         return name;
     }
 
-    public void setName(String name) {
+    public SharedFlat setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getPassword() {
@@ -54,8 +55,9 @@ public class SharedFlat {
         return id;
     }
 
-    public void setId(Long id) {
+    public SharedFlat setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public Set<ApplicationUser> getUsers() {

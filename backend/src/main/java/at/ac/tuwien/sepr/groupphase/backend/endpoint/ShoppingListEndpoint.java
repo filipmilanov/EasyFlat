@@ -54,7 +54,7 @@ public class ShoppingListEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ShoppingItemDto create(@RequestBody ShoppingItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public ShoppingItemDto createShoppingItem(@RequestBody ShoppingItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("create({})", itemDto);
         ShoppingItem item = shoppingService.create(itemDto, jwt);
         return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
@@ -62,7 +62,7 @@ public class ShoppingListEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping("{id}")
-    public ShoppingItemDto update(@PathVariable long id, @RequestBody ShoppingItemDto itemDto,
+    public ShoppingItemDto updateShoppingItem(@PathVariable long id, @RequestBody ShoppingItemDto itemDto,
                                   @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("update({},{},{})", id, itemDto, jwt);
         ShoppingItem item = shoppingService.update(itemDto.withId(id), jwt);
@@ -71,7 +71,7 @@ public class ShoppingListEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("{itemId}")
-    public Optional<ShoppingItemDto> getById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public Optional<ShoppingItemDto> getShoppingItemById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("getById({},{})", itemId, jwt);
         Optional<ShoppingItem> item = shoppingService.getById(itemId, jwt);
         return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToShopping(currentItem,

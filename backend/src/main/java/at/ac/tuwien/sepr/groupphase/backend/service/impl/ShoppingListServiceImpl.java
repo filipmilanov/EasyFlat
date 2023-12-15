@@ -215,9 +215,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         Optional<ShoppingList> toDeleteOptional = shoppingListRepository.findById(shopId);
         if (toDeleteOptional.isPresent()) {
             ShoppingList toDelete = toDeleteOptional.get();
-            if (!toDelete.getSharedFlat().equals(applicationUser.getSharedFlat())) {
-                throw new AuthenticationException("Authentication wrong", List.of("User can not delete this list"));
-            }
+
             if (toDelete.getName().equals("Default")) {
                 throw new ValidationException("Default list can not be deleted!", null);
             }

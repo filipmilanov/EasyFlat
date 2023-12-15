@@ -126,7 +126,7 @@ public class ShoppingItemValidator {
             errors.add("The item is linked to to an incorrect Digital Storage");
         }
 
-        if (itemDto.alwaysInStock()) {
+        if (itemDto.alwaysInStock() && itemDto.minimumQuantity() == null) {
             errors.add("There is no MinimumQuantity defined");
         }
 
