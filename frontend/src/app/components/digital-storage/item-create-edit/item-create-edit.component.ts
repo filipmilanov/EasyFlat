@@ -273,6 +273,7 @@ export class ItemCreateEditComponent implements OnInit {
       },
       error: error => {
         console.log("Failed at loading EAN number:", error);
+        this.notification.error(error.error);
       }
     })
   }

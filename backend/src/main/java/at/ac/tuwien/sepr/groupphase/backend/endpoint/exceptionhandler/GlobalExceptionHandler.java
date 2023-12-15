@@ -82,7 +82,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Handles RestClientException and sends a BAD_GATEWAY status.
      */
-    @ExceptionHandler(RestClientException.class)
+    @ExceptionHandler(value = {RestClientException.class})
     protected ResponseEntity<Object> handleRestClientException(RestClientException ex, WebRequest request) {
         LOGGER.warn(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_GATEWAY, request);
@@ -91,7 +91,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Handles JsonProcessingException and sends a BAD_REQUEST status.
      */
-    @ExceptionHandler(JsonProcessingException.class)
+    @ExceptionHandler(value = {JsonProcessingException.class})
     protected ResponseEntity<Object> handleJsonProcessingException(JsonProcessingException ex, WebRequest request) {
         LOGGER.warn(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
