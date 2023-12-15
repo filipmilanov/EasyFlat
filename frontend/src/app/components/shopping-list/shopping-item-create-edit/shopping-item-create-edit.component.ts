@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, SecurityContext} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {Observable, of} from "rxjs";
 import {ItemDto, ShoppingItemDto} from "../../../dtos/item";
@@ -13,6 +13,7 @@ import {switchMap} from 'rxjs/operators';
 import {Unit} from "../../../dtos/unit";
 import {UnitService} from "../../../services/unit.service";
 import {ShoppingListDto} from "../../../dtos/shoppingList";
+import {DomSanitizer} from "@angular/platform-browser";
 
 
 @Component({
@@ -32,13 +33,11 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   shoppingListName: string = '';
 
   constructor(
-    private itemService: ItemService,
-    private storageService: StorageService,
     private shoppingService: ShoppingListService,
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
-    private unitService: UnitService
+    private unitService: UnitService,
   ) {
   }
 
@@ -141,7 +140,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
     console.log('is form valid?', form.valid, this.item);
 
     if (form.valid) {
-      let observable: Observable<ItemDto>;
+      let observable: Observable<ShoppingItemDto>;
       switch (this.mode) {
         case ItemCreateEditMode.create:
           this.item.quantityCurrent = this.item.quantityTotal;
@@ -163,6 +162,10 @@ export class ShoppingItemCreateEditComponent implements OnInit {
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}`);
+          this.notification.error("Validation error")
+          if (this.modeIsEdit && this.item.alwaysInStock) {
+            this.notification.error("Check if you set minimum quantity");
+          }
         }
       });
     }
