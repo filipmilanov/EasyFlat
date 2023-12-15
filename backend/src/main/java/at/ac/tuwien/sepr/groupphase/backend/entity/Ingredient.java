@@ -36,8 +36,9 @@ public class Ingredient {
         return title;
     }
 
-    public void setTitle(String title) {
+    public Ingredient setTitle(String title) {
         this.title = title;
+        return this;
     }
 
     public List<Item> getItemList() {
