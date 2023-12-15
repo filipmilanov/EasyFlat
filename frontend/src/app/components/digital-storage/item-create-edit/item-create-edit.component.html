@@ -127,7 +127,8 @@
         >
           Quantity
         </label>
-        <div class="col-md-4 col-lg-3 mt-2">
+        <div *ngIf="!modeIsCreate"
+             class="col-md-4 col-lg-3 mt-2">
           <input type="number"
                  class="form-control"
                  id="currentQuantityAndUnit"
@@ -135,7 +136,13 @@
                  placeholder="Current Quantity"
                  [(ngModel)]="item.quantityCurrent">
         </div>
-        <div class="col-md-4 col-lg-3 mt-2">
+        <div [ngClass]="{
+        'col-md-4': !modeIsCreate,
+        'col-lg-3': !modeIsCreate,
+        'col-md-8': modeIsCreate,
+        'col-lg-6': modeIsCreate,
+        'mt-2': true
+        }">
           <input type="number"
                  class="form-control"
                  id="totalQuantityAndUnit"
