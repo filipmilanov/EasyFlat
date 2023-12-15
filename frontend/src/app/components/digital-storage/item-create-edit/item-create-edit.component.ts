@@ -160,6 +160,7 @@ export class ItemCreateEditComponent implements OnInit {
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}: ${error}`);
+          this.notification.error(`Error item was not ${this.modeActionFinished}`);
           console.error(error);
           let firstBracket = error.error.indexOf('[');
           let lastBracket = error.error.indexOf(']');
