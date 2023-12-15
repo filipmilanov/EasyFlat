@@ -3,10 +3,14 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -26,6 +30,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -152,4 +158,54 @@ class DigitalStorageServiceTest {
         assertThrows(ValidationException.class, () -> service.searchItems(searchParams, ""));
     }
 
+    @Test
+    void givenValidSearchParamsWhenSearchItemsThenReturnList() throws ValidationException, AuthenticationException, ConflictException {
+        // given
+        ItemSearchDto searchParams = new ItemSearchDto(null, false, null, null, null);
+        ItemListDto itemListDto = ItemListDtoBuilder.builder()
+            .generalName("apples")
+            .quantityCurrent(10.0)
+            .quantityTotal(20.0)
+            .storId(1L)
+            .unit(UnitDtoBuilder.builder().name("kg").build())
+            .build();
+
+        // when
+        List<ItemListDto> result = service.searchItems(searchParams, "Bearer Token");
+
+
+        assertAll(
+            () -> assertThat(result).isNotEmpty(),
+            () -> assertThat(result).contains(itemListDto)
+        );
+    }
+
+    @Test
+    void givenInvalidSearchParamsWhenSearchItemsThenThrowValidationException() {
+        // given
+        ItemSearchDto invalidSearchParams = new ItemSearchDto(null, null, null, null, null);
+
+
+        // when + then
+        assertThrows(ValidationException.class, () -> service.searchItems(invalidSearchParams, "Bearer Token"));
+    }
+
+    @Test
+    void givenValidSearchParamsWhenGetItemsWithGeneralNameThenReturnList() throws ValidationException, AuthenticationException, ConflictException {
+        // given
+        String itemName = "apples";
+        String jwt = "Bearer Token";
+
+
+        // when
+        List<Item> result = service.getItemWithGeneralName(itemName, jwt);
+
+
+        // then
+        assertAll(
+            () -> assertThat(result).isNotEmpty(),
+            () -> assertThat(result).isNotNull(),
+            () -> assertEquals(result.size(), 1)
+        );
+    }
 }
