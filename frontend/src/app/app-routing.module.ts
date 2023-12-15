@@ -1,14 +1,17 @@
 import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {mapToCanActivate, RouterModule, Routes} from '@angular/router';
 import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
 import {DigitalStorageComponent} from "./components/digital-storage/digital-storage.component";
 import {
-  ItemCreateEditComponent,
-  ItemCreateEditMode
+    ItemCreateEditComponent,
+    ItemCreateEditMode
 } from "./components/digital-storage/item-create-edit/item-create-edit.component";
 import {ItemDetailComponent} from "./components/digital-storage/item-detail/item-detail.component";
 import {ItemDetailListComponent} from "./components/digital-storage/item-detail-list/item-detail-list.component";
+import {StorageItemListDto} from "./dtos/storageItem";
+import {AuthGuard} from './guards/auth.guard';
+import {MessageComponent} from './components/message/message.component';
 import {RegisterComponent} from "./components/register/register.component";
 import {AccountComponent} from "./components/account/account.component";
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
@@ -20,6 +23,7 @@ import {
 import {
   ShoppingListCreateComponent
 } from "./components/shopping-list/shopping-list-create/shopping-list-create.component";
+import computeOffsets from "@popperjs/core/lib/utils/computeOffsets";
 import {CookingComponent} from "./components/cooking/cooking.component";
 import {CookbookComponent} from "./components/cookbook/cookbook.component";
 import {CookbookCreateComponent, CookbookMode} from "./components/cookbook/cookbook-create/cookbook-create.component";
@@ -40,6 +44,7 @@ const routes: Routes = [
             ]}
         ]}
   ]},
+  {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
   {path: 'shopping-list/:name', children: [
       {path: '', component: ShoppingListComponent},
       {path: 'item', children: [

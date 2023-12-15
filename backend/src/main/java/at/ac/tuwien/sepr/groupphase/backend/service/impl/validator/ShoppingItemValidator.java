@@ -62,9 +62,6 @@ public class ShoppingItemValidator {
         if (itemDto.generalName().isBlank()) {
             errors.add("The given name is blank");
         }
-        if (itemDto.generalName().contains(" ")) {
-            errors.add("Item name should not contain whitespaces");
-        }
         if (itemDto.itemId() != null) {
             errors.add("The Id must be null");
         }

@@ -72,12 +72,16 @@
           General Name
         </label>
         <div class="col-md-10 col-lg-8">
-          <input type="text"
-                 class="form-control"
-                 id="generalName"
-                 name="generalName"
-                 placeholder="General Name"
-                 [(ngModel)]="item.generalName">
+          <app-autocomplete
+            id="generalName"
+            name="generalName"
+            textInputClass="form-control"
+            valueNeedsToMatchSuggestion="false"
+            [(ngModel)]="item.generalName"
+            [formatModel]="formatGeneralName"
+            [suggestions]="generalNameSuggestions"
+            placeholder="General Name"
+          ></app-autocomplete>
         </div>
       </div>
 
@@ -104,12 +108,16 @@
           Brand
         </label>
         <div class="col-md-10 col-lg-8">
-          <input type="text"
-                 class="form-control"
-                 id="brand"
-                 name="brand"
-                 placeholder="Brand"
-                 [(ngModel)]="item.brand">
+          <app-autocomplete
+            id="brand"
+            name="brand"
+            textInputClass="form-control"
+            valueNeedsToMatchSuggestion="false"
+            [(ngModel)]="item.brand"
+            [formatModel]="formatBrand"
+            [suggestions]="brandSuggestions"
+            placeholder="Brand"
+          ></app-autocomplete>
         </div>
       </div>
 
@@ -263,7 +271,7 @@
         <label for="boughtAt"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
-          Bought At
+          Brought At
         </label>
         <div class="col-md-10 col-lg-8">
           <app-autocomplete

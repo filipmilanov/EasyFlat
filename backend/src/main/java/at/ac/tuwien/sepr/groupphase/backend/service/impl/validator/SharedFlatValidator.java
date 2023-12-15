@@ -50,16 +50,13 @@ public class SharedFlatValidator {
         List<String> errors = new ArrayList<>();
 
         if (sharedFlat.getName().isEmpty()) {
-            errors.add("Shared Flat name should not be empty!");
+            errors.add("Tha name should not be empty!");
         }
         if (sharedFlat.getName().length() > 120) {
-            errors.add("Shared Flat is too long");
+            errors.add("The name is too long");
         }
         if (sharedFlat.getName().isBlank()) {
-            errors.add("Shared Flat name is blank");
-        }
-        if (sharedFlat.getName().contains(" ")) {
-            errors.add("Shared Flat name should not contain whitespaces");
+            errors.add("The given name is blank");
         }
         if (sharedFlat.getPassword() == null) {
             errors.add("Password is not given");

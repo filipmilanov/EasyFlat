@@ -30,8 +30,6 @@ export class ShoppingListComponent implements OnInit {
   }
   shopName: string;
 
-  uncheckItems: boolean = false;
-
   constructor(
     private shoppingListService: ShoppingListService,
     private itemService: ItemService,
@@ -114,7 +112,7 @@ export class ShoppingListComponent implements OnInit {
       this.shoppingListService.deleteList(this.shopId).subscribe({
         next: (deletedList: ShoppingListDto) => {
           console.log(deletedList.listName, ' was deleted successfully');
-          this.router.navigate(['shopping-list/Default']);
+          this.router.navigate(['shopping-list' + this.shoppingList.listName]);
         },
         error: error => {
           console.error(error.message, error);
@@ -161,10 +159,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   onShoppingListChange() {
-    console.log('Selected Shopping List:', this.selectedShoppingList);
-    this.uncheckItems = true;
-    this.change();
-    console.log('Checked Items : ', this.checkedItems);
+    console.log('Selected Shopping List:', this.shopName);
     if (this.selectedShoppingList) {
       this.shoppingListService.getShoppingListById(this.selectedShoppingList + '').subscribe({
         next: res => {
@@ -200,10 +195,4 @@ export class ShoppingListComponent implements OnInit {
     this.router.navigate(['shopping-list', this.shopName, 'item', itemId, 'edit']);
   }
 
-  change() {
-    if (this.uncheckItems){
-      this.checkedItems = [];
-      this.getCheckedItems();
-    }
-  }
 }

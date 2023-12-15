@@ -9,6 +9,7 @@ import {HeaderComponent} from './components/header/header.component';
 import {FooterComponent} from './components/footer/footer.component';
 import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
+import {MessageComponent} from './components/message/message.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
 import {DigitalStorageComponent} from './components/digital-storage/digital-storage.component';
@@ -22,15 +23,11 @@ import {ItemDetailListComponent} from './components/digital-storage/item-detail-
 import {RegisterComponent} from './components/register/register.component';
 import {AccountComponent} from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
-import {CreateFlatComponent} from './components/create-flat/create-flat.component';
-import {ShoppingListComponent} from './components/shopping-list/shopping-list.component';
-import {
-  ShoppingItemCreateEditComponent
-} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
+import { CreateFlatComponent } from './components/create-flat/create-flat.component';
+import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
+import {ShoppingItemCreateEditComponent} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
 import {ColorPickerModule} from "ngx-color-picker";
-import {
-  ShoppingListCreateComponent
-} from './components/shopping-list/shopping-list-create/shopping-list-create.component';
+import { ShoppingListCreateComponent } from './components/shopping-list/shopping-list-create/shopping-list-create.component';
 import {CookingComponent} from './components/cooking/cooking.component';
 import {RecipeCardComponent} from './components/cooking/recipe-card/recipe-card.component';
 import {NgOptimizedImage} from "@angular/common";
@@ -54,6 +51,7 @@ LOAD_WASM().subscribe();
     FooterComponent,
     HomeComponent,
     LoginComponent,
+    MessageComponent,
     DigitalStorageComponent,
     ItemCardComponent,
     ItemCreateEditComponent,

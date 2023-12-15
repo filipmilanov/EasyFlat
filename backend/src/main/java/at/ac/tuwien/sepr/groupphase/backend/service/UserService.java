@@ -5,7 +5,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -42,15 +41,15 @@ public interface UserService extends UserDetailsService {
      * @return the JWT, if successful
      * @throws org.springframework.security.authentication.BadCredentialsException if credentials are bad
      */
-    String login(UserLoginDto userLoginDto) throws ConflictException;
+    String login(UserLoginDto userLoginDto);
 
-    String register(UserDetailDto userDetailDto) throws ConflictException;
+    String register(UserDetailDto userDetailDto);
 
     ApplicationUser getUser(String authToken);
 
-    UserDetailDto update(UserDetailDto userDetailDto) throws ConflictException;
+    UserDetailDto update(UserDetailDto userDetailDto);
 
-    UserDetailDto delete(String email) throws ConflictException;
+    UserDetailDto delete(String email);
 
     UserDetailDto signOut(String flatName, String authToken);
 

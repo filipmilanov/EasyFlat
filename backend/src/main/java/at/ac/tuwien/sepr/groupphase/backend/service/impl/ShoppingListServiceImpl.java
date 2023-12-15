@@ -101,7 +101,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         ShoppingItem createdItem = shoppingItemRepository.save(itemMapper.dtoToShopping(itemDto, labels, shoppingListMapper.dtoToEntity(itemDto.shoppingList())));
         createdItem.setLabels(labels);
-        createdItem.setShoppingList(shoppingLists.get(0));
         return createdItem;
     }
 
@@ -220,13 +219,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         Optional<ShoppingList> toDeleteOptional = shoppingListRepository.findById(shopId);
         if (toDeleteOptional.isPresent()) {
             ShoppingList toDelete = toDeleteOptional.get();
+
             if (toDelete.getName().equals("Default")) {
                 throw new ValidationException("Default list can not be deleted!", null);
             }
             List<ShoppingItem> items = shoppingItemRepository.findByShoppingListId(shopId);
-            if (items.size() > 0) {
-                shoppingItemRepository.deleteAll(items);
-            }
+            shoppingItemRepository.deleteAll(items);
             shoppingListRepository.deleteById(shopId);
             return toDelete;
         } else {
