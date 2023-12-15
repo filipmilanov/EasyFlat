@@ -8,6 +8,8 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
+import at.ac.tuwien.sepr.groupphase.backend.service.OpenFoodFactsService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -33,10 +35,12 @@ public class ItemEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ItemService itemService;
+    private final OpenFoodFactsService openFoodFactsService;
     private final ItemMapper itemMapper;
 
-    public ItemEndpoint(ItemService itemService, ItemMapper itemMapper) {
+    public ItemEndpoint(ItemService itemService, OpenFoodFactsService openFoodFactsService, ItemMapper itemMapper) {
         this.itemService = itemService;
+        this.openFoodFactsService = openFoodFactsService;
         this.itemMapper = itemMapper;
     }
 
@@ -85,6 +89,15 @@ public class ItemEndpoint {
     public void delete(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("delete({})", itemId);
         itemService.delete(itemId, jwt);
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/ean/{ean}")
+    public ItemDto findByEan(@PathVariable Long ean) throws ConflictException, JsonProcessingException {
+        LOGGER.info("findByEan({})", ean);
+        return itemMapper.openFoodFactItemDtoToItemDto(
+            openFoodFactsService.findByEan(ean)
+        );
     }
 
 }

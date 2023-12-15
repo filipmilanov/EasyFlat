@@ -27,12 +27,18 @@ public class SharedFlat {
     private String password;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sharedFlat")
     private Set<ApplicationUser> users = new HashSet<>();
+
     @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
     private DigitalStorage digitalStorage;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sharedFlat")
 
     private List<ShoppingList> shoppingLists;
+    @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
+    private Cookbook cookbook;
+
+    public SharedFlat() {
+    }
 
     public String getName() {
         return name;
@@ -78,6 +84,15 @@ public class SharedFlat {
         if (digitalStorage != null) {
             digitalStorage.setSharedFlat(this);
         }
+    }
+
+    @JsonManagedReference
+    public Cookbook getCookbook() {
+        return cookbook;
+    }
+
+    public void setCookbook(Cookbook cookbook) {
+        this.cookbook = cookbook;
     }
 
     @Override

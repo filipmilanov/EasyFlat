@@ -37,7 +37,6 @@ public class Item {
     private String ean;
 
     @Column
-
     private String generalName;
 
     @Column
@@ -49,11 +48,11 @@ public class Item {
 
     @Column
     @Min(value = 0, message = "The actual quantity must be positive")
-    private Long quantityCurrent;
+    private Double quantityCurrent;
 
     @Column
     @Min(value = 0, message = "The total quantity must be positive")
-    private Long quantityTotal;
+    private Double quantityTotal;
 
     @ManyToOne
     private Unit unit;
@@ -126,19 +125,19 @@ public class Item {
         this.brand = brand;
     }
 
-    public Long getQuantityCurrent() {
+    public Double getQuantityCurrent() {
         return quantityCurrent;
     }
 
-    public void setQuantityCurrent(Long quantityCurrent) {
+    public void setQuantityCurrent(Double quantityCurrent) {
         this.quantityCurrent = quantityCurrent;
     }
 
-    public Long getQuantityTotal() {
+    public Double getQuantityTotal() {
         return quantityTotal;
     }
 
-    public void setQuantityTotal(Long quantityTotal) {
+    public void setQuantityTotal(Double quantityTotal) {
         this.quantityTotal = quantityTotal;
     }
 

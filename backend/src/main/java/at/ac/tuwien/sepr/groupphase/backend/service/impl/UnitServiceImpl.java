@@ -48,15 +48,26 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
-    public Long convertUnits(Unit from, Unit to, Long value) throws ValidationException, ConflictException {
+    public Double convertUnits(Unit from, Unit to, Double value) {
         LOGGER.info("convertUnits({}, {}, {})", from, to, value);
 
-        Unit persistedFrom = this.findByName(from.getName());
-        Unit persistedTo = this.findByName(to.getName());
 
-        unitValidator.validateUnit(from, to, persistedFrom, persistedTo);
+        if (to.equals(from)) {
+            return value;
+        }
 
-        return value * persistedFrom.getConvertFactor();
+        if (this.getMinUnit(from).equals(to)) {
+            if (from.getConvertFactor() == null) {
+                return value;
+            }
+            return value * from.getConvertFactor();
+        } else {
+            if (to.getConvertFactor() == null) {
+                return value;
+            }
+            return value / to.getConvertFactor();
+        }
+
     }
 
     @Override
@@ -67,5 +78,15 @@ public class UnitServiceImpl implements UnitService {
 
         Unit unitEntity = unitMapper.unitDtoToEntity(unit);
         return unitRepository.save(unitEntity);
+    }
+
+    @Override
+    public Unit getMinUnit(Unit unit) {
+        if (!unit.getSubUnit().isEmpty()) {
+            for (Unit subUnit : unit.getSubUnit()) {
+                return subUnit;
+            }
+        }
+        return unit;
     }
 }

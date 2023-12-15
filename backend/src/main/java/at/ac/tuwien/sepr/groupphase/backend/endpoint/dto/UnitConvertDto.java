@@ -6,6 +6,6 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 public record UnitConvertDto(
     UnitDto from,
     UnitDto to,
-    Long value
+    Double value
 ) {
 }

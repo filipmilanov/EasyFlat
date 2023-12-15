@@ -25,10 +25,10 @@ public record ItemDto(
     String brand,
     @NotNull(message = "The actual quantity cannot be empty")
     @Min(value = 0, message = "The actual quantity must be positive")
-    Long quantityCurrent,
+    Double quantityCurrent,
     @NotNull(message = "The total quantity cannot be empty")
     @Min(value = 0, message = "The total quantity must be positive")
-    Long quantityTotal,
+    Double quantityTotal,
     @NotNull(message = "The unit cannot be null")
     UnitDto unit,
     @FutureOrPresent(message = "You cannot store products which are over the expire date")
@@ -121,5 +121,27 @@ public record ItemDto(
             + ", digitalStorage=" + digitalStorage
             + ", ingredients=" + ingredients
             + '}';
+    }
+
+    public ItemDto withUpdatedQuantity(Double updatedQuantity) {
+        return new ItemDto(
+            itemId,
+            ean,
+            generalName,
+            productName,
+            brand,
+            updatedQuantity,
+            quantityTotal,
+            unit,
+            expireDate,
+            description,
+            priceInCent,
+            alwaysInStock,
+            minimumQuantity,
+            boughtAt,
+            digitalStorage,
+            ingredients,
+            itemStats
+        );
     }
 }

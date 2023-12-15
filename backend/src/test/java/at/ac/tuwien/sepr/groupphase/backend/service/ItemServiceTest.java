@@ -7,6 +7,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
@@ -16,7 +18,6 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ import java.util.Optional;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.g;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -76,7 +77,7 @@ class ItemServiceTest {
 
         // then
         assertTrue(actual.isPresent());
-        Assertions.assertThat(actual.get().getItemId()).isEqualTo(id);
+        assertThat(actual.get().getItemId()).isEqualTo(id);
     }
 
     @Test
@@ -90,6 +91,58 @@ class ItemServiceTest {
         // then
         assertTrue(actual.isEmpty());
     }
+
+    @Test
+    void givenGeneralNameWhenFindByFieldsThenItemWithGeneralNameIsReturned() throws AuthenticationException {
+        // given
+        ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
+                .generalName("apples")
+                .build();
+
+        // when
+        List<Item> actual = service.findByFields(itemFieldSearchDto);
+
+        // then
+        assertThat(actual).isNotEmpty();
+        actual.forEach(item ->
+                assertThat(item.getGeneralName()).containsSequence(itemFieldSearchDto.generalName())
+        );
+    }
+
+    @Test
+    void givenBrandWhenFindByFieldsThenItemWithBrandIsReturned() throws AuthenticationException {
+        // given
+        ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
+                .brand("Brand")
+                .build();
+
+        // when
+        List<Item> actual = service.findByFields(itemFieldSearchDto);
+
+        // then
+        assertThat(actual).isNotEmpty();
+        actual.forEach(item ->
+                assertThat(item.getBrand()).containsSequence(itemFieldSearchDto.brand())
+        );
+    }
+
+    @Test
+    void givenBoughtAtWhenFindByFieldsThenItemWithBoughtAtIsReturned() throws AuthenticationException {
+        // given
+        ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
+                .boughtAt("Hofer")
+                .build();
+
+        // when
+        List<Item> actual = service.findByFields(itemFieldSearchDto);
+
+        // then
+        assertThat(actual).isNotEmpty();
+        actual.forEach(item ->
+                assertThat(item.getBoughtAt()).containsSequence(itemFieldSearchDto.boughtAt())
+        );
+    }
+
 
     @Test
     void givenValidItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, AuthenticationException {
@@ -112,8 +165,8 @@ class ItemServiceTest {
             .generalName("Test")
             .productName("MyTest")
             .brand("Hofer")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
             .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -129,8 +182,8 @@ class ItemServiceTest {
         Optional<Item> persisted = service.findById(actual.getItemId(), "Bearer token");
 
         assertTrue(persisted.isPresent());
-        Assertions.assertThat(actual).isEqualTo(persisted.get());
-        Assertions.assertThat(actual)
+        assertThat(actual).isEqualTo(persisted.get());
+        assertThat(actual)
             .extracting(
                 Item::getEan,
                 Item::getGeneralName,
@@ -184,8 +237,8 @@ class ItemServiceTest {
             .generalName("Test")
             .productName("MyTest")
             .brand("Hofer")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
             .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -204,8 +257,8 @@ class ItemServiceTest {
         Optional<Item> persisted = service.findById(actual.getItemId(), "bearer token");
 
         assertTrue(persisted.isPresent());
-        Assertions.assertThat(actual).isEqualTo(persisted.get());
-        Assertions.assertThat(actual)
+        assertThat(actual).isEqualTo(persisted.get());
+        assertThat(actual)
             .extracting(
                 Item::getEan,
                 Item::getGeneralName,
@@ -265,8 +318,8 @@ class ItemServiceTest {
             .generalName("")
             .productName(null)
             .brand("")
-            .quantityCurrent(100L)
-            .quantityTotal(-200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(-200.0)
             .unit(UnitDtoBuilder.builder().build())
             .description("")
             .priceInCent(-1234L)
@@ -307,8 +360,8 @@ class ItemServiceTest {
             .generalName("Test")
             .productName("MyTest")
             .brand("Hofer")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
             .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -348,8 +401,8 @@ class ItemServiceTest {
             .generalName("Test")
             .productName("MyTest")
             .brand("Hofer")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
             .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -392,8 +445,8 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
             .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -410,8 +463,8 @@ class ItemServiceTest {
             .generalName(updatedGeneralName)
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
             .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -454,8 +507,8 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
             .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -472,8 +525,8 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(-100L)
-            .quantityTotal(200L)
+            .quantityCurrent(-100.0)
+            .quantityTotal(200.0)
             .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -494,7 +547,7 @@ class ItemServiceTest {
     void givenValidItemWhenUpdateMultipleAttributesThenItemIsUpdated() throws ValidationException, ConflictException, AuthenticationException {
         // given:
         String updatedGeneralName = "General Name Updated";
-        Long updatedCurrentAmount = 150L;
+        Double updatedCurrentAmount = 150.0;
 
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
@@ -515,8 +568,8 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
             .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -534,7 +587,7 @@ class ItemServiceTest {
             .productName("TestProduct")
             .brand("TestBrand")
             .quantityCurrent(updatedCurrentAmount)
-            .quantityTotal(200L)
+            .quantityTotal(200.0)
             .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -578,8 +631,8 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
             .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -596,8 +649,8 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand(null)
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
             .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
@@ -637,8 +690,8 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
             .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")

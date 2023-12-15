@@ -42,6 +42,7 @@ export class ItemDetailComponent implements OnInit {
         this.service.getById(itemId).subscribe({
           next: res => {
             this.item = res;
+            console.log(this.item)
           },
           error: error => {
             console.error(`Item could not be retrieved from the backend: ${error.error.message}`);

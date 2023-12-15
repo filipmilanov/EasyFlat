@@ -105,6 +105,7 @@ export class AutocompleteComponent<T> implements OnInit, ControlValueAccessor {
   /* Methods needed for ControlValueAccessor */
 
   public writeValue(obj: any): void {
+    console.log('writeValue', obj);
     this.setValue(obj as T);
   }
 

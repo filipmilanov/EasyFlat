@@ -4,11 +4,12 @@ import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
 import {DigitalStorageComponent} from "./components/digital-storage/digital-storage.component";
 import {
-  ItemCreateEditComponent,
-  ItemCreateEditMode
+    ItemCreateEditComponent,
+    ItemCreateEditMode
 } from "./components/digital-storage/item-create-edit/item-create-edit.component";
 import {ItemDetailComponent} from "./components/digital-storage/item-detail/item-detail.component";
 import {ItemDetailListComponent} from "./components/digital-storage/item-detail-list/item-detail-list.component";
+import {StorageItemListDto} from "./dtos/storageItem";
 import {AuthGuard} from './guards/auth.guard';
 import {MessageComponent} from './components/message/message.component';
 import {RegisterComponent} from "./components/register/register.component";
@@ -22,6 +23,12 @@ import {
 import {
   ShoppingListCreateComponent
 } from "./components/shopping-list/shopping-list-create/shopping-list-create.component";
+import computeOffsets from "@popperjs/core/lib/utils/computeOffsets";
+import {CookingComponent} from "./components/cooking/cooking.component";
+import {CookbookComponent} from "./components/cookbook/cookbook.component";
+import {CookbookCreateComponent, CookbookMode} from "./components/cookbook/cookbook-create/cookbook-create.component";
+import {RecipeDetailComponent} from "./components/cooking/recipe-detail/recipe-detail.component";
+import {CookbookDetailComponent} from "./components/cookbook/cookbook-detail/cookbook-detail.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -52,6 +59,16 @@ const routes: Routes = [
   {path: 'account', component: AccountComponent},
   {path: 'wgLogin', component: LoginFlatComponent},
   {path: 'wgCreate', component: CreateFlatComponent},
+  {path: 'cooking', children: [
+      {path: '' ,component: CookingComponent},
+      {path: ':id/detail', component: RecipeDetailComponent}
+    ]},
+  {path: 'cookbook', children: [
+      {path: '', component: CookbookComponent},
+      {path: 'create', component: CookbookCreateComponent, data: {mode: CookbookMode.create}},
+      {path: ':id/edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}},
+      {path: ':id/detail', component: CookbookDetailComponent}
+    ]}
 ];
 
 @NgModule({
