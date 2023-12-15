@@ -207,7 +207,7 @@ export class ItemCreateEditComponent implements OnInit {
     : this.storageService.findAll(input, 5);
 
   formatGeneralName(item: ItemDto | null): string {
-    return item ? item.generalName : '';
+    return item ? item as any as string : '';
   }
 
   generalNameSuggestions = (input: string) => (input === '')
@@ -215,7 +215,7 @@ export class ItemCreateEditComponent implements OnInit {
     : this.itemService.findByGeneralName(input);
 
   formatBrand(item: ItemDto | null): string {
-    return item ? item.brand : '';
+    return item ? item as any as string : '';
   }
 
   brandSuggestions = (input: string) => (input === '')
