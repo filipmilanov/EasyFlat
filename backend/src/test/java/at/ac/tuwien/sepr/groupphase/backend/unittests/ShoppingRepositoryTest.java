@@ -1,12 +1,17 @@
 package at.ac.tuwien.sepr.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +21,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -40,7 +47,6 @@ public class ShoppingRepositoryTest implements TestData {
     public void saveValidShoppingItemThenFindItByProductName() {
         ShoppingItem shoppingItem = new ShoppingItem();
         shoppingItem.setProductName("Product1");
-        shoppingItem.setExpireDate(LocalDate.now().plusDays(7));
         ShoppingItem savedItem = shoppingItemRepository.save(shoppingItem);
 
         ShoppingItem foundItem = shoppingItemRepository.findFirstByProductName("Product1");
@@ -97,6 +103,40 @@ public class ShoppingRepositoryTest implements TestData {
             () -> assertEquals(1, items.size()),
             () -> assertEquals("Banana", items.get(0).getProductName())
         );
+    }
+
+    @Test
+    @Disabled("not finished")
+    @DisplayName("Test transferring item from storage to shopping list")
+    public void testMappingValidItemDtoToValidShoppingItemDtoAndSaveToDatabase() {
+        SharedFlat sharedFlat = new SharedFlat().setName("The cool flat");
+        SharedFlat saved = sharedFlatRepository.save(sharedFlat);
+
+        ItemDto validShoppingItemDto = new ItemDto(
+            null,
+            null,
+            "pear",
+            "pear1",
+            "lidl",
+            10.0,
+            20.0,
+            g,
+            LocalDate.now().plusDays(7),
+            "Description",
+            500L,
+            false,
+            null,
+            "Store",
+            null,
+            null,
+            null
+        );
+
+        String shoppingListName = "Groceries";
+        ShoppingList shoppingList = new ShoppingList();
+        shoppingList.setName(shoppingListName);
+        shoppingList.setSharedFlat(saved);
+        ShoppingList savedList = shoppingListRepository.save(shoppingList);
     }
 
 }

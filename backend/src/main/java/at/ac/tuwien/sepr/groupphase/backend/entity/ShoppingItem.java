@@ -58,9 +58,6 @@ public class ShoppingItem {
     private Unit unit;
 
     @Column
-    private LocalDate expireDate;
-
-    @Column
     private String description;
 
     @Column
@@ -167,14 +164,6 @@ public class ShoppingItem {
 
     public Unit getUnit() {
         return unit;
-    }
-
-    public LocalDate getExpireDate() {
-        return expireDate;
-    }
-
-    public void setExpireDate(LocalDate expireDate) {
-        this.expireDate = expireDate;
     }
 
     public String getDescription() {

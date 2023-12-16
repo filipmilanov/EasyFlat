@@ -60,7 +60,6 @@ public class ShoppingItemDataGenerator {
 
             shoppingItem.setUnit(kg);
 
-            shoppingItem.setExpireDate(LocalDate.now().plusMonths(3));
             shoppingItem.setDescription("Description of the product");
             shoppingItem.setPriceInCent(499L);
             shoppingItem.setBoughtAt("Grocery Store");

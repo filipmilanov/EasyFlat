@@ -26,8 +26,6 @@ public record ShoppingItemDto(
     Long quantityTotal,
     @NotNull(message = "The unit cannot be null")
     UnitDto unit,
-    @FutureOrPresent(message = "You cannot store products which are over the expire date")
-    LocalDate expireDate,
     String description,
     @Min(value = 0, message = "The price must be positive")
     Long priceInCent,
@@ -52,7 +50,6 @@ public record ShoppingItemDto(
             quantityCurrent,
             quantityTotal,
             unit,
-            expireDate,
             description,
             priceInCent,
             alwaysInStock,
