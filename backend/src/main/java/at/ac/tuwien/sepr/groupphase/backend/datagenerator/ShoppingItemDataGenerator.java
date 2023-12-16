@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-@Profile({"generateData", "test"})
+@Profile({"generateData"})
 @Component("ItemDataGenerator")
 @DependsOn({
     "CleanDatabase",

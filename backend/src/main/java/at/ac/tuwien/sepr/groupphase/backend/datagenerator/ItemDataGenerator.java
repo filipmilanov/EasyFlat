@@ -73,45 +73,6 @@ public class ItemDataGenerator {
         }
     }
 
-    @PostConstruct
-    public void generateItemsForDifferrentStorages() {
-        LOGGER.debug("generating {} Items for different storages", NUMBER_OF_ENTITIES_TO_GENERATE);
-        Unit kg = unitRepository.findByName("kg").orElseThrow();
-        List<String> generalNames = getGeneralNames();
-
-        for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
-            Item item = new Item();
-            item.setGeneralName(generalNames.get(i));
-            item.setEan("123456789012" + i);  // Replace with valid EAN numbers
-            item.setProductName("Test Product " + (i + 1));
-            item.setBrand("Test Brand " + (i + 1));
-            item.setQuantityCurrent(10.0 + i);
-            item.setQuantityTotal(20.0 + i);
-            item.setUnit(kg);
-            item.setExpireDate(LocalDate.now().plusMonths(i + 1));  // Set expire date to current date + i months
-            item.setDescription("This is a test product description for Item " + (i + 1));
-            item.setPriceInCent(500L + i * 100);
-            item.setBoughtAt("Hofer");
-
-            DigitalStorage storage = new DigitalStorage();
-            storage.setStorId(null);
-            storage.setTitle("Storage");
-            item.setStorage(storage);
-
-            List<Ingredient> ingredientList = new ArrayList<>();
-            Ingredient ingredient1 = new Ingredient();
-            ingredient1.setIngrId(1L);
-            Ingredient ingredient2 = new Ingredient();
-            ingredient2.setIngrId(2L);
-            ingredientList.add(ingredient1);
-            ingredientList.add(ingredient2);
-            item.setIngredientList(ingredientList);
-
-            LOGGER.debug("saving item {}", item);
-            itemRepository.save(item);
-        }
-    }
-
     private List<String> getGeneralNames() {
         List<String> generalNames = new LinkedList<>();
         generalNames.add("apples");
