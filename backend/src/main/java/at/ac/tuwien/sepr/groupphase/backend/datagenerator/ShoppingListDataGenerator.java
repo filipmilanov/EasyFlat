@@ -14,7 +14,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.LinkedList;
 import java.util.List;
 
-@Profile({"generateData", "test"})
+@Profile({"generateData"})
 @Component("ShoppingListDataGenerator")
 @DependsOn({"CleanDatabase", "SharedFlatDataGenerator"})
 public class ShoppingListDataGenerator {

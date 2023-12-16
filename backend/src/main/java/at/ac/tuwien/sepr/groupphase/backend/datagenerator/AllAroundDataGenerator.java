@@ -33,7 +33,6 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 @Profile({"presentationData"})
 @Component("AllAroundDataGenerator")
@@ -41,7 +40,6 @@ import java.util.List;
 public class AllAroundDataGenerator {
     private final PasswordEncoder passwordEncoder;
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private final int NUMBER_OF_ENTITIES_TO_GENERATE = 5;
     private final UserRepository userRepository;
     private final SharedFlatRepository sharedFlatRepository;
     private final UnitRepository unitRepository;
@@ -82,7 +80,6 @@ public class AllAroundDataGenerator {
         this.generateSharedFlats();
         this.generateApplicationUsers();
         this.generateItems();
-        this.generateShoppingLists();
         this.generateShoppingItems();
         this.generateCookbook();
         this.generateRezipe();
@@ -177,17 +174,9 @@ public class AllAroundDataGenerator {
     }
 
     public void generateItems() {
-        Unit kg = unitRepository.findByName("kg").orElseThrow();
-        Unit g = unitRepository.findByName("g").orElseThrow();
-        Unit ml = unitRepository.findByName("ml").orElseThrow();
-        Unit l = unitRepository.findByName("l").orElseThrow();
-        Unit gallon = unitRepository.findByName("gallon").orElseThrow();
-        Unit servings = unitRepository.findByName("servings").orElseThrow();
-
         DigitalStorage storage1 = digitalStorageRepository.getReferenceById(1L);
 
-        DigitalStorage storage2 = digitalStorageRepository.getReferenceById(2L);
-
+        Unit l = unitRepository.findByName("l").orElseThrow();
         Item item1 = new Item();
         item1.setGeneralName("milk");
         item1.setEan("1234567890124");
@@ -212,6 +201,7 @@ public class AllAroundDataGenerator {
         LOGGER.debug("saving item {}", item1);
         itemRepository.save(item1);
 
+        Unit g = unitRepository.findByName("g").orElseThrow();
         Item item2 = new Item();
         item2.setGeneralName("bread");
         item2.setEan("1234567890123");
@@ -236,6 +226,7 @@ public class AllAroundDataGenerator {
         LOGGER.debug("saving item {}", item2);
         itemRepository.save(item2);
 
+        Unit kg = unitRepository.findByName("kg").orElseThrow();
         Item item3 = new Item();
         item3.setGeneralName("chicken");
         item3.setEan("1234567890124");
@@ -252,6 +243,7 @@ public class AllAroundDataGenerator {
         LOGGER.debug("saving item {}", item3);
         itemRepository.save(item3);
 
+        Unit ml = unitRepository.findByName("ml").orElseThrow();
         Item item4 = new Item();
         item4.setGeneralName("coffee");
         item4.setEan("1234567890125");
@@ -272,6 +264,8 @@ public class AllAroundDataGenerator {
         LOGGER.debug("saving item {}", item4);
         itemRepository.save(item4);
 
+        DigitalStorage storage2 = digitalStorageRepository.getReferenceById(2L);
+
         Item item5 = new Item();
         item5.setGeneralName("tomatoes");
         item5.setEan("1234567890126");
@@ -289,6 +283,7 @@ public class AllAroundDataGenerator {
         LOGGER.debug("saving item {}", item5);
         itemRepository.save(item5);
 
+        Unit servings = unitRepository.findByName("servings").orElseThrow();
         Item item6 = new Item();
         item6.setGeneralName("pasta");
         item6.setEan("1234567890127");
@@ -313,7 +308,7 @@ public class AllAroundDataGenerator {
         itemRepository.save(item6);
     }
 
-    public void generateShoppingLists() {
+    public void generateShoppingItems() {
         ShoppingList shoppingList1 = new ShoppingList();
         shoppingList1.setName("Groceries");
         shoppingList1.setSharedFlat(sharedFlatRepository.findFirstByName("Stephansplatz Luxus WG"));
@@ -332,38 +327,30 @@ public class AllAroundDataGenerator {
         shoppingList4.setName("Billa");
         shoppingList4.setSharedFlat(sharedFlatRepository.findFirstByName("Mariahilfer Straße Studentenheim"));
 
-        shoppingListRepository.save(shoppingList1);
-        shoppingListRepository.save(shoppingList2);
-        shoppingListRepository.save(shoppingList3);
-        shoppingListRepository.save(shoppingList4);
-
-
-    }
-
-    public void generateShoppingItems() {
         Unit g = unitRepository.findByName("g").orElseThrow();
-        Unit l = unitRepository.findByName("l").orElseThrow();
-
         ShoppingItem shoppingItem1 = new ShoppingItem();
         shoppingItem1.setProductName("Mehl");
         shoppingItem1.setUnit(g);
-        shoppingItem1.setShoppingList(shoppingListRepository.findByName("Groceries"));
+        shoppingItem1.setShoppingList(shoppingListRepository.save(shoppingList1));
         shoppingItem1.setQuantityCurrent(1000L);
+
         ShoppingItem shoppingItem2 = new ShoppingItem();
         shoppingItem2.setProductName("Schokolade");
         shoppingItem2.setUnit(g);
         shoppingItem2.setQuantityCurrent(100L);
-        shoppingItem2.setShoppingList(shoppingListRepository.findByName("Home Improvements"));
+        shoppingItem2.setShoppingList(shoppingListRepository.save(shoppingList2));
+
+        Unit l = unitRepository.findByName("l").orElseThrow();
         ShoppingItem shoppingItem3 = new ShoppingItem();
         shoppingItem3.setProductName("Milch");
         shoppingItem3.setUnit(l);
         shoppingItem3.setQuantityCurrent(4L);
-        shoppingItem3.setShoppingList(shoppingListRepository.findByName("Foods"));
+        shoppingItem3.setShoppingList(shoppingListRepository.save(shoppingList3));
         ShoppingItem shoppingItem4 = new ShoppingItem();
         shoppingItem4.setProductName("Weintrauben");
         shoppingItem4.setUnit(g);
         shoppingItem4.setQuantityCurrent(4L);
-        shoppingItem4.setShoppingList(shoppingListRepository.findByName("Billa"));
+        shoppingItem4.setShoppingList(shoppingListRepository.save(shoppingList4));
 
         shoppingItemRepository.save(shoppingItem1);
         shoppingItemRepository.save(shoppingItem2);
@@ -376,21 +363,21 @@ public class AllAroundDataGenerator {
 
         RecipeSuggestion rescipe = new RecipeSuggestion();
         rescipe.setTitle("Amerikanische Double Choc Brownies");
-        rescipe.setSummary("Preheat the oven to 200°C.\n" +
-            "Roll out the pizza dough. Spread the ingredients evenly over it, leaving a 1 cm wide edge. Roll up from the wide side. Cut the pizza roll into 3 cm wide slices with a sharp knife.\n" +
-            "Place on the prepared baking tray and bake for approx. 20 mins. ");
+        rescipe.setSummary("Preheat the oven to 200°C.\n"
+            + "Roll out the pizza dough. Spread the ingredients evenly over it, leaving a 1 cm wide edge. Roll up from the wide side. Cut the pizza roll into 3 cm wide slices with a sharp knife.\n"
+            + "Place on the prepared baking tray and bake for approx. 20 mins. ");
         rescipe.setReadyInMinutes(30);
         rescipe.setCookbook(cookbook);
 
         RecipeSuggestion rescipe2 = new RecipeSuggestion();
         rescipe2.setTitle("Pizzarolles");
-        rescipe2.setSummary("Melt 200 g of the dark chocolate with 120 g of butter, stir and leave to cool slightly. Chop up the remaining chocolate (it is best to crumble it in a freezer bag). Mix the flour with the baking powder and salt. Beat the eggs, sugar and vanilla sugar until frothy and add the lukewarm chocolate mixture. Gradually sift in the flour mixture and carefully mix everything into a dough. Now fold in the remaining chocolate chips. Alternatively, you can also use a handful of chopped walnuts.\n" +
-            "\n" +
-            "Grease a brownies baking tin (approx. 23 x 23 cm) with the remaining butter, pour in the batter and smooth out. Then place in the oven preheated to 180 degrees with a rack on the middle shelf for 20 - 25 minutes. You need to find the right time here so that the brownies are still nice and moist and crispy on the inside. It is best to leave them in for 20 minutes or more. They should be ready when the edges are a nice deep dark brown.\n" +
-            "\n" +
-            "After cooling, either leave them plain or spread with milk chocolate coating and decorate with diagonal stripes of white chocolate coating. Cut into 16 squares or 32 smaller rectangles.\n" +
-            "\n" +
-            "Very suitable for freezing. Once frozen, allow to thaw briefly and serve with a scoop of vanilla ice cream. ");
+        rescipe2.setSummary("Melt 200 g of the dark chocolate with 120 g of butter, stir and leave to cool slightly. Chop up the remaining chocolate (it is best to crumble it in a freezer bag). Mix the flour with the baking powder and "
+            + "salt. Beat the eggs, sugar and vanilla sugar until frothy and add the lukewarm chocolate mixture. Gradually sift in the flour mixture and carefully mix everything into a dough. Now fold in the remaining chocolate chips. "
+            + "Alternatively, you can also use a handful of chopped walnuts.\nGrease a brownies baking tin (approx. 23 x 23 cm) with the remaining butter, pour in the batter and smooth out. "
+            + "Then place in the oven preheated to 180 degrees with a rack on the middle shelf for 20 - 25 minutes. You need to find the right time here so that the brownies are still nice and moist and crispy on the inside. "
+            + "It is best to leave them in for 20 minutes or more. They should be ready when the edges are a nice deep dark brown.\n"
+            + "\nAfter cooling, either leave them plain or spread with milk chocolate coating and decorate with diagonal stripes of white chocolate coating. Cut into 16 squares or 32 smaller rectangles.\n"
+            + "\nVery suitable for freezing. Once frozen, allow to thaw briefly and serve with a scoop of vanilla ice cream. ");
         rescipe2.setReadyInMinutes(30);
         rescipe2.setCookbook(cookbook);
 
@@ -401,12 +388,12 @@ public class AllAroundDataGenerator {
 
     public void generateCookbook() {
         SharedFlat sharedFlat1 = sharedFlatRepository.findById(1L).orElseThrow();
-        SharedFlat sharedFlat2 = sharedFlatRepository.findById(2L).orElseThrow();
 
         Cookbook cookbook1 = new Cookbook();
         cookbook1.setTitle("My Cookbook");
         cookbook1.setSharedFlat(sharedFlat1);
 
+        SharedFlat sharedFlat2 = sharedFlatRepository.findById(2L).orElseThrow();
         Cookbook cookbook2 = new Cookbook();
         cookbook2.setTitle("My Cookbook");
         cookbook2.setSharedFlat(sharedFlat2);
