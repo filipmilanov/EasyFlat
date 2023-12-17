@@ -43,16 +43,16 @@ public class ShoppingItem {
     private String brand;
 
     @Column
-    private Long quantityCurrent;
+    private Double quantityCurrent;
 
     @Column
-    private Long quantityTotal;
+    private Double quantityTotal;
 
     @Column
     private Boolean alwaysInStock;
 
     @Column
-    private Long minimumQuantity;
+    private Double minimumQuantity;
 
     @ManyToOne
     private Unit unit;
@@ -142,19 +142,19 @@ public class ShoppingItem {
         this.brand = brand;
     }
 
-    public Long getQuantityCurrent() {
+    public Double getQuantityCurrent() {
         return quantityCurrent;
     }
 
-    public void setQuantityCurrent(Long quantityCurrent) {
+    public void setQuantityCurrent(Double quantityCurrent) {
         this.quantityCurrent = quantityCurrent;
     }
 
-    public Long getQuantityTotal() {
+    public Double getQuantityTotal() {
         return quantityTotal;
     }
 
-    public void setQuantityTotal(Long quantityTotal) {
+    public void setQuantityTotal(Double quantityTotal) {
         this.quantityTotal = quantityTotal;
     }
 
@@ -206,11 +206,11 @@ public class ShoppingItem {
         this.ingredientList = ingredientList;
     }
 
-    public Long getMinimumQuantity() {
+    public Double getMinimumQuantity() {
         return minimumQuantity;
     }
 
-    public void setMinimumQuantity(Long minimumQuantity) {
+    public void setMinimumQuantity(Double minimumQuantity) {
         this.minimumQuantity = minimumQuantity;
     }
 

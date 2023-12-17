@@ -53,10 +53,10 @@ public class ShoppingItemDataGenerator {
             shoppingItem.setGeneralName("Grocery Item");
             shoppingItem.setProductName("Product ABC");
             shoppingItem.setBrand("Brand XYZ");
-            shoppingItem.setQuantityCurrent(5L);
-            shoppingItem.setQuantityTotal(10L);
+            shoppingItem.setQuantityCurrent(5.0);
+            shoppingItem.setQuantityTotal(10.0);
             shoppingItem.setAlwaysIsStock(i % 2 == 0);
-            shoppingItem.setMinimumQuantity(i % 2 == 0 ? 2L : null);
+            shoppingItem.setMinimumQuantity(i % 2 == 0 ? 2.0 : null);
 
             shoppingItem.setUnit(kg);
 

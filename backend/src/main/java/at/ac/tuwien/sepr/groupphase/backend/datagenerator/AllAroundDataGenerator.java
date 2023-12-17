@@ -332,24 +332,24 @@ public class AllAroundDataGenerator {
         shoppingItem1.setProductName("Mehl");
         shoppingItem1.setUnit(g);
         shoppingItem1.setShoppingList(shoppingListRepository.save(shoppingList1));
-        shoppingItem1.setQuantityCurrent(1000L);
+        shoppingItem1.setQuantityCurrent(1000.0);
 
         ShoppingItem shoppingItem2 = new ShoppingItem();
         shoppingItem2.setProductName("Schokolade");
         shoppingItem2.setUnit(g);
-        shoppingItem2.setQuantityCurrent(100L);
+        shoppingItem2.setQuantityCurrent(100.0);
         shoppingItem2.setShoppingList(shoppingListRepository.save(shoppingList2));
 
         Unit l = unitRepository.findByName("l").orElseThrow();
         ShoppingItem shoppingItem3 = new ShoppingItem();
         shoppingItem3.setProductName("Milch");
         shoppingItem3.setUnit(l);
-        shoppingItem3.setQuantityCurrent(4L);
+        shoppingItem3.setQuantityCurrent(4.0);
         shoppingItem3.setShoppingList(shoppingListRepository.save(shoppingList3));
         ShoppingItem shoppingItem4 = new ShoppingItem();
         shoppingItem4.setProductName("Weintrauben");
         shoppingItem4.setUnit(g);
-        shoppingItem4.setQuantityCurrent(4L);
+        shoppingItem4.setQuantityCurrent(4.0);
         shoppingItem4.setShoppingList(shoppingListRepository.save(shoppingList4));
 
         shoppingItemRepository.save(shoppingItem1);

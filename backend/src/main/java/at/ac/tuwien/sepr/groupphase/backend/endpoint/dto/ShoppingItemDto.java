@@ -21,9 +21,9 @@ public record ShoppingItemDto(
     String productName,
     String brand,
     @Min(value = 0, message = "The actual quantity must be positive")
-    Long quantityCurrent,
+    Double quantityCurrent,
     @Min(value = 0, message = "The total quantity must be positive")
-    Long quantityTotal,
+    Double quantityTotal,
     @NotNull(message = "The unit cannot be null")
     UnitDto unit,
     String description,
@@ -31,7 +31,7 @@ public record ShoppingItemDto(
     Long priceInCent,
     Boolean alwaysInStock,
     @Min(value = 0, message = "The minimum quantity must be positive")
-    Long minimumQuantity,
+    Double minimumQuantity,
     String boughtAt,
     DigitalStorageDto digitalStorage,
     List<IngredientDto> ingredients,
