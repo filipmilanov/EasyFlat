@@ -95,10 +95,19 @@ export class ItemDetailListComponent implements OnInit {
   }
 
   onSave(id: string, value: string, mode: number) {
-    const quantity = parseInt(value);
+    const quantity = parseFloat(value);
 
-    if (isNaN(quantity) || quantity < 0) {
-      console.error('Invalid input. Please enter a valid number.');
+    if (isNaN(quantity)) {
+      console.error('Invalid input. Input should be positive number less than 10.000');
+      this.notification.error('Invalid input. Please enter a valid number.');
+      return;
+    } else if (quantity < 0 && mode === 1) {
+      console.error('Invalid input. Input should be positive number less than 10.000');
+      this.notification.error('You can not add negative number. Please enter a valid positive number.');
+      return;
+    } else if (quantity < 0 && mode === 0) {
+      console.error('Invalid input. Input should be positive number less than 10.000');
+      this.notification.error('You can not subtract negative number. Please enter a valid positive number.');
       return;
     }
 
@@ -119,12 +128,12 @@ export class ItemDetailListComponent implements OnInit {
         let quantityCurrent: number;
         let quantityTotal: number;
         if (mode == 0) { // Subtract
-          quantityCurrent = item.quantityCurrent - parseInt(value);
+          quantityCurrent = item.quantityCurrent - parseFloat(value);
           quantityTotal = item.quantityTotal;
 
           this.hashMap.get(id)[0] = false;
         } else { // mode == 1, Add
-          quantityCurrent = item.quantityCurrent + parseInt(value);
+          quantityCurrent = item.quantityCurrent + parseFloat(value);
           if (quantityCurrent > item.quantityTotal) {
             quantityTotal = quantityCurrent;
           } else {
@@ -158,8 +167,7 @@ export class ItemDetailListComponent implements OnInit {
             },
             error: error => {
               console.error(`Item's quantity could not be changed: ${error.error.message}`);
-              this.notification.error(error.error.message);
-              this.notification.error(`Item ${id} could not be deleted`, "Error");
+              this.notification.error(`Item could not be deleted`, "Error");
             }
           });
         }
@@ -174,10 +182,10 @@ export class ItemDetailListComponent implements OnInit {
   public delete(itemId: number) {
     this.itemService.deleteItem(itemId).subscribe({
       next: data => {
-        this.notification.success(`Item ${itemId} was successfully deleted`, "Success");
+        this.notification.success(`Item was successfully deleted`, "Success");
 
         if (this.items.length == 1) {
-          this.router.navigate([`/digital-storage/${this.storId}`]);
+          this.router.navigate([`/digital-storage`]);
         } else {
           let j = 0;
           let arr: StorageItem[] = new Array<StorageItem>(this.items.length - 1);
@@ -196,7 +204,7 @@ export class ItemDetailListComponent implements OnInit {
       error: error => {
         console.error(`Item could not be deleted: ${error.error.message}`);
         this.notification.error(error.error.message);
-        this.notification.error(`Item ${itemId} could not be deleted`, "Error");
+        this.notification.error(`Item could not be deleted`, "Error");
       }
     });
   }
@@ -209,7 +217,7 @@ export class ItemDetailListComponent implements OnInit {
 
         this.storageService.addItemToShoppingList(item).subscribe({
             next: data => {
-              this.notification.success(`Item ${itemId} successfully added to the shopping list.`);
+              this.notification.success(`Item successfully added to the shopping list.`);
               this.shoppingService.getShoppingListByName('Default').subscribe({
                 next: res => {
                   this.router.navigate([`/shopping-list/` + res.listName]);
@@ -218,7 +226,7 @@ export class ItemDetailListComponent implements OnInit {
             },
             error: error => {
               console.error(`Item could not be added to the shopping list: ${error.error.message}`);
-              this.notification.error(`Item ${itemId} could not be added to the shopping list`, "Error");
+              this.notification.error(`Item could not be added to the shopping list`, "Error");
             }
 
           },
