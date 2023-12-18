@@ -7,7 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
@@ -74,7 +74,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     }
 
     @Override
-    public SharedFlat findById(Long id, String jwt) throws AuthenticationException {
+    public SharedFlat findById(Long id, String jwt) throws AuthorizationException {
         LOGGER.trace("findById({}, {})", id, jwt);
 
         Optional<SharedFlat> sharedFlatOptional = sharedFlatRepository.findById(id);

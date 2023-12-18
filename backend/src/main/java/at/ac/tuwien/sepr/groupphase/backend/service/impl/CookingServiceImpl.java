@@ -22,7 +22,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -117,7 +117,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt) throws ValidationException, ConflictException, AuthorizationException {
 
 
         List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, true, null, null, null), jwt);
@@ -300,7 +300,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public Cookbook createCookbook(CookbookDto cookbookDto, String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public Cookbook createCookbook(CookbookDto cookbookDto, String jwt) throws ValidationException, ConflictException, AuthorizationException {
 
         cookbookValidator.validateForCreate(cookbookDto);
 
@@ -323,16 +323,16 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<Cookbook> findAllCookbooks(String jwt) throws AuthenticationException {
+    public List<Cookbook> findAllCookbooks(String jwt) throws AuthorizationException {
         ApplicationUser applicationUser = userService.getUser(jwt);
         if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exists"));
+            throw new AuthorizationException("Authentication failed", List.of("User does not exists"));
         }
         return cookbookRepository.findBySharedFlatIs(applicationUser.getSharedFlat());
     }
 
     @Override
-    public List<RecipeSuggestionDto> getCookbook(String jwt) throws ValidationException, AuthenticationException {
+    public List<RecipeSuggestionDto> getCookbook(String jwt) throws ValidationException, AuthorizationException {
         List<RecipeSuggestionDto> recipesDto = new LinkedList<>();
         Long cookbookId = this.getCookbookIdForUser(jwt);
         Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
@@ -345,7 +345,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe, String jwt) throws ConflictException, ValidationException,
-        AuthenticationException {
+        AuthorizationException {
         recipeValidator.validateForCreate(recipe);
         List<RecipeIngredient> ingredientList = ingredientService.createAll(recipe.extendedIngredients());
         RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipe, ingredientList);
@@ -367,7 +367,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe, String jwt) throws ValidationException, AuthenticationException {
+    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe, String jwt) throws ValidationException, AuthorizationException {
         recipeValidator.validateForUpdate(recipe);
         RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id(), jwt)
             .orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
@@ -391,7 +391,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion deleteCookbookRecipe(Long id, String jwt) throws AuthenticationException {
+    public RecipeSuggestion deleteCookbookRecipe(Long id, String jwt) throws AuthorizationException {
         RecipeSuggestion deletedRecipe = this.getCookbookRecipe(id, jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         this.getCookbookIdForUser(jwt);
         repository.delete(deletedRecipe);
@@ -399,7 +399,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthenticationException {
+    public RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthorizationException {
         Long storId = this.getStorIdForUser(jwt);
         Optional<RecipeSuggestion> recipeEntity = repository.findById(id);
         Optional<RecipeSuggestionDto> recipeDto = recipeEntity.map(currentRecipe -> {
@@ -468,7 +468,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthorizationException {
         recipeValidator.validateForCook(recipeToCook);
         Long storId = this.getStorIdForUser(jwt);
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
@@ -594,7 +594,7 @@ public class CookingServiceImpl implements CookingService {
 
     }
 
-    private Long getCookbookIdForUser(String jwt) throws AuthenticationException {
+    private Long getCookbookIdForUser(String jwt) throws AuthorizationException {
         List<Cookbook> cookbookList = findAllCookbooks(jwt);
         Cookbook matchingCookbook = null;
         if (!cookbookList.isEmpty()) {
@@ -622,7 +622,7 @@ public class CookingServiceImpl implements CookingService {
         }
     }
 
-    private Long getStorIdForUser(String jwt) throws AuthenticationException {
+    private Long getStorIdForUser(String jwt) throws AuthorizationException {
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
         DigitalStorage matchingDigitalStorage = null;
         if (!digitalStorageList.isEmpty()) {

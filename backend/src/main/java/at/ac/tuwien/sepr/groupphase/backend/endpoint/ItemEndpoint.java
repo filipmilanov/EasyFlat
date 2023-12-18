@@ -4,7 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
@@ -46,7 +46,7 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("{itemId}")
-    public Optional<ItemDto> findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public Optional<ItemDto> findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthorizationException {
         LOGGER.info("findById({})", itemId);
         Optional<Item> item = itemService.findById(itemId, jwt);
 
@@ -75,7 +75,7 @@ public class ItemEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(@RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public ItemDto create(@RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthorizationException {
         LOGGER.info("create({})", itemDto);
         return itemMapper.entityToDto(
             itemService.create(itemDto, jwt)
@@ -84,7 +84,7 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping("{id}")
-    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthorizationException {
         LOGGER.info("update({},{})", id, itemDto);
         return itemMapper.entityToDto(
             itemService.update(itemDto.withId(id), jwt)
@@ -94,7 +94,7 @@ public class ItemEndpoint {
     @Secured("ROLE_USER")
     @DeleteMapping("{itemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public void delete(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthorizationException {
         LOGGER.info("delete({})", itemId);
         itemService.delete(itemId, jwt);
     }

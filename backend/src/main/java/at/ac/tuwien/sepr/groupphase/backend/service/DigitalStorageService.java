@@ -9,7 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -36,7 +36,7 @@ public interface DigitalStorageService {
      * @param jwt  A valid JWT token for user authentication.
      * @return a List of all persisted Storages
      */
-    List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto, String jwt) throws AuthenticationException;
+    List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto, String jwt) throws AuthorizationException;
 
     /**
      * Search for all Items of a DigitalStorage stored in the database.
@@ -62,7 +62,7 @@ public interface DigitalStorageService {
      * @param jwt  A valid JWT token for user authentication.
      * @return a List of filtered items
      */
-    List<ItemListDto> searchItems(ItemSearchDto itemSearchDto, String jwt) throws ValidationException, AuthenticationException, ConflictException;
+    List<ItemListDto> searchItems(ItemSearchDto itemSearchDto, String jwt) throws ValidationException, AuthorizationException, ConflictException;
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.
@@ -71,7 +71,7 @@ public interface DigitalStorageService {
      * @param jwt  A valid JWT token for user authentication.
      * @return an object of type {@link DigitalStorage} which is persisted and has an ID
      */
-    DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthenticationException;
+    DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthorizationException;
 
     /**
      * Validates and Updates a new {@link DigitalStorage} in the db.
@@ -106,9 +106,9 @@ public interface DigitalStorageService {
      * @param name The general name to filter items by.
      * @param jwt  A valid JWT token for user authentication.
      * @return A list of items with the specified general name.
-     * @throws AuthenticationException If authentication fails or the user does not exist.
+     * @throws AuthorizationException If authentication fails or the user does not exist.
      */
-    List<Item> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException;
+    List<Item> getItemWithGeneralName(String name, String jwt) throws AuthorizationException, ValidationException, ConflictException;
 
 
     /**
@@ -118,5 +118,5 @@ public interface DigitalStorageService {
      * @param jwt  A valid JWT token for user authentication.
      * @return the added item of type {@link ShoppingItem}
      */
-    ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException;
+    ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthorizationException, ValidationException, ConflictException;
 }

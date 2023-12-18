@@ -12,7 +12,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
@@ -98,7 +98,7 @@ class DigitalStorageServiceTest {
     }
 
     @Test
-    void givenNothingWhenFindAllThenAllDigitalStoragesOfActiveUserAreReturned() throws AuthenticationException {
+    void givenNothingWhenFindAllThenAllDigitalStoragesOfActiveUserAreReturned() throws AuthorizationException {
         // when
         List<DigitalStorage> actual = service.findAll(null, "Bearer Token");
 
@@ -159,7 +159,7 @@ class DigitalStorageServiceTest {
     }
 
     @Test
-    void givenValidSearchParamsWhenSearchItemsThenReturnList() throws ValidationException, AuthenticationException, ConflictException {
+    void givenValidSearchParamsWhenSearchItemsThenReturnList() throws ValidationException, AuthorizationException, ConflictException {
         // given
         ItemSearchDto searchParams = new ItemSearchDto(null, false, null, null, null);
         ItemListDto itemListDto = ItemListDtoBuilder.builder()
@@ -191,7 +191,7 @@ class DigitalStorageServiceTest {
     }
 
     @Test
-    void givenValidSearchParamsWhenGetItemsWithGeneralNameThenReturnList() throws ValidationException, AuthenticationException, ConflictException {
+    void givenValidSearchParamsWhenGetItemsWithGeneralNameThenReturnList() throws ValidationException, AuthorizationException, ConflictException {
         // given
         String itemName = "apples";
         String jwt = "Bearer Token";

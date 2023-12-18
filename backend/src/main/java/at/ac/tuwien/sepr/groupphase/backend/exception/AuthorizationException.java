@@ -2,7 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.exception;
 
 import java.util.List;
 
-public class AuthenticationException extends ErrorListException {
+public class AuthorizationException extends ErrorListException {
 
     /**
      * Creates an Object of typ {@link ErrorListException}.
@@ -10,7 +10,7 @@ public class AuthenticationException extends ErrorListException {
      * @param messageSummary a summary of the problem
      * @param errors         a list of detail problem descriptions
      */
-    public AuthenticationException(String messageSummary, List<String> errors) {
+    public AuthorizationException(String messageSummary, List<String> errors) {
         super(messageSummary, errors);
     }
 

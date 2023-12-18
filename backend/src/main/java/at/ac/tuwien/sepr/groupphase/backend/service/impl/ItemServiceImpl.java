@@ -10,7 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -69,8 +69,8 @@ public class ItemServiceImpl implements ItemService {
         this.unitService = unitService;
     }
 
-    @Override // TODO: it should not return a Optional, it should throw a NotFoundException, if there is non
-    public Optional<Item> findById(Long id, String jwt) throws AuthenticationException {
+    @Override
+    public Item findById(Long id, String jwt) throws AuthorizationException {
         LOGGER.trace("findById({})", id);
         if (id == null) {
             return Optional.empty();
@@ -104,7 +104,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item create(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
+    public Item create(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthorizationException {
         LOGGER.trace("create({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
@@ -157,7 +157,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item update(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
+    public Item update(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthorizationException {
         LOGGER.trace("update({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
@@ -208,7 +208,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void delete(Long id, String jwt) throws AuthenticationException {
+    public void delete(Long id, String jwt) throws AuthorizationException {
         LOGGER.trace("delete({})", id);
 
         Item itemToDelete = this.findById(id, jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));

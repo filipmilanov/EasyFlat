@@ -5,7 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -20,7 +20,7 @@ public interface ShoppingListService {
      * @param itemDto a shopping item without ID
      * @return an object of type {@link ShoppingItem} which is persisted and has an ID
      */
-    ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException;
+    ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthorizationException, ValidationException, ConflictException;
 
     /**
      * Search for a shopping item in the database with given ID.
@@ -28,7 +28,7 @@ public interface ShoppingListService {
      * @param itemId a valid ID
      * @return if the id exists in the DB, an Optional of a persisted ShoppingItem with given ID, an empty Optional otherwise
      */
-    Optional<ShoppingItem> getById(Long itemId, String jwt) throws AuthenticationException;
+    Optional<ShoppingItem> getById(Long itemId, String jwt) throws AuthorizationException;
 
     /**
      * Search for a shopping list in the database with given ID.
@@ -36,7 +36,7 @@ public interface ShoppingListService {
      * @param name a valid listName
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
      */
-    Optional<ShoppingList> getShoppingListByName(String name, String jwt) throws AuthenticationException;
+    Optional<ShoppingList> getShoppingListByName(String name, String jwt) throws AuthorizationException;
 
     /**
      * Search for a shopping list in the database with given ID.
@@ -44,7 +44,7 @@ public interface ShoppingListService {
      * @param id a valid ID of a ShoppingList
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
      */
-    Optional<ShoppingList> getShoppingListById(Long id, String jwt) throws AuthenticationException;
+    Optional<ShoppingList> getShoppingListById(Long id, String jwt) throws AuthorizationException;
 
 
     /**
@@ -54,7 +54,7 @@ public interface ShoppingListService {
      * @param itemSearchDto search parameters consisting of the product's name and its label's value
      * @return if the id exists in the DB, a List of a persisted ShoppingItems with the given ID, an empty Optional otherwise
      */
-    List<ShoppingItem> getItemsByName(String name, ShoppingItemSearchDto itemSearchDto, String jwt) throws AuthenticationException;
+    List<ShoppingItem> getItemsByName(String name, ShoppingItemSearchDto itemSearchDto, String jwt) throws AuthorizationException;
 
     /**
      * Create a new ShoppingList in the db.
@@ -62,7 +62,7 @@ public interface ShoppingListService {
      * @param listName a valid name for the new ShoppingList
      * @return an object of type {@link ShoppingList} which is persisted and has an ID
      */
-    ShoppingList createList(String listName, String jwt) throws ValidationException, AuthenticationException, ConflictException;
+    ShoppingList createList(String listName, String jwt) throws ValidationException, AuthorizationException, ConflictException;
 
     /**
      * Delete a ShoppingItem from the db based on its ID.
@@ -70,7 +70,7 @@ public interface ShoppingListService {
      * @param itemId a valid ID of a ShoppingItem
      * @return the deleted ShoppingItem
      */
-    ShoppingItem deleteItem(Long itemId, String jwt) throws AuthenticationException;
+    ShoppingItem deleteItem(Long itemId, String jwt) throws AuthorizationException;
 
     /**
      * Delete a ShoppingList from the db based on its ID.
@@ -78,14 +78,14 @@ public interface ShoppingListService {
      * @param shopId a valid ID of a ShoppingList
      * @return the deleted ShoppingList
      */
-    ShoppingList deleteList(Long shopId, String jwt) throws ValidationException, AuthenticationException;
+    ShoppingList deleteList(Long shopId, String jwt) throws ValidationException, AuthorizationException;
 
     /**
      * Get all ShoppingLists from the db.
      *
      * @return a List of all persisted ShoppingLists
      */
-    List<ShoppingList> getShoppingLists(String jwt) throws AuthenticationException;
+    List<ShoppingList> getShoppingLists(String jwt) throws AuthorizationException;
 
     /**
      * Transfer ShoppingItems to the server.
@@ -93,7 +93,7 @@ public interface ShoppingListService {
      * @param items a List of ShoppingItemDto to be transferred
      * @return a List of Item objects
      */
-    List<Item> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthenticationException;
+    List<Item> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthorizationException;
 
     /**
      * Validates and Updates a new {@link ShoppingItem} in the db.
@@ -101,6 +101,6 @@ public interface ShoppingListService {
      * @param shoppingItemDto a DTO of type shopping item with existing ID
      * @return an object of type {@link ShoppingItem} which is updated
      */
-    ShoppingItem update(ShoppingItemDto shoppingItemDto, String jwt) throws ConflictException, AuthenticationException, ValidationException;
+    ShoppingItem update(ShoppingItemDto shoppingItemDto, String jwt) throws ConflictException, AuthorizationException, ValidationException;
 }
 
