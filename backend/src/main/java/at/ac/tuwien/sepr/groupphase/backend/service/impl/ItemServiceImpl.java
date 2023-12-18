@@ -73,22 +73,28 @@ public class ItemServiceImpl implements ItemService {
     public Item findById(Long id, String jwt) throws AuthorizationException {
         LOGGER.trace("findById({})", id);
         if (id == null) {
-            return Optional.empty();
+            throw new NotFoundException("Given Id does not exists in the Database!");
         }
 
         Optional<Item> item = itemRepository.findById(id);
 
         if (item.isEmpty()) {
-            return item;
+            throw new NotFoundException("Given Id does not exists in the Database!");
         }
 
-        List<Long> allowedUser = item.get().getStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
+        List<Long> allowedUser = item.get()
+            .getStorage()
+            .getSharedFlat()
+            .getUsers()
+            .stream()
+            .map(ApplicationUser::getId)
+            .toList();
         authorization.authenticateUser(
                 jwt,
                 allowedUser,
                 "The given item does not belong to the user's shared flat!"
         );
-        return item;
+        return item.get();
     }
 
     @Override
@@ -195,7 +201,7 @@ public class ItemServiceImpl implements ItemService {
             item = itemMapper.dtoToEntity(itemDto, ingredientList, null);
         }
 
-        Item presistedItem = this.findById(itemDto.itemId(), jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        Item presistedItem = this.findById(itemDto.itemId(), jwt);
 
         // necessary because JPA cannot convert an Entity to another Entity
         if (item.alwaysInStock() != presistedItem.alwaysInStock()) {
@@ -211,7 +217,7 @@ public class ItemServiceImpl implements ItemService {
     public void delete(Long id, String jwt) throws AuthorizationException {
         LOGGER.trace("delete({})", id);
 
-        Item itemToDelete = this.findById(id, jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        Item itemToDelete = this.findById(id, jwt);
 
         Long sharedFlatId = itemToDelete.getStorage().getSharedFlat().getId();
 

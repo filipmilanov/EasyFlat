@@ -15,6 +15,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
@@ -27,16 +28,13 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.g;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -73,11 +71,10 @@ class ItemServiceTest {
         Long id = 1L;
 
         // when
-        Optional<Item> actual = service.findById(id, "Bearer test");
+        Item actual = service.findById(id, "Bearer test");
 
         // then
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getItemId()).isEqualTo(id);
+        assertThat(actual.getItemId()).isEqualTo(id);
     }
 
     @Test
@@ -85,11 +82,8 @@ class ItemServiceTest {
         // given
         Long id = -1L;
 
-        // when
-        Optional<Item> actual = service.findById(id, "Bearer test");
-
-        // then
-        assertTrue(actual.isEmpty());
+        // when + them
+        assertThrows(NotFoundException.class, () -> service.findById(id, "Bearer test"));
     }
 
     @Test
@@ -179,10 +173,9 @@ class ItemServiceTest {
         Item actual = service.create(itemDto, "Bearer test");
 
         // then
-        Optional<Item> persisted = service.findById(actual.getItemId(), "Bearer token");
+        Item persisted = service.findById(actual.getItemId(), "Bearer token");
 
-        assertTrue(persisted.isPresent());
-        assertThat(actual).isEqualTo(persisted.get());
+        assertThat(actual).isEqualTo(persisted);
         assertThat(actual)
             .extracting(
                 Item::getEan,
@@ -254,10 +247,9 @@ class ItemServiceTest {
         Item actual = service.create(itemDto, "Bearer test");
 
         // then
-        Optional<Item> persisted = service.findById(actual.getItemId(), "bearer token");
+        Item persisted = service.findById(actual.getItemId(), "bearer token");
 
-        assertTrue(persisted.isPresent());
-        assertThat(actual).isEqualTo(persisted.get());
+        assertThat(actual).isEqualTo(persisted);
         assertThat(actual)
             .extracting(
                 Item::getEan,
@@ -477,12 +469,9 @@ class ItemServiceTest {
         service.update(updatedItemDto, "Bearer test");
 
         // then:
-        Optional<Item> updatedItem = service.findById(createdItem.getItemId(), "bearer token");
+        Item updatedItem = service.findById(createdItem.getItemId(), "bearer token");
 
-        assertAll(
-            () -> assertTrue(updatedItem.isPresent()),
-            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getGeneralName()))
-        );
+        assertEquals(updatedGeneralName, updatedItem.getGeneralName());
     }
 
     @Test
@@ -600,12 +589,11 @@ class ItemServiceTest {
         service.update(updatedItemDto, "Bearer test");
 
         // then:
-        Optional<Item> updatedItem = service.findById(createdItem.getItemId(), "bearer token");
+        Item updatedItem = service.findById(createdItem.getItemId(), "bearer token");
 
         assertAll(
-            () -> assertTrue(updatedItem.isPresent()),
-            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getGeneralName())),
-            () -> updatedItem.ifPresent(item -> assertEquals(updatedCurrentAmount, updatedItem.get().getQuantityCurrent()))
+            () -> assertEquals(updatedGeneralName, updatedItem.getGeneralName()),
+            () -> assertEquals(updatedCurrentAmount, updatedItem.getQuantityCurrent())
         );
     }
 
@@ -706,7 +694,7 @@ class ItemServiceTest {
         service.delete(createdItem.getItemId(), "Bearer test");
 
         // then:
-        Optional<Item> deletedItem = service.findById(createdItem.getItemId(), "bearer token");
-        assertFalse(deletedItem.isPresent());
+        assertThrows(NotFoundException.class, () -> service.findById(createdItem.getItemId(), "bearer token"));
+
     }
 }
