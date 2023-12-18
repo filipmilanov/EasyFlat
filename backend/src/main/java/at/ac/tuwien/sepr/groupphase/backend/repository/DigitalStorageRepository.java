@@ -22,22 +22,18 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
     DigitalStorageItem updateItemQuantity(@Param("storageId") long storageId, @Param("itemId") long itemId, @Param("quantity") long quantity);
 
     @Query("SELECT i FROM DigitalStorageItem i WHERE i.digitalStorage.storId = :storageId AND "
-        + "(:title IS NULL OR LOWER(i.generalName) LIKE LOWER(CONCAT('%', :title, '%'))) AND "
+        + "(:title IS NULL OR LOWER(i.itemCache.generalName) LIKE LOWER(CONCAT('%', :title, '%'))) AND "
         + "(:fillLevel IS NULL OR "
-        + "(:fillLevel = 'full' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.4) OR "
-        + "(:fillLevel = 'nearly_empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.2 AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.4) OR "
-        + "(:fillLevel = 'empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) < 0.2)) AND "
+        + "(:fillLevel = 'full' AND ((cast(i.quantityCurrent as float ))/(cast(i.itemCache.quantityTotal as float ))) > 0.4) OR "
+        + "(:fillLevel = 'nearly_empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.itemCache.quantityTotal as float ))) > 0.2 AND ((cast(i.quantityCurrent as float ))/(cast(i.itemCache.quantityTotal as float ))) < 0.4) OR "
+        + "(:fillLevel = 'empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.itemCache.quantityTotal as float ))) < 0.2)) AND "
         + "(:alwaysInStock IS NULL OR TYPE(i) = :alwaysInStock) ")
     List<DigitalStorageItem> searchItems(@Param("storageId") Long storageId,
                                          @Param("title") String title,
                                          @Param("fillLevel") String fillLevel,
                                          @Param("alwaysInStock") Class alwaysInStock);
 
-
-    @Query("SELECT i FROM DigitalStorageItem i WHERE i.digitalStorage.storId = :storId AND "
-        + ":generalName = i.generalName ")
-    List<DigitalStorageItem> getItemWithGeneralName(@Param("storId") Long storId,
-                                                    @Param("generalName") String generalName);
+    List<DigitalStorageItem> findAllByStorIdAndDigitalStorageItemList_ItemCache_GeneralNameIs(Long storId, String generalName);
 }
 
 
