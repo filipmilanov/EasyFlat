@@ -9,9 +9,9 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<DigitalStorageItem, Long> {
 
-    List<DigitalStorageItem> findAllByItemCache_GeneralNameContainingIgnoreCaseOrItemCache_BrandContainingIgnoreCaseOrItemCache_ProductNameContainingIgnoreCase(
+    List<DigitalStorageItem> findAllByItemCache_GeneralNameContainingIgnoreCaseOrItemCache_BrandContainingIgnoreCaseOrBoughtAtContainingIgnoreCase(
         String generalName,
         String brand,
-        String productName);
+        String boughtAt);
 
 }

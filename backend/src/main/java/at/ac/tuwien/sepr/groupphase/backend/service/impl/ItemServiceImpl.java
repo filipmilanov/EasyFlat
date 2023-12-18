@@ -95,7 +95,7 @@ public class ItemServiceImpl implements ItemService {
     public List<DigitalStorageItem> findByFields(ItemFieldSearchDto itemFieldSearchDto) {
         LOGGER.trace("findByFields({})", itemFieldSearchDto);
 
-        return itemRepository.findAllByItemCache_GeneralNameContainingIgnoreCaseOrItemCache_BrandContainingIgnoreCaseOrItemCache_ProductNameContainingIgnoreCase(
+        return itemRepository.findAllByItemCache_GeneralNameContainingIgnoreCaseOrItemCache_BrandContainingIgnoreCaseOrBoughtAtContainingIgnoreCase(
             itemFieldSearchDto.generalName(),
             itemFieldSearchDto.brand(),
             itemFieldSearchDto.boughtAt()
