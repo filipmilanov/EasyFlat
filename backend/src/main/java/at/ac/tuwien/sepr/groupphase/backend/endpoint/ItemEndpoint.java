@@ -45,6 +45,24 @@ public class ItemEndpoint {
     }
 
     @Secured("ROLE_USER")
+    @GetMapping("{itemId}")
+    public Optional<ItemDto> findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+        LOGGER.info("findById({})", itemId);
+        Optional<Item> item = itemService.findById(itemId, jwt);
+
+        return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToDto(currentItem)));
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/ean/{ean}")
+    public ItemDto findByEan(@PathVariable Long ean) throws ConflictException, JsonProcessingException {
+        LOGGER.info("findByEan({})", ean);
+        return itemMapper.openFoodFactItemDtoToItemDto(
+            openFoodFactsService.findByEan(ean)
+        );
+    }
+
+    @Secured("ROLE_USER")
     @GetMapping("search")
     @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> findByFields(ItemFieldSearchDto itemFieldSearchDto) {
@@ -54,7 +72,6 @@ public class ItemEndpoint {
         );
     }
 
-
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -63,15 +80,6 @@ public class ItemEndpoint {
         return itemMapper.entityToDto(
             itemService.create(itemDto, jwt)
         );
-    }
-
-    @Secured("ROLE_USER")
-    @GetMapping("{itemId}")
-    public Optional<ItemDto> findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
-        LOGGER.info("findById({})", itemId);
-        Optional<Item> item = itemService.findById(itemId, jwt);
-
-        return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToDto(currentItem)));
     }
 
     @Secured("ROLE_USER")
@@ -89,15 +97,6 @@ public class ItemEndpoint {
     public void delete(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("delete({})", itemId);
         itemService.delete(itemId, jwt);
-    }
-
-    @Secured("ROLE_USER")
-    @GetMapping("/ean/{ean}")
-    public ItemDto findByEan(@PathVariable Long ean) throws ConflictException, JsonProcessingException {
-        LOGGER.info("findByEan({})", ean);
-        return itemMapper.openFoodFactItemDtoToItemDto(
-            openFoodFactsService.findByEan(ean)
-        );
     }
 
 }
