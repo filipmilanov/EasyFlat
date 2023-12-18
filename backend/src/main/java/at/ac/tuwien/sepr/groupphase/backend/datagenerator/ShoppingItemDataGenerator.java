@@ -65,7 +65,7 @@ public class ShoppingItemDataGenerator {
 
             DigitalStorage digitalStorage = new DigitalStorage();
             digitalStorage.setTitle("Storage");
-            shoppingItem.setStorage(digitalStorage);
+            shoppingItem.setDigitalStorage(digitalStorage);
 
             List<Ingredient> ingredientList = Arrays.asList(new Ingredient().setTitle("Ingredient1"), new Ingredient().setTitle("Ingredient2"));
             shoppingItem.setIngredientList(ingredientList);

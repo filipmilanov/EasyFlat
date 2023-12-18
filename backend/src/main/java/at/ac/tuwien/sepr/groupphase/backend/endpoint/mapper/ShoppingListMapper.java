@@ -27,13 +27,11 @@ public abstract class ShoppingListMapper {
 
 
     @Mapping(target = "ingredientList", source = "ingredients")
-    @Mapping(target = "storage", source = "digitalStorage")
     public abstract DigitalStorageItem shoppingItemDtoToItem(ShoppingItemDto shoppingItemDto,
                                                              List<Ingredient> ingredients,
                                                              DigitalStorage digitalStorage);
 
     @Mapping(target = "ingredientList", source = "ingredients")
-    @Mapping(target = "storage", source = "digitalStorage")
     public abstract AlwaysInStockDigitalStorageItem shoppingItemDtoToAis(ShoppingItemDto shoppingItem,
                                                                          List<Ingredient> ingredients,
                                                                          DigitalStorage digitalStorage);

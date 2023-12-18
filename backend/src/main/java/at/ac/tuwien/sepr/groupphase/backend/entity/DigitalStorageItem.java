@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -43,8 +44,8 @@ public class DigitalStorageItem {
     @Column
     private String boughtAt;
 
-    @ManyToOne
-    private ItemCache itemCache;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
+    private ItemCache itemCache = new ItemCache();
 
     @ManyToOne
     @NotNull(message = "A DigitalStorageItem need to be linked to a storage")
@@ -109,14 +110,6 @@ public class DigitalStorageItem {
     }
 
     public void setDigitalStorage(DigitalStorage digitalStorage) {
-        this.digitalStorage = digitalStorage;
-    }
-
-    public DigitalStorage getStorage() {
-        return digitalStorage;
-    }
-
-    public void setStorage(DigitalStorage digitalStorage) {
         this.digitalStorage = digitalStorage;
     }
 

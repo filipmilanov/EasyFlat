@@ -222,7 +222,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     @Override
     public List<DigitalStorageItem> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException {
         Long storId = getStorIdForUser(jwt);
-        return digitalStorageRepository.getItemWithGeneralName(storId, name);
+        return digitalStorageRepository.findAllByStorIdAndDigitalStorageItemList_ItemCache_GeneralNameIs(storId, name);
     }
 
 
@@ -246,24 +246,24 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         Map<String, Unit> itemUnits = new HashMap<>();
         Unit unit = null;
         for (DigitalStorageItem digitalStorageItem : allDigitalStorageItems) {
-            itemUnits.computeIfAbsent(digitalStorageItem.getGeneralName(), k -> digitalStorageItem.getUnit());
+            itemUnits.computeIfAbsent(digitalStorageItem.getItemCache().getGeneralName(), k -> digitalStorageItem.getItemCache().getUnit());
 
             double currentQ = 0;
             double totalQ = 0;
-            if (items.get(digitalStorageItem.getGeneralName()) != null) {
-                currentQ = items.get(digitalStorageItem.getGeneralName())[0];
-                totalQ = items.get(digitalStorageItem.getGeneralName())[2];
+            if (items.get(digitalStorageItem.getItemCache().getGeneralName()) != null) {
+                currentQ = items.get(digitalStorageItem.getItemCache().getGeneralName())[0];
+                totalQ = items.get(digitalStorageItem.getItemCache().getGeneralName())[2];
             }
 
-            Double updatedQuantityCurrent = unitService.convertUnits(digitalStorageItem.getUnit(), itemUnits.get(digitalStorageItem.getGeneralName()), digitalStorageItem.getQuantityCurrent());
-            Double updatedQuantityTotal = unitService.convertUnits(digitalStorageItem.getUnit(), itemUnits.get(digitalStorageItem.getGeneralName()), digitalStorageItem.getQuantityTotal());
+            Double updatedQuantityCurrent = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), itemUnits.get(digitalStorageItem.getItemCache().getGeneralName()), digitalStorageItem.getQuantityCurrent());
+            Double updatedQuantityTotal = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), itemUnits.get(digitalStorageItem.getItemCache().getGeneralName()), digitalStorageItem.getItemCache().getQuantityTotal());
 
 
             Double[] quantityStorId = new Double[3];
             quantityStorId[0] = currentQ + updatedQuantityCurrent;
-            quantityStorId[1] = digitalStorageItem.getStorage().getStorId().doubleValue();
+            quantityStorId[1] = digitalStorageItem.getDigitalStorage().getStorId().doubleValue();
             quantityStorId[2] = totalQ + updatedQuantityTotal;
-            items.put(digitalStorageItem.getGeneralName(), quantityStorId);
+            items.put(digitalStorageItem.getItemCache().getGeneralName(), quantityStorId);
         }
         List<ItemListDto> toRet = new LinkedList<>();
         for (Map.Entry<String, Double[]> item : items.entrySet()) {

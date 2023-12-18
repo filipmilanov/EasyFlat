@@ -5,10 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -20,9 +17,6 @@ public class Ingredient {
 
     @Column
     private String title;
-
-    @ManyToMany(mappedBy = "ingredientList")
-    private List<DigitalStorageItem> digitalStorageItemList = new ArrayList<>();
 
     public Long getIngrId() {
         return ingrId;
@@ -39,17 +33,6 @@ public class Ingredient {
     public Ingredient setTitle(String title) {
         this.title = title;
         return this;
-    }
-
-    public List<DigitalStorageItem> getItemList() {
-        return digitalStorageItemList;
-    }
-
-    public void setItemList(List<DigitalStorageItem> digitalStorageItemList) {
-        this.digitalStorageItemList = digitalStorageItemList;
-        if (digitalStorageItemList != null) {
-            digitalStorageItemList.forEach(item -> item.getIngredientList().add(this));
-        }
     }
 
     @Override

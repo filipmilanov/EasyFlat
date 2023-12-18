@@ -10,14 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -190,11 +184,11 @@ public class ShoppingItem {
         this.boughtAt = boughtAt;
     }
 
-    public DigitalStorage getStorage() {
+    public DigitalStorage getDigitalStorage() {
         return digitalStorage;
     }
 
-    public void setStorage(DigitalStorage digitalStorage) {
+    public void setDigitalStorage(DigitalStorage digitalStorage) {
         this.digitalStorage = digitalStorage;
     }
 

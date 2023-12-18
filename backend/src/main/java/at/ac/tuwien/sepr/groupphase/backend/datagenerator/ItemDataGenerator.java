@@ -43,21 +43,21 @@ public class ItemDataGenerator {
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
 
             DigitalStorageItem digitalStorageItem = new DigitalStorageItem();
-            digitalStorageItem.setGeneralName(generalNames.get(i));
-            digitalStorageItem.setEan("123456789012" + i);  // Replace with valid EAN numbers
-            digitalStorageItem.setProductName("Test Product " + (i + 1));
-            digitalStorageItem.setBrand("Test Brand " + (i + 1));
+            digitalStorageItem.getItemCache().setGeneralName(generalNames.get(i));
+            digitalStorageItem.getItemCache().setEan("123456789012" + i);  // Replace with valid EAN numbers
+            digitalStorageItem.getItemCache().setProductName("Test Product " + (i + 1));
+            digitalStorageItem.getItemCache().setBrand("Test Brand " + (i + 1));
             digitalStorageItem.setQuantityCurrent(10.0 + i);
-            digitalStorageItem.setQuantityTotal(20.0 + i);
-            digitalStorageItem.setUnit(kg);
+            digitalStorageItem.getItemCache().setQuantityTotal(20.0 + i);
+            digitalStorageItem.getItemCache().setUnit(kg);
             digitalStorageItem.setExpireDate(LocalDate.now().plusMonths(i + 1));  // Set expire date to current date + i months
-            digitalStorageItem.setDescription("This is a test product description for DigitalStorageItem " + (i + 1));
+            digitalStorageItem.getItemCache().setDescription("This is a test product description for DigitalStorageItem " + (i + 1));
             digitalStorageItem.setPriceInCent(500L + i * 100);
             digitalStorageItem.setBoughtAt("Hofer");
 
             DigitalStorage storage = new DigitalStorage();
             storage.setStorId(1L);
-            digitalStorageItem.setStorage(storage);
+            digitalStorageItem.setDigitalStorage(storage);
 
             List<Ingredient> ingredientList = new ArrayList<>();
             Ingredient ingredient1 = new Ingredient();

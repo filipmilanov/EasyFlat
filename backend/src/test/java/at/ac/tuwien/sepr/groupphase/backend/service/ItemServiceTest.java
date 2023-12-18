@@ -105,7 +105,7 @@ class ItemServiceTest {
         // then
         assertThat(actual).isNotEmpty();
         actual.forEach(item ->
-                assertThat(item.getGeneralName()).containsSequence(itemFieldSearchDto.generalName())
+            assertThat(item.getItemCache().getGeneralName()).containsSequence(itemFieldSearchDto.generalName())
         );
     }
 
@@ -122,7 +122,7 @@ class ItemServiceTest {
         // then
         assertThat(actual).isNotEmpty();
         actual.forEach(item ->
-                assertThat(item.getBrand()).containsSequence(itemFieldSearchDto.brand())
+            assertThat(item.getItemCache().getBrand()).containsSequence(itemFieldSearchDto.brand())
         );
     }
 
@@ -185,15 +185,15 @@ class ItemServiceTest {
         assertThat(actual).isEqualTo(persisted.get());
         assertThat(actual)
             .extracting(
-                DigitalStorageItem::getEan,
-                DigitalStorageItem::getGeneralName,
-                DigitalStorageItem::getProductName,
-                DigitalStorageItem::getBrand,
+                (item) -> item.getItemCache().getEan(),
+                (item) -> item.getItemCache().getGeneralName(),
+                (item) -> item.getItemCache().getProductName(),
+                (item) -> item.getItemCache().getBrand(),
                 DigitalStorageItem::getQuantityCurrent,
-                DigitalStorageItem::getQuantityTotal,
-                (item) -> item.getUnit().getName(),
+                (item) -> item.getItemCache().getQuantityTotal(),
+                (item) -> item.getItemCache().getUnit().getName(),
                 DigitalStorageItem::getExpireDate,
-                DigitalStorageItem::getDescription,
+                (item) -> item.getItemCache().getDescription(),
                 DigitalStorageItem::getPriceInCent
             )
             .containsExactly(
@@ -208,7 +208,7 @@ class ItemServiceTest {
                 itemDto.description(),
                 itemDto.priceInCent()
             );
-        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
+        assertThat(actual.getDigitalStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getTitle)
             .toList()
@@ -260,15 +260,15 @@ class ItemServiceTest {
         assertThat(actual).isEqualTo(persisted.get());
         assertThat(actual)
             .extracting(
-                DigitalStorageItem::getEan,
-                DigitalStorageItem::getGeneralName,
-                DigitalStorageItem::getProductName,
-                DigitalStorageItem::getBrand,
+                (item) -> item.getItemCache().getEan(),
+                (item) -> item.getItemCache().getGeneralName(),
+                (item) -> item.getItemCache().getProductName(),
+                (item) -> item.getItemCache().getBrand(),
                 DigitalStorageItem::getQuantityCurrent,
-                DigitalStorageItem::getQuantityTotal,
-                (item) -> item.getUnit().getName(),
+                (item) -> item.getItemCache().getQuantityTotal(),
+                (item) -> item.getItemCache().getUnit().getName(),
                 DigitalStorageItem::getExpireDate,
-                DigitalStorageItem::getDescription,
+                (item) -> item.getItemCache().getDescription(),
                 DigitalStorageItem::getPriceInCent,
                 DigitalStorageItem::alwaysInStock,
                 DigitalStorageItem::getMinimumQuantity,
@@ -289,7 +289,7 @@ class ItemServiceTest {
                 itemDto.minimumQuantity(),
                 itemDto.boughtAt()
             );
-        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
+        assertThat(actual.getDigitalStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getTitle)
             .toList()
@@ -481,7 +481,7 @@ class ItemServiceTest {
 
         assertAll(
             () -> assertTrue(updatedItem.isPresent()),
-            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getGeneralName()))
+            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getItemCache().getGeneralName()))
         );
     }
 
@@ -604,7 +604,7 @@ class ItemServiceTest {
 
         assertAll(
             () -> assertTrue(updatedItem.isPresent()),
-            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getGeneralName())),
+            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getItemCache().getGeneralName())),
             () -> updatedItem.ifPresent(item -> assertEquals(updatedCurrentAmount, updatedItem.get().getQuantityCurrent()))
         );
     }

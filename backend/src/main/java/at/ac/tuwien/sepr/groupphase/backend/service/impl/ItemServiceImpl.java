@@ -82,7 +82,7 @@ public class ItemServiceImpl implements ItemService {
             return item;
         }
 
-        List<Long> allowedUser = item.get().getStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
+        List<Long> allowedUser = item.get().getDigitalStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
         authorization.authenticateUser(
                 jwt,
                 allowedUser,
@@ -95,7 +95,7 @@ public class ItemServiceImpl implements ItemService {
     public List<DigitalStorageItem> findByFields(ItemFieldSearchDto itemFieldSearchDto) {
         LOGGER.trace("findByFields({})", itemFieldSearchDto);
 
-        return itemRepository.findAllByGeneralNameContainingIgnoreCaseOrBrandContainingIgnoreCaseOrBoughtAtContainingIgnoreCase(
+        return itemRepository.findAllByItemCache_GeneralNameContainingIgnoreCaseOrItemCache_BrandContainingIgnoreCaseOrItemCache_ProductNameContainingIgnoreCase(
             itemFieldSearchDto.generalName(),
             itemFieldSearchDto.brand(),
             itemFieldSearchDto.boughtAt()
@@ -213,7 +213,7 @@ public class ItemServiceImpl implements ItemService {
 
         DigitalStorageItem digitalStorageItemToDelete = this.findById(id, jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
 
-        Long sharedFlatId = digitalStorageItemToDelete.getStorage().getSharedFlat().getId();
+        Long sharedFlatId = digitalStorageItemToDelete.getDigitalStorage().getSharedFlat().getId();
 
         List<Long> allowedUsers = sharedFlatService.findById(sharedFlatId, jwt)
                 .getUsers().stream()
