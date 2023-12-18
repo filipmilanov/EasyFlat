@@ -152,13 +152,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<ShoppingItem> getItemsByName(String name, ShoppingItemSearchDto itemSearchDto, String jwt) throws AuthenticationException {
-        LOGGER.trace("getItemsById({},{},{})", name, itemSearchDto, jwt);
+    public List<ShoppingItem> getItemsById(Long id, ShoppingItemSearchDto itemSearchDto, String jwt) throws AuthenticationException {
+        LOGGER.trace("getItemsById({},{},{})", id, itemSearchDto, jwt);
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        List<ShoppingItem> shoppingItems = shoppingItemRepository.searchItems(name,
+        List<ShoppingItem> shoppingItems = shoppingItemRepository.searchItems(id,
             (itemSearchDto.productName() != null) ? itemSearchDto.productName() : null,
             (itemSearchDto.label() != null) ? itemSearchDto.label() : null);
         List<ShoppingItem> ret = new ArrayList<>();

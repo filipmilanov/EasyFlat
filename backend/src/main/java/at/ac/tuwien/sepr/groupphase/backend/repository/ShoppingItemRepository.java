@@ -22,15 +22,15 @@ public interface ShoppingItemRepository extends JpaRepository<ShoppingItem, Long
     /**
      * Searches for ShoppingItems based on ShoppingList name, product name, and label.
      *
-     * @param name        The name of the ShoppingList.
+     * @param id        The id of the ShoppingList.
      * @param productName The name of the product to search for (can be null).
      * @param label       The label value to search for (can be null).
      * @return A list of ShoppingItems based on the criteria.
      */
-    @Query("SELECT i FROM ShoppingItem i LEFT JOIN i.labels il WHERE i.shoppingList.name = :name AND "
+    @Query("SELECT i FROM ShoppingItem i LEFT JOIN i.labels il WHERE i.shoppingList.shopListId = :id AND "
         + "(:productName IS NULL OR LOWER(i.generalName) LIKE LOWER(CONCAT('%', :productName, '%'))) AND "
         + "(:label IS NULL OR LOWER(il.labelValue) LIKE LOWER(CONCAT('%', :label, '%')))")
-    List<ShoppingItem> searchItems(@Param("name") String name,
+    List<ShoppingItem> searchItems(@Param("id") Long id,
                                    @Param("productName") String productName,
                                    @Param("label") String label);
 

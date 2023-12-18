@@ -220,7 +220,7 @@ export class ItemDetailListComponent implements OnInit {
               this.notification.success(`Item successfully added to the shopping list.`);
               this.shoppingService.getShoppingListByName('Default').subscribe({
                 next: res => {
-                  this.router.navigate([`/shopping-list/` + res.listName]);
+                  this.router.navigate([`/shopping-list/` + res.id]);
                 }
               })
             },

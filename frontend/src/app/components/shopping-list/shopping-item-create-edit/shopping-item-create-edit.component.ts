@@ -98,11 +98,10 @@ export class ShoppingItemCreateEditComponent implements OnInit {
       this.mode = data.mode;
       this.route.params.subscribe(params => {
         // Extract the 'id' parameter from the route
-        const name = params['name'];
-        this.shoppingService.getShoppingListByName(name).subscribe({
+        const id = params['id'];
+        this.shoppingService.getShoppingListById(id).subscribe({
           next: res => {
             this.item.shoppingList = res;
-            console.log(this.item.shoppingList)
           }
         });
 

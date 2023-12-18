@@ -4,9 +4,9 @@
     <div class="col-md-2 col-lg-2 mt-2">
       <select class="form-select form-select-md"
               name="selectedShoppingList"
-              [(ngModel)]="selectedShoppingList"
+              [(ngModel)]="selectedShoppingListId"
               (change)="onShoppingListChange()">
-        <ng-container *ngIf="!selectedShoppingList">
+        <ng-container *ngIf="!selectedShoppingListId">
           <option value="" disabled selected hidden>Select Shopping List</option>
         </ng-container>
         <option *ngFor="let list of shoppingLists" [value]="list.id">
@@ -14,7 +14,6 @@
         </option>
       </select>
     </div>
-    <button type="button" class="btn btn-primary m-3" (click)="navigateToCreateList()">Add new list</button>
   </div>
 </form>
 

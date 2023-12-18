@@ -22,18 +22,16 @@ export class ShoppingListComponent implements OnInit {
   items: ShoppingItemDto[] = [];
   shopId: string;
   checkedItems: ShoppingItemDto[] = this.getCheckedItems();
-  selectedShoppingList: number;
+  selectedShoppingListId: number;
   shoppingLists: ShoppingListDto[] = [];
   searchParams: ShoppingItemSearchDto = {
     productName: '',
     label: '',
   }
-  shopName: string;
-  default: ShoppingListDto;
+  baseUri: string = 'shopping-lists/list';
 
   constructor(
     private shoppingListService: ShoppingListService,
-    private itemService: ItemService,
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
@@ -41,31 +39,40 @@ export class ShoppingListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.checkedItems = this.getCheckedItems();
-    console.log('Checked Items:', this.checkedItems);
     this.shoppingListService.getShoppingLists().subscribe({
-        next: res => {
+      next: res => {
           this.shoppingLists = res;
-          for (let i = 0; i < this.shoppingLists.length; i++) {
-            if (this.shoppingLists[i].listName === 'Default') {
-              this.shoppingList = this.shoppingLists[i];
-              this.shopId = this.shoppingLists[i].id +'';
-              this.getItems();
-              break;
-            }
+        this.route.params.subscribe({
+          next: params => {
+            this.shopId = params.id;
+            this.shoppingListService.getShoppingListById(this.shopId).subscribe({
+              next: (res: ShoppingListDto) => {
+                this.shoppingList = res;
+                this.selectedShoppingListId = res.id;
+                this.getItems();
+              },
+              error: (error: any) => {
+                console.error('Error fetching shopping list:', error);
+              }
+            });
+          },
+          error: error => {
+            console.error("Error fetching parameters:", error);
           }
-        }
+        });
+      },
+      error: err => {
+        console.error('Error fetching shopping lists');
       }
-    );
+    });
 
-
+    this.checkedItems = this.getCheckedItems();
   }
 
   getItems() {
-    this.shoppingListService.getItemsWithShopName(this.shopName, this.searchParams).subscribe({
+    this.shoppingListService.getItemsWithShopId(this.shopId, this.searchParams).subscribe({
       next: res => {
         this.items = res;
-        console.log(this.items)
       },
       error: err => {
         console.error("Error finding items:", err);
@@ -74,11 +81,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   navigateToCreateItem() {
-    this.router.navigate(['shopping-list', this.shoppingList.listName, 'item', 'create']);
-  }
-
-  navigateToCreateList() {
-    this.router.navigate(['shopping-list', this.shoppingList.listName, 'list', 'create']);
+    this.router.navigate([this.baseUri, this.shoppingList.id, 'item', 'create']);
   }
 
   deleteItem(itemId: number) {
@@ -100,7 +103,7 @@ export class ShoppingListComponent implements OnInit {
       this.shoppingListService.deleteList(this.shopId).subscribe({
         next: (deletedList: ShoppingListDto) => {
           console.log(deletedList.listName, ' was deleted successfully');
-          this.router.navigate(['shopping-list' + this.shoppingList.listName]);
+          this.router.navigate(['shopping-lists', 'list' + this.shoppingList.id]);
         },
         error: error => {
           console.error(error.message, error);
@@ -147,17 +150,18 @@ export class ShoppingListComponent implements OnInit {
   }
 
   onShoppingListChange() {
-    console.log('Selected Shopping List:', this.shopName);
-    if (this.selectedShoppingList) {
-      this.shoppingListService.getShoppingListById(this.selectedShoppingList + '').subscribe({
+    if (this.selectedShoppingListId) {
+      this.shoppingListService.getShoppingListById(this.selectedShoppingListId + '').subscribe({
         next: res => {
           this.shoppingList = res;
-          this.shopName = res.listName;
           this.shopId = res.id + '';
           this.getItems();
-          this.router.navigate(['/shopping-list', this.shopName]);
+          this.router.navigate([this.baseUri, this.shopId]);
+        },
+        error: err => {
+          console.error('Error fetching shopping list:', err);
         }
-      })
+      });
     }
   }
 
@@ -180,7 +184,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   navigateToEditItem(itemId: string) {
-    this.router.navigate(['shopping-list', this.shopName, 'item', itemId, 'edit']);
+    this.router.navigate([this.baseUri, this.shopId, 'item', itemId, 'edit']);
   }
 
 }

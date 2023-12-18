@@ -18,14 +18,6 @@ export class ItemCardComponent {
   @Input() quantityTotal: number;
   @Input() unit: string;
 
-
-  customModalOpen: boolean = false;
-  customModalOpen1: boolean = false;
-
-  constructor(private el: ElementRef, private digitalStorage: DigitalStorageComponent, private storageService: StorageService,
-              private itemService: ItemService) {
-  }
-
   getCardColor(): string {
     const ratio = this.quantity / this.quantityTotal;
     if (ratio < 0.2) return 'bg-danger'; // Low quantity
