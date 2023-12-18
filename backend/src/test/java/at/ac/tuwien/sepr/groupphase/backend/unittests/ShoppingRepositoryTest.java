@@ -53,8 +53,7 @@ public class ShoppingRepositoryTest implements TestData {
 
         assertAll(
             () -> assertEquals(savedItem.getItemId(), foundItem.getItemId()),
-            () -> assertEquals(savedItem.getProductName(), foundItem.getProductName()),
-            () -> assertEquals(savedItem.getExpireDate(), foundItem.getExpireDate())
+            () -> assertEquals(savedItem.getProductName(), foundItem.getProductName())
         );
     }
 
@@ -63,7 +62,6 @@ public class ShoppingRepositoryTest implements TestData {
     public void deleteExistingShoppingItemAndCheckIfSuccessfullyDeleted() {
         ShoppingItem shoppingItem = new ShoppingItem();
         shoppingItem.setProductName("Product2");
-        shoppingItem.setExpireDate(LocalDate.now().plusDays(14));
         ShoppingItem savedItem = shoppingItemRepository.save(shoppingItem);
 
         ShoppingItem foundItem = shoppingItemRepository.findFirstByProductName("Product2");
@@ -105,38 +103,5 @@ public class ShoppingRepositoryTest implements TestData {
         );
     }
 
-    @Test
-    @Disabled("not finished")
-    @DisplayName("Test transferring item from storage to shopping list")
-    public void testMappingValidItemDtoToValidShoppingItemDtoAndSaveToDatabase() {
-        SharedFlat sharedFlat = new SharedFlat().setName("The cool flat");
-        SharedFlat saved = sharedFlatRepository.save(sharedFlat);
-
-        ItemDto validShoppingItemDto = new ItemDto(
-            null,
-            null,
-            "pear",
-            "pear1",
-            "lidl",
-            10.0,
-            20.0,
-            g,
-            LocalDate.now().plusDays(7),
-            "Description",
-            500L,
-            false,
-            null,
-            "Store",
-            null,
-            null,
-            null
-        );
-
-        String shoppingListName = "Groceries";
-        ShoppingList shoppingList = new ShoppingList();
-        shoppingList.setName(shoppingListName);
-        shoppingList.setSharedFlat(saved);
-        ShoppingList savedList = shoppingListRepository.save(shoppingList);
-    }
 
 }

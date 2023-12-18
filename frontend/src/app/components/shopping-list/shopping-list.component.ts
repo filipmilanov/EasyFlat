@@ -29,6 +29,7 @@ export class ShoppingListComponent implements OnInit {
     label: '',
   }
   shopName: string;
+  default: ShoppingListDto;
 
   constructor(
     private shoppingListService: ShoppingListService,
@@ -45,31 +46,18 @@ export class ShoppingListComponent implements OnInit {
     this.shoppingListService.getShoppingLists().subscribe({
         next: res => {
           this.shoppingLists = res;
+          for (let i = 0; i < this.shoppingLists.length; i++) {
+            if (this.shoppingLists[i].listName === 'Default') {
+              this.shoppingList = this.shoppingLists[i];
+              this.shopId = this.shoppingLists[i].id +'';
+              this.getItems();
+              break;
+            }
+          }
         }
       }
     );
-    this.route.params.subscribe({
-      next: params => {
-        this.shopName = params.name;
-        console.log(params.name)
-        console.log(this.shopName)
-        this.shoppingListService.getShoppingListByName(this.shopName).subscribe({
-          next: (res: ShoppingListDto) => {
-            this.shoppingList = res;
-            this.shopId = res.id + "";
-            this.getItems();
-            console.log(this.items)
-          },
-          error: (error: any) => {
-            console.error('Error fetching shopping list:', error);
-          }
-        });
 
-      },
-      error: error => {
-        console.error("Error fetching parameters:", error);
-      }
-    });
 
   }
 

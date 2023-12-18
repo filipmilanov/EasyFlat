@@ -16,6 +16,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import jakarta.annotation.security.PermitAll;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -61,6 +62,7 @@ public class StorageEndpoint {
 
 
     @Secured("ROLE_USER")
+    @Transactional
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public DigitalStorageDto create(@RequestBody DigitalStorageDto digitalStorageDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
