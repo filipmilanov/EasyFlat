@@ -1,17 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,9 +15,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -46,14 +38,14 @@ public class ShoppingRepositoryTest implements TestData {
     @DisplayName("Positive test for saving a valid shopping item")
     public void saveValidShoppingItemThenFindItByProductName() {
         ShoppingItem shoppingItem = new ShoppingItem();
-        shoppingItem.setProductName("Product1");
+        shoppingItem.getItemCache().setProductName("Product1");
         ShoppingItem savedItem = shoppingItemRepository.save(shoppingItem);
 
-        ShoppingItem foundItem = shoppingItemRepository.findFirstByProductName("Product1");
+        ShoppingItem foundItem = shoppingItemRepository.findFirstByItemCacheProductName("Product1");
 
         assertAll(
             () -> assertEquals(savedItem.getItemId(), foundItem.getItemId()),
-            () -> assertEquals(savedItem.getProductName(), foundItem.getProductName())
+            () -> assertEquals(savedItem.getItemCache().getProductName(), foundItem.getItemCache().getProductName())
         );
     }
 
@@ -61,15 +53,15 @@ public class ShoppingRepositoryTest implements TestData {
     @DisplayName("Positive test for deleting an existing shopping item")
     public void deleteExistingShoppingItemAndCheckIfSuccessfullyDeleted() {
         ShoppingItem shoppingItem = new ShoppingItem();
-        shoppingItem.setProductName("Product2");
+        shoppingItem.getItemCache().setProductName("Product2");
         ShoppingItem savedItem = shoppingItemRepository.save(shoppingItem);
 
-        ShoppingItem foundItem = shoppingItemRepository.findFirstByProductName("Product2");
+        ShoppingItem foundItem = shoppingItemRepository.findFirstByItemCacheProductName("Product2");
         assertNotNull(foundItem);
 
         shoppingItemRepository.delete(savedItem);
 
-        ShoppingItem deletedItem = shoppingItemRepository.findFirstByProductName("Product2");
+        ShoppingItem deletedItem = shoppingItemRepository.findFirstByItemCacheProductName("Product2");
         assertNull(deletedItem, "Deleted item should not be found");
     }
 
@@ -86,20 +78,20 @@ public class ShoppingRepositoryTest implements TestData {
         ShoppingList savedList = shoppingListRepository.save(shoppingList);
 
         ShoppingItem item1 = new ShoppingItem();
-        item1.setProductName("Apple");
+        item1.getItemCache().setProductName("Apple");
         item1.setShoppingList(savedList);
         shoppingItemRepository.save(item1);
 
         ShoppingItem item2 = new ShoppingItem();
-        item2.setProductName("Banana");
+        item2.getItemCache().setProductName("Banana");
         item2.setShoppingList(savedList);
         shoppingItemRepository.save(item2);
 
-        List<ShoppingItem> items = shoppingItemRepository.searchItemsByShoppingListNameAndShoppingListSharedFlatIdAndProductName(shoppingListName, sharedFlat.getId(), "Banana");
+        List<ShoppingItem> items = shoppingItemRepository.searchItemsByShoppingListNameAndShoppingListSharedFlatIdAndItemCache_ProductName(shoppingListName, sharedFlat.getId(), "Banana");
 
         assertAll(
             () -> assertEquals(1, items.size()),
-            () -> assertEquals("Banana", items.get(0).getProductName())
+            () -> assertEquals("Banana", items.get(0).getItemCache().getProductName())
         );
     }
 

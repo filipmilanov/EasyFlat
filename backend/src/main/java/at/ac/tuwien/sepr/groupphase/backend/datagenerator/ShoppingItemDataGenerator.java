@@ -48,18 +48,18 @@ public class ShoppingItemDataGenerator {
 
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             ShoppingItem shoppingItem = new ShoppingItem();
-            shoppingItem.setEan("1234567890123");
-            shoppingItem.setGeneralName("Grocery DigitalStorageItem");
-            shoppingItem.setProductName("Product ABC");
-            shoppingItem.setBrand("Brand XYZ");
+            shoppingItem.getItemCache().setEan("1234567890123");
+            shoppingItem.getItemCache().setGeneralName("Grocery DigitalStorageItem");
+            shoppingItem.getItemCache().setProductName("Product ABC");
+            shoppingItem.getItemCache().setBrand("Brand XYZ");
             shoppingItem.setQuantityCurrent(5.0);
-            shoppingItem.setQuantityTotal(10.0);
+            shoppingItem.getItemCache().setQuantityTotal(10.0);
             shoppingItem.setAlwaysIsStock(i % 2 == 0);
             shoppingItem.setMinimumQuantity(i % 2 == 0 ? 2.0 : null);
 
-            shoppingItem.setUnit(kg);
+            shoppingItem.getItemCache().setUnit(kg);
 
-            shoppingItem.setDescription("Description of the product");
+            shoppingItem.getItemCache().setDescription("Description of the product");
             shoppingItem.setPriceInCent(499L);
             shoppingItem.setBoughtAt("Grocery Store");
 
@@ -68,7 +68,7 @@ public class ShoppingItemDataGenerator {
             shoppingItem.setDigitalStorage(digitalStorage);
 
             List<Ingredient> ingredientList = Arrays.asList(new Ingredient().setTitle("Ingredient1"), new Ingredient().setTitle("Ingredient2"));
-            shoppingItem.setIngredientList(ingredientList);
+            shoppingItem.getItemCache().setIngredientList(ingredientList);
 
             List<ItemLabel> labels = Arrays.asList(new ItemLabel().setLabelValue("Label1").setLabelColour("ff0000"),
                 new ItemLabel().setLabelValue("Label1").setLabelColour("00ff00"));
