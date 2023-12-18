@@ -28,6 +28,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
@@ -78,6 +79,7 @@ public class CookingServiceImpl implements CookingService {
     private final CookbookMapper cookbookMapper;
     private final CookbookRepository cookbookRepository;
     private final UserService userService;
+    private final ItemRepository itemRepository;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
     public CookingServiceImpl(RestTemplate restTemplate,
@@ -94,7 +96,8 @@ public class CookingServiceImpl implements CookingService {
                               ItemMapper itemMapper, RecipeValidator recipeValidator,
                               CookbookValidator cookbookValidator, SharedFlatService sharedFlatService,
                               Authorization authorization, CookbookMapper cookbookMapper,
-                              CookbookRepository cookbookRepository, UserService userService) {
+                              CookbookRepository cookbookRepository, UserService userService,
+                              ItemRepository itemRepository) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
@@ -114,6 +117,7 @@ public class CookingServiceImpl implements CookingService {
         this.cookbookMapper = cookbookMapper;
         this.cookbookRepository = cookbookRepository;
         this.userService = userService;
+        this.itemRepository = itemRepository;
     }
 
     @Override
@@ -407,7 +411,7 @@ public class CookingServiceImpl implements CookingService {
             if (recipeSuggestionDto != null) {
                 List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
                 for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
-                    List<DigitalStorageItem> digitalStorageItems = storageRepository.findAllByStorIdAndDigitalStorageItemList_ItemCache_GeneralNameIs(storId, ingredient.name());
+                    List<DigitalStorageItem> digitalStorageItems = itemRepository.findAllByDigitalStorage_StorIdAndItemCache_GeneralName(storId, ingredient.name());
                     if (digitalStorageItems.isEmpty()) {
                         missingIngredients.add(ingredient);
                         continue;
@@ -473,7 +477,7 @@ public class CookingServiceImpl implements CookingService {
         Long storId = this.getStorIdForUser(jwt);
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
-            List<DigitalStorageItem> digitalStorageItems = storageRepository.findAllByStorIdAndDigitalStorageItemList_ItemCache_GeneralNameIs(storId, recipeIngredientDto.name());
+            List<DigitalStorageItem> digitalStorageItems = itemRepository.findAllByDigitalStorage_StorIdAndItemCache_GeneralName(storId, recipeIngredientDto.name());
             Unit ingredientUnit = unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum());
             Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), recipeIngredientDto.amount());
             List<DigitalStorageItem> itemsWithMinUnits = minimizeUnits(digitalStorageItems);

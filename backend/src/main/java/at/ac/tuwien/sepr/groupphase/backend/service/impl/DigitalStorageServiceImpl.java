@@ -21,6 +21,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
@@ -58,6 +59,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final SharedFlatService sharedFlatService;
     private final ShoppingListRepository shoppingListRepository;
     private final ItemValidator itemValidator;
+    private final ItemRepository itemRepository;
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      DigitalStorageMapper digitalStorageMapper,
@@ -70,7 +72,8 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
                                      Authorization authorization,
                                      ShoppingListRepository shoppingListRepository,
                                      UnitService unitService,
-                                     ItemValidator itemValidator) {
+                                     ItemValidator itemValidator,
+                                     ItemRepository itemRepository) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
@@ -83,6 +86,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         this.unitService = unitService;
         this.itemValidator = itemValidator;
         this.itemMapper = itemMapper;
+        this.itemRepository = itemRepository;
     }
 
     @Override
@@ -222,7 +226,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     @Override
     public List<DigitalStorageItem> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException {
         Long storId = getStorIdForUser(jwt);
-        return digitalStorageRepository.findAllByStorIdAndDigitalStorageItemList_ItemCache_GeneralNameIs(storId, name);
+        return this.itemRepository.findAllByDigitalStorage_StorIdAndItemCache_GeneralName(storId, name);
     }
 
 
