@@ -72,8 +72,16 @@ public abstract class ItemMapper {
 
     public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItem> items);
 
+
+    @Mapping(target = "itemCache.ean", source = "ean")
+    @Mapping(target = "itemCache.generalName", source = "generalName")
+    @Mapping(target = "itemCache.productName", source = "productName")
+    @Mapping(target = "itemCache.brand", source = "brand")
+    @Mapping(target = "itemCache.quantityTotal", source = "quantityTotal")
+    @Mapping(target = "itemCache.unit", source = "unit")
+    @Mapping(target = "itemCache.description", source = "description")
     @Mapping(target = "alwaysIsStock", expression = "java( itemDto.alwaysInStock() )")
-    @Mapping(target = "ingredientList", expression = "java( ingredients )")
+    @Mapping(target = "itemCache.ingredientList", expression = "java( ingredients )")
     @Mapping(target = "shoppingList", expression = "java( shoppingList )")
     public abstract ShoppingItem itemDtoToShoppingItem(ItemDto itemDto,
                                               @Context List<Ingredient> ingredients,
