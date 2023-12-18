@@ -229,7 +229,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
 
     @Override
-    public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException {
+    public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException {
         LOGGER.trace("addItemToShopping({})", itemDto);
 
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);

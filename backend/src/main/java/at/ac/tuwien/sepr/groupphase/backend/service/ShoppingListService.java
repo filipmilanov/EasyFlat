@@ -19,6 +19,7 @@ public interface ShoppingListService {
      *
      * @param itemDto a shopping item without ID
      * @return an object of type {@link ShoppingItem} which is persisted and has an ID
+     * @throws AuthenticationException If authentication fails or the user does not exist
      */
     ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException;
 
@@ -35,6 +36,7 @@ public interface ShoppingListService {
      *
      * @param name a valid listName
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
+     * @throws AuthenticationException If authentication fails or the user does not exist
      */
     Optional<ShoppingList> getShoppingListByName(String name, String jwt) throws AuthenticationException;
 
@@ -43,6 +45,7 @@ public interface ShoppingListService {
      *
      * @param id a valid ID of a ShoppingList
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
+     * @throws AuthenticationException If authentication fails or the user does not exist
      */
     Optional<ShoppingList> getShoppingListById(Long id, String jwt) throws AuthenticationException;
 
@@ -53,6 +56,7 @@ public interface ShoppingListService {
      * @param id a valid ID of a ShoppingList
      * @param itemSearchDto search parameters consisting of the product's name and its label's value
      * @return if the id exists in the DB, a List of a persisted ShoppingItems with the given ID, an empty Optional otherwise
+     * @throws AuthenticationException If authentication fails or the user does not exist
      */
     List<ShoppingItem> getItemsById(Long id, ShoppingItemSearchDto itemSearchDto, String jwt) throws AuthenticationException;
 
@@ -85,6 +89,7 @@ public interface ShoppingListService {
      *
      * @param searchParams name of the list, through which we search for it. Can also be null
      * @return a List of all persisted ShoppingLists
+     * @throws AuthenticationException If authentication fails or the user does not exist
      */
     List<ShoppingList> getShoppingLists(String searchParams, String jwt) throws AuthenticationException;
 
@@ -101,6 +106,9 @@ public interface ShoppingListService {
      *
      * @param shoppingItemDto a DTO of type shopping item with existing ID
      * @return an object of type {@link ShoppingItem} which is updated
+     * @throws AuthenticationException If authentication fails or the user does not exist
+     * @throws ConflictException if there is a conflict with the persisted data
+     * @throws ValidationException if the data in shoppingItemDto is not valid
      */
     ShoppingItem update(ShoppingItemDto shoppingItemDto, String jwt) throws ConflictException, AuthenticationException, ValidationException;
 }

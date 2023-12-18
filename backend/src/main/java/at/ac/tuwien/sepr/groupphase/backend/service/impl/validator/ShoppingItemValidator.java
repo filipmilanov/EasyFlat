@@ -53,14 +53,15 @@ public class ShoppingItemValidator {
 
         List<String> errors = new ArrayList<>();
 
-        if (itemDto.generalName().isEmpty()) {
-            errors.add("Tha name should not be empty!");
-        }
-        if (itemDto.generalName().length() > 120) {
-            errors.add("The name is too long");
-        }
-        if (itemDto.generalName().isBlank()) {
-            errors.add("The given name is blank");
+        if (itemDto.generalName() == null) {
+            errors.add("No name given");
+        } else {
+            if (itemDto.generalName().isBlank()) {
+                errors.add("The given name can not be blank");
+            }
+            if (itemDto.generalName().length() > 120) {
+                errors.add("The name is too long");
+            }
         }
         if (itemDto.itemId() != null) {
             errors.add("The Id must be null");
@@ -79,8 +80,8 @@ public class ShoppingItemValidator {
             }
         }
 
-        if (itemDto.digitalStorage() != null && !itemDto.digitalStorage().title().equals("Storage")) {
-            errors.add("The item is linked to to an incorrect Digital Storage");
+        if (itemDto.digitalStorage() == null) {
+            errors.add("The item is not linked to an digital storage");
         }
 
         if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
@@ -115,14 +116,15 @@ public class ShoppingItemValidator {
         LOGGER.trace("checkItemForUpdate({}, {}, {})", itemDto, digitalStorageList, unitList);
 
         List<String> errors = new ArrayList<>();
-        if (itemDto.generalName().isEmpty()) {
-            errors.add("Tha name should not be empty!");
-        }
-        if (itemDto.generalName().length() > 120) {
-            errors.add("The name is too long");
-        }
-        if (itemDto.generalName().isBlank()) {
-            errors.add("The given name is blank");
+        if (itemDto.generalName() == null) {
+            errors.add("No name given");
+        } else {
+            if (itemDto.generalName().isBlank()) {
+                errors.add("The given name can not be blank");
+            }
+            if (itemDto.generalName().length() > 120) {
+                errors.add("The name is too long");
+            }
         }
         if (itemDto.itemId() == null) {
             errors.add("The Id can not be null");
@@ -141,12 +143,12 @@ public class ShoppingItemValidator {
             }
         }
 
-        if (itemDto.digitalStorage() != null && !itemDto.digitalStorage().title().equals("Storage")) {
-            errors.add("The item is linked to to an incorrect Digital Storage");
+        if (itemDto.digitalStorage() == null) {
+            errors.add("The item is not linked to a digital storage");
         }
 
         if (itemDto.alwaysInStock() && itemDto.minimumQuantity() == null) {
-            errors.add("There is no MinimumQuantity defined");
+            errors.add("There is no minimumQuantity defined");
         }
 
         if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {

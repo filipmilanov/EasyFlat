@@ -54,9 +54,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final DigitalStorageService digitalStorageService;
     private final ItemService itemService;
     private CustomUserDetailService customUserDetailService;
-
-    private final Authorization authorization;
-    private final SharedFlatService sharedFlatService;
     private final DigitalStorageRepository digitalStorageRepository;
     private final ShoppingItemValidator shoppingItemValidator;
     private final UnitService unitService;
@@ -65,8 +62,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListServiceImpl(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
-                                   ItemService itemService, CustomUserDetailService customUserDetailService, Authorization authorization,
-                                   SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository, ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidator validator) {
+                                   ItemService itemService, CustomUserDetailService customUserDetailService, DigitalStorageRepository digitalStorageRepository,
+                                   ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidator validator) {
         this.shoppingItemRepository = shoppingItemRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -77,8 +74,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.digitalStorageService = digitalStorageService;
         this.itemService = itemService;
         this.customUserDetailService = customUserDetailService;
-        this.authorization = authorization;
-        this.sharedFlatService = sharedFlatService;
         this.digitalStorageRepository = digitalStorageRepository;
         this.shoppingItemValidator = shoppingItemValidator;
         this.unitService = unitService;
@@ -282,11 +277,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         ShoppingItem item = itemMapper.dtoToShopping(itemDto, labels,
             shoppingListMapper.dtoToEntity(itemDto.shoppingList()));
-
-        ShoppingItem updatedItem = shoppingItemRepository.save(item);
-        updatedItem.setIngredientList(ingredientList);
-        updatedItem.setLabels(labels);
-        return updatedItem;
+        item.setIngredientList(ingredientList);
+        item.setLabels(labels);
+        return shoppingItemRepository.save(item);
     }
 
 

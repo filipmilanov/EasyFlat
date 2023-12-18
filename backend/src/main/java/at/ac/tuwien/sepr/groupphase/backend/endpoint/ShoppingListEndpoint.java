@@ -94,7 +94,6 @@ public class ShoppingListEndpoint {
         LOGGER.info("getShoppingListById({},{})", id, jwt);
         Optional<ShoppingList> ret = shoppingService.getShoppingListById(id, jwt);
         return ret.flatMap(shoppingList -> Optional.ofNullable(shoppingListMapper.entityToDto(shoppingList)));
-
     }
 
     @PermitAll
@@ -139,7 +138,6 @@ public class ShoppingListEndpoint {
     public List<ShoppingListDto> getShoppingLists(@RequestParam(name = "searchParams") String searchParams, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("getShoppingLists({}, {})", searchParams, jwt);
         List<ShoppingList> lists = shoppingService.getShoppingLists(searchParams, jwt);
-
         return shoppingListMapper.entityListToDtoList(lists);
     }
 
@@ -154,7 +152,5 @@ public class ShoppingListEndpoint {
         }
         return toRet;
     }
-
-
 
 }
