@@ -3,7 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -69,7 +69,7 @@ public class ItemEndpoint {
     @GetMapping("{itemId}")
     public Optional<ItemDto> findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("findById({})", itemId);
-        Optional<Item> item = itemService.findById(itemId, jwt);
+        Optional<DigitalStorageItem> item = itemService.findById(itemId, jwt);
 
         return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToDto(currentItem)));
     }

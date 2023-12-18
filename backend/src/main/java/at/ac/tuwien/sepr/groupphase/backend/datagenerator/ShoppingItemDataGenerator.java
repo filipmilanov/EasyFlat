@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,7 +49,7 @@ public class ShoppingItemDataGenerator {
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             ShoppingItem shoppingItem = new ShoppingItem();
             shoppingItem.setEan("1234567890123");
-            shoppingItem.setGeneralName("Grocery Item");
+            shoppingItem.setGeneralName("Grocery DigitalStorageItem");
             shoppingItem.setProductName("Product ABC");
             shoppingItem.setBrand("Brand XYZ");
             shoppingItem.setQuantityCurrent(5.0);

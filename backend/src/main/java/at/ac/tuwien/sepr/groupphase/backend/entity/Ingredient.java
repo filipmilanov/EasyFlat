@@ -22,7 +22,7 @@ public class Ingredient {
     private String title;
 
     @ManyToMany(mappedBy = "ingredientList")
-    private List<Item> itemList = new ArrayList<>();
+    private List<DigitalStorageItem> digitalStorageItemList = new ArrayList<>();
 
     public Long getIngrId() {
         return ingrId;
@@ -41,14 +41,14 @@ public class Ingredient {
         return this;
     }
 
-    public List<Item> getItemList() {
-        return itemList;
+    public List<DigitalStorageItem> getItemList() {
+        return digitalStorageItemList;
     }
 
-    public void setItemList(List<Item> itemList) {
-        this.itemList = itemList;
-        if (itemList != null) {
-            itemList.forEach(item -> item.getIngredientList().add(this));
+    public void setItemList(List<DigitalStorageItem> digitalStorageItemList) {
+        this.digitalStorageItemList = digitalStorageItemList;
+        if (digitalStorageItemList != null) {
+            digitalStorageItemList.forEach(item -> item.getIngredientList().add(this));
         }
     }
 

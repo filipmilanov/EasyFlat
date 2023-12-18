@@ -1,13 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.OpenFoodFactsItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.OpenFoodFactsItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockItem;
+import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockDigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
@@ -23,21 +23,21 @@ public abstract class ItemMapper {
 
     @Mapping(target = "storage", source = "digitalStorage")
     @Mapping(target = "ingredientList", expression = "java( ingredientList )")
-    public abstract Item dtoToEntity(ItemDto itemDto,
-                                     @Context List<Ingredient> ingredientList,
-                                     @Context List<ItemStats> itemStats);
+    public abstract DigitalStorageItem dtoToEntity(ItemDto itemDto,
+                                                   @Context List<Ingredient> ingredientList,
+                                                   @Context List<ItemStats> itemStats);
 
     @Mapping(target = "storage", source = "digitalStorage")
     @Mapping(target = "ingredientList", expression = "java( ingredientList )")
-    public abstract AlwaysInStockItem dtoToAlwaysInStock(ItemDto itemDto,
-                                                         @Context List<Ingredient> ingredientList,
-                                                         @Context List<ItemStats> itemStats);
+    public abstract AlwaysInStockDigitalStorageItem dtoToAlwaysInStock(ItemDto itemDto,
+                                                                       @Context List<Ingredient> ingredientList,
+                                                                       @Context List<ItemStats> itemStats);
 
     @Mapping(target = "digitalStorage", source = "storage")
     @Mapping(target = "ingredients", source = "ingredientList")
-    @Mapping(target = "alwaysInStock", expression = "java( item.alwaysInStock() )")
-    @Mapping(target = "minimumQuantity", expression = "java( item.getMinimumQuantity() )")
-    public abstract ItemDto entityToDto(Item item);
+    @Mapping(target = "alwaysInStock", expression = "java( digitalStorageItem.alwaysInStock() )")
+    @Mapping(target = "minimumQuantity", expression = "java( digitalStorageItem.getMinimumQuantity() )")
+    public abstract ItemDto entityToDto(DigitalStorageItem digitalStorageItem);
 
 
     Long digitalStorageToId(DigitalStorage storage) {
@@ -70,7 +70,7 @@ public abstract class ItemMapper {
                                               @Context List<Ingredient> ingredients,
                                               @Context ShoppingList shoppingList);
 
-    public abstract List<ItemDto> entityListToItemDtoList(List<Item> items);
+    public abstract List<ItemDto> entityListToItemDtoList(List<DigitalStorageItem> digitalStorageItems);
 
     @Mapping(target = "ean", source = "eanCode")
     public abstract ItemDto openFoodFactItemDtoToItemDto(OpenFoodFactsItemDto openFoodFactsItemDto);

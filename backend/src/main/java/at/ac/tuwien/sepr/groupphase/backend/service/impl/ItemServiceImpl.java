@@ -6,8 +6,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
@@ -70,13 +70,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override // TODO: it should not return a Optional, it should throw a NotFoundException, if there is non
-    public Optional<Item> findById(Long id, String jwt) throws AuthenticationException {
+    public Optional<DigitalStorageItem> findById(Long id, String jwt) throws AuthenticationException {
         LOGGER.trace("findById({})", id);
         if (id == null) {
             return Optional.empty();
         }
 
-        Optional<Item> item = itemRepository.findById(id);
+        Optional<DigitalStorageItem> item = itemRepository.findById(id);
 
         if (item.isEmpty()) {
             return item;
@@ -92,7 +92,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> findByFields(ItemFieldSearchDto itemFieldSearchDto) {
+    public List<DigitalStorageItem> findByFields(ItemFieldSearchDto itemFieldSearchDto) {
         LOGGER.trace("findByFields({})", itemFieldSearchDto);
 
         return itemRepository.findAllByGeneralNameContainingIgnoreCaseOrBrandContainingIgnoreCaseOrBoughtAtContainingIgnoreCase(
@@ -104,7 +104,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item create(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
+    public DigitalStorageItem create(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("create({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
@@ -144,20 +144,20 @@ public class ItemServiceImpl implements ItemService {
         itemStats.add(curr);
         itemStatsRepository.save(curr);
 
-        Item item;
+        DigitalStorageItem digitalStorageItem;
         if (itemDto.alwaysInStock()) {
-            item = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null);
+            digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null);
         } else {
-            item = itemMapper.dtoToEntity(itemDto, ingredientList, null);
+            digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null);
         }
-        Item createdItem = itemRepository.save(item);
-        createdItem.setIngredientList(ingredientList);
-        return createdItem;
+        DigitalStorageItem createdDigitalStorageItem = itemRepository.save(digitalStorageItem);
+        createdDigitalStorageItem.setIngredientList(ingredientList);
+        return createdDigitalStorageItem;
     }
 
     @Override
     @Transactional
-    public Item update(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
+    public DigitalStorageItem update(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("update({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
@@ -188,32 +188,32 @@ public class ItemServiceImpl implements ItemService {
 
         List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
-        Item item;
+        DigitalStorageItem digitalStorageItem;
         if (itemDto.alwaysInStock()) {
-            item = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null);
+            digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null);
         } else {
-            item = itemMapper.dtoToEntity(itemDto, ingredientList, null);
+            digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null);
         }
 
-        Item presistedItem = this.findById(itemDto.itemId(), jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        DigitalStorageItem presistedDigitalStorageItem = this.findById(itemDto.itemId(), jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
 
         // necessary because JPA cannot convert an Entity to another Entity
-        if (item.alwaysInStock() != presistedItem.alwaysInStock()) {
+        if (digitalStorageItem.alwaysInStock() != presistedDigitalStorageItem.alwaysInStock()) {
             this.delete(itemDto.itemId(), jwt);
         }
 
-        Item updatedItem = itemRepository.save(item);
-        updatedItem.setIngredientList(ingredientList);
-        return updatedItem;
+        DigitalStorageItem updatedDigitalStorageItem = itemRepository.save(digitalStorageItem);
+        updatedDigitalStorageItem.setIngredientList(ingredientList);
+        return updatedDigitalStorageItem;
     }
 
     @Override
     public void delete(Long id, String jwt) throws AuthenticationException {
         LOGGER.trace("delete({})", id);
 
-        Item itemToDelete = this.findById(id, jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        DigitalStorageItem digitalStorageItemToDelete = this.findById(id, jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
 
-        Long sharedFlatId = itemToDelete.getStorage().getSharedFlat().getId();
+        Long sharedFlatId = digitalStorageItemToDelete.getStorage().getSharedFlat().getId();
 
         List<Long> allowedUsers = sharedFlatService.findById(sharedFlatId, jwt)
                 .getUsers().stream()

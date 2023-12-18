@@ -26,8 +26,8 @@ import java.util.Objects;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
-@GroupSequence({Item.class, ShoppingItem.class}) // Define the order of group validation
-public class Item {
+@GroupSequence({DigitalStorageItem.class, ShoppingItem.class}) // Define the order of group validation
+public class DigitalStorageItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,7 +71,7 @@ public class Item {
     private String boughtAt;
 
     @ManyToOne
-    @NotNull(message = "A Item need to be linked to a storage")
+    @NotNull(message = "A DigitalStorageItem need to be linked to a storage")
     private DigitalStorage digitalStorage;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -217,8 +217,8 @@ public class Item {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Item item = (Item) o;
-        return Objects.equals(itemId, item.itemId);
+        DigitalStorageItem digitalStorageItem = (DigitalStorageItem) o;
+        return Objects.equals(itemId, digitalStorageItem.itemId);
     }
 
     @Override

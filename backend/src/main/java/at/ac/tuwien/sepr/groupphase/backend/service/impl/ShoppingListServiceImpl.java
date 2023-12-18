@@ -8,8 +8,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
@@ -19,8 +19,8 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
@@ -29,7 +29,6 @@ import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingItemValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListValidator;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -205,7 +203,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             shoppingItemRepository.deleteById(itemId);
             return toDelete;
         } else {
-            throw new NoSuchElementException("Item with this id does not exist!");
+            throw new NoSuchElementException("DigitalStorageItem with this id does not exist!");
         }
     }
 
@@ -243,24 +241,24 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<Item> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthenticationException {
+    public List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthenticationException {
         LOGGER.trace("transferToServer({},{})", items, jwt);
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
         List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage", applicationUser.getSharedFlat());
-        List<Item> itemsList = new ArrayList<>();
+        List<DigitalStorageItem> itemsList = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
-            Item item;
+            DigitalStorageItem digitalStorageItem;
             if (itemDto.alwaysInStock() != null && itemDto.alwaysInStock()) {
-                item = shoppingListMapper.shoppingItemDtoToAis(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), storage.get(0));
+                digitalStorageItem = shoppingListMapper.shoppingItemDtoToAis(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), storage.get(0));
             } else {
-                item = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), storage.get(0));
+                digitalStorageItem = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), storage.get(0));
             }
-            itemRepository.save(item);
+            itemRepository.save(digitalStorageItem);
             shoppingItemRepository.deleteById(itemDto.itemId());
-            itemsList.add(item);
+            itemsList.add(digitalStorageItem);
         }
         return itemsList;
     }
