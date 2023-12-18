@@ -19,7 +19,6 @@ import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,17 +55,6 @@ public class StorageEndpoint {
 
         return digitalStorageMapper.entityListToDtoList(
             digitalStorageService.findAll(digitalStorageDto, jwt)
-        );
-    }
-
-
-    @Secured("ROLE_USER")
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public DigitalStorageDto create(@RequestBody DigitalStorageDto digitalStorageDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
-        LOGGER.info("create({})", digitalStorageDto);
-        return digitalStorageMapper.entityToDto(
-            digitalStorageService.create(digitalStorageDto, jwt)
         );
     }
 
