@@ -5,7 +5,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.OpenFoodFactsItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockDigitalStorageItem;
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
@@ -21,32 +20,42 @@ import java.util.List;
 @Mapper(uses = {IngredientMapper.class, DigitalStorageMapper.class, UnitMapper.class})
 public abstract class ItemMapper {
 
-    @Mapping(target = "storage", source = "digitalStorage")
-    @Mapping(target = "ingredientList", expression = "java( ingredientList )")
+    @Mapping(target = "itemCache.ean", source = "ean")
+    @Mapping(target = "itemCache.generalName", source = "generalName")
+    @Mapping(target = "itemCache.productName", source = "productName")
+    @Mapping(target = "itemCache.brand", source = "brand")
+    @Mapping(target = "itemCache.quantityTotal", source = "quantityTotal")
+    @Mapping(target = "itemCache.unit", source = "unit")
+    @Mapping(target = "itemCache.description", source = "description")
+    @Mapping(target = "itemCache.ingredientList", expression = "java( ingredientList )")
     public abstract DigitalStorageItem dtoToEntity(ItemDto itemDto,
                                                    @Context List<Ingredient> ingredientList,
                                                    @Context List<ItemStats> itemStats);
 
-    @Mapping(target = "storage", source = "digitalStorage")
+    @Mapping(target = "itemCache.ean", source = "ean")
+    @Mapping(target = "itemCache.generalName", source = "generalName")
+    @Mapping(target = "itemCache.productName", source = "productName")
+    @Mapping(target = "itemCache.brand", source = "brand")
+    @Mapping(target = "itemCache.quantityTotal", source = "quantityTotal")
+    @Mapping(target = "itemCache.unit", source = "unit")
+    @Mapping(target = "itemCache.description", source = "description")
     @Mapping(target = "ingredientList", expression = "java( ingredientList )")
     public abstract AlwaysInStockDigitalStorageItem dtoToAlwaysInStock(ItemDto itemDto,
                                                                        @Context List<Ingredient> ingredientList,
                                                                        @Context List<ItemStats> itemStats);
 
-    @Mapping(target = "digitalStorage", source = "storage")
-    @Mapping(target = "ingredients", source = "ingredientList")
+
+    @Mapping(target = "ean", source = "itemCache.ean")
+    @Mapping(target = "generalName", source = "itemCache.generalName")
+    @Mapping(target = "productName", source = "itemCache.productName")
+    @Mapping(target = "brand", source = "itemCache.brand")
+    @Mapping(target = "quantityTotal", source = "itemCache.quantityTotal")
+    @Mapping(target = "unit", source = "itemCache.unit")
+    @Mapping(target = "description", source = "itemCache.description")
+    @Mapping(target = "ingredients", source = "itemCache.ingredientList")
     @Mapping(target = "alwaysInStock", expression = "java( digitalStorageItem.alwaysInStock() )")
     @Mapping(target = "minimumQuantity", expression = "java( digitalStorageItem.getMinimumQuantity() )")
     public abstract ItemDto entityToDto(DigitalStorageItem digitalStorageItem);
-
-
-    Long digitalStorageToId(DigitalStorage storage) {
-        return storage.getStorId();
-    }
-
-    List<Long> ingredientListToIdList(List<Ingredient> ingredientList) {
-        return ingredientList.stream().map(Ingredient::getIngrId).toList();
-    }
 
     @Mapping(target = "alwaysIsStock", expression = "java( itemDto.alwaysInStock() )")
     @Mapping(target = "labels", expression = "java( labels )")
