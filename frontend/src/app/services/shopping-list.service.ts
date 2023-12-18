@@ -78,6 +78,12 @@ export class ShoppingListService {
     return this.http.get<ShoppingListDto>(this.baseUri + '/list/' + shoppingListName, {headers});
   }
 
+  /**
+   * Find an existing shopping list in the system
+   *
+   * @param shoppingListId the id of the list that should already be stored in the system
+   * @return an Observable for the existing shopping list in the system
+   */
   getShoppingListById(shoppingListId: string): Observable<ShoppingListDto> {
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
@@ -108,11 +114,21 @@ export class ShoppingListService {
     return this.http.delete<ShoppingListDto>(this.baseUri + '/delete/' + shopId, {headers});
   }
 
-  getShoppingLists(): Observable<ShoppingListDto[]> {
+  /**
+   * Get all shopping lists filtered by search parameters
+   *
+   * @param searchParams the search parameters consisting only of one string representing the lists' name
+   * @return on Observable for the array of lists, which fulfil the search criteria
+   */
+  getShoppingLists(searchParams: string): Observable<ShoppingListDto[]> {
+    let params = new HttpParams();
+    if (searchParams) {
+      params = params.append('searchParams', searchParams);
+    }
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });
-    return this.http.get<ShoppingListDto[]>(this.baseUri + '/lists', {headers});
+    return this.http.get<ShoppingListDto[]>(this.baseUri + '/lists', {params, headers});
   }
 
   transferToStorage(shoppingItems: ShoppingItemDto[]): Observable<StorageItem[]> {

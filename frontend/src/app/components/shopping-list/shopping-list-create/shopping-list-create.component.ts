@@ -19,7 +19,7 @@ export class ShoppingListCreateComponent {
 
   list: ShoppingListDto = {
     id: 0,
-    listName: ''
+    name: ''
   };
   constructor(
     private itemService: ItemService,
@@ -36,11 +36,11 @@ export class ShoppingListCreateComponent {
 
     if (form.valid) {
       let observable: Observable<ShoppingListDto>;
-      observable = this.shoppingService.createList(this.list.listName);
+      observable = this.shoppingService.createList(this.list.name);
       observable.subscribe({
         next: data => {
-          this.notification.success(`List ${this.list.listName} successfully created.`, "Success");
-          this.router.navigate(['/shopping-list/', this.list.listName]);
+          this.notification.success(`New shopping list successfully created.`, "Success");
+          this.router.navigate(['/shopping-list/', this.list.name]);
         },
         error: error => {
           console.error(`Error list was not created`);

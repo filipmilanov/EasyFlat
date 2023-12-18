@@ -88,7 +88,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.trace("create({},{})", itemDto, jwt);
-        List<ShoppingList> shoppingLists = this.getShoppingLists(jwt);
+        List<ShoppingList> shoppingLists = this.getShoppingLists("", jwt);
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
         List<Unit> unitList = unitService.findAll();
         shoppingItemValidator.validateForCreate(itemDto, shoppingLists, digitalStorageList, unitList);
@@ -233,13 +233,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<ShoppingList> getShoppingLists(String jwt) throws AuthenticationException {
+    public List<ShoppingList> getShoppingLists(String name, String jwt) throws AuthenticationException {
         LOGGER.trace("getShoppingLists({})", jwt);
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        return shoppingListRepository.findBySharedFlatIs(applicationUser.getSharedFlat());
+        return shoppingListRepository.findAllByNameContainingIgnoreCaseAndSharedFlatIs(name != null ? name : "", applicationUser.getSharedFlat());
     }
 
     @Override
@@ -269,7 +269,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingItem update(ShoppingItemDto itemDto, String jwt) throws ConflictException, AuthenticationException, ValidationException {
         LOGGER.trace("update({})", itemDto);
 
-        List<ShoppingList> shoppingLists = this.getShoppingLists(jwt);
+        List<ShoppingList> shoppingLists = this.getShoppingLists("", jwt);
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
         List<Unit> unitList = unitService.findAll();
         shoppingItemValidator.validateForUpdate(itemDto, shoppingLists, digitalStorageList, unitList);

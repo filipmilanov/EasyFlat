@@ -17,7 +17,7 @@ export class ShoppingListComponent implements OnInit {
 
   shoppingList: ShoppingListDto = {
     id: 0,
-    listName: ''
+    name: ''
   };
   items: ShoppingItemDto[] = [];
   shopId: string;
@@ -39,7 +39,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.shoppingListService.getShoppingLists().subscribe({
+    this.shoppingListService.getShoppingLists('').subscribe({
       next: res => {
           this.shoppingLists = res;
         this.route.params.subscribe({
@@ -102,7 +102,7 @@ export class ShoppingListComponent implements OnInit {
     if (confirm("Are you sure you want to delete this list?")) {
       this.shoppingListService.deleteList(this.shopId).subscribe({
         next: (deletedList: ShoppingListDto) => {
-          console.log(deletedList.listName, ' was deleted successfully');
+          console.log(deletedList.name, ' was deleted successfully');
           this.router.navigate(['shopping-lists', 'list' + this.shoppingList.id]);
         },
         error: error => {
@@ -180,7 +180,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   checkId() {
-    return this.shoppingList.listName == "Default";
+    return this.shoppingList.name == "Default";
   }
 
   navigateToEditItem(itemId: string) {

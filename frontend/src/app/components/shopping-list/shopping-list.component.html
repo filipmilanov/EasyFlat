@@ -1,4 +1,4 @@
-<h1 class="display-4">{{shoppingList?.listName}}</h1>
+<h1 class="display-4">{{shoppingList?.name}}</h1>
 <form>
   <div class="form-elements">
     <div class="col-md-2 col-lg-2 mt-2">
@@ -10,7 +10,7 @@
           <option value="" disabled selected hidden>Select Shopping List</option>
         </ng-container>
         <option *ngFor="let list of shoppingLists" [value]="list.id">
-          {{ list.listName }}
+          {{ list.name }}
         </option>
       </select>
     </div>

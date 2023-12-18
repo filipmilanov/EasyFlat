@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -135,9 +136,9 @@ public class ShoppingListEndpoint {
 
     @PermitAll
     @GetMapping("/lists")
-    public List<ShoppingListDto> getShoppingLists(@RequestHeader("Authorization") String jwt) throws AuthenticationException {
-        LOGGER.info("getShoppingLists({})", jwt);
-        List<ShoppingList> lists = shoppingService.getShoppingLists(jwt);
+    public List<ShoppingListDto> getShoppingLists(@RequestParam(name = "searchParams") String searchParams, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+        LOGGER.info("getShoppingLists({}, {})", searchParams, jwt);
+        List<ShoppingList> lists = shoppingService.getShoppingLists(searchParams, jwt);
 
         return shoppingListMapper.entityListToDtoList(lists);
     }

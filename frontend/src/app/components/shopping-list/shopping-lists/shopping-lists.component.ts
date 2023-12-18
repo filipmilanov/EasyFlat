@@ -11,7 +11,7 @@ import {ToastrService} from "ngx-toastr";
 })
 export class ShoppingListsComponent {
   lists: ShoppingListDto[];
-  searchParameters: string;
+  searchParams: string;
 
   constructor(private shoppingService: ShoppingListService,
               private notification: ToastrService) {
@@ -22,7 +22,7 @@ export class ShoppingListsComponent {
   }
 
   loadLists() {
-    this.shoppingService.getShoppingLists().subscribe({
+    this.shoppingService.getShoppingLists(this.searchParams).subscribe({
       next: res => {
         this.lists = res;
       },

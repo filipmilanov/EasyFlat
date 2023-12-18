@@ -81,11 +81,12 @@ public interface ShoppingListService {
     ShoppingList deleteList(Long shopId, String jwt) throws ValidationException, AuthenticationException;
 
     /**
-     * Get all ShoppingLists from the db.
+     * Get all ShoppingLists from the db filtered by search parameters.
      *
+     * @param searchParams name of the list, through which we search for it. Can also be null
      * @return a List of all persisted ShoppingLists
      */
-    List<ShoppingList> getShoppingLists(String jwt) throws AuthenticationException;
+    List<ShoppingList> getShoppingLists(String searchParams, String jwt) throws AuthenticationException;
 
     /**
      * Transfer ShoppingItems to the server.
