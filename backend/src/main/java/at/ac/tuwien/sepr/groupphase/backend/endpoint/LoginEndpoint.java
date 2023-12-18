@@ -48,8 +48,8 @@ public class LoginEndpoint {
     }
 
     @PermitAll
-    @PutMapping
-    public UserDetailDto update(@RequestBody UserDetailDto userDetailDto) {
+    @PutMapping("/{id}")
+    public UserDetailDto update(@PathVariable long id, @RequestBody UserDetailDto userDetailDto) {
         return userService.update(userDetailDto);
     }
 
