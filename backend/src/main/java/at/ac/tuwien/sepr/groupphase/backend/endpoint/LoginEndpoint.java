@@ -41,9 +41,10 @@ public class LoginEndpoint {
     @PermitAll
     @GetMapping
     public UserDetailDto getUser(@RequestHeader("Authorization") String authToken) {
-        return userMapper.entityToUserDetailDto(
+        UserDetailDto toReturn = userMapper.entityToUserDetailDto(
             userService.getUser(authToken)
         );
+        return toReturn;
     }
 
     @PermitAll
@@ -53,9 +54,9 @@ public class LoginEndpoint {
     }
 
     @PermitAll
-    @DeleteMapping("/{email}")
-    public UserDetailDto delete(@PathVariable String email) {
-        return userService.delete(email);
+    @DeleteMapping("/{id}")
+    public UserDetailDto delete(@PathVariable long id) {
+        return userService.delete(id);
     }
 
     @PermitAll
