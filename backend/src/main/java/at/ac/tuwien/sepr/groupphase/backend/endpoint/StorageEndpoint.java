@@ -70,7 +70,6 @@ public class StorageEndpoint {
     @GetMapping("/info/{name}")
     public List<Item> getItemWithGeneralName(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.info("getItemWithGeneralName");
-        List<Item> items = digitalStorageService.getItemWithGeneralName(name, jwt);
         return digitalStorageService.getItemWithGeneralName(name, jwt);
     }
 
