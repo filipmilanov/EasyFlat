@@ -155,7 +155,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
       observable.subscribe({
         next: data => {
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished}.`, "Success");
-          this.router.navigate(['shopping-lists', 'list' + this.item.shoppingList.id]);
+          this.router.navigate(['shopping-lists', 'list', this.item.shoppingList.id]);
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}`);

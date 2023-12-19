@@ -92,9 +92,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         List<ItemLabel> labels = findLabelsAndCreateMissing(itemDto.labels());
 
-        ShoppingItem createdItem = shoppingItemRepository.save(itemMapper.dtoToShopping(itemDto, labels, shoppingListMapper.dtoToEntity(itemDto.shoppingList())));
-        createdItem.setLabels(labels);
-        return createdItem;
+        return shoppingItemRepository.save(itemMapper.dtoToShopping(itemDto, labels, shoppingListMapper.dtoToEntity(itemDto.shoppingList())));
     }
 
     @Override

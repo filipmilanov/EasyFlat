@@ -103,7 +103,7 @@ export class ShoppingListComponent implements OnInit {
       this.shoppingListService.deleteList(this.shopId).subscribe({
         next: (deletedList: ShoppingListDto) => {
           console.log(deletedList.name, ' was deleted successfully');
-          this.router.navigate(['shopping-lists', 'list' + this.shoppingList.id]);
+          this.router.navigate(['shopping-lists']);
         },
         error: error => {
           console.error(error.message, error);

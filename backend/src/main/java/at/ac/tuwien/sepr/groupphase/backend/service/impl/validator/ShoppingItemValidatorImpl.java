@@ -82,7 +82,7 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
             }
         }
 
-        if (itemDto.digitalStorage() == null) {
+        if (digitalStorageList.isEmpty()) {
             errors.add("The item is not linked to an digital storage");
         }
 
