@@ -79,10 +79,6 @@ public class ShoppingItemValidator {
             }
         }
 
-        if (itemDto.digitalStorage() != null && !itemDto.digitalStorage().title().equals("Storage")) {
-            errors.add("The item is linked to to an incorrect Digital Storage");
-        }
-
         if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
             errors.add("The given Unit does not exists");
         }
