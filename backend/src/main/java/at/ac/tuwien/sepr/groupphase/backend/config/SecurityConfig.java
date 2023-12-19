@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.config;
 
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -27,6 +28,16 @@ public class SecurityConfig {
     }
 
     @Bean
+    public FilterRegistrationBean<JwtAuthorizationFilter> jwtFilter() {
+        FilterRegistrationBean<JwtAuthorizationFilter> filterRegistrationBean = new FilterRegistrationBean<>();
+        filterRegistrationBean.setFilter(jwtAuthorizationFilter);
+        filterRegistrationBean.addUrlPatterns("/api/v1/shopping/*", "/api/v1/wgCreate/*",
+            "/api/v1/register/*", "/api/v1/storage/*", "/api/v1/unit/", "/api/v1/messages/*",
+            "/api/v1/wgLogin/*", "/api/v1/authentication/*", "/api/v1/item/*", "/health/*", "/api/v1/cooking/*");
+        return filterRegistrationBean;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
@@ -40,7 +51,8 @@ public class SecurityConfig {
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**")
                 .allowedOriginPatterns("http://localhost:4200", "https://*.apps.student.inso-w.at")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD");
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD")
+                .allowedHeaders("*");
         }
     }
 }

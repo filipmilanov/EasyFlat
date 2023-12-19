@@ -1,0 +1,97 @@
+<div *ngIf="error" class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>Authentication problems!</strong> {{ errorMessage }}
+  <button type="button" (click)="vanishError()" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="pt-5">
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <span class="anchor" id="formRegister"></span>
+
+      <div class="card mt-3">
+        <div class="card-header">
+          <h3 class="mb-0">Account Details</h3>
+        </div>
+
+        <div class="card-body">
+          <form class="form" [formGroup]="accountForm" (ngSubmit)="update()">
+
+            <div class="form-group">
+              <div>
+                <label for="firstName">First name</label>
+                <input type="text" name="firstName" formControlName="firstName" class="form-control" id="firstName">
+              </div>
+              <div *ngIf="submitted && accountForm.get('firstName').errors?.required" class="error">
+                <small class="form-text text-warning">Your first name is required!</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div>
+                <label for="firstName">Last name</label>
+                <input type="text" name="lastName" formControlName="lastName" class="form-control" id="lastName">
+              </div>
+              <div *ngIf="submitted && accountForm.get('lastName').errors?.required" class="error">
+                <small class="form-text text-warning">Your last name is required!</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div>
+                <label for="firstName">Email</label>
+                <input type="email" name="email" formControlName="email" class="form-control" id="email">
+              </div>
+              <div *ngIf="submitted && accountForm.get('email').errors?.required" class="error">
+                <small class="form-text text-warning">Your email is required!</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password">New password</label>
+              <input type="password" name="password" formControlName="password" class="form-control" id="password"
+                     placeholder="New password">
+              <div *ngIf="submitted && accountForm.controls.password.errors" class="error">
+                <small class="form-text text-warning" *ngIf="accountForm.controls.password.errors?.minlength">Your password
+                  must be at least 8 characters long!
+                </small>
+              </div>
+            </div>
+            <button style="margin-right: 10px;" type="submit" class="btn btn-success float-right">Save Changes</button>
+            <button style="margin-right: 10px;" type="button" (click)="delete()" class="btn btn-danger float-right">Delete Account</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+<div *ngIf="user.flatName != null">
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <span class="anchor" id="formRegister"></span>
+
+      <div class="card mt-3">
+        <div class="card-header">
+          <h3 class="mb-0">Shared Flat Details</h3>
+        </div>
+
+        <div class="card-body">
+          <form class="form" [formGroup]="accountForm" >
+            <div class="form-group">
+              <div>
+                <label for="name">Flat name</label>
+                <input type="text"  name="name" formControlName="flatName" class="form-control" id="name" readonly>
+              </div>
+              <div *ngIf="submitted && accountForm.get('name').errors?.required" class="error">
+                <small class="form-text text-warning">Your flat name is required!</small>
+              </div>
+            </div>
+            <button style="margin-right: 10px;" type="button" (click)="signOut()" class="btn btn-danger float-right">Sign Out</button>
+            <button *ngIf="user.admin" style="margin-right: 10px;" type="button" (click)="deleteFlat()" class="btn btn-danger float-right">Delete Flat</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

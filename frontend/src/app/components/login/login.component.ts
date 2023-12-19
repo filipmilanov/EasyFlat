@@ -3,6 +3,7 @@ import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import {AuthRequest} from '../../dtos/auth-request';
+import {SharedFlatService} from "../../services/sharedFlat.service";
 
 
 @Component({
@@ -19,11 +20,13 @@ export class LoginComponent implements OnInit {
   error = false;
   errorMessage = '';
 
-  constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private router: Router) {
+
+  constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private sharedFlatService: SharedFlatService, private router: Router) {
     this.loginForm = this.formBuilder.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8)]]
     });
+
   }
 
   /**
@@ -32,12 +35,14 @@ export class LoginComponent implements OnInit {
   loginUser() {
     this.submitted = true;
     if (this.loginForm.valid) {
+      this.sharedFlatService.changeEvent();
       const authRequest: AuthRequest = new AuthRequest(this.loginForm.controls.username.value, this.loginForm.controls.password.value);
       this.authenticateUser(authRequest);
     } else {
       console.log('Invalid input');
     }
   }
+
 
   /**
    * Send authentication data to the authService. If the authentication was successfully, the user will be forwarded to the message page
@@ -46,10 +51,11 @@ export class LoginComponent implements OnInit {
    */
   authenticateUser(authRequest: AuthRequest) {
     console.log('Try to authenticate user: ' + authRequest.email);
+
     this.authService.loginUser(authRequest).subscribe({
       next: () => {
         console.log('Successfully logged in user: ' + authRequest.email);
-        this.router.navigate(['/message']);
+           this.router.navigate(['']);
       },
       error: error => {
         console.log('Could not log in due to:');

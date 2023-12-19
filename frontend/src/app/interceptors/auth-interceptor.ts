@@ -1,25 +1,47 @@
-import {Injectable} from '@angular/core';
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {AuthService} from '../services/auth.service';
-import {Observable} from 'rxjs';
-import {Globals} from '../global/globals';
+import { Injectable } from "@angular/core";
+import {
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from "@angular/common/http";
+import { AuthService } from "../services/auth.service";
+import { Observable } from "rxjs";
+import { Globals } from "../global/globals";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+  constructor(private authService: AuthService, private globals: Globals) {}
 
-  constructor(private authService: AuthService, private globals: Globals) {
-  }
-
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const authUri = this.globals.backendUri + '/authentication';
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
+    const whiteList = [
+      "/authentication",
+      "/register",
+      "/account",
+      "/wgLogin",
+      "/wgCreate",
+      "/storage",
+      "/cooking",
+      "/cookbook",
+    ];
 
     // Do not intercept authentication requests
-    if (req.url === authUri) {
+    if (
+      whiteList.find((whiteListedEndpoint) =>
+        req.url.startsWith(this.globals.backendUri + whiteListedEndpoint)
+      )
+    ) {
       return next.handle(req);
     }
 
     const authReq = req.clone({
-      headers: req.headers.set('Authorization', 'Bearer ' + this.authService.getToken())
+      headers: req.headers.set(
+        "Authorization",
+        "Bearer " + this.authService.getToken()
+      ),
     });
 
     return next.handle(authReq);

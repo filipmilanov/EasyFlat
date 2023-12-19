@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.security;
 
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -30,5 +32,19 @@ public class JwtTokenizer {
             .claim("rol", roles)
             .compact();
         return securityProperties.getAuthTokenPrefix() + token;
+    }
+
+    public String getEmailFromToken(String authToken) {
+        try {
+            String tokenWithoutPrefix = authToken.replace(securityProperties.getAuthTokenPrefix(), "");
+            Claims claims = Jwts.parser()
+                .setSigningKey(securityProperties.getJwtSecret().getBytes())
+                .build()
+                .parseClaimsJws(tokenWithoutPrefix)
+                .getBody();
+            return claims.getSubject();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new RuntimeException("Failed to retrieve email from token", e);
+        }
     }
 }

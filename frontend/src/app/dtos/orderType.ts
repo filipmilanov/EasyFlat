@@ -1,0 +1,4 @@
+export enum OrderType {
+    PRODUCT_NAME = 'PRODUCT_NAME',
+    QUANTITY_CURRENT = 'QUANTITY_CURRENT'
+}
