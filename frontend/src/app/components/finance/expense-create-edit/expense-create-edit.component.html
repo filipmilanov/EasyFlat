@@ -31,7 +31,7 @@
           <input type="text"
                  class="form-control"
                  id="description"
-                 name="amountInCents"
+                 name="description"
                  placeholder="Description"
                  [(ngModel)]="expense.description">
         </div>
@@ -44,12 +44,12 @@
           Amount*
         </label>
         <div class="col-md-10 col-lg-8">
-          <input type="text"
+          <input type="number"
                  class="form-control"
                  id="amountInCents"
                  name="amountInCents"
                  placeholder="Amount"
-                 [(ngModel)]="expense.amountInCents">
+                 [(ngModel)]="amountInEuro">
         </div>
       </div>
 
@@ -66,7 +66,7 @@
                  name="createdAt"
                  placeholder="Timestamp"
                  [selectionStart]="expense.createdAt"
-                 [ngModel]="expense.createdAt | date:'yyyy-MM-dd'"
+                 [ngModel]="expense.createdAt | date:'dd.MM.yyyy'"
                  (ngModelChange)="expense.createdAt = $event">
         </div>
       </div>

@@ -17,6 +17,7 @@ export class ExpenseCreateEditComponent implements OnInit {
 
   heading: string = 'Create Expense';
   expense: ExpenseDto = new ExpenseDto();
+  amountInEuro: number;
   splitByOptions = Object.keys(SplitBy).map(key => ({value: key, label: SplitBy[key]}));
   selectedSplitBy: SplitBy = SplitBy.EQUAL;
   submitButtonText: string = 'Create';
@@ -64,7 +65,8 @@ export class ExpenseCreateEditComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    console.log(this.expense)
+    this.prepareExpense();
+    console.log(this.expense);
     let o = this.financeService.createExpense(this.expense).subscribe({
       next: (expense: ExpenseDto) => {
         this.notification.success("Expense created");
@@ -81,6 +83,10 @@ export class ExpenseCreateEditComponent implements OnInit {
         });
       }
     });
+  }
+
+  private prepareExpense() {
+    this.expense.amountInCents = this.amountInEuro * 100;
   }
 
   onSplitByChange() {
