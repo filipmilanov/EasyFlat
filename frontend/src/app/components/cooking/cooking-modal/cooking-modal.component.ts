@@ -20,10 +20,25 @@ export class CookingModalComponent {
 
   }
 
-  cook() {
-    this.cookingService.cookRecipe(this.recipe).subscribe({
+  ngOnInit(): void {
+    this.cookingService.getMissingIngredients(this.recipe.id).subscribe({
+      next: res => {
+        this.recipeWithMissing = res;
+        console.log(this.recipeWithMissing)
+      },
+      error: err => {
+        console.error("Error loading recipes:", err);
+        this.notification.error("Error loading recipes");
+      }
+    })
+  }
+
+  cook(){
+    this.activeModal.dismiss();
+    this.cookingService.cookRecipe(this.recipeWithMissing).subscribe({
       next: res => {
         console.log("cooked");
+        this.notification.success(`Recipe ${this.recipeWithMissing.title} successfully cooked.`, "Success");
 
       },
       error: err => {

@@ -46,7 +46,7 @@ public class RecipeSuggestion {
     private String summary;
 
     @ManyToOne
-    @NotNull(message = "A Item need to be linked to a cookbook")
+    //@NotNull(message = "A Item need to be linked to a cookbook")
     private Cookbook cookbook;
 
     public void setId(Long id) {

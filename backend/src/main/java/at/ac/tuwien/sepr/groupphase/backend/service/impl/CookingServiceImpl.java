@@ -151,6 +151,7 @@ public class CookingServiceImpl implements CookingService {
 
         toReturn = saveUnitsAlsUnits(toReturn);
 
+
         return toReturn;
     }
 
@@ -299,6 +300,14 @@ public class CookingServiceImpl implements CookingService {
         return null;
     }
 
+    public RecipeSuggestion getRecipeFromApi(Long recipeId) {
+        String reqString = "https://api.spoonacular.com/recipes/" + recipeId + "/information" + "?apiKey=" + apiKey + "&includeNutrition=false";
+        ResponseEntity<RecipeSuggestion> response = restTemplate.exchange(reqString, HttpMethod.GET, null, new ParameterizedTypeReference<RecipeSuggestion>() {
+        });
+
+        return response.getBody();
+    }
+
     @Override
     public Cookbook createCookbook(CookbookDto cookbookDto, String jwt) throws ValidationException, ConflictException, AuthenticationException {
 
@@ -401,70 +410,77 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthenticationException {
         Long storId = this.getStorIdForUser(jwt);
-        Optional<RecipeSuggestion> recipeEntity = repository.findById(id);
-        Optional<RecipeSuggestionDto> recipeDto = recipeEntity.map(currentRecipe -> {
-            RecipeSuggestionDto recipeSuggestionDto = recipeMapper.entityToRecipeSuggestionDto(currentRecipe);
-            if (recipeSuggestionDto != null) {
-                List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
-                for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
-                    List<Item> items = storageRepository.getItemWithGeneralName(storId, ingredient.name());
-                    if (items.isEmpty()) {
-                        missingIngredients.add(ingredient);
-                        continue;
-                    }
 
-                    Unit ingredientUnit = unitMapper.unitDtoToEntity(ingredient.unitEnum());
-                    if (!getMinUnit(ingredientUnit).equals(getMinUnit(items.get(0).getUnit()))) {
-                        missingIngredients.add(ingredient);
-                        continue;
-                    }
-                    try {
-                        Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), ingredient.amount());
-                        Double itemQuantityTotal = getItemQuantityTotalInMinQuantity(items);
+        RecipeSuggestion recipeEntity;
+        try {
+            recipeEntity = repository.findById(id).orElseThrow(() -> {
+                throw new NotFoundException();
+            });
+        } catch (NotFoundException e) {
+            recipeEntity = getRecipeFromApi(id);
+        }
 
-                        if (ingAmountMin > itemQuantityTotal) {
-                            if (ingredientUnit.getConvertFactor() == null) {
-                                ingredientUnit.setConvertFactor(1L);
-                            }
-                            if (ingAmountMin < ingredientUnit.getConvertFactor()) {
-
-                                RecipeIngredientDto newIngredient = new RecipeIngredientDto(
-                                    ingredient.id(),
-                                    ingredient.name(),
-                                    getMinUnit(ingredientUnit).getName(),
-                                    unitMapper.entityToUnitDto(getMinUnit(ingredientUnit)),
-                                    ingAmountMin - itemQuantityTotal
-                                );
-                                missingIngredients.add(newIngredient);
-                            } else {
-
-                                Double updatedQuantity = unitService.convertUnits(getMinUnit(ingredientUnit), items.get(0).getUnit(), ingAmountMin - itemQuantityTotal);
-                                RecipeIngredientDto newIngredient = new RecipeIngredientDto(
-                                    ingredient.id(),
-                                    ingredient.name(),
-                                    items.get(0).getUnit().getName(),
-                                    unitMapper.entityToUnitDto(items.get(0).getUnit()),
-                                    updatedQuantity
-                                );
-                                missingIngredients.add(newIngredient);
-                            }
-                        }
-
-
-                    } catch (ValidationException | ConflictException e) {
-                        throw new RuntimeException(e);
-                    }
-
-
+        RecipeSuggestionDto recipeSuggestionDto = recipeMapper.entityToRecipeSuggestionDto(recipeEntity);
+        if (recipeSuggestionDto != null) {
+            List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
+            for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
+                List<Item> items = storageRepository.getItemWithGeneralName(storId, ingredient.name());
+                if (items.isEmpty()) {
+                    missingIngredients.add(ingredient);
+                    continue;
                 }
-                RecipeSuggestionDto newRecipe = new RecipeSuggestionDto(recipeSuggestionDto.id(), recipeSuggestionDto.title(), recipeSuggestionDto.servings(),
-                    recipeSuggestionDto.readyInMinutes(), recipeSuggestionDto.extendedIngredients(), recipeSuggestionDto.summary(),
-                    missingIngredients, recipeSuggestionDto.dishTypes());
-                recipeSuggestionDto = newRecipe;
+
+                Unit ingredientUnit = unitMapper.unitDtoToEntity(ingredient.unitEnum());
+                if (!getMinUnit(ingredientUnit).equals(getMinUnit(items.get(0).getUnit()))) {
+                    missingIngredients.add(ingredient);
+                    continue;
+                }
+                try {
+                    Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), ingredient.amount());
+                    Double itemQuantityTotal = getItemQuantityTotalInMinQuantity(items);
+
+                    if (ingAmountMin > itemQuantityTotal) {
+                        if (ingredientUnit.getConvertFactor() == null) {
+                            ingredientUnit.setConvertFactor(1L);
+                        }
+                        if (ingAmountMin < ingredientUnit.getConvertFactor()) {
+
+                            RecipeIngredientDto newIngredient = new RecipeIngredientDto(
+                                ingredient.id(),
+                                ingredient.name(),
+                                getMinUnit(ingredientUnit).getName(),
+                                unitMapper.entityToUnitDto(getMinUnit(ingredientUnit)),
+                                ingAmountMin - itemQuantityTotal
+                            );
+                            missingIngredients.add(newIngredient);
+                        } else {
+
+                            Double updatedQuantity = unitService.convertUnits(getMinUnit(ingredientUnit), items.get(0).getUnit(), ingAmountMin - itemQuantityTotal);
+                            RecipeIngredientDto newIngredient = new RecipeIngredientDto(
+                                ingredient.id(),
+                                ingredient.name(),
+                                items.get(0).getUnit().getName(),
+                                unitMapper.entityToUnitDto(items.get(0).getUnit()),
+                                updatedQuantity
+                            );
+                            missingIngredients.add(newIngredient);
+                        }
+                    }
+
+
+                } catch (ValidationException | ConflictException e) {
+                    throw new RuntimeException(e);
+                }
+
+
             }
-            return recipeSuggestionDto;
-        });
-        return recipeDto.orElse(null);
+            RecipeSuggestionDto newRecipe = new RecipeSuggestionDto(recipeSuggestionDto.id(), recipeSuggestionDto.title(), recipeSuggestionDto.servings(),
+                recipeSuggestionDto.readyInMinutes(), recipeSuggestionDto.extendedIngredients(), recipeSuggestionDto.summary(),
+                missingIngredients, recipeSuggestionDto.dishTypes());
+            recipeSuggestionDto = newRecipe;
+        }
+        return recipeSuggestionDto;
+
     }
 
     @Override
@@ -650,4 +666,12 @@ public class CookingServiceImpl implements CookingService {
         }
     }
 
+    private void saveRecipes(List<RecipeSuggestionDto> recipes) {
+        for (RecipeSuggestionDto recipeSuggestionDto : recipes) {
+            List<RecipeIngredient> ingredientList = ingredientService.createAll(recipeSuggestionDto.extendedIngredients());
+            RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipeSuggestionDto, ingredientList);
+            recipeEntity.setVersion(2);
+            repository.save(recipeEntity);
+        }
+    }
 }
