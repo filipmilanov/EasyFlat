@@ -60,12 +60,14 @@
           Timestamp
         </label>
         <div class="col-md-10 col-lg-8">
-          <input type="datetime-local"
+          <input type="date"
                  class="form-control"
                  id="createdAt"
                  name="createdAt"
                  placeholder="Timestamp"
-                 [(ngModel)]="expense.createdAt">
+                 [selectionStart]="expense.createdAt"
+                 [ngModel]="expense.createdAt | date:'yyyy-MM-dd'"
+                 (ngModelChange)="expense.createdAt = $event">
         </div>
       </div>
 
