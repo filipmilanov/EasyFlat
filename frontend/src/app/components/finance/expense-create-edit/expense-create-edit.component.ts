@@ -85,12 +85,22 @@ export class ExpenseCreateEditComponent implements OnInit {
         errorMessages.forEach(message => {
           this.notification.error(message, errorDescription);
         });
+        if (this.selectedSplitBy === SplitBy.EQUAL || this.selectedSplitBy === SplitBy.UNEQUAL) {
+          this.expense.debitUsers.forEach(user => {
+            user.value = user.value / 100;
+          });
+        }
       }
     });
   }
 
   private prepareExpense() {
     this.expense.amountInCents = this.amountInEuro * 100;
+    if (this.selectedSplitBy === SplitBy.EQUAL || this.selectedSplitBy === SplitBy.UNEQUAL) {
+      this.expense.debitUsers.forEach(user => {
+        user.value = user.value * 100;
+      });
+    }
   }
 
   private checkIfAmountIsToHigh() {
