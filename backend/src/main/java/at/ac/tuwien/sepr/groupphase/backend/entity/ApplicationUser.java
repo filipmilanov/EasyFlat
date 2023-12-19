@@ -86,7 +86,9 @@ public class ApplicationUser {
 
     public void setSharedFlat(SharedFlat existingSharedFlat) {
         this.sharedFlat = existingSharedFlat;
-        sharedFlat.getUsers().add(this);
+        if (existingSharedFlat != null) {
+            sharedFlat.getUsers().add(this);
+        }
     }
 
     public SharedFlat getSharedFlat() {
