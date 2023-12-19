@@ -39,7 +39,7 @@ public class ExpenseDataGenerator {
             expense.setTitle("Expense " + i);
             expense.setDescription("Description " + i);
             expense.setSplitBy(SplitBy.EQUAL);
-            expense.setAmountInCents(1000L);
+            expense.setAmountInCents(1000.0);
 
 
             for (int j = 0; j < NUMBER_OF_ENTITIES_TO_GENERATE; j++) {

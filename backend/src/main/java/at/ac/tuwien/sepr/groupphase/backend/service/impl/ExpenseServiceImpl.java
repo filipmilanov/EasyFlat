@@ -92,7 +92,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 DebitDto debit = DebitDtoBuilder.builder()
                     .splitBy(debitDto.splitBy())
                     .user(debitDto.user())
-                    .value(debitDto.value() * 100 / expense.amountInCents())
+                    .value(debitDto.value() * 100.0 / expense.amountInCents())
                     .build();
                 debitList.add(debitMapper.debitDtoToEntity(debit, expense));
             });
@@ -100,14 +100,14 @@ public class ExpenseServiceImpl implements ExpenseService {
                 debitList.add(debitMapper.debitDtoToEntity(debitDto, expense));
             });
             case PROPORTIONAL -> {
-                double proportions = expense.debitUsers().stream().mapToLong(DebitDto::value).sum();
+                double proportions = expense.debitUsers().stream().mapToDouble(DebitDto::value).sum();
                 double baseAmount = expense.amountInCents() / proportions;
                 expense.debitUsers().forEach(debitDto -> {
                     double valueOfUser = baseAmount * debitDto.value();
                     DebitDto debit = DebitDtoBuilder.builder()
                         .splitBy(debitDto.splitBy())
                         .user(debitDto.user())
-                        .value(Math.round(valueOfUser * 100.0 / expense.amountInCents()))
+                        .value(valueOfUser * 100.0 / expense.amountInCents())
                         .build();
                     debitList.add(debitMapper.debitDtoToEntity(debit, expense));
                 });
