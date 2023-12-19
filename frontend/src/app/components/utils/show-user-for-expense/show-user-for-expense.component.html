@@ -4,9 +4,8 @@
     <input class="form-check-input"
            type="checkbox"
            id="target"
-           #isActive
-           [ngModel]="isActive"
-           (change)="user.value = 0">
+           [(ngModel)]="selectedUsers[i]"
+           (change)="adaptedToChange()">
   </div>
   <div class="col-4">
     {{user.user.firstName + " " + user.user.lastName}}
@@ -19,7 +18,7 @@
            class="form-control"
            aria-label="value"
            [(ngModel)]="user.value"
-           [disabled]="!isActive.checked"
+           [disabled]="!selectedUsers[i]"
     >
   </div>
 </div>

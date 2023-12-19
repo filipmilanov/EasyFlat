@@ -110,6 +110,8 @@
           <h3>Paid for</h3>
           <app-show-user-for-expense
             id="users"
+            [splitBy]="this.selectedSplitBy"
+            [amountInEuro]="this.amountInEuro"
             [(users)]="this.expense.debitUsers"
           ></app-show-user-for-expense>
         </div>
