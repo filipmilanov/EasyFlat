@@ -12,7 +12,7 @@ import java.util.List;
 public record ExpenseDto(
     Long id,
     @NotEmpty(message = "Title cannot be empty") String title,
-    @NotNull(message = "Description cannot be null") String description,
+    String description,
     @NotNull(message = "Amount cannot be empty")
     Long amountInCents,
     @NotNull(message = "CreatedAt cannot be null")
