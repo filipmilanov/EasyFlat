@@ -119,7 +119,7 @@ class DigitalStorageServiceTest {
         sharedFlat.setName("TestWG");
         sharedFlat.setPassword("1234");
 
-        WgDetailDto wgDetailDto = sharedFlatService.create(sharedFlat, "");
+        WgDetailDto wgDetailDto = sharedFlatService.create(sharedFlat, null);
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("MyTestStorage")
             .sharedFlat(wgDetailDto)

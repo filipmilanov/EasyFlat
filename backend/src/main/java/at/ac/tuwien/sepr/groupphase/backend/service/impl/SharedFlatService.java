@@ -18,7 +18,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.SharedFlatValidator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.SharedFlatValidatorImpl;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     private final ShoppingListRepository shoppingListRepository;
     private final CookbookRepository cookbookRepository;
 
-    private final SharedFlatValidator validator;
+    private final SharedFlatValidatorImpl validator;
 
     @Autowired
     public SharedFlatService(SharedFlatRepository sharedFlatRepository,
@@ -58,7 +58,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
                              UserRepository userRepository,
                              Authorization authorization,
                              ShoppingListRepository shoppingListRepository,
-                             SharedFlatValidator validator) {
+                             SharedFlatValidatorImpl validator) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.sharedFlatMapper = sharedFlatMapper;
@@ -73,7 +73,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         this.validator = validator;
     }
 
-    @Override
+
     public SharedFlat findById(Long id, String jwt) throws AuthenticationException {
         LOGGER.trace("findById({}, {})", id, jwt);
 
@@ -113,7 +113,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         newSharedFlat.setDigitalStorage(digitalStorage);
 
         ShoppingList shoppingList = new ShoppingList();
-        shoppingList.setName("Default");
+        shoppingList.setName("Shopping List (Default)");
         shoppingList.setSharedFlat(newSharedFlat);
         shoppingListRepository.save(shoppingList);
 

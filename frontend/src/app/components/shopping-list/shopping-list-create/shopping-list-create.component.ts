@@ -40,7 +40,7 @@ export class ShoppingListCreateComponent {
       observable.subscribe({
         next: data => {
           this.notification.success(`New shopping list successfully created.`, "Success");
-          this.router.navigate(['/shopping-list/', this.list.name]);
+          this.router.navigate(['/shopping-lists']);
         },
         error: error => {
           console.error(`Error list was not created`);

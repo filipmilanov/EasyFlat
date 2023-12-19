@@ -180,7 +180,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   checkId() {
-    return this.shoppingList.name == "Default";
+    return this.shoppingList.name == "Shopping List (Default)";
   }
 
   navigateToEditItem(itemId: string) {

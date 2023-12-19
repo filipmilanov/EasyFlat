@@ -27,7 +27,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingItemValidator;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListValidator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListValidatorImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,13 +55,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final DigitalStorageRepository digitalStorageRepository;
     private final ShoppingItemValidator shoppingItemValidator;
     private final UnitService unitService;
-    private final ShoppingListValidator validator;
+    private final ShoppingListValidatorImpl validator;
 
     public ShoppingListServiceImpl(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
                                    ItemService itemService, CustomUserDetailService customUserDetailService, DigitalStorageRepository digitalStorageRepository,
-                                   ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidator validator) {
+                                   ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidatorImpl validator) {
         this.shoppingItemRepository = shoppingItemRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
