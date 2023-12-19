@@ -88,15 +88,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         List<Debit> debitList = new ArrayList<>();
         switch (splitBy) {
-            case EQUAL -> expense.debitUsers().forEach(debitDto -> {
-                DebitDto debit = DebitDtoBuilder.builder()
-                    .splitBy(debitDto.splitBy())
-                    .user(debitDto.user())
-                    .value(100L / expense.debitUsers().size())
-                    .build();
-                debitList.add(debitMapper.debitDtoToEntity(debit, expense));
-            });
-            case UNEQUAL -> expense.debitUsers().forEach(debitDto -> {
+            case EQUAL, UNEQUAL -> expense.debitUsers().forEach(debitDto -> {
                 DebitDto debit = DebitDtoBuilder.builder()
                     .splitBy(debitDto.splitBy())
                     .user(debitDto.user())
