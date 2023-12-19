@@ -146,7 +146,7 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
             }
         }
 
-        if (itemDto.digitalStorage() == null) {
+        if (digitalStorageList.isEmpty()) {
             errors.add("The item is not linked to a digital storage");
         }
 
