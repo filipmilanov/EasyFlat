@@ -21,6 +21,8 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
@@ -38,7 +40,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -54,19 +55,21 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final DigitalStorageService digitalStorageService;
     private final ItemService itemService;
     private CustomUserDetailService customUserDetailService;
-
+    private final JwtTokenizer jwtTokenizer;
     private final Authorization authorization;
     private final SharedFlatService sharedFlatService;
     private final DigitalStorageRepository digitalStorageRepository;
     private final ShoppingItemValidator shoppingItemValidator;
     private final UnitService unitService;
     private final ShoppingListValidator validator;
+    private final UserRepository userRepository;
 
     public ShoppingListServiceImpl(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
-                                   ItemService itemService, CustomUserDetailService customUserDetailService, Authorization authorization,
-                                   SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository, ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidator validator) {
+                                   ItemService itemService, CustomUserDetailService customUserDetailService, JwtTokenizer jwtTokenizer, Authorization authorization,
+                                   SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository,
+                                   ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidator validator, UserRepository userRepository) {
         this.shoppingItemRepository = shoppingItemRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -77,23 +80,26 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.digitalStorageService = digitalStorageService;
         this.itemService = itemService;
         this.customUserDetailService = customUserDetailService;
+        this.jwtTokenizer = jwtTokenizer;
         this.authorization = authorization;
         this.sharedFlatService = sharedFlatService;
         this.digitalStorageRepository = digitalStorageRepository;
         this.shoppingItemValidator = shoppingItemValidator;
         this.unitService = unitService;
         this.validator = validator;
+        this.userRepository = userRepository;
     }
 
     @Override
     public ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.trace("create({},{})", itemDto, jwt);
-        List<ShoppingList> shoppingLists = this.getShoppingLists(jwt);
+        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+        List<ShoppingList> shoppingLists = this.getShoppingLists(applicationUser);
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
         List<Unit> unitList = unitService.findAll();
         shoppingItemValidator.validateForCreate(itemDto, shoppingLists, digitalStorageList, unitList);
 
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
@@ -233,23 +239,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<ShoppingList> getShoppingLists(String jwt) throws AuthenticationException {
-        LOGGER.trace("getShoppingLists({})", jwt);
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-        return shoppingListRepository.findBySharedFlatIs(applicationUser.getSharedFlat());
+    public List<ShoppingList> getShoppingLists(ApplicationUser user) throws AuthenticationException {
+        LOGGER.trace("getShoppingLists({})", user);
+        return shoppingListRepository.findBySharedFlatIs(user.getSharedFlat());
     }
 
     @Override
-    public List<Item> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthenticationException {
-        LOGGER.trace("transferToServer({},{})", items, jwt);
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-        List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage", applicationUser.getSharedFlat());
+    public List<Item> transferToServer(List<ShoppingItemDto> items, ApplicationUser user) throws AuthenticationException {
+        LOGGER.trace("transferToServer({}, {})", items, user);
+        List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage", user.getSharedFlat());
         List<Item> itemsList = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
             Item item;
@@ -268,8 +266,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingItem update(ShoppingItemDto itemDto, String jwt) throws ConflictException, AuthenticationException, ValidationException {
         LOGGER.trace("update({})", itemDto);
-
-        List<ShoppingList> shoppingLists = this.getShoppingLists(jwt);
+        String userEmail = jwtTokenizer.getEmailFromToken(jwt);
+        ApplicationUser user = userRepository.findUserByEmail(userEmail);
+        List<ShoppingList> shoppingLists = this.getShoppingLists(user);
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
         List<Unit> unitList = unitService.findAll();
         shoppingItemValidator.validateForUpdate(itemDto, shoppingLists, digitalStorageList, unitList);

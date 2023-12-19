@@ -17,6 +17,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -82,7 +83,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (username == null || username.isEmpty()) {
             throw new IllegalArgumentException("Token contains no user");
         }
-
         MDC.put("u", username);
 
         return new UsernamePasswordAuthenticationToken(username, null, authorities);

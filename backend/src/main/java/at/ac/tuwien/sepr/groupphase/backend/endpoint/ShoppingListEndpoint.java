@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.LabelMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
@@ -15,11 +16,14 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,10 +49,13 @@ public class ShoppingListEndpoint {
     private final ItemMapper itemMapper;
     private final ShoppingListMapper shoppingListMapper;
 
-    public ShoppingListEndpoint(ShoppingListService shoppingService, ItemMapper mapper, ShoppingListMapper shoppingListMapper, IngredientMapper ingredientsMapper, LabelMapper labelMapper) {
+    private final CustomUserDetailService customUserDetailService;
+
+    public ShoppingListEndpoint(ShoppingListService shoppingService, ItemMapper mapper, ShoppingListMapper shoppingListMapper, IngredientMapper ingredientsMapper, LabelMapper labelMapper, CustomUserDetailService customUserDetailService) {
         this.shoppingService = shoppingService;
         this.itemMapper = mapper;
         this.shoppingListMapper = shoppingListMapper;
+        this.customUserDetailService = customUserDetailService;
     }
 
     @Secured("ROLE_USER")
@@ -135,18 +142,22 @@ public class ShoppingListEndpoint {
 
     @PermitAll
     @GetMapping("/lists")
-    public List<ShoppingListDto> getShoppingLists(@RequestHeader("Authorization") String jwt) throws AuthenticationException {
-        LOGGER.info("getShoppingLists({})", jwt);
-        List<ShoppingList> lists = shoppingService.getShoppingLists(jwt);
+    public List<ShoppingListDto> getShoppingLists() throws AuthenticationException {
+        LOGGER.info("getShoppingLists()");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ApplicationUser user  =  customUserDetailService.findApplicationUserByEmail((String) authentication.getPrincipal());
+        List<ShoppingList> lists = shoppingService.getShoppingLists(user);
 
         return shoppingListMapper.entityListToDtoList(lists);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @PostMapping("/storage")
-    public List<ItemDto> transferToStorage(@RequestBody List<ShoppingItemDto> items, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
-        LOGGER.info("transferToStorage({},{})", items, jwt);
-        List<Item> res = this.shoppingService.transferToServer(items, jwt);
+    public List<ItemDto> transferToStorage(@RequestBody List<ShoppingItemDto> items) throws AuthenticationException {
+        LOGGER.info("transferToStorage({})", items);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ApplicationUser user  =  customUserDetailService.findApplicationUserByEmail((String) authentication.getPrincipal());
+        List<Item> res = this.shoppingService.transferToServer(items, user);
         List<ItemDto> toRet = new ArrayList<>();
         for (Item item : res) {
             toRet.add(itemMapper.entityToDto(item));

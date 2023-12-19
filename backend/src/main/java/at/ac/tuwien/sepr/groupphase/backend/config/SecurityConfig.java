@@ -2,9 +2,9 @@ package at.ac.tuwien.sepr.groupphase.backend.config;
 
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,16 +25,6 @@ public class SecurityConfig {
     @Autowired
     public SecurityConfig(JwtAuthorizationFilter jwtAuthorizationFilter) {
         this.jwtAuthorizationFilter = jwtAuthorizationFilter;
-    }
-
-    @Bean
-    public FilterRegistrationBean<JwtAuthorizationFilter> jwtFilter() {
-        FilterRegistrationBean<JwtAuthorizationFilter> filterRegistrationBean = new FilterRegistrationBean<>();
-        filterRegistrationBean.setFilter(jwtAuthorizationFilter);
-        filterRegistrationBean.addUrlPatterns("/api/v1/shopping/*", "/api/v1/wgCreate/*",
-            "/api/v1/register/*", "/api/v1/storage/*", "/api/v1/unit/", "/api/v1/messages/*",
-            "/api/v1/wgLogin/*", "/api/v1/authentication/*", "/api/v1/item/*", "/health/*", "/api/v1/cooking/*");
-        return filterRegistrationBean;
     }
 
     @Bean

@@ -53,5 +53,4 @@ public interface UserService extends UserDetailsService {
 
     UserDetailDto signOut(String flatName, String authToken);
 
-
 }

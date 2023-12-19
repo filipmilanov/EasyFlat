@@ -2,8 +2,10 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 
 
 public interface SharedFlatService {
@@ -17,10 +19,10 @@ public interface SharedFlatService {
      */
     SharedFlat findById(Long id, String jwt) throws AuthenticationException;
 
-    WgDetailDto create(SharedFlat sharedFlat, String authToken) throws Exception;
+    WgDetailDto create(SharedFlat sharedFlat, ApplicationUser user) throws Exception;
 
-    WgDetailDto loginWg(SharedFlat wgDetailDto, String authToken);
+    WgDetailDto loginWg(SharedFlat wgDetailDto, ApplicationUser user);
 
-    WgDetailDto delete(String email);
+    WgDetailDto delete(ApplicationUser user) throws AuthorizationException;
 }
 

@@ -2,7 +2,9 @@ package at.ac.tuwien.sepr.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.LoginFlatEndpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,25 +39,25 @@ class LoginFlatEndPointTest {
         wgDetailDto.setName("name");
         wgDetailDto.setPassword("password");
 
-        when(sharedFlatService.loginWg(any(SharedFlat.class), any(String.class)))
+        when(sharedFlatService.loginWg(any(SharedFlat.class), any(ApplicationUser.class)))
             .thenReturn(wgDetailDto);
 
-        WgDetailDto result = loginFlatEndpoint.loginWg(authToken, sharedFlat);
+        WgDetailDto result = loginFlatEndpoint.loginWg(sharedFlat);
 
         assertEquals(wgDetailDto, result);
     }
 
     @Test
-    void testDelete() {
+    void testDelete() throws AuthorizationException {
         String email = "example@example.com";
         WgDetailDto wgDetailDto = new WgDetailDto();
         wgDetailDto.setName("name");
         wgDetailDto.setPassword("password");
 
-        when(sharedFlatService.delete(any(String.class)))
+        when(sharedFlatService.delete(any(ApplicationUser.class)))
             .thenReturn(wgDetailDto);
 
-        WgDetailDto result = loginFlatEndpoint.delete(email);
+        WgDetailDto result = loginFlatEndpoint.delete();
 
         assertEquals(wgDetailDto, result);
     }

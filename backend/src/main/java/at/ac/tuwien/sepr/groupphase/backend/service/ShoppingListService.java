@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
@@ -85,7 +86,7 @@ public interface ShoppingListService {
      *
      * @return a List of all persisted ShoppingLists
      */
-    List<ShoppingList> getShoppingLists(String jwt) throws AuthenticationException;
+    List<ShoppingList> getShoppingLists(ApplicationUser user) throws AuthenticationException;
 
     /**
      * Transfer ShoppingItems to the server.
@@ -93,7 +94,7 @@ public interface ShoppingListService {
      * @param items a List of ShoppingItemDto to be transferred
      * @return a List of Item objects
      */
-    List<Item> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthenticationException;
+    List<Item> transferToServer(List<ShoppingItemDto> items, ApplicationUser user) throws AuthenticationException;
 
     /**
      * Validates and Updates a new {@link ShoppingItem} in the db.
