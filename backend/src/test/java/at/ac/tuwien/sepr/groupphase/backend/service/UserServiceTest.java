@@ -100,9 +100,7 @@ public class UserServiceTest implements TestData {
         userDetailDto.setPassword("password");
         userService.register(userDetailDto);
 
-        ApplicationUser user = userRepository.findUserByEmail(userDetailDto.getEmail());
-
-        userService.delete(user.getId());
+        userService.delete("todelete@example.com");
 
         ApplicationUser deletedUserFromDB = userRepository.findUserByEmail("todelete@example.com");
         assertNull(deletedUserFromDB, "Deleted user should not be found");

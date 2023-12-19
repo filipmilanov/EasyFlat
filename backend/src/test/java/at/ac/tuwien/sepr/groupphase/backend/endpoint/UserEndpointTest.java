@@ -4,7 +4,6 @@ import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -131,9 +130,7 @@ public class UserEndpointTest implements TestData {
         user.setPassword("password");
         registerEndpoint.register(user);
 
-        ApplicationUser userByEmail = userRepository.findUserByEmail(user.getEmail());
-
-        mockMvc.perform(delete(LOGIN_BASE_URI + "/" + userByEmail.getId()))
+        mockMvc.perform(delete(LOGIN_BASE_URI + "/" + "delete@example.com"))
             .andExpect(status().isOk());
     }
 }

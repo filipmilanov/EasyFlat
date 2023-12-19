@@ -11,7 +11,6 @@ public abstract class UserMapper {
     public abstract UserLoginDto entityToUserLoginDto(ApplicationUser applicationUser);
 
     @Mapping(source = "applicationUser.sharedFlat.name", target = "flatName")
-    @Mapping(source = "applicationUser.id", target = "id")
     public abstract UserDetailDto entityToUserDetailDto(ApplicationUser applicationUser);
 
 }

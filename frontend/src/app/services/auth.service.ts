@@ -48,11 +48,11 @@ export class AuthService {
   }
 
   update(user: UserDetail): Observable<UserDetail> {
-    return this.httpClient.put<UserDetail>(this.authBaseUri+ '/' + user.id, user);
+    return this.httpClient.put<UserDetail>(this.authBaseUri, user);
   }
 
   delete(user: UserDetail): Observable<UserDetail> {
-    return this.httpClient.delete<UserDetail>(this.authBaseUri + '/' + user.id)
+    return this.httpClient.delete<UserDetail>(this.authBaseUri + '/' + user.email)
   }
 
 

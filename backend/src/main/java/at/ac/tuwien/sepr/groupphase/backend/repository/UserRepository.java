@@ -21,7 +21,4 @@ public interface UserRepository extends JpaRepository<ApplicationUser, Long> {
     void deleteByEmail(String email);
 
     boolean existsBySharedFlat(SharedFlat flat);
-
-    ApplicationUser findApplicationUserById(long id);
-
 }

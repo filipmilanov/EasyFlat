@@ -124,9 +124,7 @@ public class CustomUserDetailService implements UserService {
     @Override
     public ApplicationUser getUser(String authToken) {
         String email = jwtTokenizer.getEmailFromToken(authToken);
-        ApplicationUser toReturn = userRepository.findUserByEmail(email);
-        long id = toReturn.getId();
-        return toReturn;
+        return userRepository.findUserByEmail(email);
     }
 
     @Override
@@ -147,9 +145,9 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public UserDetailDto delete(long id) {
-        if (userRepository.findApplicationUserById(id) != null) {
-            ApplicationUser deletedUser = userRepository.findApplicationUserById(id);
+    public UserDetailDto delete(String email) {
+        if (userRepository.findUserByEmail(email) != null) {
+            ApplicationUser deletedUser = userRepository.findUserByEmail(email);
             userRepository.delete(deletedUser);
             return userMapper.entityToUserDetailDto(deletedUser);
         }
