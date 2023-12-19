@@ -59,13 +59,13 @@ public class ItemValidator {
             errors.add("The Id must be null");
         }
 
-        if (itemDto.digitalStorage() == null || itemDto.digitalStorage().storId() == null) {
+        if (itemDto.digitalStorage() == null || itemDto.digitalStorage().storageId() == null) {
             errors.add("There is no Digital Storage defined");
         } else if (digitalStorageList == null
             || digitalStorageList.stream()
-            .map(DigitalStorage::getStorId)
+            .map(DigitalStorage::getStorageId)
             .noneMatch(id ->
-                Objects.equals(id, itemDto.digitalStorage().storId())
+                Objects.equals(id, itemDto.digitalStorage().storageId())
             )
         ) {
             errors.add("The given Digital Storage does not exists");
@@ -114,13 +114,13 @@ public class ItemValidator {
             errors.add("The item id can't be null");
         }
 
-        if (itemDto.digitalStorage() == null || itemDto.digitalStorage().storId() == null) {
+        if (itemDto.digitalStorage() == null || itemDto.digitalStorage().storageId() == null) {
             errors.add("There is no Digital Storage defined");
         } else if (digitalStorageList == null
             || digitalStorageList.stream()
-            .map(DigitalStorage::getStorId)
+            .map(DigitalStorage::getStorageId)
             .noneMatch(id ->
-                Objects.equals(id, itemDto.digitalStorage().storId())
+                Objects.equals(id, itemDto.digitalStorage().storageId())
             )
         ) {
             errors.add("The given Digital Storage does not exist");

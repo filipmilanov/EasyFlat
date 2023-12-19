@@ -20,7 +20,7 @@ public class DigitalStorage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long storId;
+    private Long storageId;
 
     @Column
     private String title;
@@ -33,12 +33,12 @@ public class DigitalStorage {
     private List<Item> itemList = new ArrayList<>();
 
 
-    public Long getStorId() {
-        return storId;
+    public Long getStorageId() {
+        return storageId;
     }
 
-    public void setStorId(Long id) {
-        this.storId = id;
+    public void setStorageId(Long id) {
+        this.storageId = id;
     }
 
     public String getTitle() {
@@ -75,11 +75,11 @@ public class DigitalStorage {
             return false;
         }
         DigitalStorage digitalStorage = (DigitalStorage) o;
-        return Objects.equals(storId, digitalStorage.storId);
+        return Objects.equals(storageId, digitalStorage.storageId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(storId);
+        return Objects.hash(storageId);
     }
 }

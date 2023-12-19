@@ -56,7 +56,7 @@ public class ItemDataGenerator {
             item.setBoughtAt("Hofer");
 
             DigitalStorage storage = new DigitalStorage();
-            storage.setStorId(1L);
+            storage.setStorageId(1L);
             item.setStorage(storage);
 
             List<Ingredient> ingredientList = new ArrayList<>();

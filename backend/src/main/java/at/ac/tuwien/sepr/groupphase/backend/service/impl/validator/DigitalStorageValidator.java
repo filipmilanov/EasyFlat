@@ -51,7 +51,7 @@ public class DigitalStorageValidator {
     private void checkDigitalStorageForCreate(DigitalStorageDto digitalStorageDto) throws ConflictException {
         LOGGER.trace("checkDigitalStorageForCreate({})", digitalStorageDto);
 
-        if (digitalStorageDto.storId() != null) {
+        if (digitalStorageDto.storageId() != null) {
             throw new ConflictException("Conflict with other data", List.of("The Id must be null"));
         }
     }

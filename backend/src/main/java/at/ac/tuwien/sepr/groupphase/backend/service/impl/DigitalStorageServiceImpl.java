@@ -133,7 +133,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         LOGGER.trace("searchItems({})", searchItem);
         digitalStorageValidator.validateForSearchItems(searchItem);
 
-        Long storId = getStorIdForUser(jwt);
+        Long storageId = getStorageIdForUser(jwt);
 
 
         Class alwaysInStock = null;
@@ -144,7 +144,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
 
         List<Item> allItems = digitalStorageRepository.searchItems(
-            storId,
+            storageId,
             (searchItem.productName() != null) ? searchItem.productName() : null,
             (searchItem.fillLevel() != null) ? searchItem.fillLevel() : null,
             alwaysInStock
@@ -221,8 +221,8 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public List<Item> getItemWithGeneralName(String name, String jwt) throws AuthorizationException, ValidationException, ConflictException {
-        Long storId = getStorIdForUser(jwt);
-        return digitalStorageRepository.getItemWithGeneralName(storId, name);
+        Long storageId = getStorageIdForUser(jwt);
+        return digitalStorageRepository.getItemWithGeneralName(storageId, name);
     }
 
 
@@ -259,11 +259,11 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             Double updatedQuantityTotal = unitService.convertUnits(item.getUnit(), itemUnits.get(item.getGeneralName()), item.getQuantityTotal());
 
 
-            Double[] quantityStorId = new Double[3];
-            quantityStorId[0] = currentQ + updatedQuantityCurrent;
-            quantityStorId[1] = item.getStorage().getStorId().doubleValue();
-            quantityStorId[2] = totalQ + updatedQuantityTotal;
-            items.put(item.getGeneralName(), quantityStorId);
+            Double[] quantityStorageId = new Double[3];
+            quantityStorageId[0] = currentQ + updatedQuantityCurrent;
+            quantityStorageId[1] = item.getStorage().getStorageId().doubleValue();
+            quantityStorageId[2] = totalQ + updatedQuantityTotal;
+            items.put(item.getGeneralName(), quantityStorageId);
         }
         List<ItemListDto> toRet = new LinkedList<>();
         for (Map.Entry<String, Double[]> item : items.entrySet()) {
@@ -275,7 +275,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     /**
      * The Method assume, that there is only one storage per sharedFlat.
      */
-    private Long getStorIdForUser(String jwt) throws AuthorizationException, ValidationException, ConflictException {
+    private Long getStorageIdForUser(String jwt) throws AuthorizationException, ValidationException, ConflictException {
         List<DigitalStorage> digitalStorageList = findAll(null, jwt);
         DigitalStorage matchingDigitalStorage = null;
         if (!digitalStorageList.isEmpty()) {
@@ -297,7 +297,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             );
 
 
-            return matchingDigitalStorage.getStorId();
+            return matchingDigitalStorage.getStorageId();
         } else {
             return null;
         }

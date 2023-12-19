@@ -143,7 +143,7 @@ class ItemServiceTest {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
-            .storId(1L)
+            .storageId(1L)
             .build();
         List<IngredientDto> ingredientDtoList = List.of(
             IngredientDtoBuilder.builder()
@@ -201,7 +201,7 @@ class ItemServiceTest {
                 itemDto.description(),
                 itemDto.priceInCent()
             );
-        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
+        assertThat(actual.getStorage().getStorageId()).isEqualTo(itemDto.digitalStorage().storageId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getTitle)
             .toList()
@@ -214,7 +214,7 @@ class ItemServiceTest {
 
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
-            .storId(1L)
+            .storageId(1L)
             .build();
         List<IngredientDto> ingredientDtoList = List.of(
             IngredientDtoBuilder.builder()
@@ -281,7 +281,7 @@ class ItemServiceTest {
                 itemDto.minimumQuantity(),
                 itemDto.boughtAt()
             );
-        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
+        assertThat(actual.getStorage().getStorageId()).isEqualTo(itemDto.digitalStorage().storageId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getTitle)
             .toList()
@@ -294,7 +294,7 @@ class ItemServiceTest {
 
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
-            .storId(1L)
+            .storageId(1L)
             .build();
         List<IngredientDto> ingredientDtoList = List.of(
             IngredientDtoBuilder.builder()
@@ -336,7 +336,7 @@ class ItemServiceTest {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
-            .storId(1L)
+            .storageId(1L)
             .build();
         List<IngredientDto> ingredientDtoList = List.of(
             IngredientDtoBuilder.builder()
@@ -377,7 +377,7 @@ class ItemServiceTest {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
-            .storId(-999L)
+            .storageId(-999L)
             .build();
         List<IngredientDto> ingredientDtoList = List.of(
             IngredientDtoBuilder.builder()
@@ -420,7 +420,7 @@ class ItemServiceTest {
 
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
-            .storId(1L)
+            .storageId(1L)
             .build();
 
         List<IngredientDto> ingredientDtoList = List.of(
@@ -479,7 +479,7 @@ class ItemServiceTest {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
-            .storId(1L)
+            .storageId(1L)
             .build();
 
         List<IngredientDto> ingredientDtoList = List.of(
@@ -540,7 +540,7 @@ class ItemServiceTest {
 
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
-            .storId(1L)
+            .storageId(1L)
             .build();
 
         List<IngredientDto> ingredientDtoList = List.of(
@@ -602,7 +602,7 @@ class ItemServiceTest {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
-            .storId(1L)
+            .storageId(1L)
             .build();
 
         List<IngredientDto> ingredientDtoList = List.of(
@@ -661,7 +661,7 @@ class ItemServiceTest {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
-            .storId(1L)
+            .storageId(1L)
             .build();
 
         List<IngredientDto> ingredientDtoList = List.of(

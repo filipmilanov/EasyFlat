@@ -400,7 +400,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthorizationException {
-        Long storId = this.getStorIdForUser(jwt);
+        Long storageId = this.getStorageIdForUser(jwt);
         Optional<RecipeSuggestion> recipeEntity = repository.findById(id);
         Optional<RecipeSuggestionDto> recipeDto = recipeEntity.map(currentRecipe -> {
             RecipeSuggestionDto recipeSuggestionDto = recipeMapper.entityToRecipeSuggestionDto(currentRecipe);
@@ -470,7 +470,7 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthorizationException {
         recipeValidator.validateForCook(recipeToCook);
-        Long storId = this.getStorIdForUser(jwt);
+        Long storageId = this.getStorageIdForUser(jwt);
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
             List<Item> items = storageRepository.getItemWithGeneralName(storId, recipeIngredientDto.name());
@@ -622,7 +622,7 @@ public class CookingServiceImpl implements CookingService {
         }
     }
 
-    private Long getStorIdForUser(String jwt) throws AuthorizationException {
+    private Long getStorageIdForUser(String jwt) throws AuthorizationException {
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
         DigitalStorage matchingDigitalStorage = null;
         if (!digitalStorageList.isEmpty()) {
@@ -644,7 +644,7 @@ public class CookingServiceImpl implements CookingService {
             );
 
 
-            return matchingDigitalStorage.getStorId();
+            return matchingDigitalStorage.getStorageId();
         } else {
             return null;
         }

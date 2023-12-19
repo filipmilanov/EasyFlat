@@ -18,10 +18,10 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
     @Query("UPDATE Item i "
         + "SET i.quantityCurrent = :quantity "
         + "WHERE i.itemId = :itemId "
-        + "AND i.digitalStorage.storId = :storageId")
+        + "AND i.digitalStorage.storageId = :storageId")
     Item updateItemQuantity(@Param("storageId") long storageId, @Param("itemId") long itemId, @Param("quantity") long quantity);
 
-    @Query("SELECT i FROM Item i WHERE i.digitalStorage.storId = :storageId AND "
+    @Query("SELECT i FROM Item i WHERE i.digitalStorage.storageId = :storageId AND "
         + "(:title IS NULL OR LOWER(i.generalName) LIKE LOWER(CONCAT('%', :title, '%'))) AND "
         + "(:fillLevel IS NULL OR "
         + "(:fillLevel = 'full' AND ((cast(i.quantityCurrent as float ))/(cast(i.quantityTotal as float ))) > 0.4) OR "
@@ -34,9 +34,9 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
                            @Param("alwaysInStock") Class alwaysInStock);
 
 
-    @Query("SELECT i FROM Item i WHERE i.digitalStorage.storId = :storId AND "
+    @Query("SELECT i FROM Item i WHERE i.digitalStorage.storageId = :storageId AND "
         + ":generalName = i.generalName ")
-    List<Item> getItemWithGeneralName(@Param("storId") Long storId,
+    List<Item> getItemWithGeneralName(@Param("storageId") Long storageId,
                                       @Param("generalName") String generalName);
 }
 

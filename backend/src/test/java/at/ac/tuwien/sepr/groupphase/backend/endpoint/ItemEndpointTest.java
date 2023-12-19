@@ -90,7 +90,7 @@ class ItemEndpointTest {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
-            .storId(1L)
+            .storageId(1L)
             .build();
         List<IngredientDto> ingredientDtoList = List.of(
             IngredientDtoBuilder.builder()
@@ -181,7 +181,7 @@ class ItemEndpointTest {
 
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
-            .storId(1L)
+            .storageId(1L)
             .build();
         List<IngredientDto> ingredientDtoList = List.of(
             IngredientDtoBuilder.builder()
@@ -235,7 +235,7 @@ class ItemEndpointTest {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
-            .storId(-909L)
+            .storageId(-909L)
             .build();
         List<IngredientDto> ingredientDtoList = List.of(
             IngredientDtoBuilder.builder()

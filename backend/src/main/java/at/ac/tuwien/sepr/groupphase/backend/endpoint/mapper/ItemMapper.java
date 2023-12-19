@@ -41,7 +41,7 @@ public abstract class ItemMapper {
 
 
     Long digitalStorageToId(DigitalStorage storage) {
-        return storage.getStorId();
+        return storage.getStorageId();
     }
 
     List<Long> ingredientListToIdList(List<Ingredient> ingredientList) {

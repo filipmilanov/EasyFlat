@@ -123,7 +123,7 @@ public class ItemServiceImpl implements ItemService {
 
         ItemDto finalItemDto = itemDto;
         DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
-                .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
+                .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storageId(), digitalStorage.getStorageId()))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
 
@@ -176,7 +176,7 @@ public class ItemServiceImpl implements ItemService {
 
         ItemDto finalItemDto = itemDto;
         DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
-                .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
+                .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storageId(), digitalStorage.getStorageId()))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
 

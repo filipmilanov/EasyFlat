@@ -82,7 +82,7 @@ class DigitalStorageServiceTest {
 
         // then
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getStorId()).isEqualTo(id);
+        assertThat(actual.get().getStorageId()).isEqualTo(id);
     }
 
     @Test
@@ -129,7 +129,7 @@ class DigitalStorageServiceTest {
         DigitalStorage actual = service.create(digitalStorageDto, "");
 
         // then
-        Optional<DigitalStorage> persisted = service.findById(actual.getStorId());
+        Optional<DigitalStorage> persisted = service.findById(actual.getStorageId());
 
         assertTrue(persisted.isPresent());
         assertThat(actual).isEqualTo(persisted.get());
@@ -166,7 +166,7 @@ class DigitalStorageServiceTest {
             .generalName("apples")
             .quantityCurrent(10.0)
             .quantityTotal(20.0)
-            .storId(1L)
+            .storageId(1L)
             .unit(UnitDtoBuilder.builder().name("kg").build())
             .build();
 
