@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
-import {AuthRequest, UserDetail} from '../dtos/auth-request';
+import {AuthRequest} from '../dtos/auth-request';
 import {Observable} from 'rxjs';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {tap} from 'rxjs/operators';
 import {jwtDecode} from 'jwt-decode';
 import {Globals} from '../global/globals';
-import {SharedFlat} from "../dtos/sharedFlat";
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +12,6 @@ import {SharedFlat} from "../dtos/sharedFlat";
 export class AuthService {
 
   private authBaseUri: string = this.globals.backendUri + '/authentication';
-
-  user: UserDetail;
-  private event: boolean = false;
 
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
@@ -30,29 +26,6 @@ export class AuthService {
       .pipe(
         tap((authResponse: string) => this.setToken(authResponse))
       );
-  }
-
-  registerUser(userDetail: UserDetail): Observable<string> {
-    return this.httpClient.post(this.globals.backendUri + '/register', userDetail, { responseType: 'text' })
-      .pipe(
-        tap((authResponse: string) => this.setToken(authResponse))
-      );
-  }
-
-  getUser(authToken: string): Observable<UserDetail> {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${authToken}`
-    });
-
-    return this.httpClient.get<UserDetail>(this.authBaseUri, { headers });
-  }
-
-  update(user: UserDetail): Observable<UserDetail> {
-    return this.httpClient.put<UserDetail>(this.authBaseUri, user);
-  }
-
-  delete(user: UserDetail): Observable<UserDetail> {
-    return this.httpClient.delete<UserDetail>(this.authBaseUri + '/' + user.email)
   }
 
 
@@ -103,34 +76,5 @@ export class AuthService {
     date.setUTCSeconds(decoded.exp);
     return date;
   }
-
-  signOut(flatName: string, authToken: string): Observable<string>{
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${authToken}`
-    });
-    return this.httpClient.put<string>(this.authBaseUri + "/signOut", flatName, {headers});
-  }
-
-  isInWg(event: boolean) {
-    if (!!this.getToken() && event){
-      return true;
-    }else {
-      return false;
-    }
-  }
-  changeEvent() {
-    this.event = true;
-  }
-
-  isLoggInWg(): boolean {
-    return this.event;
-  }
-
-  changeEventToFalse() {
-    this.event = false;
-  }
-
-
-
 
 }

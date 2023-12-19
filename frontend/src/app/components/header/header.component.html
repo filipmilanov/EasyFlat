@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
-  <a class="navbar-brand ml-lg-5" href="">EasyFlat</a>
+  <a class="navbar-brand ml-lg-5" href="">SE PR Group Phase</a>
   <button class="navbar-toggler ml-5" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -7,30 +7,13 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/message" routerLinkActive="active">Message</a>
-      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/account" routerLinkActive="active">Account</a>
-    </ul>
-    <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/digital-storage" routerLinkActive="active">Storage</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" [routerLink]="'/shopping-list/Default'" routerLinkActive="active">Shopping List</a>
+        <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/message" routerLinkActive="active">Message</a>
       </li>
     </ul>
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/cooking" routerLinkActive="active">Cooking</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/cookbook" routerLinkActive="active">Cookbook</a>
-      </li>
-    </ul>
-
     <ul class="navbar-nav mr-5">
       <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/login" routerLinkActive="active">Login</a>
-      <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/register" routerLinkActive="active">Register</a>
-      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/" (click)="logoutUser()">Logout</a>
+      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/" (click)="authService.logoutUser()">Logout</a>
     </ul>
   </div>
 </nav>

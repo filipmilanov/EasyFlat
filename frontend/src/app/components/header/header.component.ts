@@ -1,12 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
-import {UserDetail} from "../../dtos/auth-request";
-import {ShoppingListService} from "../../services/shopping-list.service";
-import {Router} from "@angular/router";
-import {SharedFlatService} from "../../services/sharedFlat.service";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Observable} from "rxjs";
-import {ShoppingListDto} from "../../dtos/shoppingList";
 
 @Component({
   selector: 'app-header',
@@ -15,28 +8,9 @@ import {ShoppingListDto} from "../../dtos/shoppingList";
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(public authService: AuthService, private sharedFlatService: SharedFlatService, private httpClient: HttpClient,
-              private shoppingService: ShoppingListService) {
-  }
+  constructor(public authService: AuthService) { }
 
   ngOnInit() {
-  }
-
-  isInWg() {
-    return this.sharedFlatService.isLoggInWg();
-  }
-
-  logoutUser() {
-    this.sharedFlatService.changeEventToFalse();
-    this.authService.logoutUser();
-  }
-
-  getDefShopListId() {
-    this.shoppingService.getShoppingListByName('Default').subscribe({
-      next: res => {
-        return res.id
-      }
-    });
   }
 
 }
