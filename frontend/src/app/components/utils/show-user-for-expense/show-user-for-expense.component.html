@@ -18,7 +18,7 @@
            class="form-control"
            aria-label="value"
            [(ngModel)]="user.value"
-           [disabled]="!selectedUsers[i]"
+           [disabled]="!selectedUsers[i] || splitBy === SplitBy.EQUAL"
     >
   </div>
 </div>
