@@ -98,16 +98,16 @@ export class ItemDetailListComponent implements OnInit {
     const quantity = parseFloat(value);
 
     if (isNaN(quantity)) {
-      console.error('Invalid input. Input should be positive number less than 10.000');
-      this.notification.error('Invalid input. Please enter a valid number.');
+      console.error('Invalid input. Input should be of type number');
+      this.notification.error('Please enter a valid number.');
       return;
-    } else if (quantity < 0 && mode === 1) {
-      console.error('Invalid input. Input should be positive number less than 10.000');
-      this.notification.error('You can not add negative number. Please enter a valid positive number.');
+    } else if (quantity < 0) {
+      console.error('Invalid input. Input should be positive number');
+      this.notification.error('Please enter a positive number.');
       return;
-    } else if (quantity < 0 && mode === 0) {
-      console.error('Invalid input. Input should be positive number less than 10.000');
-      this.notification.error('You can not subtract negative number. Please enter a valid positive number.');
+    } else if (quantity > 10000) {
+      console.error('Invalid input. Number can not be larger than 10.000');
+      this.notification.error('Please enter a positive number less than 10.000.');
       return;
     }
 
