@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @RecordBuilder
 public record ExpenseDto(
@@ -18,7 +17,7 @@ public record ExpenseDto(
     String description,
     @NotNull(message = "Amount cannot be empty")
     @Min(value = 1, message = "Amount must be greater than 1")
-    Long amountInCents,
+    Double amountInCents,
     @NotNull(message = "CreatedAt cannot be null")
     LocalDateTime createdAt,
     @NotNull(message = "Payer cannot be null")
@@ -39,7 +38,7 @@ public record ExpenseDto(
     public boolean isSumOfDebitUsersAmountEqualToTotalAmount() {
         return debitUsers == null
             || List.of(SplitBy.PROPORTIONAL, SplitBy.PERCENTAGE).contains(debitUsers.get(0).splitBy())
-            || debitUsers.stream().mapToLong(DebitDto::value).sum() == amountInCents;
+            || debitUsers.stream().mapToDouble(DebitDto::value).sum() == amountInCents;
     }
 
 
@@ -47,7 +46,7 @@ public record ExpenseDto(
     public boolean isSumOfPercent100() {
         return debitUsers == null
             || List.of(SplitBy.UNEQUAL, SplitBy.EQUAL, SplitBy.PROPORTIONAL).contains(debitUsers.get(0).splitBy())
-            || debitUsers.stream().mapToLong(DebitDto::value).sum() == 100;
+            || debitUsers.stream().mapToDouble(DebitDto::value).sum() == 100;
     }
 
     ExpenseDto withSharedFlat(WgDetailDto sharedFlat) {

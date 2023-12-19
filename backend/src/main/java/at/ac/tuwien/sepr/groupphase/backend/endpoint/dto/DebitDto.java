@@ -10,6 +10,6 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 public record DebitDto(
     UserListDto user,
     SplitBy splitBy,
-    Long value
+    Double value
 ) {
 }

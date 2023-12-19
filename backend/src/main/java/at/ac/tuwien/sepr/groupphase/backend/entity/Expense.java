@@ -32,7 +32,7 @@ public class Expense {
     private SplitBy splitBy;
 
     @Column
-    private Long amountInCents;
+    private Double amountInCents;
 
     @Column
     private LocalDateTime createdAt;
@@ -80,11 +80,11 @@ public class Expense {
         this.splitBy = splitBy;
     }
 
-    public Long getAmountInCents() {
+    public Double getAmountInCents() {
         return amountInCents;
     }
 
-    public void setAmountInCents(Long amountInCents) {
+    public void setAmountInCents(Double amountInCents) {
         this.amountInCents = amountInCents;
     }
 
