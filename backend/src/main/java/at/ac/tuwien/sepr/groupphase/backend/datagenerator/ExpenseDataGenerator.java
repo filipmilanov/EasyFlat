@@ -51,7 +51,7 @@ public class ExpenseDataGenerator {
                 debitKey.setUser(user);
 
                 Debit debit = new Debit();
-                debit.setPercent(100L / NUMBER_OF_ENTITIES_TO_GENERATE);
+                debit.setPercent(100.0 / NUMBER_OF_ENTITIES_TO_GENERATE);
                 debit.setId(debitKey);
                 expense.getDebitUsers().add(debit);
             }
