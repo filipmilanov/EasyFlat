@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
@@ -58,7 +59,7 @@ public interface TestData {
         true,
         5.0,
         "Store",
-        null,
+        new DigitalStorageDto(1L, "Storage", null),
         null,
         null,
         new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
@@ -78,7 +79,7 @@ public interface TestData {
         true,
         5.0,
         "Store",
-        null,
+        new DigitalStorageDto(1L, "Storage", null),
         null,
         null,
         null,
