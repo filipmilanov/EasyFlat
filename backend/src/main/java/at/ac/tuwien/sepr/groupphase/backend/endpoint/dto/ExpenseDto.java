@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,6 +15,7 @@ public record ExpenseDto(
     @NotEmpty(message = "Title cannot be empty") String title,
     String description,
     @NotNull(message = "Amount cannot be empty")
+    @Min(value = 1, message = "Amount must be greater than 1")
     Long amountInCents,
     @NotNull(message = "CreatedAt cannot be null")
     LocalDateTime createdAt,
