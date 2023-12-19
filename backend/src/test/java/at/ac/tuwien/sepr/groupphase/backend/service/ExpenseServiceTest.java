@@ -93,7 +93,7 @@ class ExpenseServiceTest {
     @Test
     void givenValidExpenseWhenCreateThenExpenseIsPersistedWithId() throws ValidationException, ConflictException {
         // given
-        long totalAmount = 100L;
+        double totalAmount = 100;
         WgDetailDto sharedFlat = new WgDetailDto();
         sharedFlat.setId(1L);
 
@@ -119,7 +119,7 @@ class ExpenseServiceTest {
         ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
             .title("Test")
             .description("Test")
-            .amountInCents(100L)
+            .amountInCents(100.0)
             .createdAt(LocalDateTime.now())
             .paidBy(paidBy)
             .debitUsers(debitUsers)
@@ -173,85 +173,85 @@ class ExpenseServiceTest {
                     DebitDtoBuilder.builder()
                         .user(userDetailDto1)
                         .splitBy(SplitBy.EQUAL)
-                        .value(25L)
+                        .value(25.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto2)
                         .splitBy(SplitBy.EQUAL)
-                        .value(25L)
+                        .value(25.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto3)
                         .splitBy(SplitBy.EQUAL)
-                        .value(25L)
+                        .value(25.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto4)
                         .splitBy(SplitBy.EQUAL)
-                        .value(25L)
+                        .value(25.0)
                         .build()
                 ),
-                List.of(25L, 25L, 25L, 25L)
+                List.of(25.0, 25.0, 25.0, 25.0)
             ),
             Arguments.of(
                 List.of(
                     DebitDtoBuilder.builder()
                         .user(userDetailDto1)
                         .splitBy(SplitBy.UNEQUAL)
-                        .value(30L)
+                        .value(30.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto2)
                         .splitBy(SplitBy.UNEQUAL)
-                        .value(30L)
+                        .value(30.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto3)
                         .splitBy(SplitBy.UNEQUAL)
-                        .value(40L)
+                        .value(40.0)
                         .build()
                 ),
-                List.of(30L, 30L, 40L)
+                List.of(30.0, 30.0, 40.0)
             ),
             Arguments.of(
                 List.of(
                     DebitDtoBuilder.builder()
                         .user(userDetailDto1)
                         .splitBy(SplitBy.PERCENTAGE)
-                        .value(30L)
+                        .value(30.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto2)
                         .splitBy(SplitBy.PERCENTAGE)
-                        .value(30L)
+                        .value(30.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto3)
                         .splitBy(SplitBy.PERCENTAGE)
-                        .value(40L)
+                        .value(40.0)
                         .build()
                 ),
-                List.of(30L, 30L, 40L)
+                List.of(30.0, 30.0, 40.0)
             ),
             Arguments.of(
                 List.of(
                     DebitDtoBuilder.builder()
                         .user(userDetailDto1)
                         .splitBy(SplitBy.PROPORTIONAL)
-                        .value(5L)
+                        .value(5.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto2)
                         .splitBy(SplitBy.PROPORTIONAL)
-                        .value(3L)
+                        .value(3.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto3)
                         .splitBy(SplitBy.PROPORTIONAL)
-                        .value(1L)
+                        .value(1.0)
                         .build()
                 ),
-                List.of(56L, 33L, 11L)
+                List.of(55.55555555555556, 33.33333333333333, 11.11111111111111)
             )
         );
     }
@@ -259,9 +259,9 @@ class ExpenseServiceTest {
     @ParameterizedTest
     @MethodSource("data")
     void givenExpenseWithCertainSplitByWhenCreateThenAmountIsSplitCorrectly(List<DebitDto> debitDtos,
-                                                                            List<Long> expected) throws ValidationException, ConflictException {
+                                                                            List<Double> expected) throws ValidationException, ConflictException {
         // given
-        long totalAmount = 100L;
+        double totalAmount = 100L;
         WgDetailDto sharedFlat = new WgDetailDto();
         sharedFlat.setId(applicationUser.getSharedFlat().getId());
 
@@ -288,7 +288,7 @@ class ExpenseServiceTest {
         // then
         assertThat(actual.getDebitUsers()).hasSize(expenseDto.debitUsers().size());
         assertThat(actual.getDebitUsers().stream().map((debit) ->
-            Math.round(debit.getPercent() / 100.0 * totalAmount)
+            debit.getPercent() / 100.0 * totalAmount
         ).toList()).isEqualTo(
             expected
         );
@@ -300,7 +300,7 @@ class ExpenseServiceTest {
         ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
             .title("")
             .description("")
-            .amountInCents(100L)
+            .amountInCents(100.0)
             .build();
 
         // when + then
@@ -335,7 +335,7 @@ class ExpenseServiceTest {
         ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
             .title("Test")
             .description("Test")
-            .amountInCents(100L)
+            .amountInCents(100.0)
             .createdAt(LocalDateTime.now())
             .paidBy(paidByConflict)
             .debitUsers(
@@ -343,22 +343,22 @@ class ExpenseServiceTest {
                     DebitDtoBuilder.builder()
                         .user(userDetailDto1)
                         .splitBy(SplitBy.EQUAL)
-                        .value(25L)
+                        .value(25.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto2)
                         .splitBy(SplitBy.EQUAL)
-                        .value(25L)
+                        .value(25.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto3)
                         .splitBy(SplitBy.EQUAL)
-                        .value(25L)
+                        .value(25.0)
                         .build(),
                     DebitDtoBuilder.builder()
                         .user(userDetailDto4)
                         .splitBy(SplitBy.EQUAL)
-                        .value(25L)
+                        .value(25.0)
                         .build()
                 )
             )
