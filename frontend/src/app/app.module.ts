@@ -39,6 +39,7 @@ import {CookbookDetailComponent} from './components/cookbook/cookbook-detail/coo
 import {CookbookModalComponent} from './components/cookbook/cookbook-modal/cookbook-modal.component';
 import {CookingModalComponent} from './components/cooking/cooking-modal/cooking-modal.component';
 import {LOAD_WASM, NgxScannerQrcodeModule} from "ngx-scanner-qrcode";
+import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
 
 
 LOAD_WASM().subscribe();
@@ -74,6 +75,7 @@ LOAD_WASM().subscribe();
     CookbookDetailComponent,
     CookbookModalComponent,
     CookingModalComponent,
+    ConfirmDeleteDialogComponent,
   ],
   imports: [
     BrowserModule,
