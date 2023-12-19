@@ -61,7 +61,7 @@ export class AccountComponent implements OnInit {
     }
 
     if (this.accountForm.valid) {
-      const userDetail: UserDetail = new UserDetail(this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,
+      const userDetail: UserDetail = new UserDetail(this.user.id,this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,
         this.accountForm.controls.email.value, null , this.accountForm.controls.password.value,this.accountForm.controls.admin.value);
       console.log(userDetail)
       this.authService.update(userDetail).subscribe({
