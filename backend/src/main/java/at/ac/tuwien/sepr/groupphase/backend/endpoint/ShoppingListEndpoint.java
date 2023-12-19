@@ -135,7 +135,7 @@ public class ShoppingListEndpoint {
 
     @PermitAll
     @GetMapping("/lists")
-    public List<ShoppingListDto> getShoppingLists(@RequestParam(name = "searchParams") String searchParams, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public List<ShoppingListDto> getShoppingLists(@RequestParam(name = "searchParams", required = false) String searchParams, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("getShoppingLists({}, {})", searchParams, jwt);
         List<ShoppingList> lists = shoppingService.getShoppingLists(searchParams, jwt);
         return shoppingListMapper.entityListToDtoList(lists);
