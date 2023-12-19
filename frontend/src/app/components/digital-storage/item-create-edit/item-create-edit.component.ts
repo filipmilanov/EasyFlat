@@ -110,14 +110,14 @@ export class ItemCreateEditComponent implements OnInit {
             },
             error: error => {
               console.error(`Item could not be retrieved from the backend: ${error}`);
-              this.router.navigate(['/digital-storage/1']);
+              this.router.navigate(['/digital-storage/']);
               this.notification.error('Item could not be retrieved', "Error");
             }
           })
         },
         error: error => {
           console.error(`Item could not be retrieved using the ID from the URL: ${error}`);
-          this.router.navigate(['/digital-storage/1']);
+          this.router.navigate(['/digital-storage/']);
           this.notification.error('No item provided for editing', "Error");
         }
       })
