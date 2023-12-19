@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Min;
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @RecordBuilder
 public record ExpenseDto(
@@ -31,6 +33,21 @@ public record ExpenseDto(
     @AssertTrue(message = "Interval must be present if isRepeating is true")
     public boolean isPeriodPresentIfIsRepeating() {
         return isRepeating == null || !isRepeating || interval != null;
+    }
+
+    @AssertTrue(message = "The sum of the users amount must be equal to the total amount")
+    public boolean isSumOfDebitUsersAmountEqualToTotalAmount() {
+        return debitUsers == null
+            || List.of(SplitBy.PROPORTIONAL, SplitBy.PERCENTAGE).contains(debitUsers.get(0).splitBy())
+            || debitUsers.stream().mapToLong(DebitDto::value).sum() == amountInCents;
+    }
+
+
+    @AssertTrue(message = "The sum of the users percent must be equal to 100")
+    public boolean isSumOfPercent100() {
+        return debitUsers == null
+            || List.of(SplitBy.UNEQUAL, SplitBy.EQUAL, SplitBy.PROPORTIONAL).contains(debitUsers.get(0).splitBy())
+            || debitUsers.stream().mapToLong(DebitDto::value).sum() == 100;
     }
 
     ExpenseDto withSharedFlat(WgDetailDto sharedFlat) {
