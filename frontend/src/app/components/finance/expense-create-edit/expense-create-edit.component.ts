@@ -65,7 +65,11 @@ export class ExpenseCreateEditComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
+    if (this.checkIfAmountIsToHigh()) {
+      return;
+    }
     this.prepareExpense();
+
     console.log(this.expense);
     let o = this.financeService.createExpense(this.expense).subscribe({
       next: (expense: ExpenseDto) => {
@@ -87,6 +91,14 @@ export class ExpenseCreateEditComponent implements OnInit {
 
   private prepareExpense() {
     this.expense.amountInCents = this.amountInEuro * 100;
+  }
+
+  private checkIfAmountIsToHigh() {
+    if (this.amountInEuro > 1000000) {
+      this.notification.error("Amount is too high", "Error");
+      return true;
+    }
+    return false;
   }
 
   onSplitByChange() {
