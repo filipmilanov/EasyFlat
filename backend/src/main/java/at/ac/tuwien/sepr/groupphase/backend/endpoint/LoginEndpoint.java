@@ -41,22 +41,21 @@ public class LoginEndpoint {
     @PermitAll
     @GetMapping
     public UserDetailDto getUser(@RequestHeader("Authorization") String authToken) {
-        UserDetailDto toReturn = userMapper.entityToUserDetailDto(
+        return userMapper.entityToUserDetailDto(
             userService.getUser(authToken)
         );
-        return toReturn;
     }
 
     @PermitAll
-    @PutMapping("/{id}")
-    public UserDetailDto update(@PathVariable long id, @RequestBody UserDetailDto userDetailDto) {
+    @PutMapping
+    public UserDetailDto update(@RequestBody UserDetailDto userDetailDto) {
         return userService.update(userDetailDto);
     }
 
     @PermitAll
-    @DeleteMapping("/{id}")
-    public UserDetailDto delete(@PathVariable long id) {
-        return userService.delete(id);
+    @DeleteMapping("/{email}")
+    public UserDetailDto delete(@PathVariable String email) {
+        return userService.delete(email);
     }
 
     @PermitAll

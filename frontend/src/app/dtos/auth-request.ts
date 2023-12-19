@@ -8,7 +8,6 @@ export class AuthRequest {
 }
 export class UserDetail {
   constructor(
-    public id: string,
     public firstName: string,
     public lastName: string,
     public email: string,
