@@ -6,6 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ExpenseService;
 import jakarta.annotation.security.PermitAll;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,7 @@ public class ExpenseEndpoint {
     @PermitAll
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
     public ExpenseDto create(@RequestBody ExpenseDto expenseDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException {
         LOGGER.info("create: {}", expenseDto);
 
