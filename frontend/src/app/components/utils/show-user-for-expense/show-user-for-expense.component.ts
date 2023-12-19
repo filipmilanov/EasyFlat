@@ -71,4 +71,5 @@ export class ShowUserForExpenseComponent implements OnChanges {
     });
   }
 
+  protected readonly SplitBy = SplitBy;
 }
