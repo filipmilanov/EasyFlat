@@ -43,9 +43,9 @@ const routes: Routes = [
   {path: 'wgLogin', component: LoginFlatComponent},
   {path: 'wgCreate', component: CreateFlatComponent},
   {
-    path: 'finance', children: [
+    path: 'expense', children: [
       {path: '', component: DigitalStorageComponent},
-      {path: 'expense/create', component: ExpenseCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
+      {path: 'create', component: ExpenseCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
     ]
   }
 ];
