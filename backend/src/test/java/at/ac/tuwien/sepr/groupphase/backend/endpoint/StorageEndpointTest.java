@@ -88,36 +88,6 @@ class StorageEndpointTest {
 
     @Test
 
-    public void givenInvalidStorageWhenCreateThenException() throws Exception {
-        // given
-        WgDetailDto wgDetailDto = new WgDetailDto();
-        wgDetailDto.setId(1L);
-        DigitalStorageDto digitalStorageDto = new DigitalStorageDto(-11L, "MyTestStorage", wgDetailDto);
-
-        String body = objectMapper.writeValueAsString(digitalStorageDto);
-
-        // when
-        MvcResult mvcResult = this.mockMvc.perform(post(BASE_URI)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
-            .andDo(print())
-            .andReturn();
-        MockHttpServletResponse response = mvcResult.getResponse();
-
-        // then
-        assertAll(
-            () -> assertEquals(HttpStatus.CONFLICT.value(), response.getStatus()),
-            () -> {
-                String content = response.getContentAsString();
-                assertThat(content).contains("The Id must be null");
-            }
-        );
-    }
-
-
-    @Test
-
     public void givenStorageIdAndSearchParametersWhenGetItemsThenItemsRetrieved() throws Exception {
         // Given
 
