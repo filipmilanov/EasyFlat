@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,8 +42,12 @@ public class ItemCache {
     @ManyToOne
     private Unit unit;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<AlternativeName> alternativeNames = new ArrayList<>();
+
+
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Ingredient> ingredientList;
+    private List<Ingredient> ingredientList = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -113,6 +119,14 @@ public class ItemCache {
 
     public void setIngredientList(List<Ingredient> ingredientList) {
         this.ingredientList = ingredientList;
+    }
+
+    public List<AlternativeName> getAlternativeNames() {
+        return alternativeNames;
+    }
+
+    public void setAlternativeNames(List<AlternativeName> alternativeNames) {
+        this.alternativeNames = alternativeNames;
     }
 
     @Override
