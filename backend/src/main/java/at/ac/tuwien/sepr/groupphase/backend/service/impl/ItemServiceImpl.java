@@ -214,6 +214,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id, String jwt) throws AuthorizationException {
         LOGGER.trace("delete({})", id);
 

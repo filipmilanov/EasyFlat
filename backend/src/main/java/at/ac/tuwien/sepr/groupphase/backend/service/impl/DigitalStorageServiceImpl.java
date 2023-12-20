@@ -29,6 +29,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -181,6 +182,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }).toList();
     }
 
+    @Transactional
     @Override
     public DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthorizationException {
         LOGGER.trace("create({})", storageDto);
@@ -216,6 +218,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     }
 
+    @Transactional
     @Override
     public Item updateItemQuantity(long storageId, long itemId, long quantity) {
         LOGGER.trace("updateItemQuantity({}, {}, {})", storageId, itemId, quantity);
@@ -229,7 +232,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         return itemRepository.getItemWithGeneralName(storageId, name);
     }
 
-
+    @Transactional
     @Override
     public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.trace("addItemToShopping({})", itemDto);
