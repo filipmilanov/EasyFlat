@@ -11,8 +11,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
@@ -72,7 +72,7 @@ class ItemServiceTest {
         Long id = 1L;
 
         // when
-        Item actual = service.findById(id, "Bearer test");
+        DigitalStorageItem actual = service.findById(id, "Bearer test");
 
         // then
         Assertions.assertThat(actual.getItemId()).isEqualTo(id);
@@ -95,12 +95,12 @@ class ItemServiceTest {
                 .build();
 
         // when
-        List<Item> actual = service.findByFields(itemFieldSearchDto);
+        List<DigitalStorageItem> actual = service.findByFields(itemFieldSearchDto);
 
         // then
         assertThat(actual).isNotEmpty();
         actual.forEach(item ->
-                assertThat(item.getGeneralName()).containsSequence(itemFieldSearchDto.generalName())
+            assertThat(item.getItemCache().getGeneralName()).containsSequence(itemFieldSearchDto.generalName())
         );
     }
 
@@ -112,12 +112,12 @@ class ItemServiceTest {
                 .build();
 
         // when
-        List<Item> actual = service.findByFields(itemFieldSearchDto);
+        List<DigitalStorageItem> actual = service.findByFields(itemFieldSearchDto);
 
         // then
         assertThat(actual).isNotEmpty();
         actual.forEach(item ->
-                assertThat(item.getBrand()).containsSequence(itemFieldSearchDto.brand())
+            assertThat(item.getItemCache().getBrand()).containsSequence(itemFieldSearchDto.brand())
         );
     }
 
@@ -129,7 +129,7 @@ class ItemServiceTest {
                 .build();
 
         // when
-        List<Item> actual = service.findByFields(itemFieldSearchDto);
+        List<DigitalStorageItem> actual = service.findByFields(itemFieldSearchDto);
 
         // then
         assertThat(actual).isNotEmpty();
@@ -171,24 +171,24 @@ class ItemServiceTest {
             .build();
 
         // when
-        Item actual = service.create(itemDto, "Bearer test");
+        DigitalStorageItem actual = service.create(itemDto, "Bearer test");
 
         // then
-        Item persisted = service.findById(actual.getItemId(), "Bearer token");
+        DigitalStorageItem persisted = service.findById(actual.getItemId(), "Bearer token");
 
         Assertions.assertThat(actual).isEqualTo(persisted);
         Assertions.assertThat(actual)
             .extracting(
-                Item::getEan,
-                Item::getGeneralName,
-                Item::getProductName,
-                Item::getBrand,
-                Item::getQuantityCurrent,
-                Item::getQuantityTotal,
-                (item) -> item.getUnit().getName(),
-                Item::getExpireDate,
-                Item::getDescription,
-                Item::getPriceInCent
+                (item) -> item.getItemCache().getEan(),
+                (item) -> item.getItemCache().getGeneralName(),
+                (item) -> item.getItemCache().getProductName(),
+                (item) -> item.getItemCache().getBrand(),
+                DigitalStorageItem::getQuantityCurrent,
+                (item) -> item.getItemCache().getQuantityTotal(),
+                (item) -> item.getItemCache().getUnit().getName(),
+                DigitalStorageItem::getExpireDate,
+                (item) -> item.getItemCache().getDescription(),
+                DigitalStorageItem::getPriceInCent
             )
             .containsExactly(
                 itemDto.ean(),
@@ -202,7 +202,7 @@ class ItemServiceTest {
                 itemDto.description(),
                 itemDto.priceInCent()
             );
-        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
+        assertThat(actual.getDigitalStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getTitle)
             .toList()
@@ -245,27 +245,27 @@ class ItemServiceTest {
             .build();
 
         // when
-        Item actual = service.create(itemDto, "Bearer test");
+        DigitalStorageItem actual = service.create(itemDto, "Bearer test");
 
         // then
-        Item persisted = service.findById(actual.getItemId(), "Bearer token");
+        DigitalStorageItem persisted = service.findById(actual.getItemId(), "Bearer token");
 
         Assertions.assertThat(actual).isEqualTo(persisted);
         Assertions.assertThat(actual)
             .extracting(
-                Item::getEan,
-                Item::getGeneralName,
-                Item::getProductName,
-                Item::getBrand,
-                Item::getQuantityCurrent,
-                Item::getQuantityTotal,
-                (item) -> item.getUnit().getName(),
-                Item::getExpireDate,
-                Item::getDescription,
-                Item::getPriceInCent,
-                Item::alwaysInStock,
-                Item::getMinimumQuantity,
-                Item::getBoughtAt
+                (item) -> item.getItemCache().getEan(),
+                (item) -> item.getItemCache().getGeneralName(),
+                (item) -> item.getItemCache().getProductName(),
+                (item) -> item.getItemCache().getBrand(),
+                DigitalStorageItem::getQuantityCurrent,
+                (item) -> item.getItemCache().getQuantityTotal(),
+                (item) -> item.getItemCache().getUnit().getName(),
+                DigitalStorageItem::getExpireDate,
+                (item) -> item.getItemCache().getDescription(),
+                DigitalStorageItem::getPriceInCent,
+                DigitalStorageItem::alwaysInStock,
+                DigitalStorageItem::getMinimumQuantity,
+                DigitalStorageItem::getBoughtAt
             )
             .containsExactly(
                 itemDto.ean(),
@@ -282,7 +282,7 @@ class ItemServiceTest {
                 itemDto.minimumQuantity(),
                 itemDto.boughtAt()
             );
-        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
+        assertThat(actual.getDigitalStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getTitle)
             .toList()
@@ -448,10 +448,10 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto, "Bearer test");
+        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
-            .itemId(createdItem.getItemId())
+            .itemId(createdDigitalStorageItem.getItemId())
             .ean("0123456789123")
             .generalName(updatedGeneralName)
             .productName("TestProduct")
@@ -470,10 +470,10 @@ class ItemServiceTest {
         service.update(updatedItemDto, "Bearer test");
 
         // then:
-        Item updatedItem = service.findById(createdItem.getItemId(), "Bearer token");
+        DigitalStorageItem updatedItem = service.findById(createdDigitalStorageItem.getItemId(), "Bearer token");
 
         assertAll(
-            () -> assertEquals(updatedGeneralName, updatedItem.getGeneralName())
+            () -> assertEquals(updatedGeneralName, updatedItem.getItemCache().getGeneralName())
         );
     }
 
@@ -509,10 +509,10 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto, "Bearer test");
+        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
-            .itemId(createdItem.getItemId())
+            .itemId(createdDigitalStorageItem.getItemId())
             .ean("0123456789123")
             .generalName("TestGeneral")
             .productName("TestProduct")
@@ -570,10 +570,10 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto, "Bearer test");
+        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
-            .itemId(createdItem.getItemId())
+            .itemId(createdDigitalStorageItem.getItemId())
             .ean("0123456789123")
             .generalName(updatedGeneralName)
             .productName("TestProduct")
@@ -592,10 +592,10 @@ class ItemServiceTest {
         service.update(updatedItemDto, "Bearer test");
 
         // then:
-        Item updatedItem = service.findById(createdItem.getItemId(), "Bearer token");
+        DigitalStorageItem updatedItem = service.findById(createdDigitalStorageItem.getItemId(), "Bearer token");
 
         assertAll(
-            () -> assertEquals(updatedGeneralName, updatedItem.getGeneralName()),
+            () -> assertEquals(updatedGeneralName, updatedItem.getItemCache().getGeneralName()),
             () -> assertEquals(updatedCurrentAmount, updatedItem.getQuantityCurrent())
         );
     }
@@ -632,10 +632,10 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto, "Bearer test");
+        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
-            .itemId(createdItem.getItemId())
+            .itemId(createdDigitalStorageItem.getItemId())
             .ean("0123456789123")
             .generalName("TestGeneral")
             .productName("TestProduct")
@@ -691,12 +691,12 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto, "Bearer test");
+        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto, "Bearer test");
 
         // when:
-        service.delete(createdItem.getItemId(), "Bearer test");
+        service.delete(createdDigitalStorageItem.getItemId(), "Bearer test");
 
         // then:
-        assertThrows(NotFoundException.class, () -> service.findById(createdItem.getItemId(), "Bearer token"));
+        assertThrows(NotFoundException.class, () -> service.findById(createdDigitalStorageItem.getItemId(), "Bearer token"));
     }
 }

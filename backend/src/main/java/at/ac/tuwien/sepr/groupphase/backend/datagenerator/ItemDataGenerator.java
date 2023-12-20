@@ -1,8 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UnitRepository;
@@ -42,22 +42,22 @@ public class ItemDataGenerator {
 
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
 
-            Item item = new Item();
-            item.setGeneralName(generalNames.get(i));
-            item.setEan("123456789012" + i);  // Replace with valid EAN numbers
-            item.setProductName("Test Product " + (i + 1));
-            item.setBrand("Test Brand " + (i + 1));
-            item.setQuantityCurrent(10.0 + i);
-            item.setQuantityTotal(20.0 + i);
-            item.setUnit(kg);
-            item.setExpireDate(LocalDate.now().plusMonths(i + 1));  // Set expire date to current date + i months
-            item.setDescription("This is a test product description for Item " + (i + 1));
-            item.setPriceInCent(500L + i * 100);
-            item.setBoughtAt("Hofer");
+            DigitalStorageItem digitalStorageItem = new DigitalStorageItem();
+            digitalStorageItem.getItemCache().setGeneralName(generalNames.get(i));
+            digitalStorageItem.getItemCache().setEan("123456789012" + i);  // Replace with valid EAN numbers
+            digitalStorageItem.getItemCache().setProductName("Test Product " + (i + 1));
+            digitalStorageItem.getItemCache().setBrand("Test Brand " + (i + 1));
+            digitalStorageItem.setQuantityCurrent(10.0 + i);
+            digitalStorageItem.getItemCache().setQuantityTotal(20.0 + i);
+            digitalStorageItem.getItemCache().setUnit(kg);
+            digitalStorageItem.setExpireDate(LocalDate.now().plusMonths(i + 1));  // Set expire date to current date + i months
+            digitalStorageItem.getItemCache().setDescription("This is a test product description for DigitalStorageItem " + (i + 1));
+            digitalStorageItem.setPriceInCent(500L + i * 100);
+            digitalStorageItem.setBoughtAt("Hofer");
 
             DigitalStorage storage = new DigitalStorage();
             storage.setStorId(1L);
-            item.setStorage(storage);
+            digitalStorageItem.setDigitalStorage(storage);
 
             List<Ingredient> ingredientList = new ArrayList<>();
             Ingredient ingredient1 = new Ingredient();
@@ -66,10 +66,10 @@ public class ItemDataGenerator {
             ingredient2.setIngrId(2L);
             ingredientList.add(ingredient1);
             ingredientList.add(ingredient2);
-            item.setIngredientList(ingredientList);
+            digitalStorageItem.setIngredientList(ingredientList);
 
-            LOGGER.debug("saving item {}", item);
-            itemRepository.save(item);
+            LOGGER.debug("saving digitalStorageItem {}", digitalStorageItem);
+            itemRepository.save(digitalStorageItem);
         }
     }
 
