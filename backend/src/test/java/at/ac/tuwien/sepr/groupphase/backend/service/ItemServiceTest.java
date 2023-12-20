@@ -72,7 +72,7 @@ class ItemServiceTest {
         Long id = 1L;
 
         // when
-        Item actual = service.findById(id, "Bearer test");
+        DigitalStorageItem actual = service.findById(id, "Bearer test");
 
         // then
         Assertions.assertThat(actual.getItemId()).isEqualTo(id);
@@ -174,7 +174,7 @@ class ItemServiceTest {
         DigitalStorageItem actual = service.create(itemDto, "Bearer test");
 
         // then
-        Item persisted = service.findById(actual.getItemId(), "Bearer token");
+        DigitalStorageItem persisted = service.findById(actual.getItemId(), "Bearer token");
 
         Assertions.assertThat(actual).isEqualTo(persisted);
         Assertions.assertThat(actual)
@@ -248,7 +248,7 @@ class ItemServiceTest {
         DigitalStorageItem actual = service.create(itemDto, "Bearer test");
 
         // then
-        Item persisted = service.findById(actual.getItemId(), "Bearer token");
+        DigitalStorageItem persisted = service.findById(actual.getItemId(), "Bearer token");
 
         Assertions.assertThat(actual).isEqualTo(persisted);
         Assertions.assertThat(actual)
@@ -470,10 +470,10 @@ class ItemServiceTest {
         service.update(updatedItemDto, "Bearer test");
 
         // then:
-        Item updatedItem = service.findById(createdItem.getItemId(), "Bearer token");
+        DigitalStorageItem updatedItem = service.findById(createdDigitalStorageItem.getItemId(), "Bearer token");
 
         assertAll(
-            () -> assertEquals(updatedGeneralName, updatedItem.getGeneralName())
+            () -> assertEquals(updatedGeneralName, updatedItem.getItemCache().getGeneralName())
         );
     }
 
@@ -592,10 +592,10 @@ class ItemServiceTest {
         service.update(updatedItemDto, "Bearer test");
 
         // then:
-        Item updatedItem = service.findById(createdItem.getItemId(), "Bearer token");
+        DigitalStorageItem updatedItem = service.findById(createdDigitalStorageItem.getItemId(), "Bearer token");
 
         assertAll(
-            () -> assertEquals(updatedGeneralName, updatedItem.getGeneralName()),
+            () -> assertEquals(updatedGeneralName, updatedItem.getItemCache().getGeneralName()),
             () -> assertEquals(updatedCurrentAmount, updatedItem.getQuantityCurrent())
         );
     }
@@ -697,6 +697,6 @@ class ItemServiceTest {
         service.delete(createdDigitalStorageItem.getItemId(), "Bearer test");
 
         // then:
-        assertThrows(NotFoundException.class, () -> service.findById(createdItem.getItemId(), "Bearer token"));
+        assertThrows(NotFoundException.class, () -> service.findById(createdDigitalStorageItem.getItemId(), "Bearer token"));
     }
 }

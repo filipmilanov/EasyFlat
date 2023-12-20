@@ -68,7 +68,7 @@ public class ItemEndpoint {
     @GetMapping("{itemId}")
     public ItemDto findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("findById({})", itemId);
-        Item item = itemService.findById(itemId, jwt);
+        DigitalStorageItem item = itemService.findById(itemId, jwt);
 
         return itemMapper.entityToDto(item);
     }

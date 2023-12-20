@@ -67,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item findById(Long id, String jwt) throws AuthenticationException {
+    public DigitalStorageItem findById(Long id, String jwt) throws AuthenticationException {
         LOGGER.trace("findById({})", id);
         if (id == null) {
             throw new NotFoundException("Item ID can't be null");
@@ -77,17 +77,15 @@ public class ItemServiceImpl implements ItemService {
 
         if (item.isEmpty()) {
             throw new NotFoundException("Item could not be found");
-        } else {
-
+        }
         List<Long> allowedUser = item.get().getDigitalStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
         authorization.authenticateUser(
-                jwt,
-                allowedUser,
-                "The given item does not belong to the user's shared flat!"
-            );
+            jwt,
+            allowedUser,
+            "The given item does not belong to the user's shared flat!"
+        );
 
-            return item.get();
-        }
+        return item.get();
     }
 
     @Override
@@ -116,20 +114,20 @@ public class ItemServiceImpl implements ItemService {
 
         ItemDto finalItemDto = itemDto;
         DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
-                .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
+            .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
 
         List<Long> allowedUser = sharedFlatService.findById(
-                        matchingDigitalStorage.getSharedFlat().getId(),
-                        jwt
-                ).getUsers().stream()
-                .map(ApplicationUser::getId)
-                .toList();
+                matchingDigitalStorage.getSharedFlat().getId(),
+                jwt
+            ).getUsers().stream()
+            .map(ApplicationUser::getId)
+            .toList();
         authorization.authenticateUser(
-                jwt,
-                allowedUser,
-                "The given digital storage does not belong to the user's shared flat!"
+            jwt,
+            allowedUser,
+            "The given digital storage does not belong to the user's shared flat!"
         );
 
 
@@ -169,20 +167,20 @@ public class ItemServiceImpl implements ItemService {
 
         ItemDto finalItemDto = itemDto;
         DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
-                .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
+            .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
 
         List<Long> allowedUser = sharedFlatService.findById(
-                        matchingDigitalStorage.getSharedFlat().getId(),
-                        jwt
-                ).getUsers().stream()
-                .map(ApplicationUser::getId)
-                .toList();
+                matchingDigitalStorage.getSharedFlat().getId(),
+                jwt
+            ).getUsers().stream()
+            .map(ApplicationUser::getId)
+            .toList();
         authorization.authenticateUser(
-                jwt,
-                allowedUser,
-                "The given digital storage does not belong to the user's shared flat!"
+            jwt,
+            allowedUser,
+            "The given digital storage does not belong to the user's shared flat!"
         );
 
         List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
@@ -194,7 +192,7 @@ public class ItemServiceImpl implements ItemService {
             digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null);
         }
 
-        Item presistedItem = this.findById(itemDto.itemId(), jwt);
+        DigitalStorageItem presistedDigitalStorageItem = this.findById(itemDto.itemId(), jwt);
 
         // necessary because JPA cannot convert an Entity to another Entity
         if (digitalStorageItem.alwaysInStock() != presistedDigitalStorageItem.alwaysInStock()) {
@@ -210,19 +208,19 @@ public class ItemServiceImpl implements ItemService {
     public void delete(Long id, String jwt) throws AuthenticationException {
         LOGGER.trace("delete({})", id);
 
-        Item itemToDelete = this.findById(id, jwt);
+        DigitalStorageItem itemToDelete = this.findById(id, jwt);
 
-        Long sharedFlatId = digitalStorageItemToDelete.getDigitalStorage().getSharedFlat().getId();
+        Long sharedFlatId = itemToDelete.getDigitalStorage().getSharedFlat().getId();
 
         List<Long> allowedUsers = sharedFlatService.findById(sharedFlatId, jwt)
-                .getUsers().stream()
-                .map(ApplicationUser::getId)
-                .toList();
+            .getUsers().stream()
+            .map(ApplicationUser::getId)
+            .toList();
 
         authorization.authenticateUser(
-                jwt,
-                allowedUsers,
-                "The given digital storage does not belong to the user's shared flat!"
+            jwt,
+            allowedUsers,
+            "The given digital storage does not belong to the user's shared flat!"
         );
 
         itemRepository.deleteById(id);

@@ -3,7 +3,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -22,7 +21,7 @@ public interface ItemService {
      * @param jwt a valid JWT of a user
      * @return if the id exists in the DB, an Optional of a persisted DigitalStorageItem with given ID, an empty optional otherwise
      */
-    Item findById(Long id, String jwt) throws AuthenticationException;
+    DigitalStorageItem findById(Long id, String jwt) throws AuthenticationException;
 
     /**
      * Search for an item in the database where one field is matching
