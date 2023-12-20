@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
@@ -10,7 +9,6 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service for working with Items.
@@ -24,7 +22,7 @@ public interface ItemService {
      * @param jwt a valid JWT of a user
      * @return if the id exists in the DB, an Optional of a persisted DigitalStorageItem with given ID, an empty optional otherwise
      */
-    Optional<DigitalStorageItem> findById(Long id, String jwt) throws AuthenticationException;
+    Item findById(Long id, String jwt) throws AuthenticationException;
 
     /**
      * Search for an item in the database where one field is matching
@@ -34,7 +32,6 @@ public interface ItemService {
      * @return a list of items matching the search criteria
      */
     List<DigitalStorageItem> findByFields(ItemFieldSearchDto itemFieldSearchDto);
-
 
     /**
      * Validates and Creates a new {@link DigitalStorageItem} in the db.
@@ -61,12 +58,4 @@ public interface ItemService {
      * @param jwt a valid JWT of a user
      */
     void delete(Long id, String jwt) throws AuthenticationException;
-
-    /**
-     * Finds existing and creates non-existing objects of type {@link Ingredient} in the db.
-     *
-     * @param ingredientDtoList list of objects of type {@link IngredientDto} which should already be stored in or saved to the db
-     * @return a list of objects of type {@link Ingredient} which represent all existing and newly saved ingredients
-     */
-    List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException;
 }

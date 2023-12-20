@@ -22,11 +22,10 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
-import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
+import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingItemValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListValidator;
 import org.slf4j.Logger;
@@ -50,11 +49,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final IngredientMapper ingredientMapper;
     private final ItemRepository itemRepository;
     private final DigitalStorageService digitalStorageService;
-    private final ItemService itemService;
-    private CustomUserDetailService customUserDetailService;
-
-    private final Authorization authorization;
-    private final SharedFlatService sharedFlatService;
+    private final IngredientService ingredientService;
+    private final CustomUserDetailService customUserDetailService;
     private final DigitalStorageRepository digitalStorageRepository;
     private final ShoppingItemValidator shoppingItemValidator;
     private final UnitService unitService;
@@ -63,8 +59,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListServiceImpl(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
-                                   ItemService itemService, CustomUserDetailService customUserDetailService, Authorization authorization,
-                                   SharedFlatService sharedFlatService, DigitalStorageRepository digitalStorageRepository, ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidator validator) {
+                                   IngredientService ingredientService, CustomUserDetailService customUserDetailService, DigitalStorageRepository digitalStorageRepository,
+                                   ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidator validator) {
         this.shoppingItemRepository = shoppingItemRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -73,10 +69,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.ingredientMapper = ingredientMapper;
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
-        this.itemService = itemService;
+        this.ingredientService = ingredientService;
         this.customUserDetailService = customUserDetailService;
-        this.authorization = authorization;
-        this.sharedFlatService = sharedFlatService;
         this.digitalStorageRepository = digitalStorageRepository;
         this.shoppingItemValidator = shoppingItemValidator;
         this.unitService = unitService;
@@ -276,7 +270,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (itemDto.labels() != null) {
             labels = findLabelsAndCreateMissing(itemDto.labels());
         }
-        List<Ingredient> ingredientList = itemService.findIngredientsAndCreateMissing(itemDto.ingredients());
+        List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
         ShoppingItem item = itemMapper.dtoToShopping(itemDto, labels,
             shoppingListMapper.dtoToEntity(itemDto.shoppingList()));

@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
@@ -46,7 +45,6 @@ public class ItemServiceImpl implements ItemService {
     private final ItemStatsRepository itemStatsRepository;
     private final Authorization authorization;
     private final SharedFlatService sharedFlatService;
-    private final CustomUserDetailService customUserDetailService;
     private final UnitService unitService;
 
     public ItemServiceImpl(ItemRepository itemRepository,
@@ -56,7 +54,7 @@ public class ItemServiceImpl implements ItemService {
                            ItemValidator itemValidator,
                            ItemStatsRepository itemStatsRepository,
                            Authorization authorization,
-                           SharedFlatService sharedFlatService, CustomUserDetailService customUserDetailService, UnitService unitService) {
+                           SharedFlatService sharedFlatService, UnitService unitService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
@@ -65,30 +63,31 @@ public class ItemServiceImpl implements ItemService {
         this.itemStatsRepository = itemStatsRepository;
         this.authorization = authorization;
         this.sharedFlatService = sharedFlatService;
-        this.customUserDetailService = customUserDetailService;
         this.unitService = unitService;
     }
 
-    @Override // TODO: it should not return a Optional, it should throw a NotFoundException, if there is non
-    public Optional<DigitalStorageItem> findById(Long id, String jwt) throws AuthenticationException {
+    @Override
+    public Item findById(Long id, String jwt) throws AuthenticationException {
         LOGGER.trace("findById({})", id);
         if (id == null) {
-            return Optional.empty();
+            throw new NotFoundException("Item ID can't be null");
         }
 
         Optional<DigitalStorageItem> item = itemRepository.findById(id);
 
         if (item.isEmpty()) {
-            return item;
-        }
+            throw new NotFoundException("Item could not be found");
+        } else {
 
         List<Long> allowedUser = item.get().getDigitalStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
         authorization.authenticateUser(
                 jwt,
                 allowedUser,
                 "The given item does not belong to the user's shared flat!"
-        );
-        return item;
+            );
+
+            return item.get();
+        }
     }
 
     @Override
@@ -195,7 +194,7 @@ public class ItemServiceImpl implements ItemService {
             digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null);
         }
 
-        DigitalStorageItem presistedDigitalStorageItem = this.findById(itemDto.itemId(), jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        Item presistedItem = this.findById(itemDto.itemId(), jwt);
 
         // necessary because JPA cannot convert an Entity to another Entity
         if (digitalStorageItem.alwaysInStock() != presistedDigitalStorageItem.alwaysInStock()) {
@@ -211,7 +210,7 @@ public class ItemServiceImpl implements ItemService {
     public void delete(Long id, String jwt) throws AuthenticationException {
         LOGGER.trace("delete({})", id);
 
-        DigitalStorageItem digitalStorageItemToDelete = this.findById(id, jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        Item itemToDelete = this.findById(id, jwt);
 
         Long sharedFlatId = digitalStorageItemToDelete.getDigitalStorage().getSharedFlat().getId();
 
@@ -227,30 +226,5 @@ public class ItemServiceImpl implements ItemService {
         );
 
         itemRepository.deleteById(id);
-    }
-
-    public List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) throws ConflictException {
-        if (ingredientDtoList == null) {
-            return List.of();
-        }
-        List<Ingredient> ingredientList = ingredientService.findByTitle(
-            ingredientDtoList.stream()
-                .map(IngredientDto::name)
-                .toList()
-        );
-
-        List<IngredientDto> missingIngredients = ingredientDtoList.stream()
-            .filter(ingredientDto ->
-                ingredientList.stream()
-                    .noneMatch(ingredient ->
-                        ingredient.getTitle().equals(ingredientDto.name())
-                    )
-            ).toList();
-
-        if (!missingIngredients.isEmpty()) {
-            List<Ingredient> createdIngredients = ingredientService.createAll(missingIngredients);
-            ingredientList.addAll(createdIngredients);
-        }
-        return ingredientList;
     }
 }

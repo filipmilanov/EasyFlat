@@ -15,9 +15,11 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +29,13 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.g;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -73,11 +72,10 @@ class ItemServiceTest {
         Long id = 1L;
 
         // when
-        Optional<DigitalStorageItem> actual = service.findById(id, "Bearer test");
+        Item actual = service.findById(id, "Bearer test");
 
         // then
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getItemId()).isEqualTo(id);
+        Assertions.assertThat(actual.getItemId()).isEqualTo(id);
     }
 
     @Test
@@ -85,11 +83,8 @@ class ItemServiceTest {
         // given
         Long id = -1L;
 
-        // when
-        Optional<DigitalStorageItem> actual = service.findById(id, "Bearer test");
-
-        // then
-        assertTrue(actual.isEmpty());
+        // when + then
+        assertThrows(NotFoundException.class, () -> service.findById(id, "Bearer test"));
     }
 
     @Test
@@ -179,11 +174,10 @@ class ItemServiceTest {
         DigitalStorageItem actual = service.create(itemDto, "Bearer test");
 
         // then
-        Optional<DigitalStorageItem> persisted = service.findById(actual.getItemId(), "Bearer token");
+        Item persisted = service.findById(actual.getItemId(), "Bearer token");
 
-        assertTrue(persisted.isPresent());
-        assertThat(actual).isEqualTo(persisted.get());
-        assertThat(actual)
+        Assertions.assertThat(actual).isEqualTo(persisted);
+        Assertions.assertThat(actual)
             .extracting(
                 (item) -> item.getItemCache().getEan(),
                 (item) -> item.getItemCache().getGeneralName(),
@@ -254,11 +248,10 @@ class ItemServiceTest {
         DigitalStorageItem actual = service.create(itemDto, "Bearer test");
 
         // then
-        Optional<DigitalStorageItem> persisted = service.findById(actual.getItemId(), "bearer token");
+        Item persisted = service.findById(actual.getItemId(), "Bearer token");
 
-        assertTrue(persisted.isPresent());
-        assertThat(actual).isEqualTo(persisted.get());
-        assertThat(actual)
+        Assertions.assertThat(actual).isEqualTo(persisted);
+        Assertions.assertThat(actual)
             .extracting(
                 (item) -> item.getItemCache().getEan(),
                 (item) -> item.getItemCache().getGeneralName(),
@@ -477,11 +470,10 @@ class ItemServiceTest {
         service.update(updatedItemDto, "Bearer test");
 
         // then:
-        Optional<DigitalStorageItem> updatedItem = service.findById(createdDigitalStorageItem.getItemId(), "bearer token");
+        Item updatedItem = service.findById(createdItem.getItemId(), "Bearer token");
 
         assertAll(
-            () -> assertTrue(updatedItem.isPresent()),
-            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getItemCache().getGeneralName()))
+            () -> assertEquals(updatedGeneralName, updatedItem.getGeneralName())
         );
     }
 
@@ -536,7 +528,7 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto, "bearer token")).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto, "Bearer token")).getMessage();
         assertThat(message)
             .contains(
                 "The actual quantity must be positive"
@@ -600,12 +592,11 @@ class ItemServiceTest {
         service.update(updatedItemDto, "Bearer test");
 
         // then:
-        Optional<DigitalStorageItem> updatedItem = service.findById(createdDigitalStorageItem.getItemId(), "bearer token");
+        Item updatedItem = service.findById(createdItem.getItemId(), "Bearer token");
 
         assertAll(
-            () -> assertTrue(updatedItem.isPresent()),
-            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getItemCache().getGeneralName())),
-            () -> updatedItem.ifPresent(item -> assertEquals(updatedCurrentAmount, updatedItem.get().getQuantityCurrent()))
+            () -> assertEquals(updatedGeneralName, updatedItem.getGeneralName()),
+            () -> assertEquals(updatedCurrentAmount, updatedItem.getQuantityCurrent())
         );
     }
 
@@ -660,7 +651,7 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto, "bearer token")).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto, "Bearer token")).getMessage();
         assertThat(message)
             .contains(
                 "brand",
@@ -706,7 +697,6 @@ class ItemServiceTest {
         service.delete(createdDigitalStorageItem.getItemId(), "Bearer test");
 
         // then:
-        Optional<DigitalStorageItem> deletedItem = service.findById(createdDigitalStorageItem.getItemId(), "bearer token");
-        assertFalse(deletedItem.isPresent());
+        assertThrows(NotFoundException.class, () -> service.findById(createdItem.getItemId(), "Bearer token"));
     }
 }
