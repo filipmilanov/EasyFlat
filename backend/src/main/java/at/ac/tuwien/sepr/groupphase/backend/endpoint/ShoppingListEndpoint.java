@@ -61,9 +61,9 @@ public class ShoppingListEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ShoppingItemDto createShoppingItem(@RequestBody ShoppingItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public ShoppingItemDto createShoppingItem(@RequestBody ShoppingItemDto itemDto) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("create({})", itemDto);
-        ShoppingItem item = shoppingService.create(itemDto, jwt);
+        ShoppingItem item = shoppingService.create(itemDto);
         return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
     }
 
@@ -118,25 +118,25 @@ public class ShoppingListEndpoint {
 
     @PermitAll
     @PostMapping("/list-create")
-    public ShoppingListDto createList(@RequestBody String listName, @RequestHeader("Authorization") String jwt) throws ValidationException, AuthenticationException, ConflictException {
-        LOGGER.info("createList({},{})", listName, jwt);
-        ShoppingList shoppingList = shoppingService.createList(listName, jwt);
+    public ShoppingListDto createList(@RequestBody String listName) throws ValidationException, AuthenticationException, ConflictException {
+        LOGGER.info("createList({})", listName);
+        ShoppingList shoppingList = shoppingService.createList(listName);
         return shoppingListMapper.entityToDto(shoppingList);
     }
 
     @PermitAll
     @DeleteMapping("/{itemId}")
-    public ShoppingItemDto deleteItem(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
-        LOGGER.info("deleteItem({},{})", itemId, jwt);
-        ShoppingItem deletedItem = shoppingService.deleteItem(itemId, jwt);
+    public ShoppingItemDto deleteItem(@PathVariable Long itemId) throws AuthenticationException {
+        LOGGER.info("deleteItem({})", itemId);
+        ShoppingItem deletedItem = shoppingService.deleteItem(itemId);
         return itemMapper.entityToShopping(deletedItem, shoppingListMapper.entityToDto(deletedItem.getShoppingList()));
     }
 
     @PermitAll
     @DeleteMapping("/delete/{shopId}")
-    public ShoppingListDto deleteList(@PathVariable Long shopId, @RequestHeader("Authorization") String jwt) throws ValidationException, AuthenticationException {
-        LOGGER.info("deleteList({},{})", shopId, jwt);
-        ShoppingList deletedList = shoppingService.deleteList(shopId, jwt);
+    public ShoppingListDto deleteList(@PathVariable Long shopId) throws ValidationException, AuthenticationException {
+        LOGGER.info("deleteList({})", shopId);
+        ShoppingList deletedList = shoppingService.deleteList(shopId);
         return shoppingListMapper.entityToDto(deletedList);
     }
 
@@ -144,10 +144,7 @@ public class ShoppingListEndpoint {
     @GetMapping("/lists")
     public List<ShoppingListDto> getShoppingLists() throws AuthenticationException {
         LOGGER.info("getShoppingLists()");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        ApplicationUser user  =  customUserDetailService.findApplicationUserByEmail((String) authentication.getPrincipal());
-        List<ShoppingList> lists = shoppingService.getShoppingLists(user);
-
+        List<ShoppingList> lists = shoppingService.getShoppingLists();
         return shoppingListMapper.entityListToDtoList(lists);
     }
 
@@ -155,9 +152,7 @@ public class ShoppingListEndpoint {
     @PostMapping("/storage")
     public List<ItemDto> transferToStorage(@RequestBody List<ShoppingItemDto> items) throws AuthenticationException {
         LOGGER.info("transferToStorage({})", items);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        ApplicationUser user  =  customUserDetailService.findApplicationUserByEmail((String) authentication.getPrincipal());
-        List<Item> res = this.shoppingService.transferToServer(items, user);
+        List<Item> res = this.shoppingService.transferToServer(items);
         List<ItemDto> toRet = new ArrayList<>();
         for (Item item : res) {
             toRet.add(itemMapper.entityToDto(item));

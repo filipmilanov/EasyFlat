@@ -36,20 +36,14 @@ public class LoginFlatEndpoint {
         this.customUserDetailService = customUserDetailService;
     }
 
-    @Secured("ROLE_USER")
     @PostMapping
     public WgDetailDto loginWg(@RequestBody SharedFlat wgDetailDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        ApplicationUser user  =  customUserDetailService.findApplicationUserByEmail((String) authentication.getPrincipal());
-        return sharedFlatService.loginWg(wgDetailDto, user);
+        return sharedFlatService.loginWg(wgDetailDto);
     }
 
-    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{email}")
     public WgDetailDto delete() throws AuthorizationException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        ApplicationUser user  =  customUserDetailService.findApplicationUserByEmail((String) authentication.getPrincipal());
-        return sharedFlatService.delete(user);
+        return sharedFlatService.delete();
     }
 
 

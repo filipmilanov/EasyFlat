@@ -6,6 +6,8 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
 
 public interface SharedFlatService {
@@ -19,10 +21,10 @@ public interface SharedFlatService {
      */
     SharedFlat findById(Long id, String jwt) throws AuthenticationException;
 
-    WgDetailDto create(SharedFlat sharedFlat, ApplicationUser user) throws Exception;
+    WgDetailDto create(SharedFlat sharedFlat) throws ConflictException, ValidationException;
 
-    WgDetailDto loginWg(SharedFlat wgDetailDto, ApplicationUser user);
+    WgDetailDto loginWg(SharedFlat wgDetailDto);
 
-    WgDetailDto delete(ApplicationUser user) throws AuthorizationException;
+    WgDetailDto delete() throws AuthorizationException;
 }
 

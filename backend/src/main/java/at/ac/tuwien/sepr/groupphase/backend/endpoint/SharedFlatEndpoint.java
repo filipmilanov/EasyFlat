@@ -3,6 +3,8 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import jakarta.annotation.security.PermitAll;
@@ -33,11 +35,8 @@ public class SharedFlatEndpoint {
         this.customUserDetailService = customUserDetailService;
     }
 
-    @Secured("ROLE_USER")
     @PostMapping
-    public WgDetailDto create(@RequestBody SharedFlat wgDetailDto) throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        ApplicationUser user  =  customUserDetailService.findApplicationUserByEmail((String) authentication.getPrincipal());
-        return sharedFlatService.create(wgDetailDto, user);
+    public WgDetailDto create(@RequestBody SharedFlat wgDetailDto) throws ValidationException, ConflictException {
+        return sharedFlatService.create(wgDetailDto);
     }
 }
