@@ -284,4 +284,19 @@ export class ItemCreateEditComponent implements OnInit {
       this.scanner.pause();
     }
   }
+
+  public delete() {
+    this.itemService.deleteItem(this.item.itemId).subscribe({
+      next: data => {
+        this.router.navigate(['/digital-storage/']);
+        this.notification.success(`Item ${this.item.itemId} was successfully deleted`, "Success");
+      },
+      error: error => {
+        console.error(`Item could not be deleted: ${error.error.message}`);
+        this.router.navigate(['/digital-storage/']);
+        this.notification.error(error.error.message);
+        this.notification.error(`Item ${this.item.itemId} could not be deleted`, "Error");
+      }
+    });
+  }
 }

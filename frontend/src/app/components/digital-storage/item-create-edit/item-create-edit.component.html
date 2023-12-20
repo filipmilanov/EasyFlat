@@ -332,12 +332,35 @@
         </div>
       </div>
     </div>
-    <button type="submit"
-            class="btn btn-primary float-end"
-            [disabled]="!form.valid"
-    >
-      {{ submitButtonText }}
-    </button>
+
+    <div class="row justify-content-end mb-3 me-2">
+      <div class="col-auto">
+        <button type="button"
+                class="btn btn-danger me-2"
+                data-bs-toggle="modal"
+                data-bs-target="#confirm-delete-modal"
+                aria-label="Delete item"
+                *ngIf="!modeIsCreate"
+        >
+          <i class="bi bi-trash"></i>
+          Delete
+        </button>
+        <button type="submit"
+                class="btn btn-primary float-end"
+                [disabled]="!form.valid"
+        >
+          <i class="bi bi-pencil" *ngIf="!modeIsCreate"></i>
+          <i class="bi bi-plus-square" *ngIf="modeIsCreate"></i>
+          {{ submitButtonText }}
+        </button>
+      </div>
+    </div>
+
+    <app-confirm-delete-dialog
+      deleteInfo="item"
+      [deleteName]="item.generalName"
+      (confirm)="delete()">
+    </app-confirm-delete-dialog>
 
   </form>
 </div>
