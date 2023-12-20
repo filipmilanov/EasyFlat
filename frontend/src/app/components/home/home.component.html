@@ -1,49 +1,11 @@
-<div class="jumbotron mt-5 text-center">
-  <h1 class="display-4">Welcome to EasyFlat!</h1>
+<div class="jumbotron mt-5">
+  <h1 class="display-4">Welcome to the SE PR group phase!</h1>
   <hr class="my-4">
-
-  <div *ngIf="!authService.isLoggedIn()" class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-4">
-        <div class="card mx-auto mb-3">
-          <div class="card-header text-black">
-            <h5 class="card-title">Login as an existing user</h5>
-          </div>
-          <div class="card-body">
-            <p class="btn btn-primary btn-lg btn-block" routerLink="/login" role="button">Login</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card mx-auto">
-          <div class="card-header text-black">
-            <h5 class="card-title">Register as a new user</h5>
-          </div>
-          <div class="card-body">
-            <p class="btn btn-primary btn-lg btn-block" routerLink="/register" role="button">Register</p>
-          </div>
-        </div>
-      </div>
-    </div>
+  <a *ngIf="!authService.isLoggedIn()" class="btn btn-primary btn-lg" routerLink="/login" role="button">Login</a>
+  <div *ngIf="authService.isLoggedIn()">
+    <p>Check out the latest message from the SE PR group phase.</p>
+    <p class="lead">
+      <a class="btn btn-primary btn-lg" routerLink="/message" role="button">Message</a>
+    </p>
   </div>
-
-  <div *ngIf="authService.isLoggedIn()&&!isLoggedWg()">
-    <div class="form-group">
-      <h3>Join or Create a Shared Flat</h3>
-      <div class="button-group">
-        <p class="lead">
-          <a class="btn btn-primary btn-lg" routerLink="/wgLogin" role="button">Join</a>
-        </p>
-        <p class="lead">
-          <a class="btn btn-primary btn-lg" routerLink="/wgCreate" role="button">Create</a>
-        </p>
-      </div>
-    </div>
-  </div>
-  <div *ngIf="authService.isLoggedIn()&&isLoggedWg()">
-    <h2>Welcome to our beloved flat {{user.flatName}}</h2>
-  </div>
-
-
 </div>
-

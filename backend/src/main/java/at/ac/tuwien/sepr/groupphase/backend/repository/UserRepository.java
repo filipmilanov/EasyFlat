@@ -1,24 +1,32 @@
 package at.ac.tuwien.sepr.groupphase.backend.repository;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 //TODO: replace this class with a correct ApplicationUser JPARepository implementation
 @Repository
-public interface UserRepository extends JpaRepository<ApplicationUser, Long> {
+public class UserRepository {
 
-    ApplicationUser findUserByEmail(String email);
+    private final ApplicationUser user;
+    private final ApplicationUser admin;
 
-    @Query("SELECT u.sharedFlat.id FROM application_user u WHERE u.email = :email")
-    SharedFlat findFlatIdByEmail(@Param("email") String email);
+    @Autowired
+    public UserRepository(PasswordEncoder passwordEncoder) {
+        user = new ApplicationUser("user@email.com", passwordEncoder.encode("password"), false);
+        admin = new ApplicationUser("admin@email.com", passwordEncoder.encode("password"), true);
+    }
 
-    ApplicationUser findApplicationUserBySharedFlat(SharedFlat sharedFlat);
+    public ApplicationUser findUserByEmail(String email) {
+        if (email.equals(user.getEmail())) {
+            return user;
+        }
+        if (email.equals(admin.getEmail())) {
+            return admin;
+        }
+        return null; // In this case null is returned to fake Repository behavior
+    }
 
-    void deleteByEmail(String email);
 
-    boolean existsBySharedFlat(SharedFlat flat);
 }
