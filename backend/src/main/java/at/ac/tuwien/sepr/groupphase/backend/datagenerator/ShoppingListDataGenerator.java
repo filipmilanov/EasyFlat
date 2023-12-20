@@ -14,9 +14,9 @@ import java.lang.invoke.MethodHandles;
 import java.util.LinkedList;
 import java.util.List;
 
-@Profile({"generateData"})
-@Component("ShoppingListDataGenerator")
-@DependsOn({"CleanDatabase", "SharedFlatDataGenerator"})
+//@Profile({"generateData"})
+//@Component("ShoppingListDataGenerator")
+//@DependsOn({"CleanDatabase", "SharedFlatDataGenerator"})
 public class ShoppingListDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

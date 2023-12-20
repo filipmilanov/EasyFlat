@@ -20,13 +20,13 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-@Profile({"generateData"})
-@Component("ItemDataGenerator")
-@DependsOn({
-    "CleanDatabase",
-    "StorageDataGenerator",
-    "IngredientsDataGenerator",
-    "UnitDataGenerator"})
+//@Profile({"generateData"})
+//@Component("ShoppingItemDataGenerator")
+//@DependsOn({
+//    "CleanDatabase",
+//    "StorageDataGenerator",
+//    "IngredientsDataGenerator",
+//    "UnitDataGenerator"})
 public class ShoppingItemDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 5;

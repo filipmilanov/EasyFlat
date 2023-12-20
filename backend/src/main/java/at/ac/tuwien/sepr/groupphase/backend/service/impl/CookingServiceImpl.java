@@ -27,7 +27,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
@@ -64,7 +64,7 @@ public class CookingServiceImpl implements CookingService {
     private final RecipeSuggestionRepository repository;
     private final RecipeIngredientService ingredientService;
     private final RecipeIngredientMapper ingredientMapper;
-    private final DigitalStorageRepository storageRepository;
+    private final ItemRepository itemRepository;
     private final RecipeMapper recipeMapper;
     private final RecipeIngredientMapper recipeIngredientMapper;
     private final UnitService unitService;
@@ -85,7 +85,7 @@ public class CookingServiceImpl implements CookingService {
                               DigitalStorageServiceImpl digitalStorageService,
                               RecipeIngredientService ingredientService,
                               RecipeIngredientMapper ingredientMapper,
-                              DigitalStorageRepository storageRepository,
+                              ItemRepository itemRepository,
                               RecipeMapper recipeMapper,
                               RecipeIngredientMapper recipeIngredientMapper,
                               UnitService unitService,
@@ -100,7 +100,7 @@ public class CookingServiceImpl implements CookingService {
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
         this.ingredientMapper = ingredientMapper;
-        this.storageRepository = storageRepository;
+        this.itemRepository = itemRepository;
         this.recipeMapper = recipeMapper;
         this.recipeIngredientMapper = recipeIngredientMapper;
         this.unitService = unitService;
@@ -407,7 +407,7 @@ public class CookingServiceImpl implements CookingService {
             if (recipeSuggestionDto != null) {
                 List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
                 for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
-                    List<Item> items = storageRepository.getItemWithGeneralName(storId, ingredient.name());
+                    List<Item> items = itemRepository.getItemWithGeneralName(storageId, ingredient.name());
                     if (items.isEmpty()) {
                         missingIngredients.add(ingredient);
                         continue;
@@ -473,7 +473,7 @@ public class CookingServiceImpl implements CookingService {
         Long storageId = this.getStorageIdForUser(jwt);
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
-            List<Item> items = storageRepository.getItemWithGeneralName(storId, recipeIngredientDto.name());
+            List<Item> items = itemRepository.getItemWithGeneralName(storageId, recipeIngredientDto.name());
             Unit ingredientUnit = unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum());
             Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), recipeIngredientDto.amount());
             List<Item> itemsWithMinUnits = minimizeUnits(items);
