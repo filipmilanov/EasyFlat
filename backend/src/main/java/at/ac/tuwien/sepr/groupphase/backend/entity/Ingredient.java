@@ -30,9 +30,8 @@ public class Ingredient {
         return title;
     }
 
-    public Ingredient setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
-        return this;
     }
 
     @Override
