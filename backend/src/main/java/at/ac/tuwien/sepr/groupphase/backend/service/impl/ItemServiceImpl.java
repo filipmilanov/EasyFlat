@@ -45,7 +45,6 @@ public class ItemServiceImpl implements ItemService {
     private final ItemStatsRepository itemStatsRepository;
     private final Authorization authorization;
     private final SharedFlatService sharedFlatService;
-    private final CustomUserDetailService customUserDetailService;
     private final UnitService unitService;
 
     public ItemServiceImpl(ItemRepository itemRepository,
@@ -55,7 +54,7 @@ public class ItemServiceImpl implements ItemService {
                            ItemValidator itemValidator,
                            ItemStatsRepository itemStatsRepository,
                            Authorization authorization,
-                           SharedFlatService sharedFlatService, CustomUserDetailService customUserDetailService, UnitService unitService) {
+                           SharedFlatService sharedFlatService, UnitService unitService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
@@ -64,7 +63,6 @@ public class ItemServiceImpl implements ItemService {
         this.itemStatsRepository = itemStatsRepository;
         this.authorization = authorization;
         this.sharedFlatService = sharedFlatService;
-        this.customUserDetailService = customUserDetailService;
         this.unitService = unitService;
     }
 
