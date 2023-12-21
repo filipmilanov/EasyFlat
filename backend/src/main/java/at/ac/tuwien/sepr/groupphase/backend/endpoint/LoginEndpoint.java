@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
