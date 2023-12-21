@@ -42,16 +42,18 @@ public class LoginEndpoint {
     }
 
     @PermitAll
-    @PutMapping
-    public UserDetailDto update(@RequestBody UserDetailDto userDetailDto) {
+    @PutMapping("/{id}")
+    public UserDetailDto update(@PathVariable long id, @RequestBody UserDetailDto userDetailDto) {
         return userService.update(userDetailDto);
     }
 
+
     @PermitAll
-    @DeleteMapping("/{email}")
-    public UserDetailDto delete(@PathVariable String email) {
-        return userService.delete(email);
+    @DeleteMapping("/{id}")
+    public UserDetailDto delete(@PathVariable long id) {
+        return userService.delete(id);
     }
+
 
     @PermitAll
     @PutMapping("/signOut")
