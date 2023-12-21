@@ -77,7 +77,7 @@ public class ExpenseValidator {
                         applicationUser.getId().equals(user.user().id())
                     )
             )) {
-            errors.add("The debitUsers must be one of the flat members");
+            errors.add("The list of users responsible for the payment can only contain flat members.");
         }
 
         if (expenseDto.sharedFlat() == null) {
