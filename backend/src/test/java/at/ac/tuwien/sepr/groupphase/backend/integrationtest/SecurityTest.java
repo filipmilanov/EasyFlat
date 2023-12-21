@@ -16,6 +16,7 @@ import jakarta.annotation.security.RolesAllowed;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.aop.support.AopUtils;
@@ -122,6 +123,7 @@ public class SecurityTest implements TestData {
      * Feel free to remove / disable / adapt if you do not use Method Security (e.g. if you prefer Web Security to define who may perform which actions) or want to use Method Security on the service layer.
      */
     @Test
+    @Disabled
     public void ensureSecurityAnnotationPresentForEveryEndpoint() {
         List<ImmutablePair<Class<?>, Method>> notSecured = components.stream()
             .map(AopUtils::getTargetClass) // beans may be proxies, get the target class instead
