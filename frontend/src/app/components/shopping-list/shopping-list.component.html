@@ -1,29 +1,30 @@
-<h1 class="display-4">{{shoppingList?.listName}}</h1>
+<h1 class="display-4">{{shoppingList?.name}}</h1>
+
 <form>
   <div class="form-elements">
     <div class="col-md-2 col-lg-2 mt-2">
       <select class="form-select form-select-md"
               name="selectedShoppingList"
-              [(ngModel)]="selectedShoppingList"
+              [(ngModel)]="selectedShoppingListId"
               (change)="onShoppingListChange()">
-        <ng-container *ngIf="!selectedShoppingList">
+        <ng-container *ngIf="!selectedShoppingListId">
           <option value="" disabled selected hidden>Select Shopping List</option>
         </ng-container>
         <option *ngFor="let list of shoppingLists" [value]="list.id">
-          {{ list.listName }}
+          {{ list.name }}
         </option>
       </select>
     </div>
-    <button type="button" class="btn btn-primary m-3" (click)="navigateToCreateList()">Add new list</button>
   </div>
 </form>
 
-
+<a class="btn btn-sm btn-primary"
+   routerLink="/shopping-lists"
+   aria-label="Go back">
+  <i class="bi bi-arrow-left-circle-fill"></i>
+</a>
 
 <br>
-
-
-
 
 <form class="d-flex flex-row w-auto mb-3">
   <div class="mt-3">

@@ -156,6 +156,7 @@ public class CustomUserDetailService implements UserService {
 
     @Override
     public UserDetailDto signOut(String flatName, String authToken) {
+        LOGGER.trace("signOut({}, {})", flatName, authToken);
         String userEmail = jwtTokenizer.getEmailFromToken(authToken);
         ApplicationUser user = userRepository.findUserByEmail(userEmail);
         SharedFlat userFlat = user.getSharedFlat();

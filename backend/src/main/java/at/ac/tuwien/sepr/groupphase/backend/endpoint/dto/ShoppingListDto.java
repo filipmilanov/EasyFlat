@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 public record ShoppingListDto(
     Long id,
-    String listName
+    String name
 
 ) {
 

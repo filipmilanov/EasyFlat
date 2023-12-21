@@ -35,6 +35,7 @@ public interface DigitalStorageService {
      * @param digitalStorageSearchDto search criteria
      * @param jwt  A valid JWT token for user authentication.
      * @return a List of all persisted Storages
+     * @throws AuthenticationException If authentication fails or the user does not exist.
      */
     List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto, String jwt) throws AuthenticationException;
 
@@ -61,6 +62,7 @@ public interface DigitalStorageService {
      * @param itemSearchDto search parameters
      * @param jwt  A valid JWT token for user authentication.
      * @return a List of filtered items
+     * @throws AuthenticationException If authentication fails or the user does not exist.
      */
     List<ItemListDto> searchItems(ItemSearchDto itemSearchDto, String jwt) throws ValidationException, AuthenticationException, ConflictException;
 
@@ -70,6 +72,7 @@ public interface DigitalStorageService {
      * @param storageDto a storage without ID
      * @param jwt  A valid JWT token for user authentication.
      * @return an object of type {@link DigitalStorage} which is persisted and has an ID
+     * @throws AuthenticationException If authentication fails or the user does not exist.
      */
     DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthenticationException;
 
@@ -117,6 +120,8 @@ public interface DigitalStorageService {
      * @param itemDto existing ID of a storage
      * @param jwt  A valid JWT token for user authentication.
      * @return the added item of type {@link ShoppingItem}
+     * @throws AuthenticationException If authentication fails or the user does not exist.
+     * @throws ValidationException if the data in itemDto is not valid
      */
-    ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException;
+    ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException;
 }

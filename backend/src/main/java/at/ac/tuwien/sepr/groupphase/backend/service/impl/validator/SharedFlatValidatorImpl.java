@@ -1,10 +1,9 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.SharedFlatValidator;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.slf4j.Logger;
@@ -14,17 +13,16 @@ import org.springframework.stereotype.Component;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Component
-public class SharedFlatValidator {
+public class SharedFlatValidatorImpl implements SharedFlatValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final Validator validator;
 
-    public SharedFlatValidator(Validator validator) {
+    public SharedFlatValidatorImpl(Validator validator) {
         this.validator = validator;
     }
 
@@ -49,20 +47,24 @@ public class SharedFlatValidator {
 
         List<String> errors = new ArrayList<>();
 
-        if (sharedFlat.getName().isEmpty()) {
-            errors.add("Tha name should not be empty!");
+        if (sharedFlat.getName() == null) {
+            errors.add("No name given");
+        } else {
+            if (sharedFlat.getName().isBlank()) {
+                errors.add("Flat name can not be blank");
+            }
+            if (sharedFlat.getName().length() > 200) {
+                errors.add("Flat name is too long");
+            }
         }
-        if (sharedFlat.getName().length() > 120) {
-            errors.add("The name is too long");
+        if (sharedFlat.getId() != null) {
+            errors.add("The Id must be null");
         }
-        if (sharedFlat.getName().isBlank()) {
-            errors.add("The given name is blank");
+        if (sharedFlat.getDigitalStorage() == null) {
+            errors.add("Flat must have a storage");
         }
-        if (sharedFlat.getPassword() == null) {
-            errors.add("Password is not given");
-        }
-        if (sharedFlat.getPassword().length() < 8) {
-            errors.add("Password is too short");
+        if (sharedFlat.getShoppingLists() == null) {
+            errors.add("Flat must have a shopping list");
         }
 
         if (!errors.isEmpty()) {

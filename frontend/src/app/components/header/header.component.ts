@@ -31,12 +31,4 @@ export class HeaderComponent implements OnInit {
     this.authService.logoutUser();
   }
 
-  getDefShopListId() {
-    this.shoppingService.getShoppingListByName('Default').subscribe({
-      next: res => {
-        return res.id
-      }
-    });
-  }
-
 }

@@ -30,7 +30,6 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   }
   selectedLabelColor = '#ffffff';
   availableUnits: Unit[] = [];
-  shoppingListName: string = '';
 
   constructor(
     private shoppingService: ShoppingListService,
@@ -98,11 +97,10 @@ export class ShoppingItemCreateEditComponent implements OnInit {
       this.mode = data.mode;
       this.route.params.subscribe(params => {
         // Extract the 'id' parameter from the route
-        const name = params['name'];
-        this.shoppingService.getShoppingListByName(name).subscribe({
+        const id = params['id'];
+        this.shoppingService.getShoppingListById(id).subscribe({
           next: res => {
             this.item.shoppingList = res;
-            console.log(this.item.shoppingList)
           }
         });
 
@@ -121,14 +119,14 @@ export class ShoppingItemCreateEditComponent implements OnInit {
             },
             error: error => {
               console.error(`Item could not be retrieved from the backend: ${error}`);
-              this.router.navigate(['shopping-list', this.item.shoppingList.listName]);
+              this.router.navigate(['shopping-lists', 'list' + this.item.shoppingList.id]);
               this.notification.error('Item could not be retrieved', "Error");
             }
           })
         },
         error: error => {
           console.error(`Item could not be retrieved using the ID from the URL: ${error}`);
-          this.router.navigate(['shopping-list', this.item.shoppingList.listName]);
+          this.router.navigate(['shopping-lists', 'list' + this.item.shoppingList.id]);
           this.notification.error('No item provided for editing', "Error");
         }
       })
@@ -157,8 +155,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
       observable.subscribe({
         next: data => {
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished}.`, "Success");
-          this.router.navigate(['/shopping-list/' + this.item.shoppingList.listName]);
-          console.log(this.shoppingListName)
+          this.router.navigate(['shopping-lists', 'list', this.item.shoppingList.id]);
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}`);
@@ -193,9 +190,6 @@ export class ShoppingItemCreateEditComponent implements OnInit {
     this.item.labels.splice(i, 1);
   }
 
-  formatStorageName(storage: DigitalStorageDto | null): string {
-    return storage ? storage.title : '';
-  }
 
   formatUnitName(unit: Unit | null): string {
     return unit ? unit.name : '';

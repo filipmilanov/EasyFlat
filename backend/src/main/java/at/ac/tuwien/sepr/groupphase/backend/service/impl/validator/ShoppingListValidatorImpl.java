@@ -1,9 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ShoppingListValidator;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.slf4j.Logger;
@@ -16,12 +17,12 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class ShoppingListValidator {
+public class ShoppingListValidatorImpl implements ShoppingListValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final Validator validator;
 
-    public ShoppingListValidator(Validator validator) {
+    public ShoppingListValidatorImpl(Validator validator) {
         this.validator = validator;
     }
 
@@ -43,18 +44,21 @@ public class ShoppingListValidator {
         LOGGER.trace("checkConflictForCreate({})", shoppingList);
         List<String> errors = new ArrayList<>();
 
-        if (shoppingList.getName() == "Default") {
-            errors.add("Shopping List can not have 'Default' name");
+        if (shoppingList.getName() == null) {
+            errors.add("No name given");
+        } else {
+            if (shoppingList.getName().isBlank()) {
+                errors.add("Shopping List name can not be blank");
+            }
+            if (shoppingList.getName().length() > 200) {
+                errors.add("Shopping List name is too long");
+            }
         }
-
-        if (shoppingList.getName() == null || shoppingList.getName().trim().isEmpty()) {
-            errors.add("Shopping List name must not be null or empty");
+        if (shoppingList.getShopListId() != null) {
+            errors.add("The Id must be null");
         }
-        if (shoppingList.getName().isBlank()) {
-            errors.add("Shopping List name can not be blank");
-        }
-        if (shoppingList.getName().length() > 120) {
-            errors.add("Shopping List name is too long");
+        if (shoppingList.getItems() != null) {
+            errors.add("The shopping list must not have items");
         }
 
         if (!errors.isEmpty()) {
