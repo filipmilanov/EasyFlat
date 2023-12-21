@@ -57,21 +57,5 @@ public record ExpenseDto(
         return debitUsers == null
             || debitUsers.stream().map(DebitDto::splitBy).distinct().count() == 1;
     }
-
-
-    ExpenseDto withSharedFlat(WgDetailDto sharedFlat) {
-        return new ExpenseDto(
-            id,
-            title,
-            description,
-            amountInCents,
-            createdAt,
-            paidBy,
-            debitUsers,
-            items,
-            isRepeating,
-            interval
-        );
-    }
 }
 
