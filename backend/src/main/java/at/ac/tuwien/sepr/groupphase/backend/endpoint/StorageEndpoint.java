@@ -66,13 +66,6 @@ public class StorageEndpoint {
     }
 
     @Secured("ROLE_USER")
-    @GetMapping("/info/{name}")
-    public List<Item> getItemWithGeneralName(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthorizationException, ValidationException, ConflictException {
-        LOGGER.info("getItemWithGeneralName({})", name);
-        return digitalStorageService.getItemWithGeneralName(name, jwt);
-    }
-
-    @Secured("ROLE_USER")
     @PostMapping("/shop")
     @ResponseStatus(HttpStatus.CREATED)
     public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws AuthorizationException, ValidationException, ConflictException {

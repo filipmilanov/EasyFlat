@@ -78,6 +78,7 @@ public class CookingServiceImpl implements CookingService {
     private final CookbookMapper cookbookMapper;
     private final CookbookRepository cookbookRepository;
     private final UserService userService;
+    private final CustomUserDetailService customUserDetailService;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
     public CookingServiceImpl(RestTemplate restTemplate,
@@ -94,7 +95,8 @@ public class CookingServiceImpl implements CookingService {
                               ItemMapper itemMapper, RecipeValidator recipeValidator,
                               CookbookValidator cookbookValidator, SharedFlatService sharedFlatService,
                               Authorization authorization, CookbookMapper cookbookMapper,
-                              CookbookRepository cookbookRepository, UserService userService) {
+                              CookbookRepository cookbookRepository, UserService userService,
+                              CustomUserDetailService customUserDetailService) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
@@ -114,14 +116,15 @@ public class CookingServiceImpl implements CookingService {
         this.cookbookMapper = cookbookMapper;
         this.cookbookRepository = cookbookRepository;
         this.userService = userService;
+        this.customUserDetailService = customUserDetailService;
     }
 
     @Override
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt) throws ValidationException, ConflictException, AuthorizationException {
 
 
-        List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, true, null, null, null), jwt);
-        List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, false, null, null, null), jwt);
+        List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(true, null, null, null), jwt);
+        List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(false, null, null, null), jwt);
 
         List<ItemListDto> items = new LinkedList<>();
         items.addAll(alwaysInStockItems);
@@ -400,14 +403,15 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthorizationException {
-        Long storageId = this.getStorageIdForUser(jwt);
+        ApplicationUser user = customUserDetailService.getUser(jwt);
+        DigitalStorage digitalStorageOfUser = user.getSharedFlat().getDigitalStorage();
         Optional<RecipeSuggestion> recipeEntity = repository.findById(id);
         Optional<RecipeSuggestionDto> recipeDto = recipeEntity.map(currentRecipe -> {
             RecipeSuggestionDto recipeSuggestionDto = recipeMapper.entityToRecipeSuggestionDto(currentRecipe);
             if (recipeSuggestionDto != null) {
                 List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
                 for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
-                    List<Item> items = itemRepository.getItemWithGeneralName(storageId, ingredient.name());
+                    List<Item> items = itemRepository.findAllByDigitalStorageIsAndGeneralNameIs(digitalStorageOfUser, ingredient.name());
                     if (items.isEmpty()) {
                         missingIngredients.add(ingredient);
                         continue;
@@ -470,10 +474,11 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthorizationException {
         recipeValidator.validateForCook(recipeToCook);
-        Long storageId = this.getStorageIdForUser(jwt);
+        ApplicationUser user = customUserDetailService.getUser(jwt);
+        DigitalStorage digitalStorageOfUser = user.getSharedFlat().getDigitalStorage();
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
-            List<Item> items = itemRepository.getItemWithGeneralName(storageId, recipeIngredientDto.name());
+            List<Item> items = itemRepository.findAllByDigitalStorageIsAndGeneralNameIs(digitalStorageOfUser, recipeIngredientDto.name());
             Unit ingredientUnit = unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum());
             Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), recipeIngredientDto.amount());
             List<Item> itemsWithMinUnits = minimizeUnits(items);

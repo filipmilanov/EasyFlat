@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -69,6 +70,14 @@ public class ItemEndpoint {
         return itemMapper.entityListToItemDtoList(
             itemService.findByFields(itemFieldSearchDto)
         );
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/general-name/{generalName}")
+    public List<Item> findByGeneralName(@PathVariable("generalName") String name,
+                                        @RequestHeader("Authorization") String jwt) throws AuthorizationException, ValidationException, ConflictException {
+        LOGGER.info("findByGeneralName({})", name);
+        return itemService.getItemWithGeneralName(name, jwt);
     }
 
     @Secured("ROLE_USER")

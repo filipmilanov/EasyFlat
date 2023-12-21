@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.repository;
 
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
         String generalName,
         String brand,
         String broughtAt);
+
+    List<Item> findAllByDigitalStorageIsAndGeneralNameIs(DigitalStorage digitalStorage,
+                                                         String generalName);
 
     @Query("UPDATE Item i "
         + "SET i.quantityCurrent = :quantity "
@@ -33,10 +37,4 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
                            @Param("title") String title,
                            @Param("fillLevel") String fillLevel,
                            @Param("alwaysInStock") Class alwaysInStock);
-
-    @Query("SELECT i FROM Item i WHERE i.digitalStorage.storageId = :storageId AND "
-        + ":generalName = i.generalName ")
-    List<Item> getItemWithGeneralName(@Param("storageId") Long storageId,
-                                      @Param("generalName") String generalName);
-
 }

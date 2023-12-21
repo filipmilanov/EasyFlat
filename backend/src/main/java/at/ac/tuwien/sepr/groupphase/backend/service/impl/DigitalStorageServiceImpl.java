@@ -226,12 +226,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         return itemRepository.updateItemQuantity(storageId, itemId, quantity);
     }
 
-    @Override
-    public List<Item> getItemWithGeneralName(String name, String jwt) throws AuthorizationException, ValidationException, ConflictException {
-        Long storageId = getStorageIdForUser(jwt);
-        return itemRepository.getItemWithGeneralName(storageId, name);
-    }
-
     @Transactional
     @Override
     public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthorizationException, ValidationException, ConflictException {

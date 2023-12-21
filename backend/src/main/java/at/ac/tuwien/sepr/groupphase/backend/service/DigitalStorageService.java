@@ -100,18 +100,6 @@ public interface DigitalStorageService {
 
 
     /**
-     * Retrieves a list of items with a specific general name
-     * and associated with the user identified by the provided JWT.
-     *
-     * @param name The general name to filter items by.
-     * @param jwt  A valid JWT token for user authentication.
-     * @return A list of items with the specified general name.
-     * @throws AuthorizationException If authentication fails or the user does not exist.
-     */
-    List<Item> getItemWithGeneralName(String name, String jwt) throws AuthorizationException, ValidationException, ConflictException;
-
-
-    /**
      * Gets an item from digital storage and adds it to the main shopping list.
      *
      * @param itemDto existing ID of a storage

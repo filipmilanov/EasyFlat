@@ -33,6 +33,15 @@ public interface ItemService {
      */
     List<Item> findByFields(ItemFieldSearchDto itemFieldSearchDto);
 
+    /**
+     * Retrieves a list of items with a specific general name
+     *
+     * @param generalName The general name to filter items by.
+     * @param jwt  A valid JWT token for user authentication.
+     * @return A list of items with the specified general name.
+     */
+    List<Item> getItemWithGeneralName(String generalName, String jwt);
+
 
     /**
      * Validates and Creates a new {@link Item} in the db.
