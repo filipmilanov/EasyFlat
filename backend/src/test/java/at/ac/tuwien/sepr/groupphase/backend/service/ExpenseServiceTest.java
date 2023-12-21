@@ -77,8 +77,8 @@ class ExpenseServiceTest {
 
         // then
         assertAll(
-            () -> assertThat(actual).isNotNull();
-            () -> assertThat(actual.getId()).isEqualTo(id);
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).extracting(Expense::getId).isEqualTo(id)
         );
     }
 
