@@ -27,13 +27,13 @@ public class LoginEndpoint {
         this.userMapper = userMapper;
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @PostMapping
     public String login(@RequestBody UserLoginDto userLoginDto) {
         return userService.login(userLoginDto);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping
     public UserDetailDto getUser(@RequestHeader("Authorization") String authToken) {
         return userMapper.entityToUserDetailDto(

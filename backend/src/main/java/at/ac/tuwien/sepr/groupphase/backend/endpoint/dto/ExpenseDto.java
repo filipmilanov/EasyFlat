@@ -32,7 +32,7 @@ public record ExpenseDto(
     LocalDateTime interval
 ) {
 
-    @AssertTrue(message = "Interval must be present if isRepeating is true")
+    @AssertTrue(message = "Interval must be present if the finance entry is set to repeating")
     public boolean isPeriodPresentIfIsRepeating() {
         return isRepeating == null || !isRepeating || interval != null;
     }
