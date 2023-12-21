@@ -69,7 +69,7 @@ public class ExpenseValidator {
         if (expenseDto.debitUsers() == null) {
             errors.add("The list of users responsible for the payment cannot be empty.");
         } else if (expenseDto.debitUsers().isEmpty()) {
-            errors.add("The debitUsers must not be empty");
+            errors.add("The list of users responsible for the payment cannot be empty.");
         } else if (expenseDto.debitUsers().stream()
             .anyMatch(user ->
                 applicationUsers.stream()
