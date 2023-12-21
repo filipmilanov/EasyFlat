@@ -52,6 +52,13 @@ public record ExpenseDto(
             || debitUsers.stream().mapToDouble(DebitDto::value).sum() == 100;
     }
 
+    @AssertTrue(message = "The split strategy must be equal in all debit users")
+    public boolean isSplitStrategyEqualInAllDebitUsers() {
+        return debitUsers == null
+            || debitUsers.stream().map(DebitDto::splitBy).distinct().count() == 1;
+    }
+
+
     ExpenseDto withSharedFlat(WgDetailDto sharedFlat) {
         return new ExpenseDto(
             id,
