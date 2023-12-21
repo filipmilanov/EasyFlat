@@ -57,7 +57,7 @@ public class ExpenseValidator {
         }
 
         if (expenseDto.paidBy() == null) {
-            errors.add("The payerId must not be null");
+            errors.add("The payer cannot not be empty");
         } else if (applicationUsers.stream()
             .noneMatch(user ->
                 user.getId().equals(expenseDto.paidBy().id())
