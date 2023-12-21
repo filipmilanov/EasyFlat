@@ -4,7 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 /**
- * Data transfer object for debits which is used for all splitBy methods.
+ * Data transfer object for debits which is used for all splitBy strategies.
  */
 @RecordBuilder
 public record DebitDto(
