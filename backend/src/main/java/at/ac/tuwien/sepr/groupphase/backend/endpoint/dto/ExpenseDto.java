@@ -22,9 +22,9 @@ public record ExpenseDto(
     @NotNull(message = "Amount cannot be empty")
     @Min(value = 1, message = "Amount must be greater than 1")
     Double amountInCents,
-    @NotNull(message = "CreatedAt cannot be null")
+    @NotNull(message = "A finance entry must have a creation date")
     LocalDateTime createdAt,
-    @NotNull(message = "Payer cannot be null")
+    @NotNull(message = "A finance entry must have a payer")
     UserListDto paidBy,
     List<DebitDto> debitUsers,
     @NotNull(message = "The shared flat cannot be empty") WgDetailDto sharedFlat,
