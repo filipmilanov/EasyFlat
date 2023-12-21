@@ -83,7 +83,7 @@ public class ExpenseValidator {
         if (expenseDto.sharedFlat() == null) {
             errors.add("The shared flat needs to be set");
         } else if (!expenseDto.sharedFlat().getId().equals(flatOfUser.getId())) {
-            errors.add("The sharedFlat must be the flat of the user");
+            errors.add("The shared flat needs to be the flat of the user");
         }
 
         if (!errors.isEmpty()) {
