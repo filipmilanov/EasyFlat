@@ -44,7 +44,7 @@ public class ExpenseEndpoint {
         );
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ExpenseDto create(@RequestBody ExpenseDto expenseDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException {
