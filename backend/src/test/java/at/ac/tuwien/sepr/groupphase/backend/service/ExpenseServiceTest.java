@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -131,20 +132,24 @@ class ExpenseServiceTest {
         // then
         service.findById(actual.getId(), "Bearer Token");
 
-        assertThat(actual.getId()).isNotNull();
-        assertThat(actual)
-            .extracting(
-                Expense::getTitle,
-                Expense::getDescription,
-                Expense::getAmountInCents,
-                Expense::getDebitUsers
-            ).contains(
-                expenseDto.title(),
-                expenseDto.description(),
-                expenseDto.amountInCents()
-            );
-        assertThat(actual.getPaidBy().getId()).isEqualTo(expenseDto.paidBy().id());
         assertThat(actual.getDebitUsers()).hasSize(expenseDto.debitUsers().size());
+
+        assertAll(
+            () -> assertThat(actual.getId()).isNotNull(),
+            () -> assertThat(actual)
+                .extracting(
+                    Expense::getTitle,
+                    Expense::getDescription,
+                    Expense::getAmountInCents,
+                    Expense::getDebitUsers
+                ).contains(
+                    expenseDto.title(),
+                    expenseDto.description(),
+                    expenseDto.amountInCents()
+                ),
+            () -> assertThat(actual.getPaidBy().getId()).isEqualTo(expenseDto.paidBy().id()),
+            () -> assertThat(actual.getDebitUsers()).hasSize(expenseDto.debitUsers().size())
+        );
     }
 
     static List<Arguments> data() {
@@ -283,11 +288,13 @@ class ExpenseServiceTest {
         Expense actual = service.create(expenseDto, "Bearer Token");
 
         // then
-        assertThat(actual.getDebitUsers()).hasSize(expenseDto.debitUsers().size());
-        assertThat(actual.getDebitUsers().stream().map((debit) ->
-            debit.getPercent() / 100.0 * totalAmount
-        ).toList()).isEqualTo(
-            expected
+        assertAll(
+            () -> assertThat(actual.getDebitUsers()).hasSize(expenseDto.debitUsers().size()),
+            () -> assertThat(actual.getDebitUsers().stream().map((debit) ->
+                debit.getPercent() / 100.0 * totalAmount
+            ).toList()).isEqualTo(
+                expected
+            )
         );
     }
 
