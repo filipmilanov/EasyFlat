@@ -38,7 +38,10 @@ export class ItemService {
     return this.http.get<ItemDto[]>(`${this.baseUri}/search`, {params});
   }
 
-
+  findByDigitalStorageAndGeneralName(generalName: string): Observable<ItemDto[]> {
+    console.log('Find items with general name ' + generalName)
+    return this.http.get<ItemDto[]>(this.baseUri + '/general-name/' + generalName);
+  }
 
 
   /**

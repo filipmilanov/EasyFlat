@@ -1,13 +1,10 @@
 import {Component, ElementRef, HostListener, OnInit} from '@angular/core';
-import {StorageItem} from "../../../dtos/storageItem";
 import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {ItemDto, ShoppingItemDto} from "../../../dtos/item";
+import {ItemDto} from "../../../dtos/item";
 import {ItemService} from "../../../services/item.service";
 import {ToastrService} from "ngx-toastr";
 import {parseInt} from "lodash";
-import {Observable} from "rxjs";
-import {dateComparator} from "@ng-bootstrap/ng-bootstrap/datepicker/datepicker-tools";
 import {ShoppingListService} from "../../../services/shopping-list.service";
 
 @Component({
@@ -17,13 +14,17 @@ import {ShoppingListService} from "../../../services/shopping-list.service";
 })
 export class ItemDetailListComponent implements OnInit {
   itemGeneralName: string;
-  items: StorageItem[];
+  items: ItemDto[];
   storId: string;
-  hashMap = new Map<string, boolean[]>();
+  hashMap = new Map<number, boolean[]>();
 
-  constructor(private storageService: StorageService, private router: Router,
-              private route: ActivatedRoute, private itemService: ItemService, private el: ElementRef,
-              private notification: ToastrService, private shoppingService: ShoppingListService) {
+  constructor(private storageService: StorageService,
+              private router: Router,
+              private route: ActivatedRoute,
+              private itemService: ItemService,
+              private el: ElementRef,
+              private notification: ToastrService,
+              private shoppingService: ShoppingListService) {
   }
 
   ngOnInit() {
@@ -33,7 +34,7 @@ export class ItemDetailListComponent implements OnInit {
         this.itemGeneralName = params.name;
 
 
-        this.storageService.getItemsWithGenaralName(this.itemGeneralName).subscribe({
+        this.itemService.findByDigitalStorageAndGeneralName(this.itemGeneralName).subscribe({
           next: res => {
             this.items = res;
             console.log(this.items)
@@ -53,7 +54,7 @@ export class ItemDetailListComponent implements OnInit {
     });
   }
 
-  checkModal(id: string, mode: number): boolean {
+  checkModal(id: number, mode: number): boolean {
     if (mode == 0) {
       return this.hashMap.get(id)[0];
     } else {
@@ -61,7 +62,7 @@ export class ItemDetailListComponent implements OnInit {
     }
   }
 
-  toggleCustomModalSubtract(id: string) {
+  toggleCustomModalSubtract(id: number) {
     this.hashMap.get(id)[0] = !this.hashMap.get(id)[0];
     if (this.hashMap.get(id)[0] == true) {
       this.hashMap.get(id)[1] = false;
@@ -73,7 +74,7 @@ export class ItemDetailListComponent implements OnInit {
     });
   }
 
-  toggleCustomModalAdd(id: string) {
+  toggleCustomModalAdd(id: number) {
     this.hashMap.get(id)[1] = !this.hashMap.get(id)[1];
     if (this.hashMap.get(id)[1] == true) {
       this.hashMap.get(id)[0] = false;
@@ -94,37 +95,27 @@ export class ItemDetailListComponent implements OnInit {
     }
   }
 
-  onSave(id: string, value: string, mode: number) {
-    const quantity = parseInt(value);
+  onSave(id: number, quantity: number, mode: number) {
 
-    if (isNaN(quantity) || quantity < 0) {
+    if (quantity < 0) {
       console.error('Invalid input. Please enter a valid number.');
       return;
     }
 
-    let currId: string;
-    for (let i = 0; i < this.items.length; i++) {
-      currId = this.items[i].itemId;
-      if (id == currId) {
-
-        break;
-      }
-    }
-
     let item: ItemDto;
-    this.itemService.getById(parseInt(id)).subscribe({
+    this.itemService.getById(id).subscribe({
       next: res => {
         item = res;
 
         let quantityCurrent: number;
         let quantityTotal: number;
         if (mode == 0) { // Subtract
-          quantityCurrent = item.quantityCurrent - parseInt(value);
+          quantityCurrent = item.quantityCurrent - quantity;
           quantityTotal = item.quantityTotal;
 
           this.hashMap.get(id)[0] = false;
         } else { // mode == 1, Add
-          quantityCurrent = item.quantityCurrent + parseInt(value);
+          quantityCurrent = item.quantityCurrent + quantity;
           if (quantityCurrent > item.quantityTotal) {
             quantityTotal = quantityCurrent;
           } else {
@@ -137,7 +128,7 @@ export class ItemDetailListComponent implements OnInit {
         if (quantityCurrent < 1) {
           console.log(item)
           if (confirm("The item will be deleted from the storage. Are you sure you want to proceed?")) {
-            this.delete(parseInt(id));
+            this.delete(id);
           }
         } else {
           item.quantityCurrent = quantityCurrent;
@@ -145,10 +136,8 @@ export class ItemDetailListComponent implements OnInit {
           console.log(item)
           this.itemService.updateItem(item).subscribe({
             next: res => {
-              let currId: string;
               for (let i = 0; i < this.items.length; i++) {
-                currId = this.items[i].itemId;
-                if (id == currId) {
+                if (res.itemId == this.items[i].itemId) {
                   this.items[i].quantityCurrent = res.quantityCurrent;
                   this.items[i].quantityTotal = res.quantityTotal;
                   break;
@@ -159,7 +148,6 @@ export class ItemDetailListComponent implements OnInit {
             error: error => {
               console.error(`Item's quantity could not be changed: ${error.error.message}`);
               this.notification.error(error.error.message);
-              this.notification.error(`Item ${id} could not be deleted`, "Error");
             }
           });
         }
@@ -180,11 +168,9 @@ export class ItemDetailListComponent implements OnInit {
           this.router.navigate([`/digital-storage/${this.storId}`]);
         } else {
           let j = 0;
-          let arr: StorageItem[] = new Array<StorageItem>(this.items.length - 1);
-          let currId: string;
+          let arr: ItemDto[] = new Array<ItemDto>(this.items.length - 1);
           for (let i = 0; i < this.items.length; i++) {
-            currId = this.items[i].itemId;
-            if (itemId != parseInt(currId)) {
+            if (itemId != this.items[i].itemId) {
               arr[j] = this.items[i];
               j++;
             }
@@ -201,9 +187,9 @@ export class ItemDetailListComponent implements OnInit {
     });
   }
 
-  addToShoppingList(itemId: string) {
+  addToShoppingList(itemId: number) {
     let item: ItemDto;
-    this.itemService.getById(parseInt(itemId)).subscribe({
+    this.itemService.getById(itemId).subscribe({
       next: res => {
         item = res;
 
