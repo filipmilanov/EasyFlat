@@ -307,6 +307,67 @@ class ExpenseServiceTest {
     }
 
     @Test
+    void givenExpenseWithDifferentSplitStrategiesWhenCreateThenConflictExceptionIsThrown() {
+        // given
+        UserListDto userDetailDto1 = UserListDtoBuilder.builder()
+            .id(1L)
+            .build();
+
+        UserListDto userDetailDto2 = UserListDtoBuilder.builder()
+            .id(2L)
+            .build();
+
+        UserListDto userDetailDto3 = UserListDtoBuilder.builder()
+            .id(3L)
+            .build();
+
+        UserListDto userDetailDto4 = UserListDtoBuilder.builder()
+            .id(4L)
+            .build();
+
+        UserListDto paidByConflict = UserListDtoBuilder.builder()
+            .id(-999L)
+            .build();
+
+        ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
+            .title("Test")
+            .description("Test")
+            .amountInCents(100.0)
+            .createdAt(LocalDateTime.now())
+            .paidBy(paidByConflict)
+            .debitUsers(
+                List.of(
+                    DebitDtoBuilder.builder()
+                        .user(userDetailDto1)
+                        .splitBy(SplitBy.EQUAL)
+                        .value(25.0)
+                        .build(),
+                    DebitDtoBuilder.builder()
+                        .user(userDetailDto2)
+                        .splitBy(SplitBy.UNEQUAL)
+                        .value(25.0)
+                        .build(),
+                    DebitDtoBuilder.builder()
+                        .user(userDetailDto3)
+                        .splitBy(SplitBy.EQUAL)
+                        .value(25.0)
+                        .build(),
+                    DebitDtoBuilder.builder()
+                        .user(userDetailDto4)
+                        .splitBy(SplitBy.EQUAL)
+                        .value(25.0)
+                        .build()
+                )
+            )
+            .build();
+
+        // when + then
+        assertThrows(ValidationException.class, () ->
+            service.create(expenseDto, "Bearer Token")
+        );
+    }
+
+    @Test
     void givenExpenseWithInvalidReferencesWhenCreateThenConflictExceptionIsThrown() {
         // given
         UserListDto userDetailDto1 = UserListDtoBuilder.builder()
