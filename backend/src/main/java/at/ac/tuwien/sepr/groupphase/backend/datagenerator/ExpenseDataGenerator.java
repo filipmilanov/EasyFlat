@@ -4,7 +4,6 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Debit;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DebitKey;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
-import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DebitRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ExpenseRepository;
@@ -60,10 +59,6 @@ public class ExpenseDataGenerator {
             user.setId((long) (i + 1));
 
             expense.setPaidBy(user);
-
-            SharedFlat sharedFlat = new SharedFlat();
-            sharedFlat.setId(1L);
-            expense.setSharedFlat(sharedFlat);
 
             expenseRepository.save(expense);
         }

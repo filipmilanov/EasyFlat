@@ -80,11 +80,6 @@ public class ExpenseValidator {
             errors.add("The debitUsers must be one of the flat members");
         }
 
-        if (expenseDto.sharedFlat() == null) {
-            errors.add("The sharedFlat must not be null");
-        } else if (!expenseDto.sharedFlat().getId().equals(flatOfUser.getId())) {
-            errors.add("The sharedFlat must be the flat of the user");
-        }
 
         if (!errors.isEmpty()) {
             throw new ConflictException("Conflict with persisted data", errors);

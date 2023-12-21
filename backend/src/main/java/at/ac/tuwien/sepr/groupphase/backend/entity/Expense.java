@@ -105,15 +105,6 @@ public class Expense {
         this.debitUsers = debitUsers;
     }
 
-    public SharedFlat getSharedFlat() {
-        return sharedFlat;
-    }
-
-    public void setSharedFlat(SharedFlat sharedFlat) {
-        this.sharedFlat = sharedFlat;
-        sharedFlat.getExpenses().add(this);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

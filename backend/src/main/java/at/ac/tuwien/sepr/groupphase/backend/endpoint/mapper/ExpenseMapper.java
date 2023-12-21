@@ -11,7 +11,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(uses = {UserMapper.class, SharedFlatMapper.class, DebitMapper.class})
+@Mapper(uses = {UserMapper.class, DebitMapper.class})
 public abstract class ExpenseMapper {
 
     @Mapping(target = "debitUsers", source = "expense")
