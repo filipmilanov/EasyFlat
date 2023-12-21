@@ -16,6 +16,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ExpenseRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.ExpenseService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ExpenseValidator;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    @Transactional
     public Expense create(ExpenseDto expenseDto, String jwt) throws ValidationException, ConflictException {
         LOGGER.info("create: {}", expenseDto);
 
