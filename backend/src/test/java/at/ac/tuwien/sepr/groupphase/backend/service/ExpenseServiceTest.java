@@ -75,8 +75,10 @@ class ExpenseServiceTest {
         Expense actual = service.findById(id, "Bearer Token");
 
         // then
-        assertThat(actual).isNotNull();
-        assertThat(actual.getId()).isEqualTo(id);
+        assertAll(
+            () -> assertThat(actual).isNotNull();
+            () -> assertThat(actual.getId()).isEqualTo(id);
+        );
     }
 
     @Test
