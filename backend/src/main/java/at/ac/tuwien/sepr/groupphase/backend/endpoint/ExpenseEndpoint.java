@@ -45,7 +45,7 @@ public class ExpenseEndpoint {
         );
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
