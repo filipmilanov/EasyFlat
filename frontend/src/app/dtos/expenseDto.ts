@@ -1,4 +1,3 @@
-import {SharedFlat} from "./sharedFlat";
 import {ItemDto} from "./item";
 import {UserListDto} from "./user";
 
@@ -10,7 +9,6 @@ export class ExpenseDto {
   createdAt?: Date;
   paidBy?: UserListDto;
   debitUsers?: DebitDto[];
-  sharedFlat?: SharedFlat;
   items?: ItemDto[];
   isRepeating?: boolean;
   interval?: Date;

@@ -27,7 +27,6 @@ public record ExpenseDto(
     @NotNull(message = "A finance entry must have a payer")
     UserListDto paidBy,
     List<DebitDto> debitUsers,
-    @NotNull(message = "The shared flat cannot be empty") WgDetailDto sharedFlat,
     List<ItemDto> items,
     Boolean isRepeating,
     LocalDateTime interval
@@ -62,7 +61,6 @@ public record ExpenseDto(
             createdAt,
             paidBy,
             debitUsers,
-            sharedFlat,
             items,
             isRepeating,
             interval

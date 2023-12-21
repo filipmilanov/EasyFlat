@@ -11,13 +11,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity(name = "shared_flat") // name of the table
+@Entity(name = "shared_flat")
 public class SharedFlat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

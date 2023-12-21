@@ -123,7 +123,6 @@ class ExpenseServiceTest {
             .createdAt(LocalDateTime.now())
             .paidBy(paidBy)
             .debitUsers(debitUsers)
-            .sharedFlat(sharedFlat)
             .build();
 
         // when
@@ -145,7 +144,6 @@ class ExpenseServiceTest {
                 expenseDto.amountInCents()
             );
         assertThat(actual.getPaidBy().getId()).isEqualTo(expenseDto.paidBy().id());
-        assertThat(actual.getSharedFlat().getId()).isEqualTo(expenseDto.sharedFlat().getId());
         assertThat(actual.getDebitUsers()).hasSize(expenseDto.debitUsers().size());
     }
 
@@ -278,7 +276,6 @@ class ExpenseServiceTest {
             .createdAt(LocalDateTime.now())
             .paidBy(paidBy)
             .debitUsers(debitDtos)
-            .sharedFlat(sharedFlat)
             .build();
 
 
