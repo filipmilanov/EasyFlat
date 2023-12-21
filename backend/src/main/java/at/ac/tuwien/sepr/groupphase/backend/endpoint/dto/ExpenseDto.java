@@ -10,6 +10,10 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Data transfer object for expenses.
+ * An Expense represents a payment made by a user for the shared flat.
+ */
 @RecordBuilder
 public record ExpenseDto(
     Long id,
