@@ -5,10 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -20,9 +17,6 @@ public class Ingredient {
 
     @Column
     private String title;
-
-    @ManyToMany(mappedBy = "ingredientList")
-    private List<Item> itemList = new ArrayList<>();
 
     public Long getIngrId() {
         return ingrId;
@@ -36,20 +30,8 @@ public class Ingredient {
         return title;
     }
 
-    public Ingredient setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
-        return this;
-    }
-
-    public List<Item> getItemList() {
-        return itemList;
-    }
-
-    public void setItemList(List<Item> itemList) {
-        this.itemList = itemList;
-        if (itemList != null) {
-            itemList.forEach(item -> item.getIngredientList().add(this));
-        }
     }
 
     @Override

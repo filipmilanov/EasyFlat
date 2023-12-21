@@ -52,6 +52,4 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
      * @return An Optional containing the found ShoppingList, if present.
      */
     Optional<ShoppingList> getByShopListIdAndSharedFlatIs(Long id, SharedFlat sharedFlat);
-
-    ShoppingList findByName(String stephansplatzLuxusWg);
 }
