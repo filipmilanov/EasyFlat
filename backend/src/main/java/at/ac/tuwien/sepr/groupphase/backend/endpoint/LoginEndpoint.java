@@ -33,7 +33,7 @@ public class LoginEndpoint {
         return userService.login(userLoginDto);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping
     public UserDetailDto getUser(@RequestHeader("Authorization") String authToken) {
         return userMapper.entityToUserDetailDto(
