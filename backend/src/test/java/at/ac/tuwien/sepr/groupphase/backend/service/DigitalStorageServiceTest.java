@@ -10,7 +10,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -31,7 +30,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -152,7 +150,7 @@ class DigitalStorageServiceTest {
     void givenInvalidStorageWhenSearchItemsThenValidationExceptionIsThrown() {
         // given
         Long iD = -1111L;
-        ItemSearchDto searchParams = new ItemSearchDto(null, null, null, null, null);
+        ItemSearchDto searchParams = new ItemSearchDto(null, null, null, null);
 
         // when + then
         assertThrows(ValidationException.class, () -> service.searchItems(searchParams, ""));
@@ -161,7 +159,7 @@ class DigitalStorageServiceTest {
     @Test
     void givenValidSearchParamsWhenSearchItemsThenReturnList() throws ValidationException, AuthorizationException, ConflictException {
         // given
-        ItemSearchDto searchParams = new ItemSearchDto(null, false, null, null, null);
+        ItemSearchDto searchParams = new ItemSearchDto(false, null, null, null);
         ItemListDto itemListDto = ItemListDtoBuilder.builder()
             .generalName("apples")
             .quantityCurrent(10.0)
@@ -183,29 +181,12 @@ class DigitalStorageServiceTest {
     @Test
     void givenInvalidSearchParamsWhenSearchItemsThenThrowValidationException() {
         // given
-        ItemSearchDto invalidSearchParams = new ItemSearchDto(null, null, null, null, null);
+        ItemSearchDto invalidSearchParams = new ItemSearchDto(null, null, null, null);
 
 
         // when + then
         assertThrows(ValidationException.class, () -> service.searchItems(invalidSearchParams, "Bearer Token"));
     }
 
-    @Test
-    void givenValidSearchParamsWhenGetItemsWithGeneralNameThenReturnList() throws ValidationException, AuthorizationException, ConflictException {
-        // given
-        String itemName = "apples";
-        String jwt = "Bearer Token";
 
-
-        // when
-        List<Item> result = service.getItemWithGeneralName(itemName, jwt);
-
-
-        // then
-        assertAll(
-            () -> assertThat(result).isNotEmpty(),
-            () -> assertThat(result).isNotNull(),
-            () -> assertEquals(result.size(), 1)
-        );
-    }
 }

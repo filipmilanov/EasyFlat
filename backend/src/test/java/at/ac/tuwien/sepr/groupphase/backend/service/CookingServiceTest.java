@@ -31,15 +31,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -210,8 +206,8 @@ public class CookingServiceTest {
             .summary("How to cook")
             .build();
 
-        ItemSearchDto searchParamsIS = new ItemSearchDto(null, false, null, null, null);
-        ItemSearchDto searchParamsAIS = new ItemSearchDto(null, true, null, null, null);
+        ItemSearchDto searchParamsIS = new ItemSearchDto(false, null, null, null);
+        ItemSearchDto searchParamsAIS = new ItemSearchDto(true, null, null, null);
         List<ItemListDto> itemsFromDigitalStorageIS = digitalStorageService.searchItems(searchParamsIS, "jwt");
         List<ItemListDto> itemsFromDigitalStorageAIS = digitalStorageService.searchItems(searchParamsAIS, "jwt");
         List<ItemListDto> items = new LinkedList<>();

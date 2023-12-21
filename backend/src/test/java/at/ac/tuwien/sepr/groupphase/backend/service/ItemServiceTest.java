@@ -697,4 +697,23 @@ class ItemServiceTest {
         assertThrows(NotFoundException.class, () -> service.findById(createdItem.getItemId(), "bearer token"));
 
     }
+
+    @Test
+    void givenValidSearchParamsWhenGetItemsWithGeneralNameThenReturnList() throws ValidationException, AuthorizationException, ConflictException {
+        // given
+        String itemName = "apples";
+        String jwt = "Bearer Token";
+
+
+        // when
+        List<Item> result = service.getItemWithGeneralName(itemName, jwt);
+
+
+        // then
+        assertAll(
+            () -> assertThat(result).isNotEmpty(),
+            () -> assertThat(result).isNotNull(),
+            () -> assertEquals(result.size(), 1)
+        );
+    }
 }
