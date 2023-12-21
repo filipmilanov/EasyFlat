@@ -34,7 +34,7 @@ public interface ItemService {
     List<Item> findByFields(ItemFieldSearchDto itemFieldSearchDto);
 
     /**
-     * Retrieves a list of items with a specific general name
+     * Retrieves a list of items with a specific general name.
      *
      * @param generalName The general name to filter items by.
      * @param jwt  A valid JWT token for user authentication.
