@@ -34,7 +34,7 @@ public class ExpenseEndpoint {
         this.expenseMapper = expenseMapper;
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping("{id}")
     public ExpenseDto findById(@PathVariable("id") Long id, @RequestHeader("Authorization") String jwt) {
         LOGGER.info("findById: {}", id);
