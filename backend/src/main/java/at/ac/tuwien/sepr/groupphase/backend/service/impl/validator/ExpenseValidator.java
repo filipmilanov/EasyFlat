@@ -62,7 +62,7 @@ public class ExpenseValidator {
             .noneMatch(user ->
                 user.getId().equals(expenseDto.paidBy().id())
             )) {
-            errors.add("The payerId must be one of the flat members");
+            errors.add("The payer must be a member of the flat");
         }
 
 
