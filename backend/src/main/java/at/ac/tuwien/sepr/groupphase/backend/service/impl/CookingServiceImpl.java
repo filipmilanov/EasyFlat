@@ -38,6 +38,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.CookbookValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.RecipeValidator;
+import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -428,14 +429,14 @@ public class CookingServiceImpl implements CookingService {
         if (recipeSuggestionDto != null) {
             List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
             for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
-                List<Item> items = storageRepository.getItemWithGeneralName(storId, ingredient.name());
+                List<DigitalStorageItem> items = storageRepository.findAllByStorIdAndDigitalStorageItemList_ItemCache_GeneralNameIs(storId, ingredient.name());
                 if (items.isEmpty()) {
                     missingIngredients.add(ingredient);
                     continue;
                 }
 
                 Unit ingredientUnit = unitMapper.unitDtoToEntity(ingredient.unitEnum());
-                if (!getMinUnit(ingredientUnit).equals(getMinUnit(items.get(0).getUnit()))) {
+                if (!getMinUnit(ingredientUnit).equals(getMinUnit(items.get(0).getItemCache().getUnit()))) {
                     missingIngredients.add(ingredient);
                     continue;
                 }
@@ -459,12 +460,12 @@ public class CookingServiceImpl implements CookingService {
                             missingIngredients.add(newIngredient);
                         } else {
 
-                            Double updatedQuantity = unitService.convertUnits(getMinUnit(ingredientUnit), items.get(0).getUnit(), ingAmountMin - itemQuantityTotal);
+                            Double updatedQuantity = unitService.convertUnits(getMinUnit(ingredientUnit), items.get(0).getItemCache().getUnit(), ingAmountMin - itemQuantityTotal);
                             RecipeIngredientDto newIngredient = new RecipeIngredientDto(
                                 ingredient.id(),
                                 ingredient.name(),
-                                items.get(0).getUnit().getName(),
-                                unitMapper.entityToUnitDto(items.get(0).getUnit()),
+                                items.get(0).getItemCache().getUnit().getName(),
+                                unitMapper.entityToUnitDto(items.get(0).getItemCache().getUnit()),
                                 updatedQuantity
                             );
                             missingIngredients.add(newIngredient);
