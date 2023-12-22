@@ -11,12 +11,13 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,7 +36,6 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -55,7 +55,7 @@ class ExpenseServiceTest {
     private UserRepository userRepository;
 
     @MockBean
-    private CustomUserDetailService customUserDetailService;
+    private AuthService authService;
 
     private ApplicationUser applicationUser;
 
@@ -64,16 +64,16 @@ class ExpenseServiceTest {
         testDataGenerator.cleanUp();
 
         applicationUser = userRepository.findById(1L).orElseThrow();
-        when(customUserDetailService.getUser(any(String.class))).thenReturn(applicationUser);
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
 
     @Test
-    void givenValidIdWhenFindByIdThenExpenseWithCorrectIdIsReturned() throws ValidationException, ConflictException {
+    void givenValidIdWhenFindByIdThenExpenseWithCorrectIdIsReturned() throws ValidationException, ConflictException, AuthenticationException {
         // given
         long id = 1L;
 
         // when
-        Expense actual = service.findById(id, "Bearer Token");
+        Expense actual = service.findById(id);
 
         // then
         assertAll(
@@ -89,12 +89,12 @@ class ExpenseServiceTest {
 
         // when + then
         assertThrows(NotFoundException.class, () ->
-            service.findById(id, "Bearer Token")
+            service.findById(id)
         );
     }
 
     @Test
-    void givenValidExpenseWhenCreateThenExpenseIsPersistedWithId() throws ValidationException, ConflictException {
+    void givenValidExpenseWhenCreateThenExpenseIsPersistedWithId() throws ValidationException, ConflictException, AuthenticationException {
         // given
         double totalAmount = 100;
         WgDetailDto sharedFlat = new WgDetailDto();
@@ -129,10 +129,10 @@ class ExpenseServiceTest {
             .build();
 
         // when
-        Expense actual = service.create(expenseDto, "Bearer Token");
+        Expense actual = service.create(expenseDto);
 
         // then
-        service.findById(actual.getId(), "Bearer Token");
+        service.findById(actual.getId());
 
         assertThat(actual.getDebitUsers()).hasSize(expenseDto.debitUsers().size());
 
@@ -264,7 +264,7 @@ class ExpenseServiceTest {
     @ParameterizedTest
     @MethodSource("data")
     void givenExpenseWithCertainSplitByWhenCreateThenAmountIsSplitCorrectly(List<DebitDto> debitDtos,
-                                                                            List<Double> expected) throws ValidationException, ConflictException {
+                                                                            List<Double> expected) throws ValidationException, ConflictException, AuthenticationException {
         // given
         double totalAmount = 100L;
         WgDetailDto sharedFlat = new WgDetailDto();
@@ -287,7 +287,7 @@ class ExpenseServiceTest {
 
 
         // when
-        Expense actual = service.create(expenseDto, "Bearer Token");
+        Expense actual = service.create(expenseDto);
 
         // then
         assertAll(
@@ -311,7 +311,7 @@ class ExpenseServiceTest {
 
         // when + then
         assertThrows(ValidationException.class, () ->
-            service.create(expenseDto, "Bearer Token")
+            service.create(expenseDto)
         );
     }
 
@@ -372,7 +372,7 @@ class ExpenseServiceTest {
 
         // when + then
         assertThrows(ValidationException.class, () ->
-            service.create(expenseDto, "Bearer Token")
+            service.create(expenseDto)
         );
     }
 
@@ -433,7 +433,7 @@ class ExpenseServiceTest {
 
         // when + then
         assertThrows(ConflictException.class, () ->
-            service.create(expenseDto, "Bearer Token")
+            service.create(expenseDto)
         );
     }
 }
