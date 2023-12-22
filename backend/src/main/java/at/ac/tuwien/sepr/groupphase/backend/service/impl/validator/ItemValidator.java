@@ -1,10 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;

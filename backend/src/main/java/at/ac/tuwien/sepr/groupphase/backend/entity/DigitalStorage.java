@@ -30,7 +30,7 @@ public class DigitalStorage {
 
     @OneToMany(mappedBy = "digitalStorage", fetch = FetchType.EAGER)
     @JsonIgnore
-    private List<Item> itemList = new ArrayList<>();
+    private List<DigitalStorageItem> digitalStorageItemList = new ArrayList<>();
 
 
     public Long getStorId() {
@@ -49,12 +49,12 @@ public class DigitalStorage {
         this.title = title;
     }
 
-    public List<Item> getItemList() {
-        return itemList;
+    public List<DigitalStorageItem> getItemList() {
+        return digitalStorageItemList;
     }
 
-    public void setItemList(List<Item> itemList) {
-        this.itemList = itemList;
+    public void setItemList(List<DigitalStorageItem> digitalStorageItemList) {
+        this.digitalStorageItemList = digitalStorageItemList;
     }
 
     @JsonBackReference

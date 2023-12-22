@@ -8,7 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.LabelMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
@@ -145,10 +145,10 @@ public class ShoppingListEndpoint {
     @PostMapping("/storage")
     public List<ItemDto> transferToStorage(@RequestBody List<ShoppingItemDto> items, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("transferToStorage({},{})", items, jwt);
-        List<Item> res = this.shoppingService.transferToServer(items, jwt);
+        List<DigitalStorageItem> res = this.shoppingService.transferToServer(items, jwt);
         List<ItemDto> toRet = new ArrayList<>();
-        for (Item item : res) {
-            toRet.add(itemMapper.entityToDto(item));
+        for (DigitalStorageItem digitalStorageItem : res) {
+            toRet.add(itemMapper.entityToDto(digitalStorageItem));
         }
         return toRet;
     }

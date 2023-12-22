@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -10,14 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,23 +24,7 @@ public class ShoppingItem {
     private Long itemId;
 
     @Column
-    private String ean;
-
-    @Column
-
-    private String generalName;
-
-    @Column
-    private String productName;
-
-    @Column
-    private String brand;
-
-    @Column
     private Double quantityCurrent;
-
-    @Column
-    private Double quantityTotal;
 
     @Column
     private Boolean alwaysInStock;
@@ -54,23 +32,17 @@ public class ShoppingItem {
     @Column
     private Double minimumQuantity;
 
-    @ManyToOne
-    private Unit unit;
-
-    @Column
-    private String description;
-
     @Column
     private Long priceInCent;
 
     @Column
     private String boughtAt;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    private ItemCache itemCache = new ItemCache();
+
     @ManyToOne
     private DigitalStorage digitalStorage;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Ingredient> ingredientList;
 
     @OneToMany
     private List<ItemStats> itemStats;
@@ -97,81 +69,12 @@ public class ShoppingItem {
         this.shoppingList = shoppingList;
     }
 
-    @AssertTrue(message = "The current quantity cannot be larger then the total")
-    private boolean quantityCurrentLessThenTotal() {
-        return this.quantityCurrent <= this.quantityTotal;
-    }
-
     public Long getItemId() {
         return itemId;
     }
 
     public void setItemId(Long id) {
         this.itemId = id;
-    }
-
-    public String getEan() {
-        return ean;
-    }
-
-    public void setEan(String ean) {
-        this.ean = ean;
-    }
-
-    public String getGeneralName() {
-        return generalName;
-    }
-
-    public void setGeneralName(String generalName) {
-        this.generalName = generalName;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public Double getQuantityCurrent() {
-        return quantityCurrent;
-    }
-
-    public void setQuantityCurrent(Double quantityCurrent) {
-        this.quantityCurrent = quantityCurrent;
-    }
-
-    public Double getQuantityTotal() {
-        return quantityTotal;
-    }
-
-    public void setQuantityTotal(Double quantityTotal) {
-        this.quantityTotal = quantityTotal;
-    }
-
-    public void setUnit(Unit unit) {
-        this.unit = unit;
-    }
-
-    public Unit getUnit() {
-        return unit;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Long getPriceInCent() {
@@ -190,20 +93,12 @@ public class ShoppingItem {
         this.boughtAt = boughtAt;
     }
 
-    public DigitalStorage getStorage() {
+    public DigitalStorage getDigitalStorage() {
         return digitalStorage;
     }
 
-    public void setStorage(DigitalStorage digitalStorage) {
+    public void setDigitalStorage(DigitalStorage digitalStorage) {
         this.digitalStorage = digitalStorage;
-    }
-
-    public List<Ingredient> getIngredientList() {
-        return ingredientList;
-    }
-
-    public void setIngredientList(List<Ingredient> ingredientList) {
-        this.ingredientList = ingredientList;
     }
 
     public Double getMinimumQuantity() {
@@ -216,6 +111,30 @@ public class ShoppingItem {
 
     public boolean alwaysInStock() {
         return Objects.requireNonNullElse(this.alwaysInStock, false);
+    }
+
+    public Double getQuantityCurrent() {
+        return quantityCurrent;
+    }
+
+    public void setQuantityCurrent(Double quantityCurrent) {
+        this.quantityCurrent = quantityCurrent;
+    }
+
+    public Boolean getAlwaysInStock() {
+        return alwaysInStock;
+    }
+
+    public void setAlwaysInStock(Boolean alwaysInStock) {
+        this.alwaysInStock = alwaysInStock;
+    }
+
+    public ItemCache getItemCache() {
+        return itemCache;
+    }
+
+    public void setItemCache(ItemCache itemCache) {
+        this.itemCache = itemCache;
     }
 
     @Override

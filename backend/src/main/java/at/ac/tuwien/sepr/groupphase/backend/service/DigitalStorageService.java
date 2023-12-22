@@ -6,7 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
@@ -45,7 +45,7 @@ public interface DigitalStorageService {
      * @param id an ID of a DigitalStorage
      * @return if the id exists a List of all correlated items
      */
-    List<Item> findAllItemsOfStorage(Long id);
+    List<DigitalStorageItem> findAllItemsOfStorage(Long id);
 
     /**
      * Search for all Items of a DigitalStorage stored in the database ordered by defined orderType.
@@ -54,7 +54,7 @@ public interface DigitalStorageService {
      * @param orderType defines how to order
      * @return if the id exists a List of all correlated items ordered by orderType
      */
-    List<Item> findAllItemsOfStorageOrdered(Long id, ItemOrderType orderType);
+    List<DigitalStorageItem> findAllItemsOfStorageOrdered(Long id, ItemOrderType orderType);
 
     /**
      * Search for all Items of a DigitalStorage stored in the database filtered by search parameters.
@@ -97,9 +97,9 @@ public interface DigitalStorageService {
      * @param storageId existing ID of a storage
      * @param itemId    existing ID of an item
      * @param quantity  the new quantity of the specified item
-     * @return an updated object of type {@link Item}
+     * @return an updated object of type {@link DigitalStorageItem}
      */
-    Item updateItemQuantity(long storageId, long itemId, long quantity);
+    DigitalStorageItem updateItemQuantity(long storageId, long itemId, long quantity);
 
 
     /**
@@ -111,7 +111,7 @@ public interface DigitalStorageService {
      * @return A list of items with the specified general name.
      * @throws AuthenticationException If authentication fails or the user does not exist.
      */
-    List<Item> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException;
+    List<DigitalStorageItem> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException;
 
 
     /**
