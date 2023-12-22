@@ -20,7 +20,7 @@ public interface ShoppingListService {
      * @param itemDto a shopping item without ID
      * @return an object of type {@link ShoppingItem} which is persisted and has an ID
      */
-    ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException;
+    ShoppingItem create(ShoppingItemDto itemDto) throws AuthenticationException, ValidationException, ConflictException;
 
     /**
      * Search for a shopping item in the database with given ID.
@@ -62,7 +62,7 @@ public interface ShoppingListService {
      * @param listName a valid name for the new ShoppingList
      * @return an object of type {@link ShoppingList} which is persisted and has an ID
      */
-    ShoppingList createList(String listName, String jwt) throws ValidationException, AuthenticationException, ConflictException;
+    ShoppingList createList(String listName) throws ValidationException, AuthenticationException, ConflictException;
 
     /**
      * Delete a ShoppingItem from the db based on its ID.
@@ -70,7 +70,7 @@ public interface ShoppingListService {
      * @param itemId a valid ID of a ShoppingItem
      * @return the deleted ShoppingItem
      */
-    ShoppingItem deleteItem(Long itemId, String jwt) throws AuthenticationException;
+    ShoppingItem deleteItem(Long itemId) throws AuthenticationException;
 
     /**
      * Delete a ShoppingList from the db based on its ID.
@@ -78,14 +78,14 @@ public interface ShoppingListService {
      * @param shopId a valid ID of a ShoppingList
      * @return the deleted ShoppingList
      */
-    ShoppingList deleteList(Long shopId, String jwt) throws ValidationException, AuthenticationException;
+    ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException;
 
     /**
      * Get all ShoppingLists from the db.
      *
      * @return a List of all persisted ShoppingLists
      */
-    List<ShoppingList> getShoppingLists(String jwt) throws AuthenticationException;
+    List<ShoppingList> getShoppingLists() throws AuthenticationException;
 
     /**
      * Transfer ShoppingItems to the server.
@@ -93,7 +93,7 @@ public interface ShoppingListService {
      * @param items a List of ShoppingItemDto to be transferred
      * @return a List of DigitalStorageItem objects
      */
-    List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthenticationException;
+    List<Item> transferToServer(List<ShoppingItemDto> items) throws AuthenticationException;
 
     /**
      * Validates and Updates a new {@link ShoppingItem} in the db.

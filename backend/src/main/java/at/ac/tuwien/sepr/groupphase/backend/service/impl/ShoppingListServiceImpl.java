@@ -20,7 +20,9 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
+import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
@@ -28,8 +30,11 @@ import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingItemValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListValidator;
+
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -55,6 +60,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final ShoppingItemValidator shoppingItemValidator;
     private final UnitService unitService;
     private final ShoppingListValidator validator;
+    private final UserRepository userRepository;
+    private final AuthService authService;
 
     public ShoppingListServiceImpl(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
@@ -75,17 +82,21 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.shoppingItemValidator = shoppingItemValidator;
         this.unitService = unitService;
         this.validator = validator;
+        this.userRepository = userRepository;
+        this.authService = authService;
     }
 
     @Override
-    public ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException {
-        LOGGER.trace("create({},{})", itemDto, jwt);
-        List<ShoppingList> shoppingLists = this.getShoppingLists(jwt);
+    public ShoppingItem create(ShoppingItemDto itemDto) throws AuthenticationException, ValidationException, ConflictException {
+        LOGGER.trace("create({})", itemDto);
+        String jwt = "";
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        List<ShoppingList> shoppingLists = this.getShoppingLists();
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
         List<Unit> unitList = unitService.findAll();
         shoppingItemValidator.validateForCreate(itemDto, shoppingLists, digitalStorageList, unitList);
 
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
@@ -163,9 +174,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public ShoppingList createList(String listName, String jwt) throws ValidationException, AuthenticationException, ConflictException {
-        LOGGER.trace("createList({},{})", listName, jwt);
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+    @Secured("ROLE_USER")
+    @Transactional
+    public ShoppingList createList(String listName) throws ValidationException, AuthenticationException, ConflictException {
+        LOGGER.trace("createList({})", listName);
+        ApplicationUser applicationUser = authService.getUserFromToken();
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
@@ -181,9 +194,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public ShoppingItem deleteItem(Long itemId, String jwt) throws AuthenticationException {
-        LOGGER.trace("deleteItem({},{})", itemId, jwt);
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+    @Secured("ROLE_USER")
+    @Transactional
+    public ShoppingItem deleteItem(Long itemId) throws AuthenticationException {
+        LOGGER.trace("deleteItem({})", itemId);
+        ApplicationUser applicationUser = authService.getUserFromToken();
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
@@ -202,9 +217,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public ShoppingList deleteList(Long shopId, String jwt) throws ValidationException, AuthenticationException {
-        LOGGER.trace("deleteList({},{})", shopId, jwt);
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+    @Secured("ROLE_USER")
+    @Transactional
+    public ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException {
+        LOGGER.trace("deleteList({})", shopId);
+        ApplicationUser applicationUser = authService.getUserFromToken();
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
@@ -225,24 +242,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<ShoppingList> getShoppingLists(String jwt) throws AuthenticationException {
-        LOGGER.trace("getShoppingLists({})", jwt);
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-        return shoppingListRepository.findBySharedFlatIs(applicationUser.getSharedFlat());
+    @Secured("ROLE_USER")
+    public List<ShoppingList> getShoppingLists() throws AuthenticationException {
+        LOGGER.trace("getShoppingLists()");
+        ApplicationUser user = authService.getUserFromToken();
+        return shoppingListRepository.findBySharedFlatIs(user.getSharedFlat());
     }
 
     @Override
-    public List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthenticationException {
-        LOGGER.trace("transferToServer({},{})", items, jwt);
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-        List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage", applicationUser.getSharedFlat());
-        List<DigitalStorageItem> itemsList = new ArrayList<>();
+    public List<Item> transferToServer(List<ShoppingItemDto> items) throws AuthenticationException {
+        LOGGER.trace("transferToServer({})", items);
+        ApplicationUser user = authService.getUserFromToken();
+        List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage", user.getSharedFlat());
+        List<Item> itemsList = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
             DigitalStorageItem digitalStorageItem;
             if (itemDto.alwaysInStock() != null && itemDto.alwaysInStock()) {
@@ -260,8 +272,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingItem update(ShoppingItemDto itemDto, String jwt) throws ConflictException, AuthenticationException, ValidationException {
         LOGGER.trace("update({})", itemDto);
-
-        List<ShoppingList> shoppingLists = this.getShoppingLists(jwt);
+        String userEmail = jwtTokenizer.getEmailFromToken(jwt);
+        ApplicationUser user = userRepository.findUserByEmail(userEmail);
+        List<ShoppingList> shoppingLists = this.getShoppingLists();
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
         List<Unit> unitList = unitService.findAll();
         shoppingItemValidator.validateForUpdate(itemDto, shoppingLists, digitalStorageList, unitList);
