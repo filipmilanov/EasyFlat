@@ -25,7 +25,7 @@ public class DigitalStorage {
     @Column
     private String title;
 
-    @OneToOne(mappedBy = "digitalStorage")
+    @OneToOne
     private SharedFlat sharedFlat;
 
     @OneToMany(mappedBy = "digitalStorage", fetch = FetchType.EAGER)

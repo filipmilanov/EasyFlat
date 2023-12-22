@@ -36,9 +36,6 @@ public class SharedFlat {
     @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
     private Cookbook cookbook;
 
-    @OneToOne
-    private DigitalStorage digitalStorage;
-
     public SharedFlat() {
     }
 
@@ -65,19 +62,6 @@ public class SharedFlat {
 
     public Long getId() {
         return id;
-    }
-
-    public SharedFlat setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    public Set<ApplicationUser> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<ApplicationUser> users) {
-        this.users = users;
     }
 
     @JsonManagedReference
@@ -109,6 +93,14 @@ public class SharedFlat {
         this.shoppingLists = shoppingLists;
     }
 
+    public Set<ApplicationUser> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<ApplicationUser> users) {
+        this.users = users;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -124,14 +116,6 @@ public class SharedFlat {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public Set<ApplicationUser> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<ApplicationUser> users) {
-        this.users = users;
     }
 }
 

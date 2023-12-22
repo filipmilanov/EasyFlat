@@ -60,7 +60,7 @@ class ExpenseServiceTest {
     private ApplicationUser applicationUser;
 
     @BeforeEach
-    public void cleanUp() {
+    public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
 
         applicationUser = userRepository.findById(1L).orElseThrow();
