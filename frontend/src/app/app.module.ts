@@ -77,6 +77,8 @@ LOAD_WASM().subscribe();
     CookbookDetailComponent,
     CookbookModalComponent,
     CookingModalComponent,
+    ShoppingListsComponent,
+    ShoppingListCardComponent
   ],
   imports: [
     BrowserModule,

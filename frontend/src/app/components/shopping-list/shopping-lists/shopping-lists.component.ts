@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ShoppingListService} from "../../../services/shopping-list.service";
 import {ShoppingListDto} from "../../../dtos/shoppingList";
 import {error} from "@angular/compiler-cli/src/transformers/util";
@@ -9,7 +9,7 @@ import {ToastrService} from "ngx-toastr";
   templateUrl: './shopping-lists.component.html',
   styleUrls: ['./shopping-lists.component.scss']
 })
-export class ShoppingListsComponent {
+export class ShoppingListsComponent implements OnInit{
   lists: ShoppingListDto[];
   searchParams: string;
 
