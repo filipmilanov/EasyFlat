@@ -89,7 +89,7 @@ public class ShoppingRepositoryTest implements TestData {
         item2.setShoppingList(savedList);
         shoppingItemRepository.save(item2);
 
-        List<ShoppingItem> items = shoppingItemRepository.searchItemsByShoppingListNameAndShoppingListSharedFlatIdAndProductName(shoppingListName, sharedFlat.getId(), "Banana");
+        List<ShoppingItem> items = shoppingItemRepository.searchItemsByShoppingListNameAndShoppingListSharedFlatIdAndItemCacheProductName(shoppingListName, sharedFlat.getId(), "Banana");
 
         assertAll(
             () -> assertEquals(1, items.size()),

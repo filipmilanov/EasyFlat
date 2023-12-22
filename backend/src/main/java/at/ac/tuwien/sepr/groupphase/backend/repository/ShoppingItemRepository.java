@@ -36,5 +36,5 @@ public interface ShoppingItemRepository extends JpaRepository<ShoppingItem, Long
 
     ShoppingItem findFirstByItemCacheProductName(String productName);
 
-    List<ShoppingItem> searchItemsByShoppingListNameAndShoppingListSharedFlatIdAndProductName(String shoppingListName, Long shardFlatId, String banana);
+    List<ShoppingItem> searchItemsByShoppingListNameAndShoppingListSharedFlatIdAndItemCacheProductName(String shoppingListName, Long shardFlatId, String banana);
 }
