@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -118,22 +117,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<Item> findAllItemsOfStorage(Long id) {
-        Optional<DigitalStorage> optionalStorage = digitalStorageRepository.findById(id);
-        if (optionalStorage.isPresent()) {
-            return optionalStorage.get().getItemList();
-        } else {
-            return Collections.emptyList();
-        }
-
-    }
-
-    @Override
-    public List<Item> findAllItemsOfStorageOrdered(Long id, ItemOrderType orderType) {
-        return null;
-    }
-
-    @Override
     public List<ItemListDto> searchItems(ItemSearchDto searchItem, String jwt) throws ValidationException, AuthorizationException, ConflictException {
         LOGGER.trace("searchItems({})", searchItem);
         digitalStorageValidator.validateForSearchItems(searchItem);
@@ -208,27 +191,15 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         return digitalStorageRepository.save(storage);
     }
 
+    @Transactional
     @Override
     public DigitalStorage update(DigitalStorageDto storage) {
         return null;
     }
 
-    @Override
-    public void remove(Long id) {
-
-    }
-
     @Transactional
     @Override
-    public Item updateItemQuantity(long storageId, long itemId, long quantity) {
-        LOGGER.trace("updateItemQuantity({}, {}, {})", storageId, itemId, quantity);
-
-        return itemRepository.updateItemQuantity(storageId, itemId, quantity);
-    }
-
-    @Transactional
-    @Override
-    public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthorizationException, ValidationException, ConflictException {
+    public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthorizationException {
         LOGGER.trace("addItemToShopping({})", itemDto);
 
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
@@ -242,7 +213,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         return shoppingItemRepository.save(shoppingItem);
     }
 
-    private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) throws ValidationException, ConflictException {
+    private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) {
         Map<String, Double[]> items = new HashMap<>();
         Map<String, Unit> itemUnits = new HashMap<>();
         Unit unit = null;
@@ -276,7 +247,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     /**
      * The Method assume, that there is only one storage per sharedFlat.
      */
-    private Long getStorageIdForUser(String jwt) throws AuthorizationException, ValidationException, ConflictException {
+    private Long getStorageIdForUser(String jwt) throws AuthorizationException {
         List<DigitalStorage> digitalStorageList = findAll(null, jwt);
         DigitalStorage matchingDigitalStorage = null;
         if (!digitalStorageList.isEmpty()) {
@@ -290,19 +261,15 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
                 .map(ApplicationUser::getId)
                 .toList();
 
-
             authorization.authenticateUser(
                 jwt,
                 allowedUser,
                 "The given digital storage does not belong to the user's shared flat!"
             );
 
-
             return matchingDigitalStorage.getStorageId();
         } else {
             return null;
         }
     }
-
-
 }

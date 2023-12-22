@@ -42,7 +42,6 @@ public interface ItemService {
      */
     List<Item> getItemWithGeneralName(String generalName, String jwt);
 
-
     /**
      * Validates and Creates a new {@link Item} in the db.
      *

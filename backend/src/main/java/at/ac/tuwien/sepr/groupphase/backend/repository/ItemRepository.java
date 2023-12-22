@@ -20,12 +20,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findAllByDigitalStorageIsAndGeneralNameIs(DigitalStorage digitalStorage,
                                                          String generalName);
 
-    @Query("UPDATE Item i "
-        + "SET i.quantityCurrent = :quantity "
-        + "WHERE i.itemId = :itemId "
-        + "AND i.digitalStorage.storageId = :storageId")
-    Item updateItemQuantity(@Param("storageId") long storageId, @Param("itemId") long itemId, @Param("quantity") long quantity);
-
     @Query("SELECT i FROM Item i WHERE i.digitalStorage.storageId = :storageId AND "
         + "(:title IS NULL OR LOWER(i.generalName) LIKE LOWER(CONCAT('%', :title, '%'))) AND "
         + "(:fillLevel IS NULL OR "
