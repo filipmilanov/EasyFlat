@@ -56,7 +56,7 @@ public class StorageEndpoint {
         LOGGER.info("findAll({})", digitalStorageDto);
 
         return digitalStorageMapper.entityListToDtoList(
-            digitalStorageService.findAll(digitalStorageDto, jwt)
+            digitalStorageService.findAll(digitalStorageDto)
         );
     }
 

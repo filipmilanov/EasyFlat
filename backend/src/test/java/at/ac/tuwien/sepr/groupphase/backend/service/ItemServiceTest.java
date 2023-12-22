@@ -18,7 +18,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -53,7 +52,7 @@ class ItemServiceTest {
     private UserRepository userRepository;
 
     @MockBean
-    private CustomUserDetailService customUserDetailService;
+    private AuthService authService;
 
     private ApplicationUser applicationUser;
 
@@ -62,7 +61,7 @@ class ItemServiceTest {
         testDataGenerator.cleanUp();
 
         applicationUser = userRepository.findById(1L).orElseThrow();
-        when(customUserDetailService.getUser(any(String.class))).thenReturn(applicationUser);
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
 
 

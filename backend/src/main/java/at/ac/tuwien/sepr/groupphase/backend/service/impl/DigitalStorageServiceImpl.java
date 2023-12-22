@@ -24,6 +24,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
@@ -54,7 +55,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final ItemMapper itemMapper;
     private final IngredientMapper ingredientMapper;
     private final Authorization authorization;
-    private final CustomUserDetailService customUserDetailService;
+    private final AuthService authService;
     private final UnitService unitService;
     private final SharedFlatService sharedFlatService;
     private final ShoppingListRepository shoppingListRepository;
@@ -68,7 +69,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
                                      ShoppingItemRepository shoppingItemRepository,
                                      ItemMapper itemMapper,
                                      IngredientMapper ingredientMapper,
-                                     CustomUserDetailService customUserDetailService,
+                                     AuthService authService,
                                      Authorization authorization,
                                      ShoppingListRepository shoppingListRepository,
                                      UnitService unitService,
@@ -79,7 +80,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         this.digitalStorageValidator = digitalStorageValidator;
         this.shoppingItemRepository = shoppingItemRepository;
         this.ingredientMapper = ingredientMapper;
-        this.customUserDetailService = customUserDetailService;
+        this.authService = authService;
         this.authorization = authorization;
         this.sharedFlatService = sharedFlatService;
         this.shoppingListRepository = shoppingListRepository;
@@ -100,10 +101,10 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto, String jwt) throws AuthenticationException {
+    public List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto) throws AuthenticationException {
         LOGGER.trace("findAll({})", digitalStorageSearchDto);
 
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+        ApplicationUser applicationUser = authService.getUserFromToken();
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exists"));
         }
@@ -279,7 +280,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
      * The Method assume, that there is only one storage per sharedFlat.
      */
     private Long getStorIdForUser(String jwt) throws AuthenticationException, ValidationException, ConflictException {
-        List<DigitalStorage> digitalStorageList = findAll(null, jwt);
+        List<DigitalStorage> digitalStorageList = findAll(null);
         DigitalStorage matchingDigitalStorage = null;
         if (!digitalStorageList.isEmpty()) {
             matchingDigitalStorage = digitalStorageList.stream().toList().get(0);

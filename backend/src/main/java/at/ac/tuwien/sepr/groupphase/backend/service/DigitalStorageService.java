@@ -33,11 +33,10 @@ public interface DigitalStorageService {
      * Search for all Storages stored in the database which matches with the given search criteria.
      *
      * @param digitalStorageSearchDto search criteria
-     * @param jwt  A valid JWT token for user authentication.
      * @return a List of all persisted Storages
      * @throws AuthenticationException If authentication fails or the user does not exist.
      */
-    List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto, String jwt) throws AuthenticationException;
+    List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto) throws AuthenticationException;
 
     /**
      * Search for all Items of a DigitalStorage stored in the database.

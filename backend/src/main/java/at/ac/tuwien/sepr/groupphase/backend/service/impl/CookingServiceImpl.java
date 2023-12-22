@@ -641,7 +641,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     private Long getStorIdForUser(String jwt) throws AuthenticationException {
-        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         DigitalStorage matchingDigitalStorage = null;
         if (!digitalStorageList.isEmpty()) {
             matchingDigitalStorage = digitalStorageList.stream().toList().get(0);
