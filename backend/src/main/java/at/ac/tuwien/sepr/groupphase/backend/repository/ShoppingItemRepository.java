@@ -28,13 +28,13 @@ public interface ShoppingItemRepository extends JpaRepository<ShoppingItem, Long
      * @return A list of ShoppingItems based on the criteria.
      */
     @Query("SELECT i FROM ShoppingItem i LEFT JOIN i.labels il WHERE i.shoppingList.name = :name AND "
-        + "(:productName IS NULL OR LOWER(i.generalName) LIKE LOWER(CONCAT('%', :productName, '%'))) AND "
+        + "(:productName IS NULL OR LOWER(i.itemCache.generalName) LIKE LOWER(CONCAT('%', :productName, '%'))) AND "
         + "(:label IS NULL OR LOWER(il.labelValue) LIKE LOWER(CONCAT('%', :label, '%')))")
     List<ShoppingItem> searchItems(@Param("name") String name,
                                    @Param("productName") String productName,
                                    @Param("label") String label);
 
-    ShoppingItem findFirstByProductName(String productName);
+    ShoppingItem findFirstByItemCacheProductName(String productName);
 
-    List<ShoppingItem> searchItemsByShoppingListNameAndShoppingListSharedFlatIdAndProductName(String shoppingListName, Long shardFlatId, String banana);
+    List<ShoppingItem> searchItemsByShoppingListNameAndShoppingListSharedFlatIdAndItemCache_ProductName(String shoppingListName, Long shardFlatId, String banana);
 }

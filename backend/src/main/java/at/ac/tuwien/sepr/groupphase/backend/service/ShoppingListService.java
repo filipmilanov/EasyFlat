@@ -2,7 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
@@ -91,7 +91,7 @@ public interface ShoppingListService {
      * Transfer ShoppingItems to the server.
      *
      * @param items a List of ShoppingItemDto to be transferred
-     * @return a List of Item objects
+     * @return a List of DigitalStorageItem objects
      */
     List<Item> transferToServer(List<ShoppingItemDto> items) throws AuthenticationException;
 

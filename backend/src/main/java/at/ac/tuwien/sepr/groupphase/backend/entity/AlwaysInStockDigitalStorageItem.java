@@ -6,7 +6,7 @@ import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("AlwaysInStock")
-public class AlwaysInStockItem extends Item {
+public class AlwaysInStockDigitalStorageItem extends DigitalStorageItem {
 
     @Column
     private Long minimumQuantity;

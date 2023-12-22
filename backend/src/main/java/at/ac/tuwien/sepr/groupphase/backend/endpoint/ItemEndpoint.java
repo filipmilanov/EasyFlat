@@ -3,7 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/v1/item")
@@ -67,11 +66,11 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("{itemId}")
-    public Optional<ItemDto> findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public ItemDto findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("findById({})", itemId);
-        Optional<Item> item = itemService.findById(itemId, jwt);
+        DigitalStorageItem item = itemService.findById(itemId, jwt);
 
-        return item.flatMap(currentItem -> Optional.ofNullable(itemMapper.entityToDto(currentItem)));
+        return itemMapper.entityToDto(item);
     }
 
     @Secured("ROLE_USER")
