@@ -8,8 +8,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
@@ -22,6 +22,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
+import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
@@ -50,7 +51,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final IngredientMapper ingredientMapper;
     private final ItemRepository itemRepository;
     private final DigitalStorageService digitalStorageService;
-    private final ItemService itemService;
+    private final IngredientService ingredientService;
     private CustomUserDetailService customUserDetailService;
     private final DigitalStorageRepository digitalStorageRepository;
     private final ShoppingItemValidator shoppingItemValidator;
@@ -60,7 +61,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListServiceImpl(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
-                                   ItemService itemService, CustomUserDetailService customUserDetailService, DigitalStorageRepository digitalStorageRepository,
+                                   IngredientService ingredientService, CustomUserDetailService customUserDetailService, DigitalStorageRepository digitalStorageRepository,
                                    ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidatorImpl validator) {
         this.shoppingItemRepository = shoppingItemRepository;
         this.labelService = labelService;
@@ -70,7 +71,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.ingredientMapper = ingredientMapper;
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
-        this.itemService = itemService;
+        this.ingredientService = ingredientService;
         this.customUserDetailService = customUserDetailService;
         this.digitalStorageRepository = digitalStorageRepository;
         this.shoppingItemValidator = shoppingItemValidator;
@@ -234,16 +235,16 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<Item> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthenticationException {
+    public List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthenticationException {
         LOGGER.trace("transferToServer({},{})", items, jwt);
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
         List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage", applicationUser.getSharedFlat());
-        List<Item> itemsList = new ArrayList<>();
+        List<DigitalStorageItem> itemsList = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
-            Item item;
+            DigitalStorageItem item;
             if (itemDto.alwaysInStock() != null && itemDto.alwaysInStock()) {
                 item = shoppingListMapper.shoppingItemDtoToAis(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), storage.get(0));
             } else {
@@ -269,11 +270,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (itemDto.labels() != null) {
             labels = findLabelsAndCreateMissing(itemDto.labels());
         }
-        List<Ingredient> ingredientList = itemService.findIngredientsAndCreateMissing(itemDto.ingredients());
+        List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
         ShoppingItem item = itemMapper.dtoToShopping(itemDto, labels,
             shoppingListMapper.dtoToEntity(itemDto.shoppingList()));
-        item.setIngredientList(ingredientList);
+        item.getItemCache().setIngredientList(ingredientList);
         item.setLabels(labels);
         return shoppingItemRepository.save(item);
     }

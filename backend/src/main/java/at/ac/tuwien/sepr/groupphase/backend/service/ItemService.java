@@ -57,4 +57,6 @@ public interface ItemService {
      * @param jwt a valid JWT of a user
      */
     void delete(Long id, String jwt) throws AuthenticationException;
+
+
 }
