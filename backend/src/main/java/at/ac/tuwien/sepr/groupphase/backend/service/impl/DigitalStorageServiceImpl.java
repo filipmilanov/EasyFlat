@@ -195,7 +195,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             .map(ApplicationUser::getId)
             .toList();
         authorization.authenticateUser(
-            jwt,
             allowedUser,
             "The given digital storage does not belong to the user's shared flat!"
         );
@@ -295,7 +294,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
 
             authorization.authenticateUser(
-                jwt,
                 allowedUser,
                 "The given digital storage does not belong to the user's shared flat!"
             );

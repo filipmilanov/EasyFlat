@@ -2,7 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -17,16 +17,16 @@ public class Authorization {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final CustomUserDetailService customUserDetailService;
+    private final AuthService authService;
 
-    public Authorization(CustomUserDetailService customUserDetailService) {
-        this.customUserDetailService = customUserDetailService;
+    public Authorization(AuthService authService) {
+        this.authService = authService;
     }
 
-    public void authenticateUser(String jwt, List<Long> allowedUser, String errorMessage) throws AuthenticationException {
-        LOGGER.trace("authenticateUser({}, {}, {})", jwt, id, errorMessage);
+    public void authenticateUser(List<Long> allowedUser, String errorMessage) throws AuthenticationException {
+        LOGGER.trace("authenticateUser({}, {})", id, errorMessage);
 
-        ApplicationUser user = customUserDetailService.getUser(jwt);
+        ApplicationUser user = authService.getUserFromToken();
         if (user == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exists"));
         }
@@ -36,9 +36,9 @@ public class Authorization {
         }
     }
 
-    public void authenticateUser(String jwt, List<Long> id) throws AuthenticationException {
-        LOGGER.trace("authenticateUser({}, {})", jwt, id);
+    public void authenticateUser(List<Long> id) throws AuthenticationException {
+        LOGGER.trace("authenticateUser({})", id);
 
-        authenticateUser(jwt, id, "User does not have access to this resource");
+        authenticateUser(id, "User does not have access to this resource");
     }
 }
