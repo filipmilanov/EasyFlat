@@ -28,7 +28,7 @@ public class LoginEndpoint {
         this.userMapper = userMapper;
     }
 
-    @Secured("ROLE_USER")
+    @PermitAll
     @PostMapping
     public String login(@RequestBody UserLoginDto userLoginDto) {
         return userService.login(userLoginDto);
