@@ -23,11 +23,14 @@ import {ItemDetailListComponent} from './components/digital-storage/item-detail-
 import {RegisterComponent} from './components/register/register.component';
 import {AccountComponent} from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
-import { CreateFlatComponent } from './components/create-flat/create-flat.component';
-import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
-import {ShoppingItemCreateEditComponent} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
+import {ShoppingListComponent} from './components/shopping-list/shopping-list.component';
+import {
+  ShoppingItemCreateEditComponent
+} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
 import {ColorPickerModule} from "ngx-color-picker";
-import { ShoppingListCreateComponent } from './components/shopping-list/shopping-list-create/shopping-list-create.component';
+import {
+  ShoppingListCreateComponent
+} from './components/shopping-list/shopping-list-create/shopping-list-create.component';
 import {CookingComponent} from './components/cooking/cooking.component';
 import {RecipeCardComponent} from './components/cooking/recipe-card/recipe-card.component';
 import {NgOptimizedImage} from "@angular/common";
@@ -39,8 +42,7 @@ import {CookbookDetailComponent} from './components/cookbook/cookbook-detail/coo
 import {CookbookModalComponent} from './components/cookbook/cookbook-modal/cookbook-modal.component';
 import {CookingModalComponent} from './components/cooking/cooking-modal/cooking-modal.component';
 import {LOAD_WASM, NgxScannerQrcodeModule} from "ngx-scanner-qrcode";
-import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
-import { ShoppingListsComponent } from './components/shopping-list/shopping-lists/shopping-lists.component';
+import {ShoppingListsComponent} from './components/shopping-list/shopping-lists/shopping-lists.component';
 import {CreateFlatComponent} from './components/create-flat/create-flat.component';
 import {FinanceComponent} from './components/finance/finance.component';
 import {ExpenseCreateEditComponent} from './components/finance/expense-create-edit/expense-create-edit.component';
@@ -51,7 +53,7 @@ import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expe
 import {UserDropdownComponent} from './components/utils/user-dropdown/user-dropdown.component';
 
 
-import { ShoppingListCardComponent } from './components/shopping-list/shopping-list-card/shopping-list-card.component';
+import {ShoppingListCardComponent} from './components/shopping-list/shopping-list-card/shopping-list-card.component';
 
 LOAD_WASM().subscribe();
 
@@ -86,7 +88,7 @@ LOAD_WASM().subscribe();
     CookbookModalComponent,
     CookingModalComponent,
     ShoppingListsComponent,
-    ShoppingListCardComponent
+    ShoppingListCardComponent,
     FinanceComponent,
     ExpenseCreateEditComponent,
     RadioButtonsComponentComponent,
