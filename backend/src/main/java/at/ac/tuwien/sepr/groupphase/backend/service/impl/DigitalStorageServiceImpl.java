@@ -135,7 +135,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Override
     public List<ItemListDto> searchItems(ItemSearchDto searchItem, String jwt) throws ValidationException, AuthenticationException, ConflictException {
-        LOGGER.trace("searchItems({}, {})", searchItem);
+        LOGGER.trace("searchItems({})", searchItem);
         digitalStorageValidator.validateForSearchItems(searchItem);
 
         Long storId = getStorIdForUser(jwt);
@@ -234,7 +234,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException {
         LOGGER.trace("addItemToShopping({})", itemDto);
 
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
+        ApplicationUser applicationUser = authService.getUserFromToken();
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
