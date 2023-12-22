@@ -8,13 +8,15 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Debit;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
-import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ExpenseRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ExpenseService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ExpenseValidator;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -34,41 +36,58 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseValidator expenseValidator;
     private final CustomUserDetailService customUserDetailService;
     private final DebitMapper debitMapper;
+    private final Authorization authorization;
+    private final AuthService authService;
 
     public ExpenseServiceImpl(ExpenseRepository expenseRepository,
                               ExpenseMapper expenseMapper,
                               ExpenseValidator expenseValidator,
                               CustomUserDetailService customUserDetailService,
-                              DebitMapper debitMapper) {
+                              DebitMapper debitMapper,
+                              Authorization authorization,
+                              AuthService authService) {
         this.expenseRepository = expenseRepository;
         this.expenseMapper = expenseMapper;
         this.expenseValidator = expenseValidator;
         this.customUserDetailService = customUserDetailService;
         this.debitMapper = debitMapper;
+        this.authorization = authorization;
+        this.authService = authService;
     }
 
     @Override
-    public Expense findById(Long id, String jwt) throws NotFoundException {
+    public Expense findById(Long id) throws NotFoundException, AuthenticationException {
         LOGGER.info("findById: {}", id);
 
-        // TODO: authentication
-
-        return expenseRepository.findById(id)
+        Expense persistedExpense = expenseRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Expense not found"));
+
+        List<ApplicationUser> allowedUsers = persistedExpense.getDebitUsers().stream().map(
+            debit -> debit.getId().getUser()
+        ).toList();
+        allowedUsers.add(persistedExpense.getPaidBy());
+        authorization.authenticateUser(
+            allowedUsers.stream().map(ApplicationUser::getId).toList(),
+            "User does not have access to this expense"
+        );
+
+        return persistedExpense;
     }
 
     @Override
     @Transactional
-    public Expense create(ExpenseDto expenseDto, String jwt) throws ValidationException, ConflictException {
+    public Expense create(ExpenseDto expenseDto) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("create: {}", expenseDto);
 
-        // TODO: authentication
-        ApplicationUser user = customUserDetailService.getUser(jwt);
+        ApplicationUser user = authService.getUserFromToken();
+        List<ApplicationUser> usersOfFlat = user.getSharedFlat().getUsers().stream().toList();
 
-        SharedFlat sharedFlatOfUser = user.getSharedFlat();
-        List<ApplicationUser> usersOfFlat = sharedFlatOfUser.getUsers().stream().toList();
+        expenseValidator.validateExpense(expenseDto, usersOfFlat);
 
-        expenseValidator.validateExpense(expenseDto, usersOfFlat, sharedFlatOfUser);
+        authorization.authenticateUser(
+            usersOfFlat.stream().map(ApplicationUser::getId).toList(),
+            "You cannot create an expense for this flat"
+        );
 
         List<Debit> debitList = defineDebitPerUserBySplitBy(
             expenseDto,
@@ -76,7 +95,6 @@ public class ExpenseServiceImpl implements ExpenseService {
         );
 
         Expense expense = expenseMapper.expenseDtoToExpense(expenseDto, debitList);
-
 
         expense.getDebitUsers().forEach(debit -> debit.getId().setExpense(expense));
         return expenseRepository.save(expense);

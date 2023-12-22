@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.validation.ConstraintViolation;
@@ -27,12 +26,11 @@ public class ExpenseValidator {
     }
 
     public void validateExpense(ExpenseDto expenseDto,
-                                List<ApplicationUser> applicationUsersOfFlat,
-                                SharedFlat flatOfUser) throws ValidationException, ConflictException {
-        LOGGER.trace("validateExpense({}, {}, {})", expenseDto, applicationUsersOfFlat, flatOfUser);
+                                List<ApplicationUser> applicationUsersOfFlat) throws ValidationException, ConflictException {
+        LOGGER.trace("validateExpense({}, {})", expenseDto, applicationUsersOfFlat);
 
         validateExpenseDtoForCreate(expenseDto);
-        checkForConflict(expenseDto, applicationUsersOfFlat, flatOfUser);
+        checkForConflict(expenseDto, applicationUsersOfFlat);
 
     }
 
@@ -46,9 +44,8 @@ public class ExpenseValidator {
     }
 
     private void checkForConflict(ExpenseDto expenseDto,
-                                  List<ApplicationUser> applicationUsers,
-                                  SharedFlat flatOfUser) throws ConflictException {
-        LOGGER.trace("checkForConflict({}, {}, {})", expenseDto, applicationUsers, flatOfUser);
+                                  List<ApplicationUser> applicationUsers) throws ConflictException {
+        LOGGER.trace("checkForConflict({}, {})", expenseDto, applicationUsers);
 
         List<String> errors = new ArrayList<>();
 

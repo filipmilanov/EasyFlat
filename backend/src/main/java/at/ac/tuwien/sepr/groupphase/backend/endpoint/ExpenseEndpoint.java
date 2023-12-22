@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ExpenseService;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,22 +36,22 @@ public class ExpenseEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("{id}")
-    public ExpenseDto findById(@PathVariable("id") Long id, @RequestHeader("Authorization") String jwt) {
+    public ExpenseDto findById(@PathVariable("id") Long id) throws AuthenticationException {
         LOGGER.info("findById: {}", id);
 
         return expenseMapper.entityToExpenseDto(
-            expenseService.findById(id, jwt)
+            expenseService.findById(id)
         );
     }
 
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ExpenseDto create(@RequestBody ExpenseDto expenseDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException {
+    public ExpenseDto create(@RequestBody ExpenseDto expenseDto) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("create: {}", expenseDto);
 
         return expenseMapper.entityToExpenseDto(
-            expenseService.create(expenseDto, jwt)
+            expenseService.create(expenseDto)
         );
     }
 
