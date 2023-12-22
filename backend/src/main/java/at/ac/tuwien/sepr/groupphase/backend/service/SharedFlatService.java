@@ -4,6 +4,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
 
 public interface SharedFlatService {
@@ -21,27 +23,24 @@ public interface SharedFlatService {
      * Create a shared flat.
      *
      * @param sharedFlat The shared flat to be created
-     * @param authToken  The authentication token for authorization
      * @return WgDetailDto representing the created shared flat
      * @throws Exception if an error occurs during the creation process
      */
-    WgDetailDto create(SharedFlat sharedFlat, String authToken) throws Exception;
+    WgDetailDto create(SharedFlat sharedFlat) throws ConflictException, ValidationException;
 
     /**
      * Log in to a shared flat.
      *
      * @param wgDetailDto The shared flat details for login
-     * @param authToken   The authentication token for authorization
      * @return WgDetailDto representing the logged-in shared flat
      */
-    WgDetailDto loginWg(SharedFlat wgDetailDto, String authToken);
+    WgDetailDto loginWg(SharedFlat wgDetailDto);
 
     /**
      * Delete a shared flat.
      *
-     * @param email The email associated with the shared flat to be deleted
      * @return WgDetailDto representing the deleted shared flat
      */
-    WgDetailDto delete(String email);
+    WgDetailDto delete();
 }
 
