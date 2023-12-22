@@ -11,9 +11,8 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -41,11 +40,8 @@ import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -78,13 +74,13 @@ public class CookingEndpointTest {
     private ApplicationUser applicationUser;
 
     @MockBean
-    private CustomUserDetailService customUserDetailService;
+    private AuthService authService;
 
     @BeforeEach
     public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
         applicationUser = userRepository.findById(1L).orElseThrow();
-        when(customUserDetailService.getUser(any(String.class))).thenReturn(applicationUser);
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
 
     @Test

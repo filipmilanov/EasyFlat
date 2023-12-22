@@ -19,17 +19,15 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
-import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingItemValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListValidatorImpl;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -83,7 +81,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.trace("create({},{})", itemDto, jwt);
         List<ShoppingList> shoppingLists = this.getShoppingLists("", jwt);
-        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         List<Unit> unitList = unitService.findAll();
         shoppingItemValidator.validateForCreate(itemDto, shoppingLists, digitalStorageList, unitList);
 
@@ -262,7 +260,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         LOGGER.trace("update({})", itemDto);
 
         List<ShoppingList> shoppingLists = this.getShoppingLists("", jwt);
-        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         List<Unit> unitList = unitService.findAll();
         shoppingItemValidator.validateForUpdate(itemDto, shoppingLists, digitalStorageList, unitList);
 

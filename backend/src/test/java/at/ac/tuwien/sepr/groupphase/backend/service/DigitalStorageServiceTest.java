@@ -16,8 +16,8 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class DigitalStorageServiceTest {
     private TestDataGenerator testDataGenerator;
 
     @MockBean
-    private CustomUserDetailService customUserDetailService;
+    private AuthService authService;
 
     @MockBean
     private JwtTokenizer jwtTokenizer;
@@ -67,7 +67,7 @@ class DigitalStorageServiceTest {
         testDataGenerator.cleanUp();
 
         applicationUser = userRepository.findById(1L).orElseThrow();
-        when(customUserDetailService.getUser(any(String.class))).thenReturn(applicationUser);
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
 
 
@@ -100,7 +100,7 @@ class DigitalStorageServiceTest {
     @Test
     void givenNothingWhenFindAllThenAllDigitalStoragesOfActiveUserAreReturned() throws AuthenticationException {
         // when
-        List<DigitalStorage> actual = service.findAll(null, "Bearer Token");
+        List<DigitalStorage> actual = service.findAll(null);
 
         // then
         assertThat(actual).hasSizeGreaterThanOrEqualTo(1);

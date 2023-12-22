@@ -107,7 +107,7 @@ public class ItemServiceImpl implements ItemService {
             itemDto = itemDto.withAlwaysInStock(false);
         }
 
-        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         List<Unit> unitList = unitService.findAll();
         itemValidator.validateForCreate(itemDto, digitalStorageList, unitList);
 
@@ -159,7 +159,7 @@ public class ItemServiceImpl implements ItemService {
             itemDto = itemDto.withAlwaysInStock(false);
         }
 
-        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null, jwt);
+        List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         List<Unit> unitList = unitService.findAll();
         itemValidator.validateForUpdate(itemDto, digitalStorageList, unitList);
 
