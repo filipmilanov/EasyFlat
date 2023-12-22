@@ -80,7 +80,6 @@ public class ItemServiceImpl implements ItemService {
         }
         List<Long> allowedUser = item.get().getDigitalStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
         authorization.authenticateUser(
-            jwt,
             allowedUser,
             "The given item does not belong to the user's shared flat!"
         );
@@ -125,7 +124,6 @@ public class ItemServiceImpl implements ItemService {
             .map(ApplicationUser::getId)
             .toList();
         authorization.authenticateUser(
-            jwt,
             allowedUser,
             "The given digital storage does not belong to the user's shared flat!"
         );
@@ -178,7 +176,6 @@ public class ItemServiceImpl implements ItemService {
             .map(ApplicationUser::getId)
             .toList();
         authorization.authenticateUser(
-            jwt,
             allowedUser,
             "The given digital storage does not belong to the user's shared flat!"
         );
@@ -218,7 +215,6 @@ public class ItemServiceImpl implements ItemService {
             .toList();
 
         authorization.authenticateUser(
-            jwt,
             allowedUsers,
             "The given digital storage does not belong to the user's shared flat!"
         );

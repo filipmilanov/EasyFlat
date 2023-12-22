@@ -38,7 +38,6 @@ import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.CookbookValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.RecipeValidator;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -326,7 +325,6 @@ public class CookingServiceImpl implements CookingService {
             .map(ApplicationUser::getId)
             .toList();
         authorization.authenticateUser(
-            jwt,
             allowedUser,
             "The given cookbook does not belong to the user's shared flat!"
         );
@@ -631,7 +629,6 @@ public class CookingServiceImpl implements CookingService {
 
 
             authorization.authenticateUser(
-                jwt,
                 allowedUser,
                 "The given cookbook does not belong to the user's shared flat!"
             );
@@ -659,7 +656,6 @@ public class CookingServiceImpl implements CookingService {
 
 
             authorization.authenticateUser(
-                jwt,
                 allowedUser,
                 "The given digital storage does not belong to the user's shared flat!"
             );
