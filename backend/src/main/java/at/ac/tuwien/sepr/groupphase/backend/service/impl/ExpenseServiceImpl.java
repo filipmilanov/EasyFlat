@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
@@ -61,7 +62,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         List<ApplicationUser> allowedUsers = persistedExpense.getDebitUsers().stream().map(
             debit -> debit.getId().getUser()
-        ).toList();
+        ).collect(Collectors.toList());
         allowedUsers.add(persistedExpense.getPaidBy());
         authorization.authenticateUser(
             allowedUsers.stream().map(ApplicationUser::getId).toList(),
