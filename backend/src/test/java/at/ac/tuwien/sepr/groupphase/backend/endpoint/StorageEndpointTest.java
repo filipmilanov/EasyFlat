@@ -11,9 +11,9 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -71,7 +70,8 @@ class StorageEndpointTest {
     private UserRepository userRepository;
 
     @MockBean
-    private CustomUserDetailService customUserDetailService;
+    private AuthService authService;
+
     @Autowired
     private JwtTokenizer jwtTokenizer;
 
@@ -83,7 +83,7 @@ class StorageEndpointTest {
         testDataGenerator.cleanUp();
 
         applicationUser = userRepository.findById(1L).orElseThrow();
-        when(customUserDetailService.getUser(any(String.class))).thenReturn(applicationUser);
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
 
     @Test
