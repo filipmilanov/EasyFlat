@@ -9,7 +9,6 @@ import {
 } from "./components/digital-storage/item-create-edit/item-create-edit.component";
 import {ItemDetailComponent} from "./components/digital-storage/item-detail/item-detail.component";
 import {ItemDetailListComponent} from "./components/digital-storage/item-detail-list/item-detail-list.component";
-import {StorageItemListDto} from "./dtos/storageItem";
 import {AuthGuard} from './guards/auth.guard';
 import {MessageComponent} from './components/message/message.component';
 import {RegisterComponent} from "./components/register/register.component";
@@ -23,7 +22,6 @@ import {
 import {
   ShoppingListCreateComponent
 } from "./components/shopping-list/shopping-list-create/shopping-list-create.component";
-import computeOffsets from "@popperjs/core/lib/utils/computeOffsets";
 import {CookingComponent} from "./components/cooking/cooking.component";
 import {CookbookComponent} from "./components/cookbook/cookbook.component";
 import {CookbookCreateComponent, CookbookMode} from "./components/cookbook/cookbook-create/cookbook-create.component";
@@ -35,15 +33,14 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'digital-storage', children: [
       {path: '', component: DigitalStorageComponent},
-      {path: 'item', children: [
-          {path: 'create', component: ItemCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
-          {path: ':name/list', children:[
-            {path: '', component: ItemDetailListComponent },
-            {path: ':id/detail', component: ItemDetailComponent},
-              {path: ':id/edit', component: ItemCreateEditComponent, data: {mode: ItemCreateEditMode.edit}},
-            ]}
-        ]}
+      {path: ':name', component: ItemDetailListComponent }
   ]},
+  { path: 'item', children: [
+      { path: 'create', component: ItemCreateEditComponent, data: { mode: ItemCreateEditMode.create } },
+      { path: ':id/detail', component: ItemDetailComponent },
+      { path: ':id/edit', component: ItemCreateEditComponent, data: { mode: ItemCreateEditMode.edit } },
+    ]
+  },
   {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
   {path: 'shopping-list/:name', children: [
       {path: '', component: ShoppingListComponent},

@@ -1,4 +1,15 @@
-<h1 class="display-4">Overview for {{itemGeneralName}}</h1>
+<div class="container">
+  <div class="row">
+    <div class="col col-10">
+      <h1 class="display-4">Overview for {{itemGeneralName}}</h1>
+    </div>
+    <div class="col mt-4">
+      <button type="button" class="btn btn-secondary" [routerLink]="['/digital-storage']">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+    </div>
+  </div>
+</div>
 
 <div class="mt-3">
   <table class="table table-hover">
@@ -44,14 +55,14 @@
       <td>
         <div class="btn-group">
           <button class="btn btn-sm btn-primary"
-             [routerLink]="[item.itemId, 'detail']"
+             [routerLink]="['/item', item.itemId, 'detail']"
              aria-label="Show item details">
             <i class="bi bi-info-lg"></i>
             Details
           </button>
           <button class="btn btn-sm btn-warning"
-             [routerLink]="[item.itemId, 'edit']"
-             aria-label="Edit item">
+             [routerLink]="['/item', item.itemId, 'edit']"
+          aria-label="Edit item">
             <i class="bi bi-pencil"></i>
             Edit
           </button>

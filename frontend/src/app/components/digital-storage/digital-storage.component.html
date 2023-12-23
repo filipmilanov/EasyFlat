@@ -69,7 +69,7 @@
   <div class="row row-cols-4">
     <div class="col" *ngFor="let item of items">
       <a style="text-decoration: none"
-         [routerLink]="['item', item.generalName ,'list']"
+         [routerLink]="[item.generalName]"
          aria-label="Show item details">
         <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent" [quantityTotal]="item.quantityTotal"
                        [unit]="item.unit.name"
@@ -85,7 +85,7 @@
   <div class="row row-cols-4">
     <div class="col" *ngFor="let item of itemsAIS">
       <a style="text-decoration: none"
-         [routerLink]="['item', item.generalName, 'list']"
+         [routerLink]="[item.generalName]"
          aria-label="Show item details">
         <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent" [quantityTotal]="item.quantityTotal"
                        [unit]="item.unit.name"
@@ -96,6 +96,6 @@
 </div>
 <button type="button"
         class="btn btn-primary float-end m-3"
-        [routerLink]="['item', 'create']">
+        [routerLink]="['../item/create']">
   Add Item
 </button>
