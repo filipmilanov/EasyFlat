@@ -24,7 +24,7 @@ export class ShowUserForExpenseComponent implements OnChanges {
     this.adaptedToChange();
   }
 
-  kindOfValue(value: DebitDto): string {
+  determineValueRepresentation(value: DebitDto): string {
     if (this.splitBy === SplitBy.EQUAL) {
       return '€';
     } else if (this.splitBy === SplitBy.UNEQUAL) {
