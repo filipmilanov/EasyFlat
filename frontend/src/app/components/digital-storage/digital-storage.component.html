@@ -1,5 +1,4 @@
-<form class="d-flex flex-row w-auto mb-3">
-
+<form class="d-flex flex-row align-items-end w-auto mb-3">
   <button type="submit" hidden="hidden">submit</button>
   <div class="flex-grow-1">
     <label for="searchTitle" class="col-form-label">
@@ -27,45 +26,49 @@
     </select>
   </div>
 
-  <div class="ms-1 btn-group"
-       role="group"
-       aria-label="Basic radio toggle button group"
-  >
-    <input type="radio"
-           class="btn-check"
-           name="orderType"
-           id="orderName"
-           autocomplete="off"
-           [checked]="searchParameters.orderBy === OrderType.PRODUCT_NAME"
-           [(ngModel)]="searchParameters.orderBy"
-           [value]="OrderType.PRODUCT_NAME"
-           (change)="loadStorage()">
-    <label class="btn btn-outline-primary"
-           for="orderName">
-      Name
-    </label>
+  <div class="ms-1 d-flex flex-column justify-content-end">
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+      <input type="radio"
+             class="btn-check"
+             name="orderType"
+             id="orderName"
+             autocomplete="off"
+             [checked]="searchParameters.orderBy === OrderType.PRODUCT_NAME"
+             [(ngModel)]="searchParameters.orderBy" [value]="OrderType.PRODUCT_NAME"
+             (change)="loadStorage()">
+      <label class="btn btn-outline-primary" for="orderName">Name</label>
 
-    <input type="radio"
-           class="btn-check"
-           name="orderType"
-           id="orderQuantity"
-           autocomplete="off"
-           [checked]="searchParameters.orderBy === OrderType.QUANTITY_CURRENT"
-           [(ngModel)]="searchParameters.orderBy"
-           [value]="OrderType.QUANTITY_CURRENT"
-           (change)="loadStorage()">
-    <label class="btn btn-outline-primary"
-           for="orderQuantity">
-      Quantity
-    </label>
+      <input type="radio"
+             class="btn-check"
+             name="orderType"
+             id="orderQuantity"
+             autocomplete="off"
+             [checked]="searchParameters.orderBy === OrderType.QUANTITY_CURRENT"
+             [(ngModel)]="searchParameters.orderBy" [value]="OrderType.QUANTITY_CURRENT"
+             (change)="loadStorage()">
+      <label class="btn btn-outline-primary" for="orderQuantity">Quantity</label>
+    </div>
   </div>
-
 </form>
 
 
-<div class="container ">
-  <h1 class="display-4">In Stock</h1>
-  <div style="width: 100%; height: 100%; border: 1px black solid"></div>
+<div class="container">
+  <h1 class="display-4"></h1>
+  <div class="container">
+    <div class="row">
+      <div class="col col-10">
+        <h1 class="display-4">In Stock Items</h1>
+      </div>
+      <div class="col mt-4">
+        <button type="button"
+                class="btn btn-primary"
+                [routerLink]="['/item/create']">
+          <i class="bi bi-plus-lg"></i>
+          Add Item
+        </button>
+      </div>
+    </div>
+  </div>
   <div class="row row-cols-4">
     <div class="col" *ngFor="let item of items">
       <a style="text-decoration: none"
@@ -80,7 +83,7 @@
 </div>
 
 <div class="container ">
-  <h1 class="display-4">Always in Stock</h1>
+  <h1 class="display-4">Always in Stock Items</h1>
   <div style="width: 100%; height: 100%; border: 1px black solid"></div>
   <div class="row row-cols-4">
     <div class="col" *ngFor="let item of itemsAIS">
@@ -94,8 +97,3 @@
     </div>
   </div>
 </div>
-<button type="button"
-        class="btn btn-primary float-end m-3"
-        [routerLink]="['../item/create']">
-  Add Item
-</button>
