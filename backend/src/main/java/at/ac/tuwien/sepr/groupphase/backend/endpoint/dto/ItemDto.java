@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -21,23 +22,25 @@ public record ItemDto(
     String generalName,
     @NotEmpty(message = "The product name cannot be empty")
     String productName,
-    @NotEmpty(message = "The brand name cannot be empty")
     String brand,
     @NotNull(message = "The actual quantity cannot be empty")
-    @Min(value = 0, message = "The actual quantity must be positive")
+    @Min(value = 0, message = "The current quantity must be at least 0")
+    @Max(value = 10000, message = "The current quantity cannot be greater than 10000")
     Double quantityCurrent,
     @NotNull(message = "The total quantity cannot be empty")
-    @Min(value = 0, message = "The total quantity must be positive")
+    @Min(value = 0, message = "The total quantity must be at least 0")
+    @Max(value = 10000, message = "The total quantity cannot be greater than 10000")
     Double quantityTotal,
-    @NotNull(message = "The unit cannot be null")
+    @NotNull(message = "The unit cannot be empty")
     UnitDto unit,
-    @FutureOrPresent(message = "You cannot store products which are over the expire date")
+    @FutureOrPresent(message = "You cannot store products which have already expired")
     LocalDate expireDate,
     String description,
-    @Min(value = 0, message = "The price must be positive")
+    @Min(value = 0, message = "The price must be at least €0.00")
     Long priceInCent,
     Boolean alwaysInStock,
-    @Min(value = 0, message = "The minimum quantity must be positive")
+    @Min(value = 0, message = "The minimum quantity must be at least 0")
+    @Max(value = 5000, message = "The total quantity cannot be greater than 5000")
     Long minimumQuantity,
     String boughtAt,
     @NotNull(message = "An item needs to be linked to a storage")
