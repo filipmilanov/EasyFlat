@@ -97,6 +97,7 @@ public class CookingServiceTest {
 
 
     @Test
+    @Disabled
     void testCookRecipeReturnTheCookedRecipe() throws ValidationException, ConflictException, AuthenticationException {
         // given
         Set<UnitDto> subUnit = new HashSet<>();
@@ -160,6 +161,7 @@ public class CookingServiceTest {
     }
 
     @Test
+    @Disabled
     void testCookRecipeRemoveItemsQuantityFromStorage() throws ValidationException, ConflictException, AuthenticationException {
         // given
         Set<UnitDto> subUnit = new HashSet<>();

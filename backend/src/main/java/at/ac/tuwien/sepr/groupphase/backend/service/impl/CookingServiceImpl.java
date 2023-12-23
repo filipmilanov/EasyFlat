@@ -30,6 +30,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.RecipeIngredientService;
@@ -80,6 +81,7 @@ public class CookingServiceImpl implements CookingService {
     private final CookbookRepository cookbookRepository;
     private final UserService userService;
     private final ItemRepository itemRepository;
+    private final AuthService authService;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
     public CookingServiceImpl(RestTemplate restTemplate,
@@ -97,7 +99,7 @@ public class CookingServiceImpl implements CookingService {
                               CookbookValidator cookbookValidator, SharedFlatService sharedFlatService,
                               Authorization authorization, CookbookMapper cookbookMapper,
                               CookbookRepository cookbookRepository, UserService userService,
-                              ItemRepository itemRepository) {
+                              ItemRepository itemRepository, AuthService authService) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
@@ -118,6 +120,7 @@ public class CookingServiceImpl implements CookingService {
         this.cookbookRepository = cookbookRepository;
         this.userService = userService;
         this.itemRepository = itemRepository;
+        this.authService = authService;
     }
 
     @Override

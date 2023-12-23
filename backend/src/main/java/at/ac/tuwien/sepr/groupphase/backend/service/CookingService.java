@@ -18,7 +18,7 @@ public interface CookingService {
     /**
      * Get a list of recipe suggestions based on the provided store ID and type.
      *
-     * @param type   The type of the recipe (e.g., breakfast, main dish ...).
+     * @param type The type of the recipe (e.g., breakfast, main dish ...).
      * @return A list of recipe suggestions.
      * @throws ValidationException If there is a validation error.
      */

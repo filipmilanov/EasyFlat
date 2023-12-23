@@ -30,6 +30,7 @@ import {CookbookCreateComponent, CookbookMode} from "./components/cookbook/cookb
 import {RecipeDetailComponent} from "./components/cooking/recipe-detail/recipe-detail.component";
 import {CookbookDetailComponent} from "./components/cookbook/cookbook-detail/cookbook-detail.component";
 import {ShoppingListsComponent} from "./components/shopping-list/shopping-lists/shopping-lists.component";
+import {EventsComponent} from "./components/events/events.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -90,7 +91,8 @@ const routes: Routes = [
       {path: ':id/edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}},
       {path: ':id/detail', component: CookbookDetailComponent}
     ]
-  }
+  },
+  {path: 'events', component: EventsComponent}
 ];
 
 @NgModule({
