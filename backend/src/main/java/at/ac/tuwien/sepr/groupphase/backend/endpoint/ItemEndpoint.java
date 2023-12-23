@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.OpenFoodFactsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -74,10 +75,13 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("/general-name/{generalName}")
-    public List<Item> findByGeneralName(@PathVariable("generalName") String name,
+    public List<ItemDto> findByGeneralName(@PathVariable("generalName") String name,
                                         @RequestHeader("Authorization") String jwt) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.info("findByGeneralName({})", name);
-        return itemService.getItemWithGeneralName(name, jwt);
+        List<Item> items = itemService.getItemWithGeneralName(name, jwt);
+        return items.stream()
+            .map(itemMapper::entityToDto)
+            .collect(Collectors.toList());
     }
 
     @Secured("ROLE_USER")
