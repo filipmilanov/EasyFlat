@@ -109,8 +109,7 @@ public class CookingServiceImpl implements CookingService {
                               CookbookRepository cookbookRepository, UserService userService,
                               ShoppingListService shoppingListService,
                               ShoppingListMapper shoppingListMapper,
-                              DigitalStorageMapper digitalStorageMapper) {
-                              CookbookRepository cookbookRepository, UserService userService,
+                              DigitalStorageMapper digitalStorageMapper,
                               ItemRepository itemRepository) {
         this.repository = repository;
         this.restTemplate = restTemplate;
