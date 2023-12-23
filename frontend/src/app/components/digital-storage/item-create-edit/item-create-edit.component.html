@@ -58,8 +58,7 @@
                 class="btn btn-primary me-2"
                 [disabled]="!form.valid"
         >
-          <i class="bi bi-pencil" *ngIf="!modeIsCreate"></i>
-          <i class="bi bi-plus-square" *ngIf="modeIsCreate"></i>
+          <i class="bi" [class.bi-plus-square]="modeIsCreate" [class.bi-pencil]="!modeIsCreate"></i>
           {{ submitButtonText }}
         </button>
         <button type="button"
