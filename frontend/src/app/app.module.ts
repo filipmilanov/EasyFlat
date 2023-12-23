@@ -92,7 +92,6 @@ LOAD_WASM().subscribe();
     FinanceComponent,
     ExpenseCreateEditComponent,
     RadioButtonsComponentComponent,
-    RadioButtonsComponentComponent,
     ShowUserForExpenseComponent,
     UserDropdownComponent,
   ],
