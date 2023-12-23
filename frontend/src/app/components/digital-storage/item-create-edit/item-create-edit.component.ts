@@ -91,7 +91,7 @@ export class ItemCreateEditComponent implements OnInit {
         console.log(this.availableUnits)
         this.item.unit = this.availableUnits[0];
       },
-      error: err => {
+      error: () => {
         this.notification.error('Failed to load Units', "Error");
       }
     });
@@ -128,7 +128,7 @@ export class ItemCreateEditComponent implements OnInit {
         next: res => {
           this.item.digitalStorage = res[0];
         },
-        error: err => {
+        error: () => {
           this.notification.error('Failed to load Storages', "Error");
         }
       });
@@ -154,7 +154,7 @@ export class ItemCreateEditComponent implements OnInit {
           return;
       }
       observable.subscribe({
-        next: data => {
+        next: () => {
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
           this.router.navigate(['/digital-storage']);
         },
@@ -165,7 +165,7 @@ export class ItemCreateEditComponent implements OnInit {
           let lastBracket = error.error.indexOf(']');
           let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
           let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach(message => {
+          errorMessages.forEach((message: string) => {
             this.notification.error(message, errorDescription);
           });
         }
@@ -287,7 +287,7 @@ export class ItemCreateEditComponent implements OnInit {
 
   public delete() {
     this.itemService.deleteItem(this.item.itemId).subscribe({
-      next: data => {
+      next: () => {
         this.router.navigate(['/digital-storage/']);
         this.notification.success(`Item ${this.item.generalName} was successfully deleted`, "Success");
       },
