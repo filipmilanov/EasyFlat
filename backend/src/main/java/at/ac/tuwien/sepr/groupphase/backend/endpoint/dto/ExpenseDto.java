@@ -17,7 +17,8 @@ import java.util.List;
 @RecordBuilder
 public record ExpenseDto(
     Long id,
-    @NotEmpty(message = "Title cannot be empty") String title,
+    @NotEmpty(message = "Title cannot be empty")
+    String title,
     String description,
     @NotNull(message = "Amount cannot be empty")
     @Min(value = 1, message = "Amount must be greater than 1")
