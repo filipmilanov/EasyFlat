@@ -324,10 +324,13 @@ class ItemServiceTest {
         String message = assertThrows(ValidationException.class, () -> service.create(itemDto, "Bearer Token")).getMessage();
         assertThat(message)
             .contains(
+                "quantity",
+                "general name",
+                "product name",
                 "EAN",
                 "13",
-                "brand",
-                "quantity"
+                "price",
+                "total"
             );
     }
 
@@ -528,7 +531,8 @@ class ItemServiceTest {
         String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto, "bearer token")).getMessage();
         assertThat(message)
             .contains(
-                "The actual quantity must be positive"
+                "current quantity",
+                "0"
             );
     }
 
@@ -651,7 +655,6 @@ class ItemServiceTest {
         String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto, "bearer token")).getMessage();
         assertThat(message)
             .contains(
-                "brand",
                 "storage"
             );
     }
