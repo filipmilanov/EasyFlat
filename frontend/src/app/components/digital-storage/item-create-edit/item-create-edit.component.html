@@ -153,7 +153,8 @@
         <div class="col-md-2 col-lg-2 mt-2">
           <select class="form-select form-select-md"
                   name="unit"
-                  [(ngModel)]="item.unit">
+                  [(ngModel)]="item.unit"
+                  [compareWith]="compareUnitObjects">
             <option *ngFor="let unit of availableUnits"
                     [ngValue]="unit">
               {{formatUnitName(unit)}}

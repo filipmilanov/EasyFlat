@@ -298,4 +298,8 @@ export class ItemCreateEditComponent implements OnInit {
       }
     });
   }
+
+  public compareUnitObjects(itemUnit: Unit, availableUnit: Unit): boolean {
+    return itemUnit && availableUnit ? itemUnit.name === availableUnit.name : itemUnit === availableUnit;
+  }
 }
