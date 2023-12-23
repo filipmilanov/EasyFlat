@@ -17,6 +17,7 @@
                  id="title"
                  name="title"
                  placeholder="title"
+                 required
                  [(ngModel)]="expense.title">
         </div>
       </div>
@@ -49,6 +50,7 @@
                  id="amountInCents"
                  name="amountInCents"
                  placeholder="Amount"
+                 required
                  [(ngModel)]="amountInEuro">
         </div>
       </div>
@@ -67,7 +69,8 @@
                  placeholder="Timestamp"
                  [selectionStart]="expense.createdAt"
                  [ngModel]="expense.createdAt | date:'dd.MM.yyyy'"
-                 (ngModelChange)="expense.createdAt = $event">
+                 (ngModelChange)="expense.createdAt = $event"
+                 required>
         </div>
       </div>
 
