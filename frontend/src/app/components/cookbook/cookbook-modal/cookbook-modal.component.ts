@@ -57,6 +57,7 @@ export class CookbookModalComponent implements OnInit{
     this.cookingService.addToShoppingList(this.recipeWithMissing).subscribe({
       next: res => {
         console.log("added to list");
+        this.notification.success("Ingredients added successfully to shopping list")
 
       },
       error: err => {

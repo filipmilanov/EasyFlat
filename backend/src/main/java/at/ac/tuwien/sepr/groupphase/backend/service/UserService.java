@@ -45,7 +45,7 @@ public interface UserService extends UserDetailsService {
 
     UserDetailDto update(UserDetailDto userDetailDto);
 
-    UserDetailDto delete(String email);
+    UserDetailDto delete(Long id);
 
     UserDetailDto signOut(String flatName, String authToken);
 

@@ -48,5 +48,20 @@ export class CookingModalComponent {
     })
   }
 
+  addToShoppingList() {
+    this.activeModal.dismiss();
+    this.cookingService.addToShoppingList(this.recipe).subscribe({
+      next: res => {
+        console.log("added to list");
+        this.notification.success("Ingredients added successfully to shopping list")
+
+      },
+      error: err => {
+        console.error("Error loading recipes:", err);
+        this.notification.error("Error loading recipes");
+      }
+    })
+  }
+
 
 }
