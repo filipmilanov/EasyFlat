@@ -105,7 +105,7 @@ export class ExpenseCreateEditComponent implements OnInit {
 
   private checkIfAmountIsToHigh() {
     if (this.amountInEuro > 10_000) {
-      this.notification.error("Amount is too high", "Error");
+      this.notification.error("Amount too high. The maximum amount possible is 10.000", "Error");
       return true;
     }
     return false;
