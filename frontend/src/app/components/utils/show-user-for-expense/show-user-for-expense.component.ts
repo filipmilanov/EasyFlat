@@ -25,13 +25,13 @@ export class ShowUserForExpenseComponent implements OnChanges {
   }
 
   determineValueRepresentation(value: DebitDto): string {
-    if (this.splitBy === SplitBy.EQUAL) {
+    if (this.splitBy === SplitBy.EQUAL || this.splitBy === SplitBy.UNEQUAL) {
       return '€';
-    } else if (this.splitBy === SplitBy.UNEQUAL) {
-      return '€';
-    } else if (this.splitBy === SplitBy.PERCENTAGE) {
+    }
+    if (this.splitBy === SplitBy.PERCENTAGE) {
       return '%';
-    } else if (this.splitBy === SplitBy.PROPORTIONAL) {
+    }
+    if (this.splitBy === SplitBy.PROPORTIONAL) {
       return 'Proportion';
     }
   }
