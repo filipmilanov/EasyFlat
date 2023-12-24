@@ -6,6 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
 @Mapper
 public abstract class EventMapper {
 
