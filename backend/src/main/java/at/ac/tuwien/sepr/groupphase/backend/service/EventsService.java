@@ -1,0 +1,16 @@
+package at.ac.tuwien.sepr.groupphase.backend.service;
+
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDto;
+
+import java.util.List;
+
+public interface EventsService {
+
+    EventDto create(EventDto event);
+
+    EventDto update(EventDto event);
+
+    EventDto delete(EventDto event);
+
+    List<EventDto> findAll();
+}
