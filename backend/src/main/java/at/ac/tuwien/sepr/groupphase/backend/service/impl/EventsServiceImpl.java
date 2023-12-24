@@ -7,10 +7,12 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.EventsRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
+@Service
 public class EventsServiceImpl implements EventsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
