@@ -29,7 +29,7 @@ public interface ShoppingListService {
      * @param itemId a valid ID
      * @return if the id exists in the DB, an Optional of a persisted ShoppingItem with given ID, an empty Optional otherwise
      */
-    Optional<ShoppingItem> getById(Long itemId, String jwt) throws AuthenticationException;
+    Optional<ShoppingItem> getById(Long itemId) throws AuthenticationException;
 
     /**
      * Search for a shopping list in the database with given ID.
@@ -66,7 +66,7 @@ public interface ShoppingListService {
      * @param listName a valid name for the new ShoppingList
      * @return an object of type {@link ShoppingList} which is persisted and has an ID
      */
-    ShoppingList createList(String listName, String jwt) throws ValidationException, AuthenticationException, ConflictException;
+    ShoppingList createList(String listName) throws ValidationException, AuthenticationException, ConflictException;
 
     /**
      * Delete a ShoppingItem from the db based on its ID.
@@ -74,7 +74,7 @@ public interface ShoppingListService {
      * @param itemId a valid ID of a ShoppingItem
      * @return the deleted ShoppingItem
      */
-    ShoppingItem deleteItem(Long itemId, String jwt) throws AuthenticationException;
+    ShoppingItem deleteItem(Long itemId) throws AuthenticationException;
 
     /**
      * Delete a ShoppingList from the db based on its ID.
@@ -82,7 +82,7 @@ public interface ShoppingListService {
      * @param shopId a valid ID of a ShoppingList
      * @return the deleted ShoppingList
      */
-    ShoppingList deleteList(Long shopId, String jwt) throws ValidationException, AuthenticationException;
+    ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException;
 
     /**
      * Get all ShoppingLists from the db filtered by search parameters.
@@ -99,7 +99,7 @@ public interface ShoppingListService {
      * @param items a List of ShoppingItemDto to be transferred
      * @return a List of DigitalStorageItem objects
      */
-    List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items, String jwt) throws AuthenticationException;
+    List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) throws AuthenticationException;
 
     /**
      * Validates and Updates a new {@link ShoppingItem} in the db.
