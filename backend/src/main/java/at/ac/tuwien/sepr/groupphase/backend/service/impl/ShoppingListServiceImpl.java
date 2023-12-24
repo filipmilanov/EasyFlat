@@ -28,6 +28,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingItemValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListValidatorImpl;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -200,6 +201,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
+    @Transactional
     public ShoppingList deleteList(Long shopId, String jwt) throws ValidationException, AuthenticationException {
         LOGGER.trace("deleteList({},{})", shopId, jwt);
         ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
@@ -210,12 +212,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (toDeleteOptional.isPresent()) {
             ShoppingList toDelete = toDeleteOptional.get();
 
-            if (toDelete.getName().equals("Default")) {
+            if (toDelete.getName().equals("Shopping List (Default)")) {
                 throw new ValidationException("Default list can not be deleted!", null);
             }
             List<ShoppingItem> items = shoppingItemRepository.findByShoppingListId(shopId);
             shoppingItemRepository.deleteAll(items);
-            shoppingListRepository.deleteById(shopId);
+            shoppingListRepository.deleteByListId(shopId);
             return toDelete;
         } else {
             throw new NoSuchElementException("Shopping list with this id does not exist!");

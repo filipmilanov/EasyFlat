@@ -14,8 +14,11 @@ export class SharedFlatService {
   // Variable to track login status event
   event: boolean = false;
 
+  private eventKey = 'loggedInEvent';
+
 
   constructor(private httpClient: HttpClient, private globals: Globals) {
+    this.event = localStorage.getItem(this.eventKey) === 'true';
   }
   /**
    * Logs in the user to the shared flat.
@@ -56,6 +59,7 @@ export class SharedFlatService {
    */
   changeEvent() {
     this.event = true;
+    localStorage.setItem(this.eventKey, 'true');
   }
   /**
    * Checks if the user is logged into the shared flat.
@@ -69,5 +73,6 @@ export class SharedFlatService {
    */
   changeEventToFalse() {
     this.event = false;
+    localStorage.setItem(this.eventKey, 'false');
   }
 }

@@ -60,12 +60,6 @@ public class SharedFlatValidatorImpl implements SharedFlatValidator {
         if (sharedFlat.getId() != null) {
             errors.add("The Id must be null");
         }
-        if (sharedFlat.getDigitalStorage() == null) {
-            errors.add("Flat must have a storage");
-        }
-        if (sharedFlat.getShoppingLists() == null) {
-            errors.add("Flat must have a shopping list");
-        }
 
         if (!errors.isEmpty()) {
             throw new ConflictException("There is a conflict with persisted data", errors);

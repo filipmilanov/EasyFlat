@@ -112,25 +112,7 @@ export class AuthService {
   }
 
   isInWg(event: boolean) {
-    if (!!this.getToken() && event){
-      return true;
-    }else {
-      return false;
-    }
+    return !!this.getToken() && event;
   }
-  changeEvent() {
-    this.event = true;
-  }
-
-  isLoggInWg(): boolean {
-    return this.event;
-  }
-
-  changeEventToFalse() {
-    this.event = false;
-  }
-
-
-
 
 }
