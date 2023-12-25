@@ -1,0 +1,64 @@
+<div class="container ">
+  <h1 class="display-4">{{heading}}</h1>
+  <div style="width: 100%; height: 100%; border: 1px black solid"></div>
+  <form #form="ngForm" [class.was-validated]="form.submitted" (submit)="onSubmit(form)">
+    <div class="row row-cols-1">
+      <div class="row p-2">
+        <label for="title"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Title
+        </label>
+        <div class="col-md-10 col-lg-8">
+          <input type="text"
+                 class="form-control"
+                 id="title"
+                 name="title"
+                 placeholder="Title"
+                 [(ngModel)]="event.title">
+        </div>
+      </div>
+
+      <div class="row p-2">
+        <label for="description"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Description
+        </label>
+        <div class="col-md-10 col-lg-8">
+          <input type="text"
+                 class="form-control"
+                 id="description"
+                 name="description"
+                 placeholder="Description"
+                 [(ngModel)]="event.description"
+          >
+        </div>
+      </div>
+      <div class="row p-2">
+        <label for="date"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Date
+        </label>
+        <div class="col-md-10 col-lg-8">
+          <input type="date"
+                 class="form-control"
+                 id="date"
+                 name="date"
+                 [(ngModel)]="event.date">
+        </div>
+      </div>
+
+    </div>
+
+    <button type="submit"
+            class="btn btn-secondary float-end"
+            [disabled]="!form.valid"
+    >
+      {{ submitButtonText }}
+    </button>
+
+  </form>
+</div>
+

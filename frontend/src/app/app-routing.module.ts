@@ -31,6 +31,7 @@ import {RecipeDetailComponent} from "./components/cooking/recipe-detail/recipe-d
 import {CookbookDetailComponent} from "./components/cookbook/cookbook-detail/cookbook-detail.component";
 import {ShoppingListsComponent} from "./components/shopping-list/shopping-lists/shopping-lists.component";
 import {EventsComponent} from "./components/events/events.component";
+import {EventsCreateComponent, EventsMode} from "./components/events/events-create/events-create.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -92,7 +93,13 @@ const routes: Routes = [
       {path: ':id/detail', component: CookbookDetailComponent}
     ]
   },
-  {path: 'events', component: EventsComponent}
+  {
+    path: 'events', children: [
+      {path: '', component: EventsComponent},
+      {path: 'create', component: EventsCreateComponent, data: {mode: EventsMode.create}},
+      {path: ':id/edit', component: EventsCreateComponent, data: {mode: EventsMode.edit}}
+    ]
+  }
 ];
 
 @NgModule({

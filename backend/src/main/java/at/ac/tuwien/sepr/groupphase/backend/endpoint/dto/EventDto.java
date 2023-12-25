@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @RecordBuilder
 public record EventDto(
+    Long id,
     @NotEmpty
     String title,
     String description,

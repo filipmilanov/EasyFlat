@@ -44,6 +44,7 @@ import { ShoppingListsComponent } from './components/shopping-list/shopping-list
 import { ShoppingListCardComponent } from './components/shopping-list/shopping-list-card/shopping-list-card.component';
 import { EventsComponent } from './components/events/events.component';
 import { EventCardComponent } from './components/events/event-card/event-card.component';
+import { EventsCreateComponent } from './components/events/events-create/events-create.component';
 
 
 LOAD_WASM().subscribe();
@@ -82,7 +83,8 @@ LOAD_WASM().subscribe();
     ShoppingListsComponent,
     ShoppingListCardComponent,
     EventsComponent,
-    EventCardComponent
+    EventCardComponent,
+    EventsCreateComponent
   ],
   imports: [
     BrowserModule,
