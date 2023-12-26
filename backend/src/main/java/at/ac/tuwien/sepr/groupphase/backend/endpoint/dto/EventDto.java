@@ -10,11 +10,11 @@ import java.time.LocalDate;
 @RecordBuilder
 public record EventDto(
     Long id,
-    @NotEmpty
+    @NotEmpty(message = "Title must not be empty")
     String title,
     String description,
 
-    @FutureOrPresent
+    @FutureOrPresent(message = "The date must be in the present or in the future")
     LocalDate date,
 
     WgDetailDto sharedFlat

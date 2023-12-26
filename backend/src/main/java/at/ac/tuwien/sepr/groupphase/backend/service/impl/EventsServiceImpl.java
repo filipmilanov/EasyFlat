@@ -12,6 +12,7 @@ import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventsService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.EventValidator;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -42,8 +43,9 @@ public class EventsServiceImpl implements EventsService {
     }
 
     @Override
+    @Transactional
     public EventDto create(EventDto event) throws ValidationException {
-        eventValidator.validateForCreate(event);
+        eventValidator.validate(event);
         ApplicationUser user = authService.getUserFromToken();
         Event toCreate = eventMapper.dtoToEntity(event);
         toCreate.setSharedFlat(user.getSharedFlat());
@@ -52,7 +54,9 @@ public class EventsServiceImpl implements EventsService {
     }
 
     @Override
-    public EventDto update(EventDto event) throws AuthorizationException {
+    @Transactional
+    public EventDto update(EventDto event) throws AuthorizationException, ValidationException {
+        eventValidator.validate(event);
         Optional<Event> existingEventOptional = eventsRepository.findById(event.id());
 
         if (existingEventOptional.isPresent()) {

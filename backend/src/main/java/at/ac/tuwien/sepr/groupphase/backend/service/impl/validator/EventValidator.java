@@ -1,8 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -24,12 +22,14 @@ public class EventValidator {
         this.validator = validator;
     }
 
-    public void validateForCreate(EventDto event) throws ValidationException {
+    public void validate(EventDto event) throws ValidationException {
         LOGGER.trace("validateForCreate({})", event);
 
         Set<ConstraintViolation<EventDto>> validationViolations = validator.validate(event);
         if (!validationViolations.isEmpty()) {
-            throw new ValidationException("Search Data is not valid", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+            throw new ValidationException("Data is not valid", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
         }
     }
+
+
 }

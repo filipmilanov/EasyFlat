@@ -44,7 +44,7 @@ public class EventsEndPoint {
 
     @Secured("ROLE_USER")
     @PutMapping
-    public EventDto update(EventDto event) throws ValidationException, AuthorizationException {
+    public EventDto update(EventDto event) throws AuthorizationException, ValidationException {
         return eventsService.update(event);
     }
 

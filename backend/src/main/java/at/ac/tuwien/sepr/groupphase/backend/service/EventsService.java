@@ -10,7 +10,7 @@ public interface EventsService {
 
     EventDto create(EventDto event) throws ValidationException;
 
-    EventDto update(EventDto event) throws AuthorizationException;
+    EventDto update(EventDto event) throws AuthorizationException, ValidationException;
 
     EventDto delete(EventDto event);
 
