@@ -6,7 +6,6 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DebitKey;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
-import at.ac.tuwien.sepr.groupphase.backend.repository.DebitRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ExpenseRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
@@ -25,17 +24,14 @@ import java.util.Random;
 @DependsOn({"CleanDatabase", "SharedFlatDataGenerator", "ApplicationUserDataGenerator"})
 public class ExpenseDataGenerator {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final ExpenseRepository expenseRepository;
+    private final UserRepository userRepository;
     private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 20;
     private final Random random = new Random(25012024);
-    private final ExpenseRepository expenseRepository;
-    private final DebitRepository debitRepository;
-    private final UserRepository userRepository;
 
     public ExpenseDataGenerator(ExpenseRepository expenseRepository,
-                                DebitRepository debitRepository,
                                 UserRepository userRepository) {
         this.expenseRepository = expenseRepository;
-        this.debitRepository = debitRepository;
         this.userRepository = userRepository;
     }
 
@@ -89,7 +85,7 @@ public class ExpenseDataGenerator {
             if (expense.getSplitBy() == SplitBy.EQUAL) {
                 debit.setPercent(100L / paidForUsers.size());
             } else {
-                long percent = (long) random.nextInt(100);
+                long percent = random.nextLong(100);
                 if (remainingPercent < percent) {
                     percent = remainingPercent;
                 }
@@ -116,17 +112,19 @@ public class ExpenseDataGenerator {
     }
 
     private String generateRandomExpenseDescription() {
-        String[] descriptions = {"Monthly grocery expenses", "Celebrating a special occasion", "Electricity and water bills", "Entertainment expenses", "Restocking home supplies"};
+        String[] descriptions = {
+            "Monthly grocery expenses",
+            "Celebrating a special occasion",
+            "Electricity and water bills",
+            "Entertainment expenses",
+            "Restocking home supplies"
+        };
         return descriptions[random.nextInt(descriptions.length)];
     }
 
     private SplitBy getRandomSplitByOption() {
         SplitBy[] splitByOptions = SplitBy.values();
         return splitByOptions[random.nextInt(splitByOptions.length)];
-    }
-
-    private ApplicationUser getRandomParticipant(List<Debit> debits) {
-        return debits.stream().findAny().orElseThrow().getId().getUser();
     }
 
 }
