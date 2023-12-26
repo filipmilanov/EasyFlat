@@ -59,6 +59,8 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public List<EventDto> findAll() {
-        return null;
+        ApplicationUser user = authService.getUserFromToken();
+
+        return eventsRepository.getBySharedFlatIs(user.getSharedFlat()).stream().map(event -> eventMapper.entityToDto(event, sharedFlatMapper.entityToWgDetailDto(user.getSharedFlat()))).toList();
     }
 }

@@ -29,5 +29,9 @@ export class EventsService {
     return this.http.post<EventDto>(this.baseUri, event);
   }
 
+  getEvents(): Observable<EventDto[]>{
+    return this.http.get<EventDto[]>(this.baseUri);
+  }
+
 
 }
