@@ -29,9 +29,17 @@ export class EventsService {
     return this.http.post<EventDto>(this.baseUri, event);
   }
 
-  getEvents(): Observable<EventDto[]>{
+  getEvents(): Observable<EventDto[]> {
     return this.http.get<EventDto[]>(this.baseUri);
   }
 
+  getEventWithId(id: string): Observable<EventDto> {
+    return this.http.get<EventDto>(this.baseUri + "/" + id)
+  }
+
+  updateEvent(event: EventDto): Observable<EventDto> {
+    console.log('Update event with content ' + event);
+    return this.http.put<EventDto>(this.baseUri, event);
+  }
 
 }

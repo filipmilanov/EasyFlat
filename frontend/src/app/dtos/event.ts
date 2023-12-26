@@ -1,5 +1,6 @@
 export class EventDto {
-  title:string;
+  id: number;
+  title: string;
   description?: string;
   date: string;
 }

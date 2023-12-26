@@ -1,18 +1,21 @@
 <div class="card mt-3" style="width: 18rem; height: 200px;">
   <div class="card-header text-black">
-    <div class="row row-cols-2">
-      <div class="col">
-        <h5 class="card-title">{{event.title}}</h5>
-      </div>
-
+    <div class="row">
+      <h5 class="card-title">{{truncateString(event.title, 20)}}</h5>
     </div>
   </div>
   <div class="card-body">
     <div class="row">
-      <p class="card-text">{{event.description}}</p>
+      <p class="card-text">{{truncateString(event.description, 40)}}</p>
     </div>
     <div class="row">
       <p class="card-text">Date {{event.date}}</p>
     </div>
+    <button type="button"
+            class="btn btn-primary btn-sm position-absolute fixed-bottom end-50 m-3"
+            [routerLink]="[event.id, 'edit']"
+    >
+      Edit
+    </button>
   </div>
 </div>

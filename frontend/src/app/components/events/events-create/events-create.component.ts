@@ -23,6 +23,7 @@ export enum EventsMode {
 })
 export class EventsCreateComponent implements OnInit {
   event: EventDto = {
+    id: 0,
     title: '',
     description: '',
     date: '',
@@ -51,6 +52,33 @@ export class EventsCreateComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.route.data.subscribe(data => {
+      this.mode = data.mode;
+    });
+
+    if (this.mode === EventsMode.edit) {
+      this.route.params.subscribe({
+        next: params => {
+          const id = params.id;
+          this.eventService.getEventWithId(id).subscribe({
+            next: res => {
+              console.log(res)
+              this.event = res;
+            },
+            error: error => {
+              console.error(`Event could not be retrieved from the backend: ${error}`);
+              this.router.navigate(['/events']);
+              this.notification.error('Event could not be retrieved', "Error");
+            }
+          })
+        },
+        error: error => {
+          console.error(`Event could not be retrieved using the ID from the URL: ${error}`);
+          this.router.navigate(['events']);
+          this.notification.error('No event provided for editing', "Error");
+        }
+      })
+    }
   }
 
   private get modeActionFinished(): string {

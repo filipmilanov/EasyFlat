@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventsService;
 import jakarta.annotation.security.PermitAll;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,13 +38,14 @@ public class EventsEndPoint {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public EventDto create(@RequestBody EventDto event) throws ValidationException {
+
         return eventsService.create(event);
     }
 
     @Secured("ROLE_USER")
     @PutMapping
-    public EventDto update(EventDto event) throws ValidationException {
-        return eventsService.create(event);
+    public EventDto update(EventDto event) throws ValidationException, AuthorizationException {
+        return eventsService.update(event);
     }
 
     @Secured("ROLE_USER")
@@ -57,5 +60,11 @@ public class EventsEndPoint {
     public List<EventDto> getEvents() {
         return eventsService.findAll();
 
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("{id}")
+    public EventDto getEventWithId(@PathVariable String id) throws AuthorizationException {
+        return eventsService.getEventWithId(Long.valueOf(id));
     }
 }

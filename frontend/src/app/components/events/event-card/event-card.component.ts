@@ -10,4 +10,14 @@ import {EventDto} from "../../../dtos/event";
 export class EventCardComponent {
 @Input() event:EventDto;
 
+
+  truncateString(input: string, maxLength: number): string {
+    if (input.length <= maxLength) {
+      return input;
+    }
+
+    // Truncate the string and append ellipsis
+    const truncated = input.substring(0, maxLength - 3);
+    return truncated + '...';
+  }
 }
