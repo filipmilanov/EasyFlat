@@ -3,14 +3,15 @@
   <div style="width: 100%; height: 100%; border: 1px black solid"></div>
   <div class="row row-cols-4">
     <div class="col" *ngFor="let event of events" style="margin-right: 2rem">
-     <app-event-card [event]="event">
+      <app-event-card [event]="event">
 
-     </app-event-card>
+      </app-event-card>
     </div>
   </div>
 </div>
 <button type="button"
         class="btn btn-primary float-end m-3"
-        >
-  Export
+        [routerLink]="['create']"
+>
+  Add Event
 </button>
