@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class EventServiceTest {
 
     @Test
     @Disabled
-    void givenValidEventDtoWhenCreateThenReturnCreatedEventDto() {
+    void givenValidEventDtoWhenCreateThenReturnCreatedEventDto() throws ValidationException {
         // given
         EventDto eventDto = EventDtoBuilder.builder()
             .title("Test Title")

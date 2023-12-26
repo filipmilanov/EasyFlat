@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotEmpty;
 
@@ -22,6 +23,8 @@ public class Event {
     private String description;
     @Column
     private LocalDate date;
+    @ManyToOne
+    private SharedFlat sharedFlat;
 
     public void setId(Long id) {
         this.id = id;
@@ -54,4 +57,13 @@ public class Event {
     public String getDescription() {
         return description;
     }
+
+    public void setSharedFlat(SharedFlat sharedFlat) {
+        this.sharedFlat = sharedFlat;
+    }
+
+    public SharedFlat getSharedFlat() {
+        return sharedFlat;
+    }
+
 }
