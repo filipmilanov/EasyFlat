@@ -17,10 +17,8 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 @Profile({"generateData", "test"})
 @Component("ExpenseDataGenerator")
@@ -78,7 +76,7 @@ public class ExpenseDataGenerator {
     }
 
     private void generateRandomDebitUsers(List<ApplicationUser> paidForUsers, Expense expense) {
-        Set<Debit> debitUsers = new HashSet<>();
+        List<Debit> debitUsers = new ArrayList<>();
         Long remainingPercent = 100L;
         for (int i = 0; i < paidForUsers.size(); i++) {
             DebitKey debitKey = new DebitKey();
@@ -99,8 +97,9 @@ public class ExpenseDataGenerator {
 
                 debit.setPercent(percent);
             }
-
+            debitUsers.add(debit);
         }
+        expense.setDebitUsers(debitUsers);
     }
 
     private String generateRandomExpenseTitle() {
