@@ -84,7 +84,8 @@ LOAD_WASM().subscribe();
     ShoppingListCardComponent,
     EventsComponent,
     EventCardComponent,
-    EventsCreateComponent
+    EventsCreateComponent,
+    ConfirmDeleteDialogComponent
   ],
   imports: [
     BrowserModule,

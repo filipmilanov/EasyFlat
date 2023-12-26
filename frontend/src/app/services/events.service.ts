@@ -42,4 +42,9 @@ export class EventsService {
     return this.http.put<EventDto>(this.baseUri, event);
   }
 
+  deleteEvent(id:string):Observable<EventDto>{
+    console.log('Delete event with id ' +  id);
+    return this.http.delete<EventDto>(this.baseUri + "/" + id);
+  }
+
 }

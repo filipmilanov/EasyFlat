@@ -113,7 +113,7 @@ export class EventsCreateComponent implements OnInit {
           observable = this.eventService.createEvent(this.event);
           break;
         case EventsMode.edit:
-          observable = this.eventService.createEvent(this.event);
+          observable = this.eventService.updateEvent(this.event);
           break;
         default:
           console.error('Unknown EventMode', this.mode);

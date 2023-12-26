@@ -12,7 +12,7 @@ public interface EventsService {
 
     EventDto update(EventDto event) throws AuthorizationException, ValidationException;
 
-    EventDto delete(EventDto event);
+    EventDto delete(Long id) throws AuthorizationException;
 
     List<EventDto> findAll();
 

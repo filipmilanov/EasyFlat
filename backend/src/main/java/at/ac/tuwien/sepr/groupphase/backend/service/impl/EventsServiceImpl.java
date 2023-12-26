@@ -83,9 +83,26 @@ public class EventsServiceImpl implements EventsService {
     }
 
     @Override
-    public EventDto delete(EventDto event) {
-        return null;
+    @Transactional
+    public EventDto delete(Long id) throws AuthorizationException {
+        Optional<Event> existingEventOptional = eventsRepository.findById(id);
+
+        if (existingEventOptional.isPresent()) {
+            Event existingEvent = existingEventOptional.get();
+            ApplicationUser user = authService.getUserFromToken();
+
+            if (user.getSharedFlat().equals(existingEvent.getSharedFlat())) {
+                eventsRepository.delete(existingEvent);
+
+                return eventMapper.entityToDto(existingEvent, sharedFlatMapper.entityToWgDetailDto(existingEvent.getSharedFlat()));
+            } else {
+                throw new AuthorizationException("User does not have access to delete this event", new ArrayList<>());
+            }
+        } else {
+            throw new EntityNotFoundException("Event not found with id: " + id);
+        }
     }
+
 
     @Override
     public List<EventDto> findAll() {

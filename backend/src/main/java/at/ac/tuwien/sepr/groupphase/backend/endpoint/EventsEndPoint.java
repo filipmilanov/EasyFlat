@@ -44,14 +44,14 @@ public class EventsEndPoint {
 
     @Secured("ROLE_USER")
     @PutMapping
-    public EventDto update(EventDto event) throws AuthorizationException, ValidationException {
+    public EventDto update(@RequestBody EventDto event) throws AuthorizationException, ValidationException {
         return eventsService.update(event);
     }
 
     @Secured("ROLE_USER")
-    @DeleteMapping
-    public EventDto delete(EventDto event) {
-        return null;
+    @DeleteMapping("{id}")
+    public EventDto delete(@PathVariable Long id) throws AuthorizationException {
+        return eventsService.delete(id);
     }
 
 
