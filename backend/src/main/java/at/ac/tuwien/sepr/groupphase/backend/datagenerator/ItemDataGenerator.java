@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
-import java.util.LinkedList;
 import java.util.List;
 
 @Profile({"generateData", "test"})
@@ -27,7 +26,6 @@ import java.util.List;
 @DependsOn({"CleanDatabase", "StorageDataGenerator", "IngredientsDataGenerator", "UnitDataGenerator"})
 public class ItemDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 5;
     private final ItemRepository itemRepository;
     private final UnitRepository unitRepository;
     private final IngredientRepository ingredientRepository;
@@ -363,36 +361,6 @@ public class ItemDataGenerator {
         digitalStorageItem.setMinimumQuantity(minimumQuantity);
 
         return digitalStorageItem;
-    }
-
-    private List<String> getGeneralNames() {
-        List<String> generalNames = new LinkedList<>();
-        generalNames.add("apples");
-        generalNames.add("flour");
-        generalNames.add("sugar");
-        generalNames.add("milk");
-        generalNames.add("eggs");
-        generalNames.add("cheese");
-        generalNames.add("oranges");
-        generalNames.add("chicken");
-        generalNames.add("tomatoes");
-        generalNames.add("onions");
-        generalNames.add("rice");
-        generalNames.add("pasta");
-        generalNames.add("coffee");
-        generalNames.add("tea");
-        generalNames.add("bread");
-        generalNames.add("butter");
-        generalNames.add("salt");
-        generalNames.add("pepper");
-        generalNames.add("lettuce");
-        generalNames.add("carrots");
-        generalNames.add("potatoes");
-        generalNames.add("broccoli");
-        generalNames.add("cucumber");
-        generalNames.add("strawberries");
-        generalNames.add("blueberries");
-        return generalNames;
     }
 
     public List<Ingredient> findIngredientsAndCreateMissing(List<IngredientDto> ingredientDtoList) {
