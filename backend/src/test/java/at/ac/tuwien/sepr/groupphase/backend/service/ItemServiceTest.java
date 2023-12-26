@@ -90,7 +90,7 @@ class ItemServiceTest {
     void givenGeneralNameWhenFindByFieldsThenItemWithGeneralNameIsReturned() throws AuthenticationException {
         // given
         ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
-                .generalName("apples")
+            .generalName("Noodles")
                 .build();
 
         // when
@@ -107,7 +107,7 @@ class ItemServiceTest {
     void givenBrandWhenFindByFieldsThenItemWithBrandIsReturned() throws AuthenticationException {
         // given
         ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
-                .brand("Brand")
+            .brand("alpro")
                 .build();
 
         // when
@@ -124,7 +124,7 @@ class ItemServiceTest {
     void givenBoughtAtWhenFindByFieldsThenItemWithBoughtAtIsReturned() throws AuthenticationException {
         // given
         ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
-                .boughtAt("Hofer")
+            .boughtAt("Billa")
                 .build();
 
         // when

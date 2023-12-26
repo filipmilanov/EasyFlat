@@ -164,8 +164,8 @@ class DigitalStorageServiceTest {
         ItemSearchDto searchParams = new ItemSearchDto(null, false, null, null, null);
         ItemListDto itemListDto = ItemListDtoBuilder.builder()
             .generalName("apples")
-            .quantityCurrent(10.0)
-            .quantityTotal(20.0)
+            .quantityCurrent(1.0)
+            .quantityTotal(1.0)
             .storId(1L)
             .unit(UnitDtoBuilder.builder().name("kg").build())
             .build();
