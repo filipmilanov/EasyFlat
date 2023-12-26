@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,7 +24,7 @@ public class SharedFlat {
     private String name;
     @Column
     private String password;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sharedFlat")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sharedFlat", fetch = FetchType.EAGER)
     private Set<ApplicationUser> users = new HashSet<>();
     @OneToMany
     private List<Expense> expenses = new ArrayList<>();
@@ -65,6 +66,14 @@ public class SharedFlat {
 
     public void setExpenses(List<Expense> expenses) {
         this.expenses = expenses;
+    }
+
+    public void setUsers(Set<ApplicationUser> users) {
+        this.users = users;
+    }
+
+    public Set<ApplicationUser> getUsers() {
+        return users;
     }
 }
 
