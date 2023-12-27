@@ -42,7 +42,7 @@ public class ExpenseDataGenerator {
             Expense expense = new Expense();
             expense.setTitle(generateRandomExpenseTitle());
             expense.setDescription(generateRandomExpenseDescription());
-            expense.setAmountInCents(random.nextLong(2000));
+            expense.setAmountInCents(random.nextDouble(2000));
 
             // Generate a random SplitBy option
             SplitBy splitBy = getRandomSplitByOption();
@@ -68,7 +68,7 @@ public class ExpenseDataGenerator {
 
     private void generateRandomDebitUsers(List<ApplicationUser> paidForUsers, Expense expense) {
         List<Debit> debitUsers = new ArrayList<>();
-        long remainingPercent = 100L;
+        double remainingPercent = 100L;
         for (int i = 0; i < paidForUsers.size(); i++) {
             DebitKey debitKey = new DebitKey();
             debitKey.setExpense(expense);
@@ -78,9 +78,9 @@ public class ExpenseDataGenerator {
             debit.setId(debitKey);
 
             if (expense.getSplitBy() == SplitBy.EQUAL) {
-                debit.setPercent(100L / paidForUsers.size());
+                debit.setPercent(100.0 / paidForUsers.size());
             } else {
-                long percent = random.nextLong(100);
+                double percent = random.nextLong(100);
                 if (remainingPercent < percent) {
                     percent = remainingPercent;
                 }
