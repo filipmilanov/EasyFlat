@@ -1,10 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -132,6 +129,14 @@ public class ItemValidator {
             errors.add("There is no MinimumQuantity defined");
         }
 
+        if (isNotValidDecimalPlaces(itemDto.quantityCurrent())) {
+            errors.add("The current quantity cannot have more than 2 decimal places");
+        }
+
+        if (isNotValidDecimalPlaces(itemDto.quantityTotal())) {
+            errors.add("The total quantity cannot have more than 2 decimal places");
+        }
+
         if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
             errors.add("The given Unit does not exists");
         }
@@ -141,4 +146,14 @@ public class ItemValidator {
         }
     }
 
+    private boolean isNotValidDecimalPlaces(Double value) {
+
+        int maximumDecimalPlaces = 2;
+
+        // Shift the decimal point over 'maximumDecimalPlaces' places to the right
+        double shiftedValue = value * Math.pow(10, maximumDecimalPlaces);
+
+        // Check if the shifted value is an integer (no fractional part)
+        return shiftedValue != Math.floor(shiftedValue);
+    }
 }
