@@ -121,7 +121,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item create(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthorizationException {
+    public Item create(ItemDto itemDto, String jwt) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.trace("create({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
@@ -174,7 +174,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item update(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthorizationException {
+    public Item update(ItemDto itemDto, String jwt) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.trace("update({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
