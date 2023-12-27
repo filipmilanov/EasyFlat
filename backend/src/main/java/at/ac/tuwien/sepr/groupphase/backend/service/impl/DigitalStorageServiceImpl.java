@@ -59,7 +59,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final UnitService unitService;
     private final SharedFlatService sharedFlatService;
     private final ShoppingListRepository shoppingListRepository;
-    private final ItemValidator itemValidator;
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      ItemRepository itemRepository,
@@ -72,8 +71,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
                                      CustomUserDetailService customUserDetailService,
                                      Authorization authorization,
                                      ShoppingListRepository shoppingListRepository,
-                                     UnitService unitService,
-                                     ItemValidator itemValidator) {
+                                     UnitService unitService) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.itemRepository = itemRepository;
         this.digitalStorageMapper = digitalStorageMapper;
@@ -85,7 +83,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         this.sharedFlatService = sharedFlatService;
         this.shoppingListRepository = shoppingListRepository;
         this.unitService = unitService;
-        this.itemValidator = itemValidator;
         this.itemMapper = itemMapper;
     }
 
@@ -123,8 +120,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
         Long storageId = getStorageIdForUser(jwt);
 
-
-        Class alwaysInStock = null;
+        Class alwaysInStock;
         if (searchItem.alwaysInStock() == null || !searchItem.alwaysInStock()) {
             alwaysInStock = Item.class;
         } else {
@@ -216,7 +212,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private List<ItemListDto> prepareListItemsForStorage(List<Item> allItems) {
         Map<String, Double[]> items = new HashMap<>();
         Map<String, Unit> itemUnits = new HashMap<>();
-        Unit unit = null;
         for (Item item : allItems) {
             itemUnits.computeIfAbsent(item.getGeneralName(), k -> item.getUnit());
 
