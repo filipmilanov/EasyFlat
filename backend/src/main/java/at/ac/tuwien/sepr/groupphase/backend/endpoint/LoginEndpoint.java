@@ -2,9 +2,10 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginEndpoint {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
-    public LoginEndpoint(UserService userService) {
+    public LoginEndpoint(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @PermitAll
@@ -31,10 +34,12 @@ public class LoginEndpoint {
         return userService.login(userLoginDto);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping
     public UserDetailDto getUser(@RequestHeader("Authorization") String authToken) {
-        return userService.getUser(authToken);
+        return userMapper.entityToUserDetailDto(
+            userService.getUser(authToken)
+        );
     }
 
     @PermitAll
@@ -54,4 +59,5 @@ public class LoginEndpoint {
     public UserDetailDto signOut(@RequestHeader("Authorization") String authToken, @RequestBody String flatName) {
         return userService.signOut(flatName, authToken);
     }
+
 }

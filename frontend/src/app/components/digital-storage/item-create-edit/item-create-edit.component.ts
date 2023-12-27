@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ItemDto} from "../../../dtos/item";
 import {NgForm} from "@angular/forms";
 import {ItemService} from "../../../services/item.service";
@@ -7,6 +7,10 @@ import {DigitalStorageDto} from "../../../dtos/digitalStorageDto";
 import {Observable, of} from "rxjs";
 import {StorageService} from "../../../services/storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {Unit} from "../../../dtos/unit";
+import {UnitService} from "../../../services/unit.service";
+import {NgxScannerQrcodeComponent, ScannerQRCodeResult} from "ngx-scanner-qrcode";
+import {OpenFoodFactService} from "../../../services/open-food-fact.service";
 
 export enum ItemCreateEditMode {
   create,
@@ -18,14 +22,18 @@ export enum ItemCreateEditMode {
   templateUrl: './item-create-edit.component.html',
   styleUrls: ['./item-create-edit.component.scss']
 })
-export class ItemCreateEditComponent implements OnInit{
+export class ItemCreateEditComponent implements OnInit {
+
+  @ViewChild('action')
+  scanner: NgxScannerQrcodeComponent;
 
   mode: ItemCreateEditMode = ItemCreateEditMode.create;
   item: ItemDto = {
     alwaysInStock: false,
-    addToFiance: false
+    addToFiance: false,
   }
   priceInEuro: number = 0.00;
+  availableUnits: Unit[] = [];
 
 
   constructor(
@@ -34,6 +42,8 @@ export class ItemCreateEditComponent implements OnInit{
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
+    private unitServ: UnitService,
+    private openFoodFactService: OpenFoodFactService
   ) {
   }
 
@@ -75,6 +85,17 @@ export class ItemCreateEditComponent implements OnInit{
   }
 
   ngOnInit(): void {
+    this.unitServ.findAll().subscribe({
+      next: res => {
+        this.availableUnits = res;
+        console.log(this.availableUnits)
+        this.item.unit = this.availableUnits[0];
+      },
+      error: err => {
+        this.notification.error('Failed to load Units', "Error");
+      }
+    });
+
     this.route.data.subscribe(data => {
       this.mode = data.mode;
     });
@@ -101,6 +122,17 @@ export class ItemCreateEditComponent implements OnInit{
         }
       })
     }
+
+    if (this.mode === ItemCreateEditMode.create) {
+      this.storageService.findAll('', 1).subscribe({
+        next: res => {
+          this.item.digitalStorage = res[0];
+        },
+        error: err => {
+          this.notification.error('Failed to load Storages', "Error");
+        }
+      });
+    }
   }
 
   public onSubmit(form: NgForm): void {
@@ -124,7 +156,7 @@ export class ItemCreateEditComponent implements OnInit{
       observable.subscribe({
         next: data => {
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
-          this.router.navigate(['/digital-storage/1']);
+          this.router.navigate(['/digital-storage']);
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}: ${error}`);
@@ -163,7 +195,7 @@ export class ItemCreateEditComponent implements OnInit{
   }
 
   formatPriceInEuroInput(value: string): string {
-    return  value ? `${value} € ` : '';
+    return value ? `${value} € ` : '';
   }
 
   formatStorageName(storage: DigitalStorageDto | null): string {
@@ -173,4 +205,83 @@ export class ItemCreateEditComponent implements OnInit{
   storageSuggestions = (input: string) => (input === '')
     ? of([])
     : this.storageService.findAll(input, 5);
+
+  formatGeneralName(item: ItemDto | null): string {
+    return item ? item as any as string : '';
+  }
+
+  generalNameSuggestions = (input: string) => (input === '')
+    ? of([])
+    : this.itemService.findByGeneralName(input);
+
+  formatBrand(item: ItemDto | null): string {
+    return item ? item as any as string : '';
+  }
+
+  brandSuggestions = (input: string) => (input === '')
+    ? of([])
+    : this.itemService.findByBrand(input);
+
+  formatBoughtAt(item: ItemDto | null): string {
+    return item ? item.boughtAt : '';
+  }
+
+  boughtAtSuggestions = (input: string) => (input === '')
+    ? of([])
+    : this.itemService.findByBoughtAt(input);
+
+  formatUnitName(unit: Unit | null): string {
+    return unit ? unit.name : '';
+  }
+
+  updateItemUnit(unit: Unit): void {
+    console.log(unit.name + "fdafsd");
+    this.item.unit = unit;
+  }
+
+  toggleScanning() {
+    this.scanner.isStart ? this.scanner.stop() : this.scanner.start()
+  }
+
+  updateEAN(ean: ScannerQRCodeResult[]) {
+    this.scanner.pause();
+    this.item.ean = this.scanner.data.value[0].value;
+
+    this.notification.success(`EAN number ${this.item.ean} successfully scanned.`, "Success");
+    this.searchForEan(this.item.ean);
+  }
+
+  searchForEan(ean: string) {
+    let o = this.openFoodFactService.findByEan(ean);
+    o.subscribe({
+      next: data => {
+        console.log("Loaded EAN number:", data)
+        if (data != null) {
+          this.item = {
+            ...this.item,
+            generalName: data.generalName,
+            productName: data.productName,
+            brand: data.brand,
+            ingredients: data.ingredients,
+            quantityTotal: data.quantityTotal,
+            unit: (this.availableUnits[0] == null ? this.item.unit : this.availableUnits[0]),
+            ean: ean
+          };
+        } else {
+          console.log("No data found for EAN number:", ean)
+        }
+      },
+      error: error => {
+        console.log("Failed at loading EAN number:", error);
+      }
+    })
+  }
+
+  togglePlayPause() {
+    if (this.scanner.isPause) {
+      this.scanner.play();
+    } else {
+      this.scanner.pause();
+    }
+  }
 }

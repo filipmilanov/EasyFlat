@@ -7,27 +7,36 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.g;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -39,38 +48,98 @@ class ItemServiceTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @MockBean
+    private AuthService authService;
+
+    private ApplicationUser applicationUser;
+
     @BeforeEach
-    private void cleanUp() {
+    public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
+
+        applicationUser = userRepository.findById(1L).orElseThrow();
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
 
+
     @Test
-    void givenItemIdWhenFindByIdThenItemIsReturned() {
+    void givenItemIdWhenFindByIdThenItemIsReturned() throws AuthenticationException {
         // given
         Long id = 1L;
 
         // when
-        Optional<Item> actual = service.findById(id);
+        DigitalStorageItem actual = service.findById(id, "Bearer test");
 
         // then
-        assertTrue(actual.isPresent());
-        Assertions.assertThat(actual.get().getItemId()).isEqualTo(id);
+        Assertions.assertThat(actual.getItemId()).isEqualTo(id);
     }
 
     @Test
-    void givenInvalidItemIdWhenFindByIdThenNoItem() {
+    void givenInvalidItemIdWhenFindByIdThenNoItem() throws AuthenticationException {
         // given
         Long id = -1L;
 
-        // when
-        Optional<Item> actual = service.findById(id);
-
-        // then
-        assertTrue(actual.isEmpty());
+        // when + then
+        assertThrows(NotFoundException.class, () -> service.findById(id, "Bearer test"));
     }
 
     @Test
-    void givenValidItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException {
+    void givenGeneralNameWhenFindByFieldsThenItemWithGeneralNameIsReturned() throws AuthenticationException {
+        // given
+        ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
+                .generalName("apples")
+                .build();
+
+        // when
+        List<DigitalStorageItem> actual = service.findByFields(itemFieldSearchDto);
+
+        // then
+        assertThat(actual).isNotEmpty();
+        actual.forEach(item ->
+            assertThat(item.getItemCache().getGeneralName()).containsSequence(itemFieldSearchDto.generalName())
+        );
+    }
+
+    @Test
+    void givenBrandWhenFindByFieldsThenItemWithBrandIsReturned() throws AuthenticationException {
+        // given
+        ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
+                .brand("Brand")
+                .build();
+
+        // when
+        List<DigitalStorageItem> actual = service.findByFields(itemFieldSearchDto);
+
+        // then
+        assertThat(actual).isNotEmpty();
+        actual.forEach(item ->
+            assertThat(item.getItemCache().getBrand()).containsSequence(itemFieldSearchDto.brand())
+        );
+    }
+
+    @Test
+    void givenBoughtAtWhenFindByFieldsThenItemWithBoughtAtIsReturned() throws AuthenticationException {
+        // given
+        ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
+                .boughtAt("Hofer")
+                .build();
+
+        // when
+        List<DigitalStorageItem> actual = service.findByFields(itemFieldSearchDto);
+
+        // then
+        assertThat(actual).isNotEmpty();
+        actual.forEach(item ->
+                assertThat(item.getBoughtAt()).containsSequence(itemFieldSearchDto.boughtAt())
+        );
+    }
+
+
+    @Test
+    void givenValidItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, AuthenticationException {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
@@ -90,9 +159,9 @@ class ItemServiceTest {
             .generalName("Test")
             .productName("MyTest")
             .brand("Hofer")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("ml")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -101,25 +170,24 @@ class ItemServiceTest {
             .build();
 
         // when
-        Item actual = service.create(itemDto);
+        DigitalStorageItem actual = service.create(itemDto, "Bearer test");
 
         // then
-        Optional<Item> persisted = service.findById(actual.getItemId());
+        DigitalStorageItem persisted = service.findById(actual.getItemId(), "Bearer token");
 
-        assertTrue(persisted.isPresent());
-        Assertions.assertThat(actual).isEqualTo(persisted.get());
+        Assertions.assertThat(actual).isEqualTo(persisted);
         Assertions.assertThat(actual)
             .extracting(
-                Item::getEan,
-                Item::getGeneralName,
-                Item::getProductName,
-                Item::getBrand,
-                Item::getQuantityCurrent,
-                Item::getQuantityTotal,
-                Item::getUnit,
-                Item::getExpireDate,
-                Item::getDescription,
-                Item::getPriceInCent
+                (item) -> item.getItemCache().getEan(),
+                (item) -> item.getItemCache().getGeneralName(),
+                (item) -> item.getItemCache().getProductName(),
+                (item) -> item.getItemCache().getBrand(),
+                DigitalStorageItem::getQuantityCurrent,
+                (item) -> item.getItemCache().getQuantityTotal(),
+                (item) -> item.getItemCache().getUnit().getName(),
+                DigitalStorageItem::getExpireDate,
+                (item) -> item.getItemCache().getDescription(),
+                DigitalStorageItem::getPriceInCent
             )
             .containsExactly(
                 itemDto.ean(),
@@ -128,12 +196,12 @@ class ItemServiceTest {
                 itemDto.brand(),
                 itemDto.quantityCurrent(),
                 itemDto.quantityTotal(),
-                itemDto.unit(),
+                itemDto.unit().name(),
                 itemDto.expireDate(),
                 itemDto.description(),
                 itemDto.priceInCent()
             );
-        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
+        assertThat(actual.getDigitalStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getTitle)
             .toList()
@@ -141,7 +209,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenValidAlwaysInStockItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException {
+    void givenValidAlwaysInStockItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, AuthenticationException {
         // given
 
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
@@ -162,9 +230,9 @@ class ItemServiceTest {
             .generalName("Test")
             .productName("MyTest")
             .brand("Hofer")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("ml")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -176,28 +244,27 @@ class ItemServiceTest {
             .build();
 
         // when
-        Item actual = service.create(itemDto);
+        DigitalStorageItem actual = service.create(itemDto, "Bearer test");
 
         // then
-        Optional<Item> persisted = service.findById(actual.getItemId());
+        DigitalStorageItem persisted = service.findById(actual.getItemId(), "Bearer token");
 
-        assertTrue(persisted.isPresent());
-        Assertions.assertThat(actual).isEqualTo(persisted.get());
+        Assertions.assertThat(actual).isEqualTo(persisted);
         Assertions.assertThat(actual)
             .extracting(
-                Item::getEan,
-                Item::getGeneralName,
-                Item::getProductName,
-                Item::getBrand,
-                Item::getQuantityCurrent,
-                Item::getQuantityTotal,
-                Item::getUnit,
-                Item::getExpireDate,
-                Item::getDescription,
-                Item::getPriceInCent,
-                Item::alwaysInStock,
-                Item::getMinimumQuantity,
-                Item::getBoughtAt
+                (item) -> item.getItemCache().getEan(),
+                (item) -> item.getItemCache().getGeneralName(),
+                (item) -> item.getItemCache().getProductName(),
+                (item) -> item.getItemCache().getBrand(),
+                DigitalStorageItem::getQuantityCurrent,
+                (item) -> item.getItemCache().getQuantityTotal(),
+                (item) -> item.getItemCache().getUnit().getName(),
+                DigitalStorageItem::getExpireDate,
+                (item) -> item.getItemCache().getDescription(),
+                DigitalStorageItem::getPriceInCent,
+                DigitalStorageItem::alwaysInStock,
+                DigitalStorageItem::getMinimumQuantity,
+                DigitalStorageItem::getBoughtAt
             )
             .containsExactly(
                 itemDto.ean(),
@@ -206,7 +273,7 @@ class ItemServiceTest {
                 itemDto.brand(),
                 itemDto.quantityCurrent(),
                 itemDto.quantityTotal(),
-                itemDto.unit(),
+                itemDto.unit().name(),
                 itemDto.expireDate(),
                 itemDto.description(),
                 itemDto.priceInCent(),
@@ -214,7 +281,7 @@ class ItemServiceTest {
                 itemDto.minimumQuantity(),
                 itemDto.boughtAt()
             );
-        assertThat(actual.getStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
+        assertThat(actual.getDigitalStorage().getStorId()).isEqualTo(itemDto.digitalStorage().storId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getTitle)
             .toList()
@@ -243,9 +310,9 @@ class ItemServiceTest {
             .generalName("")
             .productName(null)
             .brand("")
-            .quantityCurrent(100L)
-            .quantityTotal(-200L)
-            .unit("")
+            .quantityCurrent(100.0)
+            .quantityTotal(-200.0)
+            .unit(UnitDtoBuilder.builder().build())
             .description("")
             .priceInCent(-1234L)
             .digitalStorage(digitalStorageDto)
@@ -254,7 +321,7 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.create(itemDto)).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.create(itemDto, "Bearer Token")).getMessage();
         assertThat(message)
             .contains(
                 "EAN",
@@ -285,9 +352,9 @@ class ItemServiceTest {
             .generalName("Test")
             .productName("MyTest")
             .brand("Hofer")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("ml")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -298,7 +365,7 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.create(itemDto)).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.create(itemDto, "Bearer Token")).getMessage();
         assertThat(message)
             .contains(
                 "minimum quantity"
@@ -326,9 +393,9 @@ class ItemServiceTest {
             .generalName("Test")
             .productName("MyTest")
             .brand("Hofer")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("ml")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -337,16 +404,17 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ConflictException.class, () -> service.create(itemDto)).getMessage();
+        String message = assertThrows(ConflictException.class, () -> service.create(itemDto, "Bearer Token")).getMessage();
+        assertThat(message).isNotEmpty();
         assertThat(message)
             .contains(
-                "Storage",
+                "Digital Storage",
                 "not exists"
             );
     }
 
     @Test
-    void givenValidItemWhenUpdateSingleAttributeThenItemIsUpdated() throws ValidationException, ConflictException {
+    void givenValidItemWhenUpdateSingleAttributeThenItemIsUpdated() throws ValidationException, ConflictException, AuthenticationException {
         // given:
         String updatedGeneralName = "General Name Updated";
 
@@ -369,9 +437,9 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("g")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -379,17 +447,17 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto);
+        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
-            .itemId(createdItem.getItemId())
+            .itemId(createdDigitalStorageItem.getItemId())
             .ean("0123456789123")
             .generalName(updatedGeneralName)
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("g")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -398,19 +466,18 @@ class ItemServiceTest {
             .build();
 
         // when:
-        service.update(updatedItemDto);
+        service.update(updatedItemDto, "Bearer test");
 
         // then:
-        Optional<Item> updatedItem = service.findById(createdItem.getItemId());
+        DigitalStorageItem updatedItem = service.findById(createdDigitalStorageItem.getItemId(), "Bearer token");
 
         assertAll(
-            () -> assertTrue(updatedItem.isPresent()),
-            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getGeneralName()))
+            () -> assertEquals(updatedGeneralName, updatedItem.getItemCache().getGeneralName())
         );
     }
 
     @Test
-    void givenInvalidItemWhenUpdateSingleAttributeThenValidationExceptionIsThrown() throws ValidationException, ConflictException {
+    void givenInvalidItemWhenUpdateSingleAttributeThenValidationExceptionIsThrown() throws ValidationException, ConflictException, AuthenticationException {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
@@ -431,9 +498,9 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("g")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -441,17 +508,17 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto);
+        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
-            .itemId(createdItem.getItemId())
+            .itemId(createdDigitalStorageItem.getItemId())
             .ean("0123456789123")
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(-100L)
-            .quantityTotal(200L)
-            .unit("g")
+            .quantityCurrent(-100.0)
+            .quantityTotal(200.0)
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -460,7 +527,7 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto)).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto, "Bearer token")).getMessage();
         assertThat(message)
             .contains(
                 "The actual quantity must be positive"
@@ -468,10 +535,10 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenValidItemWhenUpdateMultipleAttributesThenItemIsUpdated() throws ValidationException, ConflictException {
+    void givenValidItemWhenUpdateMultipleAttributesThenItemIsUpdated() throws ValidationException, ConflictException, AuthenticationException {
         // given:
         String updatedGeneralName = "General Name Updated";
-        Long updatedCurrentAmount = 150L;
+        Double updatedCurrentAmount = 150.0;
 
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
@@ -492,9 +559,9 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("g")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -502,17 +569,17 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto);
+        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
-            .itemId(createdItem.getItemId())
+            .itemId(createdDigitalStorageItem.getItemId())
             .ean("0123456789123")
             .generalName(updatedGeneralName)
             .productName("TestProduct")
             .brand("TestBrand")
             .quantityCurrent(updatedCurrentAmount)
-            .quantityTotal(200L)
-            .unit("g")
+            .quantityTotal(200.0)
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -521,20 +588,19 @@ class ItemServiceTest {
             .build();
 
         // when:
-        service.update(updatedItemDto);
+        service.update(updatedItemDto, "Bearer test");
 
         // then:
-        Optional<Item> updatedItem = service.findById(createdItem.getItemId());
+        DigitalStorageItem updatedItem = service.findById(createdDigitalStorageItem.getItemId(), "Bearer token");
 
         assertAll(
-            () -> assertTrue(updatedItem.isPresent()),
-            () -> updatedItem.ifPresent(item -> assertEquals(updatedGeneralName, updatedItem.get().getGeneralName())),
-            () -> updatedItem.ifPresent(item -> assertEquals(updatedCurrentAmount, updatedItem.get().getQuantityCurrent()))
+            () -> assertEquals(updatedGeneralName, updatedItem.getItemCache().getGeneralName()),
+            () -> assertEquals(updatedCurrentAmount, updatedItem.getQuantityCurrent())
         );
     }
 
     @Test
-    void givenInvalidItemWhenUpdateMultipleAttributesThenValidationExceptionIsThrown() throws ValidationException, ConflictException {
+    void givenInvalidItemWhenUpdateMultipleAttributesThenValidationExceptionIsThrown() throws ValidationException, ConflictException, AuthenticationException {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
@@ -555,9 +621,9 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("g")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -565,17 +631,17 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto);
+        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto, "Bearer test");
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
-            .itemId(createdItem.getItemId())
+            .itemId(createdDigitalStorageItem.getItemId())
             .ean("0123456789123")
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand(null)
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("g")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -584,7 +650,7 @@ class ItemServiceTest {
             .build();
 
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto)).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.update(updatedItemDto, "Bearer token")).getMessage();
         assertThat(message)
             .contains(
                 "brand",
@@ -593,7 +659,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void givenValidItemWhenDeleteThenItemIsDeleted() throws ValidationException, ConflictException {
+    void givenValidItemWhenDeleteThenItemIsDeleted() throws ValidationException, ConflictException, AuthenticationException {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test Storage")
@@ -614,9 +680,9 @@ class ItemServiceTest {
             .generalName("TestGeneral")
             .productName("TestProduct")
             .brand("TestBrand")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("g")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(g)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -624,13 +690,12 @@ class ItemServiceTest {
             .ingredients(ingredientDtoList)
             .build();
 
-        Item createdItem = service.create(itemDto);
+        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto, "Bearer test");
 
         // when:
-        service.delete(createdItem.getItemId());
+        service.delete(createdDigitalStorageItem.getItemId(), "Bearer test");
 
         // then:
-        Optional<Item> deletedItem = service.findById(createdItem.getItemId());
-        assertFalse(deletedItem.isPresent());
+        assertThrows(NotFoundException.class, () -> service.findById(createdDigitalStorageItem.getItemId(), "Bearer token"));
     }
 }

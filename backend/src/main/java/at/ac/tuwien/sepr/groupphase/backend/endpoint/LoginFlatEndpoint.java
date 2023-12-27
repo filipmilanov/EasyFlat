@@ -1,14 +1,18 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,21 +29,22 @@ public class LoginFlatEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final SharedFlatService sharedFlatService;
 
+    private final CustomUserDetailService customUserDetailService;
+
     @Autowired
-    public LoginFlatEndpoint(SharedFlatService sharedFlatService) {
+    public LoginFlatEndpoint(SharedFlatService sharedFlatService, CustomUserDetailService customUserDetailService) {
         this.sharedFlatService = sharedFlatService;
+        this.customUserDetailService = customUserDetailService;
     }
 
-    @PermitAll
     @PostMapping
-    public WgDetailDto loginWg(@RequestHeader("Authorization") String authToken, @RequestBody SharedFlat wgDetailDto) {
-        return sharedFlatService.loginWg(wgDetailDto, authToken);
+    public WgDetailDto loginWg(@RequestBody SharedFlat wgDetailDto) {
+        return sharedFlatService.loginWg(wgDetailDto);
     }
 
-    @PermitAll
     @DeleteMapping("/{email}")
-    public WgDetailDto delete(@PathVariable String email) {
-        return sharedFlatService.delete(email);
+    public WgDetailDto delete() throws AuthorizationException {
+        return sharedFlatService.delete();
     }
 
 

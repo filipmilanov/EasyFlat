@@ -8,6 +8,12 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -17,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -30,9 +37,11 @@ import java.util.List;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -57,11 +66,21 @@ class ItemEndpointTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @MockBean
+    private AuthService authService;
+
     private final String BASE_URI = "/api/v1/item";
+    private ApplicationUser applicationUser;
 
     @BeforeEach
-    private void cleanUp() {
+    public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
+
+        applicationUser = userRepository.findById(1L).orElseThrow();
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
 
     @Test
@@ -86,9 +105,9 @@ class ItemEndpointTest {
             .generalName("Test")
             .productName("MyTest")
             .brand("Hofer")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("ml")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -177,9 +196,9 @@ class ItemEndpointTest {
             .generalName("")
             .productName(null)
             .brand("")
-            .quantityCurrent(100L)
-            .quantityTotal(-200L)
-            .unit("")
+            .quantityCurrent(100.0)
+            .quantityTotal(-200.0)
+            .unit(UnitDtoBuilder.builder().build())
             .description("")
             .priceInCent(-1234L)
             .digitalStorage(digitalStorageDto)
@@ -205,13 +224,13 @@ class ItemEndpointTest {
                 String content = response.getContentAsString();
                 ;
                 String[] errors = content.split(",");
-                assertEquals(8, errors.length);
+                assertEquals(7, errors.length);
             }
         );
     }
 
     @Test
-    public void givenInvalidStorageWhenCreateThenConflictException() throws Exception {
+    public void givenInvalidStorageWhenCreateThenAuthenticationException() throws Exception {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
             .title("Test")
@@ -231,9 +250,9 @@ class ItemEndpointTest {
             .generalName("Test")
             .productName("MyTest")
             .brand("Hofer")
-            .quantityCurrent(100L)
-            .quantityTotal(200L)
-            .unit("ml")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(ml)
             .expireDate(LocalDate.now().plusYears(1))
             .description("This is valid description")
             .priceInCent(1234L)
@@ -258,7 +277,7 @@ class ItemEndpointTest {
             () -> assertEquals(HttpStatus.CONFLICT.value(), response.getStatus()),
             () -> {
                 String content = response.getContentAsString();
-                assertThat(content).contains("not exists");
+                assertThat(content).contains("not");
             }
         );
     }

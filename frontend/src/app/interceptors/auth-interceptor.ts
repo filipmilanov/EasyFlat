@@ -24,6 +24,8 @@ export class AuthInterceptor implements HttpInterceptor {
       "/wgLogin",
       "/wgCreate",
       "/storage",
+      "/cooking",
+      "/cookbook",
     ];
 
     // Do not intercept authentication requests

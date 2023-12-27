@@ -28,7 +28,7 @@ export class DigitalStorageComponent implements OnInit {
 
   public loadStorage() {
     this.searchParameters.alwaysInStock = false;
-    this.storageService.getItems("1", this.searchParameters).subscribe({
+    this.storageService.getItems(this.searchParameters).subscribe({
 
         next: res => {
           this.items = res;
@@ -40,7 +40,7 @@ export class DigitalStorageComponent implements OnInit {
       }
     )
     this.searchParameters.alwaysInStock = true;
-    this.storageService.getItems("1", this.searchParameters).subscribe({
+    this.storageService.getItems(this.searchParameters).subscribe({
 
         next: res => {
 

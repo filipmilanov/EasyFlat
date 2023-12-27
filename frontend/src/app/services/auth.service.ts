@@ -14,6 +14,9 @@ export class AuthService {
 
   private authBaseUri: string = this.globals.backendUri + '/authentication';
 
+  user: UserDetail;
+  private event: boolean = false;
+
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
 
@@ -107,4 +110,27 @@ export class AuthService {
     });
     return this.httpClient.put<string>(this.authBaseUri + "/signOut", flatName, {headers});
   }
+
+  isInWg(event: boolean) {
+    if (!!this.getToken() && event){
+      return true;
+    }else {
+      return false;
+    }
+  }
+  changeEvent() {
+    this.event = true;
+  }
+
+  isLoggInWg(): boolean {
+    return this.event;
+  }
+
+  changeEventToFalse() {
+    this.event = false;
+  }
+
+
+
+
 }

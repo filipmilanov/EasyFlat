@@ -1,11 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
-import java.util.Optional;
+import java.util.List;
 
 /**
  * Service for working with Items.
@@ -16,30 +18,45 @@ public interface ItemService {
      * Search for an item in the database with given ID.
      *
      * @param id a valid ID
-     * @return if the id exists in the DB, an Optional of a persisted Item with given ID, an empty optional otherwise
+     * @param jwt a valid JWT of a user
+     * @return if the id exists in the DB, an Optional of a persisted DigitalStorageItem with given ID, an empty optional otherwise
      */
-    Optional<Item> findById(Long id);
+    DigitalStorageItem findById(Long id, String jwt) throws AuthenticationException;
 
     /**
-     * Validates and Creates a new {@link Item} in the db.
+     * Search for an item in the database where one field is matching
+     * .
+     *
+     * @param itemFieldSearchDto fields to search for
+     * @return a list of items matching the search criteria
+     */
+    List<DigitalStorageItem> findByFields(ItemFieldSearchDto itemFieldSearchDto);
+
+    /**
+     * Validates and Creates a new {@link DigitalStorageItem} in the db.
      *
      * @param item a storage without ID
-     * @return an object of type {@link Item} which is persisted and has an ID
+     * @param jwt  a valid JWT of a user
+     * @return an object of type {@link DigitalStorageItem} which is persisted and has an ID
      */
-    Item create(ItemDto item) throws ConflictException, ValidationException;
+    DigitalStorageItem create(ItemDto item, String jwt) throws ConflictException, ValidationException, AuthenticationException;
 
     /**
-     * Validates and Updates a new {@link Item} in the db.
+     * Validates and Updates a new {@link DigitalStorageItem} in the db.
      *
      * @param item a storage with existing ID
-     * @return an object of type {@link Item} which is updated
+     * @param jwt a valid JWT of a user
+     * @return an object of type {@link DigitalStorageItem} which is updated
      */
-    Item update(ItemDto item) throws ConflictException, ValidationException;
+    DigitalStorageItem update(ItemDto item, String jwt) throws ConflictException, ValidationException, AuthenticationException;
 
     /**
-     * Removes an {@link Item} stored in the db.
+     * Removes an {@link DigitalStorageItem} stored in the db.
      *
-     * @param id an ID of a stored {@link Item}
+     * @param id an ID of a stored {@link DigitalStorageItem}
+     * @param jwt a valid JWT of a user
      */
-    void delete(Long id);
+    void delete(Long id, String jwt) throws AuthenticationException;
+
+
 }

@@ -7,7 +7,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper
+@Mapper(uses = SharedFlatMapper.class)
 public abstract class DigitalStorageMapper {
 
 

@@ -31,7 +31,7 @@ public class DigitalStorageValidator {
         checkDigitalStorageForCreate(digitalStorageDto);
     }
 
-    public void validateForSearchItems(Long id, ItemSearchDto itemSearchDto) throws ValidationException {
+    public void validateForSearchItems(ItemSearchDto itemSearchDto) throws ValidationException {
         LOGGER.trace("validateForSearchItems({})", itemSearchDto);
         Set<ConstraintViolation<ItemSearchDto>> validationViolations = validator.validate(itemSearchDto);
         if (!validationViolations.isEmpty()) {
@@ -56,6 +56,5 @@ public class DigitalStorageValidator {
         }
     }
 
-
-
 }
+

@@ -1,0 +1,9 @@
+.btn-light .form-control {
+  display: none;
+}
+
+.btn-light:before {
+  content: "Color";
+  font-size: 16px;
+  font-weight: 600;
+}

@@ -3,6 +3,7 @@ import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import {AuthRequest} from '../../dtos/auth-request';
+import {SharedFlatService} from "../../services/sharedFlat.service";
 
 
 @Component({
@@ -19,11 +20,13 @@ export class LoginComponent implements OnInit {
   error = false;
   errorMessage = '';
 
-  constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private router: Router) {
+
+  constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private sharedFlatService: SharedFlatService, private router: Router) {
     this.loginForm = this.formBuilder.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8)]]
     });
+
   }
 
   /**
@@ -32,6 +35,7 @@ export class LoginComponent implements OnInit {
   loginUser() {
     this.submitted = true;
     if (this.loginForm.valid) {
+      this.sharedFlatService.changeEvent();
       const authRequest: AuthRequest = new AuthRequest(this.loginForm.controls.username.value, this.loginForm.controls.password.value);
       this.authenticateUser(authRequest);
     } else {

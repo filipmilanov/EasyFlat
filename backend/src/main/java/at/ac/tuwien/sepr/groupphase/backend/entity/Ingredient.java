@@ -5,9 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -19,9 +17,6 @@ public class Ingredient {
 
     @Column
     private String title;
-
-    @ManyToMany(mappedBy = "ingredientList")
-    private List<Item> itemList;
 
     public Long getIngrId() {
         return ingrId;
