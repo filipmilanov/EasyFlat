@@ -43,11 +43,9 @@ public interface DigitalStorageService {
      * @param jwt  A valid JWT token for user authentication.
      * @return a List of filtered items
      * @throws AuthorizationException if the user is not authenticated
-     * @throws ValidationException // TODO add reason
-     * @throws ConflictException // TODO add reason
+     * @throws ValidationException if alwaysInStock is null
      */
-    // TODO: Should this be in ItemService?
-    List<ItemListDto> searchItems(ItemSearchDto itemSearchDto, String jwt) throws AuthorizationException, ValidationException, ConflictException;
+    List<ItemListDto> searchItems(ItemSearchDto itemSearchDto, String jwt) throws AuthorizationException, ValidationException;
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.

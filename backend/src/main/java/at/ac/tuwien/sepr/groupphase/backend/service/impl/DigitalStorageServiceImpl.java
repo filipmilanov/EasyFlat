@@ -117,7 +117,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<ItemListDto> searchItems(ItemSearchDto searchItem, String jwt) throws ValidationException, AuthorizationException, ConflictException {
+    public List<ItemListDto> searchItems(ItemSearchDto searchItem, String jwt) throws ValidationException, AuthorizationException {
         LOGGER.trace("searchItems({})", searchItem);
         digitalStorageValidator.validateForSearchItems(searchItem);
 
