@@ -18,12 +18,12 @@ public record ItemDto(
     Long itemId,
     @Pattern(regexp = "^\\d{13}$", message = "EAN number has exactly 13 numbers")
     String ean,
-    @NotEmpty(message = "The general name cannot be empty")
+    @NotEmpty(message = "The product category cannot be empty")
     String generalName,
     @NotEmpty(message = "The product name cannot be empty")
     String productName,
     String brand,
-    @NotNull(message = "The actual quantity cannot be empty")
+    @NotNull(message = "The current quantity cannot be empty")
     @Min(value = 0, message = "The current quantity must be at least 0")
     @Max(value = 10000, message = "The current quantity cannot be greater than 10000")
     Double quantityCurrent,
