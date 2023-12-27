@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
@@ -8,6 +7,9 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
+/**
+ * Service for working with Expenses.
+ */
 public interface ExpenseService {
 
     /**
