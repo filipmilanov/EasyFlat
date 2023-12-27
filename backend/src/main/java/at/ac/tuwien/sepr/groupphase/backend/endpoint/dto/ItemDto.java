@@ -6,7 +6,7 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
@@ -18,9 +18,9 @@ public record ItemDto(
     Long itemId,
     @Pattern(regexp = "^\\d{13}$", message = "EAN number has exactly 13 numbers")
     String ean,
-    @NotEmpty(message = "The product category cannot be empty")
+    @NotBlank(message = "The product category cannot be empty")
     String generalName,
-    @NotEmpty(message = "The product name cannot be empty")
+    @NotBlank(message = "The product name cannot be empty")
     String productName,
     String brand,
     @NotNull(message = "The current quantity cannot be empty")
