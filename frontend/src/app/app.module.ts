@@ -47,6 +47,7 @@ import { ChorePreferenceComponent } from './components/haushalt-plan/chore-prefe
 import { AllChoreComponent } from './components/haushalt-plan/all-chore/all-chore.component';
 import { MyChoresComponent } from './components/haushalt-plan/my-chores/my-chores.component';
 import { NewChoreComponent } from './components/haushalt-plan/new-chore/new-chore.component';
+import { ChoreCardComponent } from './components/haushalt-plan/chore-card/chore-card.component';
 
 
 LOAD_WASM().subscribe();
@@ -89,7 +90,8 @@ LOAD_WASM().subscribe();
     ChorePreferenceComponent,
     AllChoreComponent,
     MyChoresComponent,
-    NewChoreComponent
+    NewChoreComponent,
+    ChoreCardComponent
   ],
   imports: [
     BrowserModule,
