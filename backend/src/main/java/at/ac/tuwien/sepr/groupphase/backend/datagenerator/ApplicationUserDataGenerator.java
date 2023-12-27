@@ -29,7 +29,7 @@ public class ApplicationUserDataGenerator {
     }
 
     @PostConstruct
-    public void generateDigitalStorages() {
+    public void generateApplicationUsers() {
         LOGGER.debug("generating {} User Entities", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             ApplicationUser user = new ApplicationUser();
@@ -37,9 +37,10 @@ public class ApplicationUserDataGenerator {
             user.setLastName("Last" + (i + 1));
             user.setEmail("user" + (i + 1) + "@email.at");
             user.setPassword(passwordEncoder.encode("12341234"));
+            user.setAdmin(false);
 
             SharedFlat sharedFlat = new SharedFlat();
-            sharedFlat.setId((long) (i + 1));
+            sharedFlat.setId((long) (i < 4 ? 1 : i + 1));
 
             user.setSharedFlat(sharedFlat);
 

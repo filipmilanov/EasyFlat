@@ -28,7 +28,7 @@ public class SharedFlatDataGenerator {
     }
 
     @PostConstruct
-    public void generateDigitalStorages() {
+    public void generateSharedFlats() {
         LOGGER.debug("generating {} Shared Flat Entities", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             SharedFlat sharedFlat = new SharedFlat();

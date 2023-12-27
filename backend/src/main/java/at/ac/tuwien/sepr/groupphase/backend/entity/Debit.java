@@ -11,7 +11,7 @@ public class Debit {
     @EmbeddedId
     private DebitKey id;
 
-    private Long percent;
+    private Double percent;
 
     public DebitKey getId() {
         return id;
@@ -21,11 +21,11 @@ public class Debit {
         this.id = id;
     }
 
-    public Long getPercent() {
+    public Double getPercent() {
         return percent;
     }
 
-    public void setPercent(Long percent) {
+    public void setPercent(Double percent) {
         this.percent = percent;
     }
 

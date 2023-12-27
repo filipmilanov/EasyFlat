@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.List;
+
 public interface UserService extends UserDetailsService {
 
     /**
@@ -41,11 +43,19 @@ public interface UserService extends UserDetailsService {
 
     String register(UserDetailDto userDetailDto);
 
-    UserDetailDto getUser(String authToken);
+    ApplicationUser getUser(String authToken);
 
     UserDetailDto update(UserDetailDto userDetailDto);
 
     UserDetailDto delete(String email);
 
     UserDetailDto signOut(String flatName, String authToken);
+
+    /**
+     * Find all flatmates of the current user.
+     *
+     * @param jwt the JWT of the current user
+     * @return a list of users, which are part of the same flat as the current user
+     */
+    List<ApplicationUser> findFlatmates(String jwt);
 }

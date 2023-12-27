@@ -19,11 +19,43 @@ import {ItemDetailComponent} from './components/digital-storage/item-detail/item
 import {ToastrModule} from "ngx-toastr";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AutocompleteComponent} from './components/utils/autocomplete/autocomplete.component';
-import { ItemDetailListComponent } from './components/digital-storage/item-detail-list/item-detail-list.component';
-import { RegisterComponent } from './components/register/register.component';
-import { AccountComponent } from './components/account/account.component';
+import {ItemDetailListComponent} from './components/digital-storage/item-detail-list/item-detail-list.component';
+import {RegisterComponent} from './components/register/register.component';
+import {AccountComponent} from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
-import { CreateFlatComponent } from './components/create-flat/create-flat.component';
+import {ShoppingListComponent} from './components/shopping-list/shopping-list.component';
+import {
+  ShoppingItemCreateEditComponent
+} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
+import {ColorPickerModule} from "ngx-color-picker";
+import {
+  ShoppingListCreateComponent
+} from './components/shopping-list/shopping-list-create/shopping-list-create.component';
+import {CookingComponent} from './components/cooking/cooking.component';
+import {RecipeCardComponent} from './components/cooking/recipe-card/recipe-card.component';
+import {NgOptimizedImage} from "@angular/common";
+import {CookbookComponent} from './components/cookbook/cookbook.component';
+import {CookbookCardComponent} from './components/cookbook/cookbook-card/cookbook-card.component';
+import {RecipeDetailComponent} from './components/cooking/recipe-detail/recipe-detail.component';
+import {CookbookCreateComponent} from './components/cookbook/cookbook-create/cookbook-create.component';
+import {CookbookDetailComponent} from './components/cookbook/cookbook-detail/cookbook-detail.component';
+import {CookbookModalComponent} from './components/cookbook/cookbook-modal/cookbook-modal.component';
+import {CookingModalComponent} from './components/cooking/cooking-modal/cooking-modal.component';
+import {LOAD_WASM, NgxScannerQrcodeModule} from "ngx-scanner-qrcode";
+import {ShoppingListsComponent} from './components/shopping-list/shopping-lists/shopping-lists.component';
+import {CreateFlatComponent} from './components/create-flat/create-flat.component';
+import {FinanceComponent} from './components/finance/finance.component';
+import {ExpenseCreateEditComponent} from './components/finance/expense-create-edit/expense-create-edit.component';
+import {
+  RadioButtonsComponentComponent
+} from './components/utils/radio-buttons-component/radio-buttons-component.component';
+import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expense/show-user-for-expense.component';
+import {UserDropdownComponent} from './components/utils/user-dropdown/user-dropdown.component';
+
+
+import {ShoppingListCardComponent} from './components/shopping-list/shopping-list-card/shopping-list-card.component';
+
+LOAD_WASM().subscribe();
 
 @NgModule({
   declarations: [
@@ -43,6 +75,25 @@ import { CreateFlatComponent } from './components/create-flat/create-flat.compon
     AccountComponent,
     LoginFlatComponent,
     CreateFlatComponent,
+    ShoppingListComponent,
+    ShoppingItemCreateEditComponent,
+    ShoppingListCreateComponent,
+    CookingComponent,
+    RecipeCardComponent,
+    CookbookComponent,
+    CookbookCardComponent,
+    RecipeDetailComponent,
+    CookbookCreateComponent,
+    CookbookDetailComponent,
+    CookbookModalComponent,
+    CookingModalComponent,
+    ShoppingListsComponent,
+    ShoppingListCardComponent,
+    FinanceComponent,
+    ExpenseCreateEditComponent,
+    RadioButtonsComponentComponent,
+    ShowUserForExpenseComponent,
+    UserDropdownComponent,
   ],
   imports: [
     BrowserModule,
@@ -53,6 +104,9 @@ import { CreateFlatComponent } from './components/create-flat/create-flat.compon
     FormsModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
+    ColorPickerModule,
+    NgOptimizedImage,
+    NgxScannerQrcodeModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

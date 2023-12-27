@@ -2,11 +2,14 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -31,8 +34,9 @@ public interface DigitalStorageService {
      *
      * @param digitalStorageSearchDto search criteria
      * @return a List of all persisted Storages
+     * @throws AuthenticationException If authentication fails or the user does not exist.
      */
-    List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto);
+    List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto) throws AuthenticationException;
 
     /**
      * Search for all Items of a DigitalStorage stored in the database.
@@ -40,7 +44,7 @@ public interface DigitalStorageService {
      * @param id an ID of a DigitalStorage
      * @return if the id exists a List of all correlated items
      */
-    List<Item> findAllItemsOfStorage(Long id);
+    List<DigitalStorageItem> findAllItemsOfStorage(Long id);
 
     /**
      * Search for all Items of a DigitalStorage stored in the database ordered by defined orderType.
@@ -49,24 +53,27 @@ public interface DigitalStorageService {
      * @param orderType defines how to order
      * @return if the id exists a List of all correlated items ordered by orderType
      */
-    List<Item> findAllItemsOfStorageOrdered(Long id, ItemOrderType orderType);
+    List<DigitalStorageItem> findAllItemsOfStorageOrdered(Long id, ItemOrderType orderType);
 
     /**
      * Search for all Items of a DigitalStorage stored in the database filtered by search parameters.
      *
-     * @param id            an ID of a DigitalStorage
      * @param itemSearchDto search parameters
+     * @param jwt  A valid JWT token for user authentication.
      * @return a List of filtered items
+     * @throws AuthenticationException If authentication fails or the user does not exist.
      */
-    List<ItemListDto> searchItems(Long id, ItemSearchDto itemSearchDto) throws ValidationException;
+    List<ItemListDto> searchItems(ItemSearchDto itemSearchDto, String jwt) throws ValidationException, AuthenticationException, ConflictException;
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.
      *
      * @param storageDto a storage without ID
+     * @param jwt  A valid JWT token for user authentication.
      * @return an object of type {@link DigitalStorage} which is persisted and has an ID
+     * @throws AuthenticationException If authentication fails or the user does not exist.
      */
-    DigitalStorage create(DigitalStorageDto storageDto) throws ConflictException, ValidationException;
+    DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthenticationException;
 
     /**
      * Validates and Updates a new {@link DigitalStorage} in the db.
@@ -89,10 +96,31 @@ public interface DigitalStorageService {
      * @param storageId existing ID of a storage
      * @param itemId    existing ID of an item
      * @param quantity  the new quantity of the specified item
-     * @return an updated object of type {@link Item}
+     * @return an updated object of type {@link DigitalStorageItem}
      */
-    Item updateItemQuantity(long storageId, long itemId, long quantity);
+    DigitalStorageItem updateItemQuantity(long storageId, long itemId, long quantity);
 
 
-    List<Item> getItemWithGeneralName(String name, Long storId);
+    /**
+     * Retrieves a list of items with a specific general name
+     * and associated with the user identified by the provided JWT.
+     *
+     * @param name The general name to filter items by.
+     * @param jwt  A valid JWT token for user authentication.
+     * @return A list of items with the specified general name.
+     * @throws AuthenticationException If authentication fails or the user does not exist.
+     */
+    List<DigitalStorageItem> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException;
+
+
+    /**
+     * Gets an item from digital storage and adds it to the main shopping list.
+     *
+     * @param itemDto existing ID of a storage
+     * @param jwt  A valid JWT token for user authentication.
+     * @return the added item of type {@link ShoppingItem}
+     * @throws AuthenticationException If authentication fails or the user does not exist.
+     * @throws ValidationException if the data in itemDto is not valid
+     */
+    ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException;
 }

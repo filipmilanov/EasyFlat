@@ -18,7 +18,7 @@ export class ItemDetailComponent implements OnInit {
     brand: "",
     quantityCurrent: 0,
     quantityTotal: 0,
-    unit: "",
+    unit: {name: "g"},
     expireDate: new Date(),
     description: "",
     priceInCent: 0,
@@ -42,6 +42,7 @@ export class ItemDetailComponent implements OnInit {
         this.service.getById(itemId).subscribe({
           next: res => {
             this.item = res;
+            console.log(this.item)
           },
           error: error => {
             console.error(`Item could not be retrieved from the backend: ${error.error.message}`);

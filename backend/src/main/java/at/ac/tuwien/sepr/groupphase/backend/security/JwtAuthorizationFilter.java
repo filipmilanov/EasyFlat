@@ -5,9 +5,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.List;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,8 +17,13 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 @Service
 @Order(Ordered.LOWEST_PRECEDENCE - 1)
@@ -81,7 +83,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (username == null || username.isEmpty()) {
             throw new IllegalArgumentException("Token contains no user");
         }
-
         MDC.put("u", username);
 
         return new UsernamePasswordAuthenticationToken(username, null, authorities);

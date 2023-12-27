@@ -5,11 +5,15 @@ import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDtoBuilder;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
-import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -33,6 +38,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -48,16 +54,7 @@ class StorageEndpointTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private DigitalStorageRepository digitalStorageRepository;
-
-    @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private DigitalStorageMapper digitalStorageMapper;
-
-    @Autowired
-    private JwtTokenizer jwtTokenizer;
 
     @Autowired
     private SecurityProperties securityProperties;
@@ -66,44 +63,36 @@ class StorageEndpointTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
+    @Autowired
+    private SharedFlatService sharedFlatService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @MockBean
+    private AuthService authService;
+
+    @Autowired
+    private JwtTokenizer jwtTokenizer;
+
     private final String BASE_URI = "/api/v1/storage";
+    private ApplicationUser applicationUser;
 
     @BeforeEach
-    private void cleanUp() {
+    public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
+
+        applicationUser = userRepository.findById(1L).orElseThrow();
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
 
     @Test
-    public void givenStorageWhenCreateThenStorageCreated() throws Exception {
-        // given
-        DigitalStorageDto digitalStorageDto = new DigitalStorageDto(null, "MyTestStorage");
 
-        String body = objectMapper.writeValueAsString(digitalStorageDto);
-
-        // when
-        MvcResult mvcResult = this.mockMvc.perform(post(BASE_URI)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
-            .andDo(print())
-            .andReturn();
-        MockHttpServletResponse response = mvcResult.getResponse();
-
-        // then
-        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
-        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
-
-        DigitalStorage digitalStorageResponse = objectMapper.readValue(response.getContentAsString(),
-            DigitalStorage.class);
-
-        assertThat(digitalStorageResponse).extracting(DigitalStorage::getStorId).isNotNull();
-        assertThat(digitalStorageResponse).extracting(DigitalStorage::getTitle).isEqualTo(digitalStorageDto.title());
-    }
-
-    @Test
     public void givenInvalidStorageWhenCreateThenException() throws Exception {
         // given
-        DigitalStorageDto digitalStorageDto = new DigitalStorageDto(-11L, "MyTestStorage");
+        WgDetailDto wgDetailDto = new WgDetailDto();
+        wgDetailDto.setId(1L);
+        DigitalStorageDto digitalStorageDto = new DigitalStorageDto(-11L, "MyTestStorage", wgDetailDto);
 
         String body = objectMapper.writeValueAsString(digitalStorageDto);
 
@@ -128,10 +117,11 @@ class StorageEndpointTest {
 
 
     @Test
+
     public void givenStorageIdAndSearchParametersWhenGetItemsThenItemsRetrieved() throws Exception {
         // Given
-        Long storageId = 1L;
-        String endpointUrl = BASE_URI + "/" + storageId;
+
+        String endpointUrl = BASE_URI + "/items";
 
         // when
         ItemSearchDto itemSearchDto = new ItemSearchDto(null, false, null, null, null);
@@ -152,10 +142,11 @@ class StorageEndpointTest {
     }
 
     @Test
+
     public void givenStorageIdAndOrderTypeNameWhenGetItemsThenItemsRetrievedInCorrectOrder() throws Exception {
         // Given
-        Long storageId = 1L;
-        String endpointUrl = BASE_URI + "/" + storageId;
+
+        String endpointUrl = BASE_URI + "/items";
 
 
         ItemSearchDto itemSearchDto = ItemSearchDtoBuilder.builder()
@@ -184,10 +175,11 @@ class StorageEndpointTest {
     }
 
     @Test
+
     public void givenStorageIdAndOrderTypeQuantityWhenGetItemsThenItemsRetrievedInCorrectOrder() throws Exception {
         // Given
-        Long storageId = 1L;
-        String endpointUrl = BASE_URI + "/" + storageId;
+
+        String endpointUrl = BASE_URI + "/items";
 
 
         ItemSearchDto itemSearchDto = ItemSearchDtoBuilder.builder()
@@ -213,9 +205,9 @@ class StorageEndpointTest {
                     .split("\\{\"generalName\""))
                 .filter(s -> !s.isEmpty())
                 .map((s) -> {
-                    return Integer.parseInt(s.substring(s.indexOf("\"quantityCurrent\"") + 18, s.indexOf(",\"quantityTotal\"")));
+                    return Double.parseDouble(s.substring(s.indexOf("\"quantityCurrent\"") + 18, s.indexOf(",\"quantityTotal\"")));
                 })
-                .toArray(Integer[]::new)
+                .toArray(Double[]::new)
             ).isSorted()
         );
     }

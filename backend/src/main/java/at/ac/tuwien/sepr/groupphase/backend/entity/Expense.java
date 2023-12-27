@@ -10,8 +10,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Expense {
@@ -30,12 +32,15 @@ public class Expense {
     private SplitBy splitBy;
 
     @Column
-    private Long amountInCents;
+    private Double amountInCents;
+
+    @Column
+    private LocalDateTime createdAt;
 
     @ManyToOne
     private ApplicationUser paidBy;
 
-    @OneToMany(mappedBy = "id.expense", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id.expense", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Debit> debitUsers = new ArrayList<>();
 
     @ManyToOne
@@ -75,11 +80,11 @@ public class Expense {
         this.splitBy = splitBy;
     }
 
-    public Long getAmountInCents() {
+    public Double getAmountInCents() {
         return amountInCents;
     }
 
-    public void setAmountInCents(Long amountInCents) {
+    public void setAmountInCents(Double amountInCents) {
         this.amountInCents = amountInCents;
     }
 
@@ -100,12 +105,20 @@ public class Expense {
         this.debitUsers = debitUsers;
     }
 
-    public SharedFlat getSharedFlat() {
-        return sharedFlat;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Expense expense = (Expense) o;
+        return Objects.equals(id, expense.id);
     }
 
-    public void setSharedFlat(SharedFlat sharedFlat) {
-        this.sharedFlat = sharedFlat;
-        sharedFlat.getExpenses().add(this);
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

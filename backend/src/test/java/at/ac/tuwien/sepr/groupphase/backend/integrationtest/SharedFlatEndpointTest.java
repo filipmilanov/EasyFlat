@@ -37,10 +37,10 @@ public class SharedFlatEndpointTest {
         wgDetailDto.setName("name");
         wgDetailDto.setPassword("password");
 
-        when(sharedFlatService.create(any(SharedFlat.class), any(String.class)))
+        when(sharedFlatService.create(any(SharedFlat.class)))
             .thenReturn(wgDetailDto);
 
-        WgDetailDto result = sharedFlatEndpoint.create(authToken, sharedFlat);
+        WgDetailDto result = sharedFlatEndpoint.create(sharedFlat);
 
         assertEquals(wgDetailDto, result);
     }

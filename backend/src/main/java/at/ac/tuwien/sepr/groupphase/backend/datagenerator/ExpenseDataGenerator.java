@@ -4,7 +4,6 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Debit;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DebitKey;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
-import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DebitRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ExpenseRepository;
@@ -39,7 +38,7 @@ public class ExpenseDataGenerator {
             expense.setTitle("Expense " + i);
             expense.setDescription("Description " + i);
             expense.setSplitBy(SplitBy.EQUAL);
-            expense.setAmountInCents(1000L);
+            expense.setAmountInCents(1000.0);
 
 
             for (int j = 0; j < NUMBER_OF_ENTITIES_TO_GENERATE; j++) {
@@ -51,7 +50,7 @@ public class ExpenseDataGenerator {
                 debitKey.setUser(user);
 
                 Debit debit = new Debit();
-                debit.setPercent(100L / NUMBER_OF_ENTITIES_TO_GENERATE);
+                debit.setPercent(100.0 / NUMBER_OF_ENTITIES_TO_GENERATE);
                 debit.setId(debitKey);
                 expense.getDebitUsers().add(debit);
             }
@@ -60,10 +59,6 @@ public class ExpenseDataGenerator {
             user.setId((long) (i + 1));
 
             expense.setPaidBy(user);
-
-            SharedFlat sharedFlat = new SharedFlat();
-            sharedFlat.setId(1L);
-            expense.setSharedFlat(sharedFlat);
 
             expenseRepository.save(expense);
         }

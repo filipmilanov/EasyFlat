@@ -5,11 +5,22 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
 
 public class WgDetailDto {
+
+    private Long id;
+
     @NotNull(message = "Name must not be null")
     private String name;
 
     @NotNull(message = "Password must not be null")
     private String password;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -53,3 +64,4 @@ public class WgDetailDto {
     }
 
 }
+
