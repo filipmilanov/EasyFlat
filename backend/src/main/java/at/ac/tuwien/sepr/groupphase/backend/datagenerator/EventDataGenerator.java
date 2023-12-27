@@ -45,5 +45,9 @@ public class EventDataGenerator {
         test3.setDescription("Gathering for a cozy movie night in the common area.");
         test3.setSharedFlat(sharedFlat);
         test3.setDate(LocalDate.now().plusDays(21)); // Set a date three weeks from now
+
+        eventsRepository.save(test1);
+        eventsRepository.save(test2);
+        eventsRepository.save(test3);
     }
 }

@@ -41,6 +41,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.CookbookValid
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.RecipeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -67,6 +68,7 @@ public class CookingServiceImpl implements CookingService {
     private final RecipeIngredientService ingredientService;
     private final RecipeIngredientMapper ingredientMapper;
     private final DigitalStorageRepository storageRepository;
+
     private final RecipeMapper recipeMapper;
     private final RecipeIngredientMapper recipeIngredientMapper;
     private final UnitService unitService;
