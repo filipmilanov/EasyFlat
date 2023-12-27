@@ -20,6 +20,7 @@ export class ItemDetailListComponent implements OnInit {
   itemGeneralName: string;
   items: ItemDto[];
   numberInput: number;
+  quantityInputs: { [itemId: number]: number } = {};
 
   constructor(private storageService: StorageService,
               private router: Router,

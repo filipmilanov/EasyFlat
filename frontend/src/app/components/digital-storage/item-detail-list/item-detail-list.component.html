@@ -34,20 +34,21 @@
         <div class="d-flex">
           <div class="input-group input-group-sm me-2">
             <input type="number"
-                   id="numberInput"
+                   [id]="'quantityInput-' + item.itemId"
+                   [name]="'quantityInput-' + item.itemId"
                    class="form-control"
-                   [(ngModel)]="numberInput"
+                   [(ngModel)]="quantityInputs[item.itemId]"
                    [size]="4"
                    placeholder="Quantity">
 
             <button class="btn btn-success"
-                    (click)="changeItemQuantity(item, numberInput, QuantityChange.INCREASE)"
+                    (click)="changeItemQuantity(item, quantityInputs[item.itemId], QuantityChange.INCREASE)"
                     aria-label="Increase item quantity">
               <i class="bi bi-plus-lg"></i>
             </button>
 
             <button class="btn btn-danger"
-                    (click)="changeItemQuantity(item, numberInput, QuantityChange.DECREASE)"
+                    (click)="changeItemQuantity(item, quantityInputs[item.itemId], QuantityChange.DECREASE)"
                     aria-label="Decrease item quantity">
               <i class="bi bi-dash-lg"></i>
             </button>
