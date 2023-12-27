@@ -50,9 +50,9 @@ export class ItemCreateEditComponent implements OnInit {
   public get heading(): string {
     switch (this.mode) {
       case ItemCreateEditMode.create:
-        return 'Create New Item';
+        return 'Create a new item';
       case ItemCreateEditMode.edit:
-        return 'Edit Item';
+        return 'Editing item';
       default:
         return '?';
     }
@@ -215,7 +215,7 @@ export class ItemCreateEditComponent implements OnInit {
     : this.itemService.findByGeneralName(input);
 
   formatBrand(item: ItemDto | null): string {
-    return item ? item as any as string : '';
+    return item ? item.brand as any as string : '';
   }
 
   brandSuggestions = (input: string) => (input === '')
@@ -247,7 +247,7 @@ export class ItemCreateEditComponent implements OnInit {
     this.scanner.pause();
     this.item.ean = this.scanner.data.value[0].value;
 
-    this.notification.success(`EAN number ${this.item.ean} successfully scanned.`, "Success");
+    this.notification.info("Fetching barcode data...", "Fetching data");
     this.searchForEan(this.item.ean);
   }
 
@@ -255,6 +255,7 @@ export class ItemCreateEditComponent implements OnInit {
     let o = this.openFoodFactService.findByEan(ean);
     o.subscribe({
       next: data => {
+        this.notification.success("EAN data successfully retrieved.", "Success");
         console.log("Loaded EAN number:", data)
         if (data != null) {
           this.item = {
@@ -268,10 +269,12 @@ export class ItemCreateEditComponent implements OnInit {
             ean: ean
           };
         } else {
+          this.notification.warning("No data found for EAN number.", "No Data");
           console.log("No data found for EAN number:", ean)
         }
       },
       error: error => {
+        this.notification.error("An error occurred while fetching EAN data.", "Error");
         console.log("Failed at loading EAN number:", error);
       }
     })
