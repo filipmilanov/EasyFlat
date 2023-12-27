@@ -1,6 +1,20 @@
 <h1 class="display-4">All Chores</h1>
 <hr>
 
+<div style="width: 100%;margin-top: 20px; height: 100%;"></div>
+<div class="row row-cols-4">
+  <div class="col" *ngFor="let chore of chores">
+    <a style="text-decoration: none"
+       [routerLink]="['chores', 'details', chore.id]"
+       aria-label="Show chore details">
+      <app-chore-card [choreName]="chore.choreName"
+                      [description]="chore.description"
+                      [endDate]="chore.endDate"
+                      [points]="chore.points">
+      </app-chore-card>
+    </a>
+  </div>
+</div>
 
 <button class="btn btn-primary float-end p-2" (click)="navigateToNewChore()" >
   Add Chore
