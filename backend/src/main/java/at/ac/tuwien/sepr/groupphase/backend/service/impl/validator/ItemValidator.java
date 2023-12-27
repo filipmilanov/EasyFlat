@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -72,6 +73,14 @@ public class ItemValidator {
             errors.add("There is no AlwaysInStock defined");
         } else if (itemDto.alwaysInStock() && itemDto.minimumQuantity() == null) {
             errors.add("There is no MinimumQuantity defined");
+        }
+
+        if (isNotValidDecimalPlaces(itemDto.quantityCurrent())) {
+            errors.add("The current quantity cannot have more than 2 decimal places");
+        }
+
+        if (isNotValidDecimalPlaces(itemDto.quantityTotal())) {
+            errors.add("The total quantity cannot have more than 2 decimal places");
         }
 
         if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
@@ -146,14 +155,22 @@ public class ItemValidator {
         }
     }
 
-    private boolean isNotValidDecimalPlaces(Double value) {
+    /**
+     * This method converts the given quantity to a string and then uses regex to
+     * check if the number does not exceed the maximum amount of decimal places.
+     *
+     * @param quantity the quantity that should be checked
+     * @return true - if it is not valid; false - if it is valid
+     */
+    private boolean isNotValidDecimalPlaces(Double quantity) {
 
         int maximumDecimalPlaces = 2;
 
-        // Shift the decimal point over 'maximumDecimalPlaces' places to the right
-        double shiftedValue = value * Math.pow(10, maximumDecimalPlaces);
+        String valueString = quantity.toString();
 
-        // Check if the shifted value is an integer (no fractional part)
-        return shiftedValue != Math.floor(shiftedValue);
+        String regex = "^\\d+(\\.\\d{1," + maximumDecimalPlaces + "})?$";
+        Pattern pattern = Pattern.compile(regex);
+
+        return !(pattern.matcher(valueString).matches());
     }
 }
