@@ -1,9 +1,9 @@
-<div class="card mt-3">
+<div class="card mt-3 h-100 w-100">
   <div class="card-body">
     <h5 class="card-title">{{ title | titlecase }}</h5>
     <div>
       <small>Quantity: </small>
-      <small>{{ quantity }} / {{ quantityTotal }} {{ unit }}</small>
+      <small>{{ quantity }}&nbsp;/&nbsp;{{ quantityTotal }}&nbsp;{{ unit }}</small>
       <div class="progress my-1">
         <div class="progress-bar"
              [ngClass]="getColorBasedOnQuantity()"
