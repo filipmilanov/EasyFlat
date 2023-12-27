@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ApplicationUserDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.CleanDatabase;
+import at.ac.tuwien.sepr.groupphase.backend.datagenerator.EventDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.IngredientsDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ItemDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.SharedFlatDataGenerator;
@@ -22,13 +23,15 @@ public class TestDataGenerator {
     private final ApplicationUserDataGenerator applicationUserDataGenerator;
     private final SharedFlatDataGenerator sharedFlatDataGenerator;
 
+    private final EventDataGenerator eventDataGenerator;
+
     public TestDataGenerator(StorageDataGenerator digitalStorageDataGenerator,
                              IngredientsDataGenerator ingredientsDataGenerator,
                              ItemDataGenerator itemDataGenerator,
                              CleanDatabase cleanDatabase,
                              UnitDataGenerator unitDataGenerator,
                              ApplicationUserDataGenerator applicationUserDataGenerator,
-                             SharedFlatDataGenerator sharedFlatDataGenerator) {
+                             SharedFlatDataGenerator sharedFlatDataGenerator, EventDataGenerator eventDataGenerator) {
         this.digitalStorageDataGenerator = digitalStorageDataGenerator;
         this.ingredientsDataGenerator = ingredientsDataGenerator;
         this.itemDataGenerator = itemDataGenerator;
@@ -36,6 +39,7 @@ public class TestDataGenerator {
         this.applicationUserDataGenerator = applicationUserDataGenerator;
         this.sharedFlatDataGenerator = sharedFlatDataGenerator;
         this.unitDataGenerator = unitDataGenerator;
+        this.eventDataGenerator = eventDataGenerator;
     }
 
     public void cleanUp() throws ValidationException, ConflictException {
@@ -46,6 +50,7 @@ public class TestDataGenerator {
         ingredientsDataGenerator.generateDigitalStorages();
         unitDataGenerator.generate();
         itemDataGenerator.generateDigitalStorages();
+        eventDataGenerator.generateEvents();
     }
 
 
