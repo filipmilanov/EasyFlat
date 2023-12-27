@@ -68,21 +68,22 @@ export class ItemDetailListComponent implements OnInit {
       return;
     }
 
-    if (numberInput !== 0 && numberInput != null) {
+    if (numberInput != null) {
 
       let isQuantityUpdated: boolean = false;
 
       if (mode === QuantityChange.INCREASE) {
-        item.quantityCurrent += numberInput;
-        isQuantityUpdated = true;
+        const newQuantity: number = item.quantityCurrent + numberInput;
+        if (item.quantityCurrent !== newQuantity) {
+          item.quantityCurrent = parseFloat(newQuantity.toFixed(2));
+          isQuantityUpdated = true;
+        }
 
       } else if (mode === QuantityChange.DECREASE) {
         const newQuantity: number = Math.max(0, item.quantityCurrent - numberInput);
         if (item.quantityCurrent !== newQuantity) {
-          item.quantityCurrent = newQuantity;
+          item.quantityCurrent = parseFloat(newQuantity.toFixed(2));
           isQuantityUpdated = true;
-        } else {
-          this.notification.info("The quantity is the same as before", "Info")
         }
       }
 
@@ -93,16 +94,18 @@ export class ItemDetailListComponent implements OnInit {
       if (isQuantityUpdated) {
         this.itemService.updateItem(item).subscribe({
           next: () => {
-
             this.notification.success(`Item ${item.productName} was successfully ${mode} by ${numberInput}`, "Success");
           },
           error: error => {
-            console.error(`Item could not be updated in detail-list: ${error}`);
             item.quantityCurrent = previousCurrentQuantity;
             item.quantityTotal = previousTotalQuantity;
+            console.error(`Item could not be deleted: ${error}`);
             this.notification.error(`Item ${item.productName} could not be ${mode} by ${numberInput}`, "Error");
+
           }
         });
+      } else {
+        this.notification.info("The quantity is the same as before", "Info")
       }
     } else {
       this.notification.error("The quantity you provided is not valid!", "Error");
