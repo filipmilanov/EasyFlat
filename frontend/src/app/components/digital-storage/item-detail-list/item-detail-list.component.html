@@ -27,7 +27,7 @@
       <td>{{ item.productName }}</td>
       <td>
         {{ item.expireDate | date:'dd.MM.yyyy' }}
-        <i [ngClass]="showExpiryStatus(item.expireDate)"></i>
+        <i *ngIf="item.expireDate" [ngClass]="showExpiryStatus(item.expireDate)"></i>
       </td>
       <td>{{ item.quantityCurrent }} {{item.unit.name}}</td>
       <td>
