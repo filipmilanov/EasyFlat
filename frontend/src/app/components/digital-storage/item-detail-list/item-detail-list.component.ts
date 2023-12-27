@@ -122,6 +122,19 @@ export class ItemDetailListComponent implements OnInit {
     });
   }
 
+  public showExpiryStatus(expireDate: Date): string {
+    let today: Date = new Date();
+    let expiry: Date = new Date(expireDate);
+    let differenceInDays: number = (expiry.getTime() - today.getTime()) / (1000 * 3600 * 24);
+
+    if (differenceInDays < 0) {
+      return 'bi bi-x-circle-fill text-danger'; // Has already expired
+    } else if (differenceInDays < 3) {
+      return 'bi bi-exclamation-triangle-fill text-warning'; // Expiring soon
+    }
+    return '';
+  }
+
   public addToShoppingList(item: ItemDto): void {
     this.storageService.addItemToShoppingList(item).subscribe({
       next: () => {

@@ -25,8 +25,11 @@
     <tbody>
     <tr *ngFor="let item of items" class="center-td" >
       <td>{{ item.productName }}</td>
-      <td>{{ item.expireDate | date:'dd.MM.yyyy' }}</td>
-      <td>{{ item.quantityCurrent }}/{{item.quantityTotal}} {{item.unit.name}}</td>
+      <td>
+        {{ item.expireDate | date:'dd.MM.yyyy' }}
+        <i [ngClass]="showExpiryStatus(item.expireDate)"></i>
+      </td>
+      <td>{{ item.quantityCurrent }} {{item.unit.name}}</td>
       <td>
         <div class="d-flex">
           <div class="input-group input-group-sm me-2">
