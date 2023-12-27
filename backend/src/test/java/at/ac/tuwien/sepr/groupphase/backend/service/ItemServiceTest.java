@@ -325,7 +325,7 @@ class ItemServiceTest {
         assertThat(message)
             .contains(
                 "quantity",
-                "general name",
+                "category",
                 "product name",
                 "EAN",
                 "13",
