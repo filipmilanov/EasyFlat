@@ -42,6 +42,11 @@ import {LOAD_WASM, NgxScannerQrcodeModule} from "ngx-scanner-qrcode";
 import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
 import { ShoppingListsComponent } from './components/shopping-list/shopping-lists/shopping-lists.component';
 import { ShoppingListCardComponent } from './components/shopping-list/shopping-list-card/shopping-list-card.component';
+import { HaushaltPlanComponent } from './components/haushalt-plan/haushalt-plan.component';
+import { ChorePreferenceComponent } from './components/haushalt-plan/chore-preference/chore-preference.component';
+import { AllChoreComponent } from './components/haushalt-plan/all-chore/all-chore.component';
+import { MyChoresComponent } from './components/haushalt-plan/my-chores/my-chores.component';
+import { NewChoreComponent } from './components/haushalt-plan/new-chore/new-chore.component';
 
 
 LOAD_WASM().subscribe();
@@ -78,7 +83,12 @@ LOAD_WASM().subscribe();
     CookbookModalComponent,
     CookingModalComponent,
     ShoppingListsComponent,
-    ShoppingListCardComponent
+    ShoppingListCardComponent,
+    HaushaltPlanComponent,
+    ChorePreferenceComponent,
+    AllChoreComponent,
+    MyChoresComponent,
+    NewChoreComponent
   ],
   imports: [
     BrowserModule,

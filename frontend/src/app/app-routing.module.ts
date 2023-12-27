@@ -30,6 +30,11 @@ import {CookbookCreateComponent, CookbookMode} from "./components/cookbook/cookb
 import {RecipeDetailComponent} from "./components/cooking/recipe-detail/recipe-detail.component";
 import {CookbookDetailComponent} from "./components/cookbook/cookbook-detail/cookbook-detail.component";
 import {ShoppingListsComponent} from "./components/shopping-list/shopping-lists/shopping-lists.component";
+import {HaushaltPlanComponent} from "./components/haushalt-plan/haushalt-plan.component";
+import {ChorePreferenceComponent} from "./components/haushalt-plan/chore-preference/chore-preference.component";
+import {AllChoreComponent} from "./components/haushalt-plan/all-chore/all-chore.component";
+import {MyChoresComponent} from "./components/haushalt-plan/my-chores/my-chores.component";
+import {NewChoreComponent} from "./components/haushalt-plan/new-chore/new-chore.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -74,6 +79,13 @@ const routes: Routes = [
     ]
   },
   {path: 'register', component: RegisterComponent},
+  {path: 'chores', children: [
+      {path: '', component: HaushaltPlanComponent},
+      {path: 'preference', component: ChorePreferenceComponent},
+      {path: 'all', component: AllChoreComponent},
+      {path: 'my', component: MyChoresComponent},
+      {path: 'add', component: NewChoreComponent},
+    ]},
   {path: 'account', component: AccountComponent},
   {path: 'wgLogin', component: LoginFlatComponent},
   {path: 'wgCreate', component: CreateFlatComponent},
