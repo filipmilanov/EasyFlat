@@ -154,10 +154,11 @@
       </div>
 
       <div class="row p-2">
-        <label for="currentQuantityAndUnit"
+        <label *ngIf="!modeIsCreate"
+               for="currentQuantityAndUnit"
                class="col-form-label text-muted col-md-2 col-lg-4 mt-2"
         >
-          Quantity
+          Current Quantity
         </label>
         <div *ngIf="!modeIsCreate"
              class="col-md-4 col-lg-3 mt-2">
