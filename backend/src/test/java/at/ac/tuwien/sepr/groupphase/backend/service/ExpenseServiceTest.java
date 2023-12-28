@@ -70,9 +70,9 @@ class ExpenseServiceTest {
     @Test
     void givenValidIdWhenFindByIdThenExpenseWithCorrectIdIsReturned() throws ValidationException, ConflictException, AuthenticationException {
         // given
-        long id = 1L;
+        long id = 5L;
 
-        ApplicationUser localApplicationUser = userRepository.findById(5L).orElseThrow();
+        ApplicationUser localApplicationUser = userRepository.findById(4L).orElseThrow();
         when(authService.getUserFromToken()).thenReturn(localApplicationUser);
 
         // when
