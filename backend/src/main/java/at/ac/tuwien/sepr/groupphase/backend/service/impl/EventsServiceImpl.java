@@ -1,14 +1,19 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventLabelDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.EventMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
+import at.ac.tuwien.sepr.groupphase.backend.entity.EventLabel;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventsRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
+import at.ac.tuwien.sepr.groupphase.backend.service.EventLabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventsService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.EventValidator;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,13 +38,16 @@ public class EventsServiceImpl implements EventsService {
     private final EventValidator eventValidator;
 
     private final SharedFlatMapper sharedFlatMapper;
+    private final EventLabelService labelService;
 
-    public EventsServiceImpl(EventsRepository eventsRepository, EventMapper eventMapper, AuthService authService, EventValidator eventValidator, SharedFlatMapper sharedFlatMapper) {
+    public EventsServiceImpl(EventsRepository eventsRepository, EventMapper eventMapper, AuthService authService, EventValidator eventValidator,
+                             SharedFlatMapper sharedFlatMapper, EventLabelService labelService) {
         this.eventsRepository = eventsRepository;
         this.eventMapper = eventMapper;
         this.authService = authService;
         this.eventValidator = eventValidator;
         this.sharedFlatMapper = sharedFlatMapper;
+        this.labelService = labelService;
     }
 
     @Override
@@ -47,7 +55,8 @@ public class EventsServiceImpl implements EventsService {
     public EventDto create(EventDto event) throws ValidationException {
         eventValidator.validate(event);
         ApplicationUser user = authService.getUserFromToken();
-        Event toCreate = eventMapper.dtoToEntity(event);
+        List<EventLabel> labels = this.findLabelsAndCreateMissing(event.labels());
+        Event toCreate = eventMapper.dtoToEntity(event, labels);
         toCreate.setSharedFlat(user.getSharedFlat());
         Event createdEvent = eventsRepository.save(toCreate);
         return eventMapper.entityToDto(createdEvent, sharedFlatMapper.entityToWgDetailDto(createdEvent.getSharedFlat()));
@@ -68,6 +77,11 @@ public class EventsServiceImpl implements EventsService {
                 existingEvent.setTitle(event.title());
                 existingEvent.setDescription(event.description());
                 existingEvent.setDate(event.date());
+
+                if (event.labels() != null) {
+                    List<EventLabel> labels = this.findLabelsAndCreateMissing(event.labels());
+                    existingEvent.setLabels(labels);
+                }
 
                 Event updatedEvent = eventsRepository.save(existingEvent);
 
@@ -128,5 +142,43 @@ public class EventsServiceImpl implements EventsService {
         } else {
             throw new EntityNotFoundException("Event not found with id: " + id);
         }
+    }
+
+    private List<EventLabel> findLabelsAndCreateMissing(List<EventLabelDto> labels) {
+        LOGGER.trace("findLabelsAndCreateMissing({})", labels);
+        if (labels == null) {
+            return List.of();
+        }
+        List<String> values = labels.stream()
+            .map(EventLabelDto::labelName)
+            .toList();
+        List<String> colours = labels.stream()
+            .map(EventLabelDto::labelColour)
+            .toList();
+
+        List<EventLabel> ret = new ArrayList<>();
+        if (!values.isEmpty()) {
+            for (int i = 0; i < values.size(); i++) {
+                EventLabel found = labelService.findByValueAndColour(values.get(i), colours.get(i));
+                if (found != null) {
+                    ret.add(found);
+                }
+            }
+        }
+
+        List<EventLabelDto> missingLabels = labels.stream()
+            .filter(labelDto ->
+                ret.stream()
+                    .noneMatch(label ->
+                        (label.getLabelName().equals(labelDto.labelName())
+                            && label.getLabelColour().equals(labelDto.labelColour()))
+                    )
+            ).toList();
+
+        if (!missingLabels.isEmpty()) {
+            List<EventLabel> createdLabels = labelService.createAll(missingLabels);
+            ret.addAll(createdLabels);
+        }
+        return ret;
     }
 }

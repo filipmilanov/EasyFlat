@@ -81,7 +81,7 @@ public class EventEndpointTest {
     @Test
     public void givenEventWhenCreateThenEventIsCreated() throws Exception {
         // given
-        EventDto eventDto = new EventDto(null, "Test Event", "Description", LocalDate.now().plusDays(1), null);
+        EventDto eventDto = new EventDto(null, "Test Event", "Description", LocalDate.now().plusDays(1), null,null);
 
 
         // when
@@ -110,7 +110,7 @@ public class EventEndpointTest {
     @Test
     public void givenInvalidEventWhenCreateThenValidationException() throws Exception {
         // given
-        EventDto invalidEventDto = new EventDto(null, "", "", LocalDate.now(), null);
+        EventDto invalidEventDto = new EventDto(null, "", "", LocalDate.now(), null,null);
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(post(BASE_URI)
@@ -132,7 +132,7 @@ public class EventEndpointTest {
         // given
         Long eventId = 1L;
         SharedFlat sharedFlat = new SharedFlat().setId(1L);
-        EventDto eventDto = new EventDto(eventId, "House Meeting", "Discussing important matters regarding the shared living space.", LocalDate.now().plusDays(7), sharedFlatMapper.entityToWgDetailDto(sharedFlat));
+        EventDto eventDto = new EventDto(eventId, "House Meeting", "Discussing important matters regarding the shared living space.", LocalDate.now().plusDays(7), sharedFlatMapper.entityToWgDetailDto(sharedFlat),null);
 
 
         // when
@@ -184,7 +184,7 @@ public class EventEndpointTest {
     @Test
     public void givenEventWithInvalidDateWhenCreateThenValidationException() throws Exception {
         // given
-        EventDto invalidDateEvent = new EventDto(null, "Invalid Date Event", "Description", LocalDate.now().minusDays(22), null);
+        EventDto invalidDateEvent = new EventDto(null, "Invalid Date Event", "Description", LocalDate.now().minusDays(22), null,null);
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(post(BASE_URI)

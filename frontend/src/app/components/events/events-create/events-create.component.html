@@ -50,6 +50,40 @@
         </div>
       </div>
 
+      <div class="row p-2">
+        <label for="labels" class="col-form-label text-muted col-md-2 col-lg-4">Labels</label>
+        <div class="col-md-10 col-lg-8" id="labels">
+    <span *ngFor="let labelDto of event.labels; let i = index" class="p-2">
+      <div class="border-bottom" [style.color]="labelDto.labelColour">
+
+        <button type="button" class="btn btn-secondary p-1" (click)="removeLabel(i)">
+          <i>Remove</i>
+        </button>
+        {{labelDto.labelValue}}
+      </div>
+    </span>
+
+          <div class="row align-items-center">
+
+            <div class="col-md-1">
+              <a [(colorPicker)]="selectedLabelColor" [style.background]="selectedLabelColor"
+                 class="btn btn-light ">
+                <i class="form-control"></i>
+              </a>
+            </div>
+            <div class="col-md-7">
+              <input type="text" class="form-control" placeholder="Label" #labelInput>
+            </div>
+            <div class="col">
+              <a class="btn btn-secondary p-1" (click)="addLabel(labelInput.value, selectedLabelColor)">
+                <i>Save</i>
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <button type="submit"

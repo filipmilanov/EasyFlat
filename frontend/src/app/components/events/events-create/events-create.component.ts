@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {EventDto} from "../../../dtos/event";
+import {EventDto, EventLabel} from "../../../dtos/event";
 import {CookbookMode} from "../../cookbook/cookbook-create/cookbook-create.component";
 import {NgForm} from "@angular/forms";
 import {Observable} from "rxjs";
@@ -23,12 +23,13 @@ export enum EventsMode {
 })
 export class EventsCreateComponent implements OnInit {
   event: EventDto = {
-    id: 0,
-    title: '',
-    description: '',
-    date: '',
-  };
+  title: '',
+  description: '',
+  date: '',
+};
+
   mode: EventsMode = EventsMode.create;
+  selectedLabelColor = '#ffffff';
 
   constructor(
     private eventService: EventsService,
@@ -138,4 +139,28 @@ export class EventsCreateComponent implements OnInit {
     }
 
   }
+
+  addLabel(label: string, selectedLabelColor: string): void {
+    if (!label || label.length === 0) {
+      return;
+    }
+
+    const newLabel: EventLabel = {
+      labelName: label,
+      labelColour: (selectedLabelColor !== '#ffffff' ? selectedLabelColor : '#000000')
+    };
+
+    if (!this.event.labels) {
+      this.event.labels = [newLabel];
+    } else {
+      this.event.labels.push(newLabel);
+    }
+  }
+
+  removeLabel(i: number) {
+    if (this.event.labels && this.event.labels.length > i) {
+      this.event.labels.splice(i, 1);
+    }
+  }
+
 }
