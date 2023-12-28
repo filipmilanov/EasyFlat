@@ -26,7 +26,7 @@ public class ExpenseDataGenerator {
     private final ExpenseRepository expenseRepository;
     private final UserRepository userRepository;
     private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 20;
-    private final Random random = new Random(25012024);
+    private Random random;
 
     public ExpenseDataGenerator(ExpenseRepository expenseRepository,
                                 UserRepository userRepository) {
@@ -37,6 +37,7 @@ public class ExpenseDataGenerator {
     @PostConstruct
     public void generateExpenses() {
         LOGGER.debug("generating {} Expenses", NUMBER_OF_ENTITIES_TO_GENERATE);
+        random = new Random(25012024);
 
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             Expense expense = new Expense();
