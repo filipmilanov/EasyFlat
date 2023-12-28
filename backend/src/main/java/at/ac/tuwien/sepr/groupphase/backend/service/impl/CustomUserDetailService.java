@@ -6,10 +6,12 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.UserValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +36,18 @@ public class CustomUserDetailService implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenizer jwtTokenizer;
     private final UserMapper userMapper;
+    private final UserValidator userValidator;
 
     @Autowired
-    public CustomUserDetailService(UserRepository userRepository, SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder, JwtTokenizer jwtTokenizer,
-                                   UserMapper userMapper) {
+    public CustomUserDetailService(UserRepository userRepository, SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder,
+                                   JwtTokenizer jwtTokenizer,
+                                   UserMapper userMapper, UserValidator userValidator) {
         this.userRepository = userRepository;
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenizer = jwtTokenizer;
         this.userMapper = userMapper;
+        this.userValidator = userValidator;
     }
 
     @Override
@@ -75,7 +80,8 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public String login(UserLoginDto userLoginDto) {
+    public String login(UserLoginDto userLoginDto) throws ValidationException {
+        userValidator.validateForLogIn(userLoginDto);
         UserDetails userDetails = loadUserByUsername(userLoginDto.getEmail());
         if (userDetails != null
             && userDetails.isAccountNonExpired()
@@ -93,7 +99,8 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public String register(UserDetailDto userDetailDto) {
+    public String register(UserDetailDto userDetailDto) throws ValidationException {
+        userValidator.validateForRegister(userDetailDto);
         LOGGER.debug("Registering a new user");
 
         if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
@@ -127,7 +134,8 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public UserDetailDto update(UserDetailDto userDetailDto) {
+    public UserDetailDto update(UserDetailDto userDetailDto) throws ValidationException {
+        userValidator.validateForUpdate(userDetailDto);
         if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
             ApplicationUser user = userRepository.findUserByEmail(userDetailDto.getEmail());
             user.setFirstName(userDetailDto.getFirstName());

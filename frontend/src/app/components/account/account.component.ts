@@ -24,7 +24,7 @@ export class AccountComponent implements OnInit {
     this.accountForm = this.formBuilder.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required]],
       flatName: [''],
       password: ['', [Validators.minLength(8)]],
       admin: ['']
