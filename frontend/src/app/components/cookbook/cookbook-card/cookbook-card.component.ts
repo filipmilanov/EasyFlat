@@ -22,7 +22,7 @@ export class CookbookCardComponent {
 
 
   getTruncatedSummary(): string {
-    const maxLength = 100; // Adjust as needed
+    const maxLength = 100;
     return this.recipe.summary.length > maxLength ?
       this.recipe.summary.slice(0, maxLength) + '...' :
       this.recipe.summary;

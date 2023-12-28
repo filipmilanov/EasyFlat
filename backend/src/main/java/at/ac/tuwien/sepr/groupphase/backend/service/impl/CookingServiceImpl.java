@@ -36,6 +36,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.RecipeIngredientService;
@@ -47,6 +48,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.CookbookValid
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.RecipeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -73,6 +75,7 @@ public class CookingServiceImpl implements CookingService {
     private final RecipeIngredientService ingredientService;
     private final RecipeIngredientMapper ingredientMapper;
     private final DigitalStorageRepository storageRepository;
+
     private final RecipeMapper recipeMapper;
     private final RecipeIngredientMapper recipeIngredientMapper;
     private final UnitService unitService;
@@ -90,6 +93,7 @@ public class CookingServiceImpl implements CookingService {
     private final ShoppingListMapper shoppingListMapper;
     private final DigitalStorageMapper digitalStorageMapper;
     private final ItemRepository itemRepository;
+
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
     public CookingServiceImpl(RestTemplate restTemplate,
@@ -134,6 +138,7 @@ public class CookingServiceImpl implements CookingService {
         this.shoppingListMapper = shoppingListMapper;
         this.digitalStorageMapper = digitalStorageMapper;
         this.itemRepository = itemRepository;
+
     }
 
     @Override
