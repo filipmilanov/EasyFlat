@@ -72,6 +72,9 @@ class ExpenseServiceTest {
         // given
         long id = 1L;
 
+        applicationUser = userRepository.findById(5L).orElseThrow();
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
+
         // when
         Expense actual = service.findById(id);
 
@@ -161,15 +164,15 @@ class ExpenseServiceTest {
             .build();
 
         UserListDto userDetailDto2 = UserListDtoBuilder.builder()
-            .id(2L)
+            .id(6L)
             .build();
 
         UserListDto userDetailDto3 = UserListDtoBuilder.builder()
-            .id(3L)
+            .id(11L)
             .build();
 
         UserListDto userDetailDto4 = UserListDtoBuilder.builder()
-            .id(4L)
+            .id(16L)
             .build();
 
         return List.of(
