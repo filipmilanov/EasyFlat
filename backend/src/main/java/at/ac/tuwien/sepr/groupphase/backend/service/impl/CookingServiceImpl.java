@@ -93,7 +93,7 @@ public class CookingServiceImpl implements CookingService {
     private final ShoppingListMapper shoppingListMapper;
     private final DigitalStorageMapper digitalStorageMapper;
     private final ItemRepository itemRepository;
-    private final AuthService authService;
+
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
     public CookingServiceImpl(RestTemplate restTemplate,
@@ -138,7 +138,7 @@ public class CookingServiceImpl implements CookingService {
         this.shoppingListMapper = shoppingListMapper;
         this.digitalStorageMapper = digitalStorageMapper;
         this.itemRepository = itemRepository;
-        this.authService = authService;
+
     }
 
     @Override
