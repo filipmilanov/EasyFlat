@@ -96,9 +96,9 @@ export class EventsCreateComponent implements OnInit {
   public get heading(): string {
     switch (this.mode) {
       case EventsMode.create:
-        return 'Create Recipe';
+        return 'Create Event';
       case EventsMode.edit:
-        return 'Edit Recipe';
+        return 'Edit Event';
       default:
         return '?';
     }
