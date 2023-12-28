@@ -68,9 +68,9 @@ class ExpenseServiceTest {
     }
 
     @Test
-    void givenValidIdWhenFindByIdThenExpenseWithCorrectIdIsReturned() throws ValidationException, ConflictException, AuthenticationException {
+    void givenValidIdWhenFindByIdThenExpenseWithCorrectIdIsReturned() throws AuthenticationException {
         // given
-        long id = 1L;
+        long id = 6L;
 
         // when
         Expense actual = service.findById(id);
@@ -161,15 +161,15 @@ class ExpenseServiceTest {
             .build();
 
         UserListDto userDetailDto2 = UserListDtoBuilder.builder()
-            .id(2L)
+            .id(6L)
             .build();
 
         UserListDto userDetailDto3 = UserListDtoBuilder.builder()
-            .id(3L)
+            .id(11L)
             .build();
 
         UserListDto userDetailDto4 = UserListDtoBuilder.builder()
-            .id(4L)
+            .id(16L)
             .build();
 
         return List.of(
