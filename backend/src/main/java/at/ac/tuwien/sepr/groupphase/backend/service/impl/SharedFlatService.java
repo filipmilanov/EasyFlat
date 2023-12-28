@@ -93,6 +93,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         return sharedFlat;
     }
 
+    @Secured("ROLE_USER")
     @Transactional
     public WgDetailDto create(SharedFlat sharedFlat) throws ConflictException, ValidationException {
         LOGGER.trace("create({})", sharedFlat);
@@ -134,6 +135,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     }
 
     @Override
+    @Secured("ROLE_USER")
     public WgDetailDto loginWg(SharedFlat wgDetailDto) {
         LOGGER.trace("loginWg({})", wgDetailDto);
         String name = wgDetailDto.getName();

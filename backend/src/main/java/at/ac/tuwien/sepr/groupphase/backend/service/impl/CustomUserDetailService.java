@@ -144,9 +144,9 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public UserDetailDto delete(String email) {
-        if (userRepository.findUserByEmail(email) != null) {
-            ApplicationUser deletedUser = userRepository.findUserByEmail(email);
+    public UserDetailDto delete(Long id) {
+        if (userRepository.findApplicationUserById(id) != null) {
+            ApplicationUser deletedUser = userRepository.findApplicationUserById(id);
             userRepository.delete(deletedUser);
             return userMapper.entityToUserDetailDto(deletedUser);
         }

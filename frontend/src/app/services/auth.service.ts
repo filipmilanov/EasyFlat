@@ -48,11 +48,11 @@ export class AuthService {
   }
 
   update(user: UserDetail): Observable<UserDetail> {
-    return this.httpClient.put<UserDetail>(this.authBaseUri, user);
+    return this.httpClient.put<UserDetail>(this.authBaseUri+ '/' + user.id, user);
   }
 
   delete(user: UserDetail): Observable<UserDetail> {
-    return this.httpClient.delete<UserDetail>(this.authBaseUri + '/' + user.email)
+    return this.httpClient.delete<UserDetail>(this.authBaseUri + '/' + user.id)
   }
 
 
@@ -112,25 +112,7 @@ export class AuthService {
   }
 
   isInWg(event: boolean) {
-    if (!!this.getToken() && event){
-      return true;
-    }else {
-      return false;
-    }
+    return !!this.getToken() && event;
   }
-  changeEvent() {
-    this.event = true;
-  }
-
-  isLoggInWg(): boolean {
-    return this.event;
-  }
-
-  changeEventToFalse() {
-    this.event = false;
-  }
-
-
-
 
 }

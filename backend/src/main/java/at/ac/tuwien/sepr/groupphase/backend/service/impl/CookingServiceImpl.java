@@ -1,8 +1,11 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookbookDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookingSteps;
@@ -11,9 +14,11 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.CookbookMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeIngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
@@ -21,6 +26,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -34,6 +40,7 @@ import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.RecipeIngredientService;
+import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
@@ -82,6 +89,9 @@ public class CookingServiceImpl implements CookingService {
     private final CookbookMapper cookbookMapper;
     private final CookbookRepository cookbookRepository;
     private final UserService userService;
+    private final ShoppingListService shoppingListService;
+    private final ShoppingListMapper shoppingListMapper;
+    private final DigitalStorageMapper digitalStorageMapper;
     private final ItemRepository itemRepository;
     private final AuthService authService;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
@@ -101,7 +111,10 @@ public class CookingServiceImpl implements CookingService {
                               CookbookValidator cookbookValidator, SharedFlatService sharedFlatService,
                               Authorization authorization, CookbookMapper cookbookMapper,
                               CookbookRepository cookbookRepository, UserService userService,
-                              ItemRepository itemRepository, AuthService authService) {
+                              ShoppingListService shoppingListService,
+                              ShoppingListMapper shoppingListMapper,
+                              DigitalStorageMapper digitalStorageMapper,
+                              ItemRepository itemRepository) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
@@ -121,6 +134,9 @@ public class CookingServiceImpl implements CookingService {
         this.cookbookMapper = cookbookMapper;
         this.cookbookRepository = cookbookRepository;
         this.userService = userService;
+        this.shoppingListService = shoppingListService;
+        this.shoppingListMapper = shoppingListMapper;
+        this.digitalStorageMapper = digitalStorageMapper;
         this.itemRepository = itemRepository;
         this.authService = authService;
     }
@@ -529,9 +545,21 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt) {
-        return null;
+    public RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt)
+        throws AuthenticationException, ValidationException, ConflictException {
+        ShoppingList shoppingList = shoppingListService.getShoppingListByName("Default", jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        ShoppingListDto shoppingListDto = shoppingListMapper.entityToDto(shoppingList);
+        Long storId = this.getStorIdForUser(jwt);
+        DigitalStorage storage = digitalStorageService.findById(storId).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        DigitalStorageDto storageDto = digitalStorageMapper.entityToDto(storage);
+        for (RecipeIngredientDto ingredient : recipeToCook.missedIngredients()) {
+            ShoppingItemDto newShoppingItem = new ShoppingItemDto(null, null, ingredient.name(), ingredient.name(), ingredient.name(), ingredient.amount(), ingredient.amount(),
+                ingredient.unitEnum(), null, null, false, ingredient.amount(), null, storageDto, null, null, null, shoppingListDto);
+            shoppingListService.create(newShoppingItem, jwt);
+        }
+        return recipeToCook;
     }
+
 
     private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
         List<String> ingredients = new LinkedList<>();

@@ -6,6 +6,7 @@ import {Observable} from "rxjs";
 import {Router} from "@angular/router";
 import {SharedFlat} from "../../dtos/sharedFlat";
 import {SharedFlatService} from "../../services/sharedFlat.service";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-account',
@@ -19,12 +20,12 @@ export class AccountComponent implements OnInit {
   error = false;
   errorMessage = '';
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private sharedFlatService: SharedFlatService ,private router: Router) {
+  constructor(private formBuilder: FormBuilder, private authService: AuthService, private sharedFlatService: SharedFlatService ,private router: Router, private notification: ToastrService) {
     this.accountForm = this.formBuilder.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      flatName: ['', [Validators.required]],
+      flatName: [''],
       password: ['', [Validators.minLength(8)]],
       admin: ['']
     });
@@ -59,14 +60,15 @@ export class AccountComponent implements OnInit {
     if (password === '' || this.accountForm.get('password').untouched) {
       delete formValue.password;
     }
+    console.log(this.accountForm.valid)
 
     if (this.accountForm.valid) {
-      const userDetail: UserDetail = new UserDetail(this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,
-        this.accountForm.controls.email.value, null , this.accountForm.controls.password.value,this.accountForm.controls.admin.value);
+      const userDetail: UserDetail = new UserDetail(this.user.id,this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,  this.accountForm.controls.email.value, null , this.accountForm.controls.password.value,this.accountForm.controls.admin.value);
       console.log(userDetail)
       this.authService.update(userDetail).subscribe({
         next: () => {
           console.log('Successfully updated user: ' + userDetail.email);
+          this.notification.success('Successfully updated user: ' + userDetail.email)
         },
         error: error => {
           console.log('Could not update due to:');

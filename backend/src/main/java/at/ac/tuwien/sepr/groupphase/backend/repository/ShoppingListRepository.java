@@ -3,6 +3,9 @@ package at.ac.tuwien.sepr.groupphase.backend.repository;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -56,9 +59,18 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
     /**
      * Searches for ShoppingLists based on ShoppingList name.
      *
-     * @param name        The name of the ShoppingList.
+     * @param name       The name of the ShoppingList.
      * @param sharedFlat The SharedFlat entity associated with the ShoppingList.
      * @return A list of ShoppingLists based on the criteria.
      */
     List<ShoppingList> findAllByNameContainingIgnoreCaseAndSharedFlatIs(String name, SharedFlat sharedFlat);
+
+    /**
+     * Deletes a ShoppingList by its ID.
+     *
+     * @param listId The ID of the ShoppingList to be deleted.
+     */
+    @Modifying
+    @Query("DELETE FROM ShoppingList sl WHERE sl.shopListId = :listId")
+    void deleteByListId(@Param("listId") Long listId);
 }
