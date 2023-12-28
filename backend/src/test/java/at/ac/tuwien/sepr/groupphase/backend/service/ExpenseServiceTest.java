@@ -72,8 +72,8 @@ class ExpenseServiceTest {
         // given
         long id = 1L;
 
-        applicationUser = userRepository.findById(5L).orElseThrow();
-        when(authService.getUserFromToken()).thenReturn(applicationUser);
+        ApplicationUser localApplicationUser = userRepository.findById(5L).orElseThrow();
+        when(authService.getUserFromToken()).thenReturn(localApplicationUser);
 
         // when
         Expense actual = service.findById(id);
