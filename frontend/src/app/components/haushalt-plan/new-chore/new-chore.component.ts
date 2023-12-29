@@ -20,7 +20,9 @@ export class NewChoreComponent {
     choreName: '',
     description: '',
     endDate: new Date(),
-    points: 0
+    points: 0,
+    user: null,
+    sharedFlat: null
   };
 
   constructor(

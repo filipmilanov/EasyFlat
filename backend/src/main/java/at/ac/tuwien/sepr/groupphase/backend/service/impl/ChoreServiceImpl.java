@@ -41,6 +41,7 @@ public class ChoreServiceImpl implements ChoreService {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
         Chore chore = choreMapper.choreDtoToEntity(choreDto);
+        chore.setSharedFlat(applicationUser.getSharedFlat());
         Chore savedChore = choreRepository.save(chore);
         return choreMapper.entityToChoreDto(savedChore);
     }
@@ -52,7 +53,7 @@ public class ChoreServiceImpl implements ChoreService {
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        return choreRepository.findAll();
+        return choreRepository.findAllBySharedFlatId(applicationUser.getSharedFlat().getId());
     }
 
 
