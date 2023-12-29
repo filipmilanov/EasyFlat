@@ -74,7 +74,7 @@
       <div class="col-md-4 col-lg-4">
         <ul class="list-group">
           <li class="list-group-item" *ngFor="let debitUser of expense.debitUsers">
-            {{ printNameWithEqualLength(debitUser.user.firstName + " " + debitUser.user.lastName) }}
+            {{ debitUser.user.firstName + " " + debitUser.user.lastName }}
             pays {{ debitUser.value + " " + determineValueRepresentation(debitUser)}} for this expense
           </li>
         </ul>

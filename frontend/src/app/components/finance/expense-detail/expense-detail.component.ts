@@ -72,20 +72,4 @@ export class ExpenseDetailComponent implements OnInit {
       return 'Proportion';
     }
   }
-
-  printNameWithEqualLength(name: string): string {
-    let maxNameLength = 0;
-    this.expense.debitUsers.forEach(value => {
-      let nameLength = value.user.firstName.length + 1 + value.user.lastName.length;
-      if (nameLength > maxNameLength) {
-        maxNameLength = nameLength;
-      }
-    });
-
-    while (name.length < maxNameLength) {
-      name += ' ';
-    }
-
-    return name;
-  }
 }
