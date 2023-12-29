@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FinanceService} from "../../../services/finance.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
-import {ExpenseDto} from "../../../dtos/expenseDto";
+import {DebitDto, ExpenseDto, SplitBy} from "../../../dtos/expenseDto";
 
 @Component({
   selector: 'app-expense-detail',
@@ -57,4 +57,35 @@ export class ExpenseDetailComponent implements OnInit {
   }
 
 
+  delete() {
+
+  }
+
+  determineValueRepresentation(value: DebitDto): string {
+    if (value.splitBy === SplitBy.EQUAL || value.splitBy === SplitBy.UNEQUAL) {
+      return '€';
+    }
+    if (value.splitBy === SplitBy.PERCENTAGE) {
+      return '%';
+    }
+    if (value.splitBy === SplitBy.PROPORTIONAL) {
+      return 'Proportion';
+    }
+  }
+
+  printNameWithEqualLength(name: string): string {
+    let maxNameLength = 0;
+    this.expense.debitUsers.forEach(value => {
+      let nameLength = value.user.firstName.length + 1 + value.user.lastName.length;
+      if (nameLength > maxNameLength) {
+        maxNameLength = nameLength;
+      }
+    });
+
+    while (name.length < maxNameLength) {
+      name += ' ';
+    }
+
+    return name;
+  }
 }
