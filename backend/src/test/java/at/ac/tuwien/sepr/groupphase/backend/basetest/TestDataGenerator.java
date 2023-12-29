@@ -45,7 +45,7 @@ public class TestDataGenerator {
         digitalStorageDataGenerator.generateDigitalStorages();
         ingredientsDataGenerator.generateDigitalStorages();
         unitDataGenerator.generate();
-        itemDataGenerator.generateDigitalStorages();
+        itemDataGenerator.generateItems();
     }
 
 
