@@ -75,14 +75,6 @@ public class ItemValidator {
             errors.add("There is no MinimumQuantity defined");
         }
 
-        if (isNotValidDecimalPlaces(itemDto.quantityCurrent())) {
-            errors.add("The current quantity cannot have more than 2 decimal places");
-        }
-
-        if (isNotValidDecimalPlaces(itemDto.quantityTotal())) {
-            errors.add("The total quantity cannot have more than 2 decimal places");
-        }
-
         if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
             errors.add("The given Unit does not exists");
         }
@@ -138,14 +130,6 @@ public class ItemValidator {
             errors.add("There is no MinimumQuantity defined");
         }
 
-        if (isNotValidDecimalPlaces(itemDto.quantityCurrent())) {
-            errors.add("The current quantity cannot have more than 2 decimal places");
-        }
-
-        if (isNotValidDecimalPlaces(itemDto.quantityTotal())) {
-            errors.add("The total quantity cannot have more than 2 decimal places");
-        }
-
         if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
             errors.add("The given Unit does not exists");
         }
@@ -153,24 +137,5 @@ public class ItemValidator {
         if (!errors.isEmpty()) {
             throw new ConflictException("There is a conflict with persisted data", errors);
         }
-    }
-
-    /**
-     * This method converts the given quantity to a string and then uses regex to
-     * check if the number does not exceed the maximum amount of decimal places.
-     *
-     * @param quantity the quantity that should be checked
-     * @return true - if it is not valid; false - if it is valid
-     */
-    private boolean isNotValidDecimalPlaces(Double quantity) {
-
-        int maximumDecimalPlaces = 2;
-
-        String valueString = quantity.toString();
-
-        String regex = "^\\d+(\\.\\d{1," + maximumDecimalPlaces + "})?$";
-        Pattern pattern = Pattern.compile(regex);
-
-        return !(pattern.matcher(valueString).matches());
     }
 }

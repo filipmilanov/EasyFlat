@@ -60,6 +60,44 @@ public record ItemDto(
         return this.alwaysInStock == null || !this.alwaysInStock || this.minimumQuantity != null;
     }
 
+    /**
+     * This method converts the current quantity to a string and then uses regex to
+     * check if the number does not exceed the maximum amount of decimal places.
+     *
+     * @return true - if it is valid; false - if it is not valid
+     */
+    @AssertTrue(message = "The current quantity cannot have more than 2 decimal places")
+    private boolean isQuantityCurrentValidDecimalPlaces() {
+        int maximumDecimalPlaces = 2;
+
+        String valueString = this.quantityCurrent.toString();
+
+        String regex = "^\\d+(\\.\\d{1," + maximumDecimalPlaces + "})?$";
+        // fully qualified name necessary due to conflict with Jakarta Pattern
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
+
+        return pattern.matcher(valueString).matches();
+    }
+
+    /**
+     * This method converts the total quantity to a string and then uses regex tos
+     * check if the number does not exceed the maximum amount of decimal places.
+     *
+     * @return true - if it is valid; false - if it is not valid
+     */
+    @AssertTrue(message = "The total quantity cannot have more than 2 decimal places")
+    private boolean isQuantityTotalValidDecimalPlaces() {
+        int maximumDecimalPlaces = 2;
+
+        String valueString = this.quantityTotal.toString();
+
+        String regex = "^\\d+(\\.\\d{1," + maximumDecimalPlaces + "})?$";
+        // fully qualified name necessary due to conflict with Jakarta Pattern
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
+
+        return pattern.matcher(valueString).matches();
+    }
+
     public ItemDto withId(long newId) {
         return new ItemDto(
             newId,
