@@ -3,14 +3,12 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Item;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.OpenFoodFactsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -75,13 +73,11 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("/general-name/{generalName}")
-    public List<ItemDto> findByGeneralName(@PathVariable("generalName") String name,
-                                        @RequestHeader("Authorization") String jwt) throws AuthorizationException, ValidationException, ConflictException {
+    public List<ItemDto> findByGeneralName(@PathVariable("generalName") String name, @RequestHeader("Authorization") String jwt) {
         LOGGER.info("findByGeneralName({})", name);
-        List<Item> items = itemService.getItemWithGeneralName(name, jwt);
-        return items.stream()
-            .map(itemMapper::entityToDto)
-            .collect(Collectors.toList());
+        return itemMapper.entityListToItemDtoList(
+            itemService.getItemWithGeneralName(name, jwt)
+        );
     }
 
     @Secured("ROLE_USER")
