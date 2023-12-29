@@ -73,13 +73,13 @@ public class ItemServiceImpl implements ItemService {
     public Item findById(Long id, String jwt) throws AuthorizationException {
         LOGGER.trace("findById({})", id);
         if (id == null) {
-            throw new NotFoundException("Given Id does not exists in the Database!");
+            throw new NotFoundException("No ID given!");
         }
 
         Optional<Item> item = itemRepository.findById(id);
 
         if (item.isEmpty()) {
-            throw new NotFoundException("Given Id does not exists in the Database!");
+            throw new NotFoundException("The given ID could not be found in the database!");
         }
 
         List<Long> allowedUser = item.get()
