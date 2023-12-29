@@ -40,7 +40,7 @@ public record ItemDto(
     Long priceInCent,
     Boolean alwaysInStock,
     @Min(value = 0, message = "The minimum quantity must be at least 0")
-    @Max(value = 5000, message = "The total quantity cannot be greater than 5000")
+    @Max(value = 5000, message = "The minimum quantity cannot be greater than 5000")
     Long minimumQuantity,
     String boughtAt,
     @NotNull(message = "An item needs to be linked to a storage")
