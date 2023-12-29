@@ -55,6 +55,7 @@ import {UserDropdownComponent} from './components/utils/user-dropdown/user-dropd
 
 import {ShoppingListCardComponent} from './components/shopping-list/shopping-list-card/shopping-list-card.component';
 import {ExpenseDetailComponent} from './components/finance/expense-detail/expense-detail.component';
+import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
 
 LOAD_WASM().subscribe();
 
@@ -96,6 +97,7 @@ LOAD_WASM().subscribe();
     ShowUserForExpenseComponent,
     UserDropdownComponent,
     ExpenseDetailComponent,
+    ConfirmDeleteDialogComponent
   ],
   imports: [
     BrowserModule,
