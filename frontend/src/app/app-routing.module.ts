@@ -80,8 +80,8 @@ const routes: Routes = [
   {
     path: 'expense', children: [
       {path: '', component: DigitalStorageComponent},
-      {path: ':id', component: ExpenseDetailComponent},
       {path: 'create', component: ExpenseCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
+      {path: ':id', component: ExpenseDetailComponent},
 
     ]
   },
