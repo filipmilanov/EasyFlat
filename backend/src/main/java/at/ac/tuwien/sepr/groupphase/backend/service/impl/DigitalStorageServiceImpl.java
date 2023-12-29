@@ -28,7 +28,6 @@ import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,12 +188,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Transactional
     @Override
-    public DigitalStorage update(DigitalStorageDto storage) {
-        return null;
-    }
-
-    @Transactional
-    @Override
     public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthorizationException {
         LOGGER.trace("addItemToShopping({})", itemDto);
 
@@ -205,7 +198,8 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         ShoppingList shoppingList = shoppingListRepository.findByNameAndSharedFlatIs("Default", applicationUser.getSharedFlat());
         ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto,
             ingredientMapper.dtoListToEntityList(itemDto.ingredients()),
-            shoppingList);
+            shoppingList
+        );
         return shoppingItemRepository.save(shoppingItem);
     }
 

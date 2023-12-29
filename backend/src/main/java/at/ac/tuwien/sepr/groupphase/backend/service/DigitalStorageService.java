@@ -60,14 +60,6 @@ public interface DigitalStorageService {
     DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws AuthorizationException, ValidationException, ConflictException;
 
     /**
-     * Validates and Updates a new {@link DigitalStorage} in the db.
-     *
-     * @param storageDto a storage with existing ID
-     * @return an object of type {@link DigitalStorage} which is updated
-     */
-    DigitalStorage update(DigitalStorageDto storageDto);
-
-    /**
      * Gets an item from digital storage and adds it to the main shopping list.
      *
      * @param itemDto existing ID of a storage
