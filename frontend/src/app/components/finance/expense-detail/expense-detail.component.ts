@@ -72,4 +72,8 @@ export class ExpenseDetailComponent implements OnInit {
       return 'Proportion';
     }
   }
+
+  formatAmount(amount: number): string {
+    return (amount / 100).toFixed(2);
+  }
 }
