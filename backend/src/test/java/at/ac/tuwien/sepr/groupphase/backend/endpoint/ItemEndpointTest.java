@@ -223,9 +223,8 @@ class ItemEndpointTest {
             () -> assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus()),
             () -> {
                 String content = response.getContentAsString();
-                ;
                 String[] errors = content.split(",");
-                assertEquals(6, errors.length);
+                assertEquals(7, errors.length);
             }
         );
     }
