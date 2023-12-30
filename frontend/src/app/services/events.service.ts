@@ -55,4 +55,9 @@ export class EventsService {
     return this.http.get<EventDto[]>(this.baseUri + "/search" , {params});
   }
 
+  exportAll(): Observable<string> {
+    return this.http.get(this.baseUri + '/export', { responseType: 'text' });
+  }
+
+
 }

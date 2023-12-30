@@ -73,4 +73,10 @@ public class EventsEndPoint {
     public List<EventDto> findEventsByLabel(String label) throws AuthorizationException {
         return eventsService.findEventsByLabel(label);
     }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/export")
+    public String exportAll() {
+        return eventsService.exportAll();
+    }
 }

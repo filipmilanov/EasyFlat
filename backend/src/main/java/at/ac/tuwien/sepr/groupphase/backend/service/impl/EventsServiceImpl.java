@@ -24,9 +24,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class EventsServiceImpl implements EventsService {
@@ -163,6 +166,40 @@ public class EventsServiceImpl implements EventsService {
             .toList();
     }
 
+    @Override
+    public String exportAll() {
+        ApplicationUser user = authService.getUserFromToken();
+
+        StringBuilder icsContent = new StringBuilder();
+
+        icsContent.append("BEGIN:VCALENDAR\n");
+        icsContent.append("VERSION:2.0\n");
+        icsContent.append("PRODID:-//EasyFlat//\n");
+
+        List<Event> events = eventsRepository.getBySharedFlatIs(user.getSharedFlat());
+
+        for (Event event : events) {
+            icsContent.append("BEGIN:VEVENT\n");
+
+            String uuid = UUID.randomUUID().toString();
+
+            icsContent.append("UID:").append(uuid).append("\n");
+            icsContent.append("SUMMARY:").append(event.getTitle()).append("\n");
+            icsContent.append("DESCRIPTION:").append(event.getDescription()).append("\n");
+            icsContent.append("DTSTART:").append(formatDate(event.getDate())).append("\n");
+            icsContent.append("DTEND:").append(formatDate(event.getDate().plusDays(1))).append("\n");
+            icsContent.append("END:VEVENT\n");
+        }
+
+        icsContent.append("END:VCALENDAR");
+
+        return icsContent.toString();
+    }
+
+    private String formatDate(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        return date.format(formatter);
+    }
 
 
     private List<EventLabel> findLabelsAndCreateMissing(List<EventLabelDto> labels) {

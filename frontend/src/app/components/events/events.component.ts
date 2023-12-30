@@ -52,9 +52,31 @@ findEventsByLabel(){
     });
 }
 
-exportAll() {
+  exportAll() {
+    this.eventService.exportAll().subscribe(
+      (icsContent: string) => {
+        this.downloadICSFile(icsContent);
+      },
+      (error) => {
+        console.error('Error exporting events:', error);
+        this.notification.error('Error exporting events');
+      }
+    );
+  }
 
-}
+  private downloadICSFile(icsContent: string) {
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'events.ics');
+    document.body.appendChild(link);
+
+    link.click();
+    document.body.removeChild(link);
+  }
+
 
 
 }
