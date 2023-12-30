@@ -12,6 +12,7 @@ import {ToastrService} from "ngx-toastr";
 })
 export class EventsComponent implements OnInit {
  events: EventDto[];
+ label: string = '';
 
   constructor(
     private eventService: EventsService,
@@ -37,6 +38,18 @@ loadEvents(){
       this.notification.error("Error loading events");
     }
   })
+}
+
+findEventsByLabel(){
+    this.eventService.findEventsByLabel(this.label).subscribe({
+      next: res => {
+        this.events = res;
+      },
+      error: err => {
+        console.error("Error finding events:", err);
+        this.notification.error("Error finding events");
+      }
+    });
 }
 
 

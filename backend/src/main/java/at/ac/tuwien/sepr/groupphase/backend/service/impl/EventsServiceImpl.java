@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.entity.EventLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventsRepository;
@@ -143,6 +144,26 @@ public class EventsServiceImpl implements EventsService {
             throw new EntityNotFoundException("Event not found with id: " + id);
         }
     }
+
+    @Override
+    public List<EventDto> findEventsByLabel(String labelName) throws AuthorizationException {
+        ApplicationUser user = authService.getUserFromToken();
+
+        if (user == null) {
+            throw new AuthorizationException("Authorization failed", List.of("User does not exist"));
+        }
+
+        Long sharedFlatId = user.getSharedFlat().getId();
+
+        List<Event> events = eventsRepository.findEventsByLabelNameAndSharedFlatId(labelName, sharedFlatId);
+
+        return events.stream()
+            .filter(event -> user.getSharedFlat().equals(event.getSharedFlat()))
+            .map(event -> eventMapper.entityToDto(event, sharedFlatMapper.entityToWgDetailDto(event.getSharedFlat())))
+            .toList();
+    }
+
+
 
     private List<EventLabel> findLabelsAndCreateMissing(List<EventLabelDto> labels) {
         LOGGER.trace("findLabelsAndCreateMissing({})", labels);

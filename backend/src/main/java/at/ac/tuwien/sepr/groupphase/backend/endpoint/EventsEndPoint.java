@@ -67,4 +67,10 @@ public class EventsEndPoint {
     public EventDto getEventWithId(@PathVariable String id) throws AuthorizationException {
         return eventsService.getEventWithId(Long.valueOf(id));
     }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/search")
+    public List<EventDto> findEventsByLabel(String label) throws AuthorizationException {
+        return eventsService.findEventsByLabel(label);
+    }
 }

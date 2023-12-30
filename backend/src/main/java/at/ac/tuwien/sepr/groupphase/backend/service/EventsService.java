@@ -54,5 +54,14 @@ public interface EventsService {
      * @throws AuthorizationException If the user is not authorized to access the event.
      */
     EventDto getEventWithId(Long id) throws AuthorizationException;
+
+    /**
+     * Retrieves all events with given label.
+     *
+     * @param labelName The name of the label to be retrieved.
+     * @return A list of EventDto objects representing all events with given label.
+     * @throws AuthorizationException If the user is not authorized to access the events.
+     */
+    List<EventDto> findEventsByLabel(String labelName) throws AuthorizationException;
 }
 

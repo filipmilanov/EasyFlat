@@ -9,8 +9,17 @@
       <p class="card-text">{{truncateString(event.description, 40)}}</p>
     </div>
     <div class="row">
-      <p class="card-text">Date {{event.date}}</p>
+      <p class="card-text"><strong>Date:</strong> {{event.date}}</p>
     </div>
+    <div>
+      <strong>Label: </strong>
+      <ng-container *ngFor="let label of event.labels; let last = last">
+        <span [style.color]="label.labelColour">{{ label.labelName }}</span>
+        <ng-container *ngIf="!last">, </ng-container>
+      </ng-container>
+    </div>
+
+
 
   </div>
   <div class="card-footer">
