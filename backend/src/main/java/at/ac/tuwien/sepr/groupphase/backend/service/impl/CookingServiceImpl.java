@@ -505,10 +505,10 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthenticationException {
         recipeValidator.validateForCook(recipeToCook);
-        Long storId = this.getStorIdForUser(jwt);
+        Long storageId = this.getStorageIdForUser(jwt);
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
-            List<DigitalStorageItem> digitalStorageItems = itemRepository.findAllByDigitalStorage_StorIdAndItemCache_GeneralName(storId, recipeIngredientDto.name());
+            List<DigitalStorageItem> digitalStorageItems = itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_GeneralName(storageId, recipeIngredientDto.name());
             Unit ingredientUnit = unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum());
             Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), recipeIngredientDto.amount());
             List<DigitalStorageItem> itemsWithMinUnits = minimizeUnits(digitalStorageItems);
@@ -544,8 +544,8 @@ public class CookingServiceImpl implements CookingService {
         throws AuthenticationException, ValidationException, ConflictException {
         ShoppingList shoppingList = shoppingListService.getShoppingListByName("Default", jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         ShoppingListDto shoppingListDto = shoppingListMapper.entityToDto(shoppingList);
-        Long storId = this.getStorIdForUser(jwt);
-        DigitalStorage storage = digitalStorageService.findById(storId).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        Long storageId = this.getStorageIdForUser(jwt);
+        DigitalStorage storage = digitalStorageService.findById(storageId).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         DigitalStorageDto storageDto = digitalStorageMapper.entityToDto(storage);
         for (RecipeIngredientDto ingredient : recipeToCook.missedIngredients()) {
             ShoppingItemDto newShoppingItem = new ShoppingItemDto(null, null, ingredient.name(), ingredient.name(), ingredient.name(), ingredient.amount(), ingredient.amount(),
@@ -668,7 +668,7 @@ public class CookingServiceImpl implements CookingService {
         }
     }
 
-    private Long getStorIdForUser(String jwt) throws AuthenticationException {
+    private Long getStorageIdForUser(String jwt) throws AuthenticationException {
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         DigitalStorage matchingDigitalStorage = null;
         if (!digitalStorageList.isEmpty()) {

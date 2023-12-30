@@ -234,11 +234,11 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             Double updatedQuantityTotal = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), itemUnits.get(digitalStorageItem.getItemCache().getGeneralName()), digitalStorageItem.getItemCache().getQuantityTotal());
 
 
-            Double[] quantityStorId = new Double[3];
-            quantityStorId[0] = currentQ + updatedQuantityCurrent;
-            quantityStorId[1] = digitalStorageItem.getDigitalStorage().getStorId().doubleValue();
-            quantityStorId[2] = totalQ + updatedQuantityTotal;
-            items.put(digitalStorageItem.getItemCache().getGeneralName(), quantityStorId);
+            Double[] quantityStorageId = new Double[3];
+            quantityStorageId[0] = currentQ + updatedQuantityCurrent;
+            quantityStorageId[1] = digitalStorageItem.getDigitalStorage().getStorageId().doubleValue();
+            quantityStorageId[2] = totalQ + updatedQuantityTotal;
+            items.put(digitalStorageItem.getItemCache().getGeneralName(), quantityStorageId);
         }
         List<ItemListDto> toRet = new LinkedList<>();
         for (Map.Entry<String, Double[]> item : items.entrySet()) {
@@ -250,7 +250,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     /**
      * The Method assume, that there is only one storage per sharedFlat.
      */
-    private Long getStorIdForUser(String jwt) throws AuthenticationException, ValidationException, ConflictException {
+    private Long getStorageIdForUser(String jwt) throws AuthenticationException, ValidationException, ConflictException {
         List<DigitalStorage> digitalStorageList = findAll(null);
         DigitalStorage matchingDigitalStorage = null;
         if (!digitalStorageList.isEmpty()) {
