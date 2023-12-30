@@ -33,6 +33,7 @@ public abstract class ItemMapper {
                                                          @Context List<Ingredient> ingredientList,
                                                          @Context List<ItemStats> itemStats);
 
+    @Mapping(target = "digitalStorage", source = "storage")
     @Mapping(target = "ingredients", source = "ingredientList")
     @Mapping(target = "alwaysInStock", expression = "java( item.alwaysInStock() )")
     @Mapping(target = "minimumQuantity", expression = "java( item.getMinimumQuantity() )")
