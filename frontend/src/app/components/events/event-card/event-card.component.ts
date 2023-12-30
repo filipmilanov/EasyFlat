@@ -43,4 +43,9 @@ export class EventCardComponent {
       }
     });
   }
+
+  export(id: number) {
+    console.log(id)
+
+  }
 }
