@@ -80,11 +80,6 @@ public class Item {
     @OneToMany
     private List<ItemStats> itemStats;
 
-    @AssertTrue(message = "The current quantity cannot be larger then the total")
-    private boolean quantityCurrentLessThenTotal() {
-        return this.quantityCurrent <= this.quantityTotal;
-    }
-
     public Long getItemId() {
         return itemId;
     }
