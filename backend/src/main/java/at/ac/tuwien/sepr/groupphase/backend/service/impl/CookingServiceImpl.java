@@ -45,6 +45,9 @@ import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.CookbookValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.RecipeValidator;
+import com.deepl.api.DeepLException;
+import com.deepl.api.TextResult;
+import com.deepl.api.Translator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -90,7 +93,9 @@ public class CookingServiceImpl implements CookingService {
     private final ShoppingListMapper shoppingListMapper;
     private final DigitalStorageMapper digitalStorageMapper;
     private final ItemRepository itemRepository;
+    private Translator translator;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
+    private final String translateKey = "99218f60-385f-59ea-55ce-513e8cec1469:fx";
 
     public CookingServiceImpl(RestTemplate restTemplate,
                               RecipeSuggestionRepository repository,
@@ -137,7 +142,8 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt)
+        throws ValidationException, ConflictException, AuthenticationException, DeepLException, InterruptedException {
 
 
         List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, true, null, null, null), jwt);
@@ -556,7 +562,9 @@ public class CookingServiceImpl implements CookingService {
     }
 
 
-    private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
+    private String getRequestStringForRecipeSearch(List<ItemListDto> items) throws DeepLException, InterruptedException {
+        translator = new Translator(translateKey);
+
         List<String> ingredients = new LinkedList<>();
         for (ItemListDto item : items) {
             ingredients.add(item.generalName());
@@ -566,6 +574,8 @@ public class CookingServiceImpl implements CookingService {
         requestString += "?apiKey=" + apiKey;
         boolean isFirst = true;
         for (String ingredient : ingredients) {
+            TextResult textResult = translator.translateText(ingredient, null, "en-GB");
+            ingredient = textResult.getText();
             if (isFirst) {
                 requestString += "&ingredients=" + ingredient;
                 isFirst = false;

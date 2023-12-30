@@ -16,6 +16,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
+import com.deepl.api.DeepLException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -77,7 +78,7 @@ public class CookingServiceTest {
 
     @Test
     @Disabled
-    void testGetRecipeSuggestion() throws ValidationException, ConflictException, AuthenticationException {
+    void testGetRecipeSuggestion() throws ValidationException, ConflictException, AuthenticationException, DeepLException, InterruptedException {
 
         when(jwtTokenizer.getEmailFromToken(any(String.class))).thenReturn(applicationUser.getEmail());
 

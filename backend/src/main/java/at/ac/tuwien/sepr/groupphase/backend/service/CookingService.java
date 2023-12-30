@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import com.deepl.api.DeepLException;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,8 @@ public interface CookingService {
      * @return A list of recipe suggestions.
      * @throws ValidationException If there is a validation error.
      */
-    List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt) throws ValidationException, ConflictException, AuthenticationException;
+    List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt)
+        throws ValidationException, ConflictException, AuthenticationException, DeepLException, InterruptedException;
 
     /**
      * Get the details of a specific recipe based on the provided recipe ID.
