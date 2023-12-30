@@ -78,18 +78,14 @@ export class ItemDetailListComponent implements OnInit {
       return;
     }
 
-    // necessary to ensure that we only work with 2 decimal places
     quantityInput = parseFloat(quantityInput.toFixed(2));
 
     let isQuantityUpdated: boolean = false;
 
-    // Determine the adjustment amount based on the mode
     const adjustment: number = mode === QuantityChange.INCREASE ? quantityInput : -quantityInput;
 
-    // Calculate new quantity, ensuring it doesn't fall below zero for decrease mode
     const newQuantity: number = Math.max(0, item.quantityCurrent + adjustment);
 
-    // Update the item's current quantity if it has changed
     if (item.quantityCurrent !== newQuantity) {
       item.quantityCurrent = parseFloat(newQuantity.toFixed(2));
       isQuantityUpdated = true;
