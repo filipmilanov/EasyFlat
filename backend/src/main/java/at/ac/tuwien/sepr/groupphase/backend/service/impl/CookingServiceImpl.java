@@ -33,7 +33,6 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
@@ -72,7 +71,7 @@ public class CookingServiceImpl implements CookingService {
     private final RecipeSuggestionRepository repository;
     private final RecipeIngredientService ingredientService;
     private final RecipeIngredientMapper ingredientMapper;
-    private final DigitalStorageRepository storageRepository;
+    private final ItemRepository itemRepository;
     private final RecipeMapper recipeMapper;
     private final RecipeIngredientMapper recipeIngredientMapper;
     private final UnitService unitService;
@@ -86,10 +85,10 @@ public class CookingServiceImpl implements CookingService {
     private final CookbookMapper cookbookMapper;
     private final CookbookRepository cookbookRepository;
     private final UserService userService;
+    private final CustomUserDetailService customUserDetailService;
     private final ShoppingListService shoppingListService;
     private final ShoppingListMapper shoppingListMapper;
     private final DigitalStorageMapper digitalStorageMapper;
-    private final ItemRepository itemRepository;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
     public CookingServiceImpl(RestTemplate restTemplate,
@@ -97,7 +96,7 @@ public class CookingServiceImpl implements CookingService {
                               DigitalStorageServiceImpl digitalStorageService,
                               RecipeIngredientService ingredientService,
                               RecipeIngredientMapper ingredientMapper,
-                              DigitalStorageRepository storageRepository,
+                              ItemRepository itemRepository,
                               RecipeMapper recipeMapper,
                               RecipeIngredientMapper recipeIngredientMapper,
                               UnitService unitService,
@@ -107,16 +106,15 @@ public class CookingServiceImpl implements CookingService {
                               CookbookValidator cookbookValidator, SharedFlatService sharedFlatService,
                               Authorization authorization, CookbookMapper cookbookMapper,
                               CookbookRepository cookbookRepository, UserService userService,
+                              CustomUserDetailService customUserDetailService,
                               ShoppingListService shoppingListService,
                               ShoppingListMapper shoppingListMapper,
-                              DigitalStorageMapper digitalStorageMapper,
-                              ItemRepository itemRepository) {
+                              DigitalStorageMapper digitalStorageMapper) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
         this.ingredientMapper = ingredientMapper;
-        this.storageRepository = storageRepository;
         this.recipeMapper = recipeMapper;
         this.recipeIngredientMapper = recipeIngredientMapper;
         this.unitService = unitService;
@@ -134,6 +132,7 @@ public class CookingServiceImpl implements CookingService {
         this.shoppingListMapper = shoppingListMapper;
         this.digitalStorageMapper = digitalStorageMapper;
         this.itemRepository = itemRepository;
+        this.customUserDetailService = customUserDetailService;
     }
 
     @Override
@@ -428,7 +427,8 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthenticationException {
-        Long storId = this.getStorIdForUser(jwt);
+        ApplicationUser user = customUserDetailService.getUser(jwt);
+        DigitalStorage digitalStorageOfUser = user.getSharedFlat().getDigitalStorage();
 
         RecipeSuggestion recipeEntity;
         try {
@@ -443,7 +443,7 @@ public class CookingServiceImpl implements CookingService {
         if (recipeSuggestionDto != null) {
             List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
             for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
-                List<DigitalStorageItem> items = storageRepository.findAllByStorIdAndDigitalStorageItemList_ItemCache_GeneralNameIs(storId, ingredient.name());
+                List<DigitalStorageItem> items = itemRepository.findAllByDigitalStorageIsAndGeneralNameIs(digitalStorageOfUser, ingredient.name());
                 if (items.isEmpty()) {
                     missingIngredients.add(ingredient);
                     continue;
@@ -689,7 +689,7 @@ public class CookingServiceImpl implements CookingService {
             );
 
 
-            return matchingDigitalStorage.getStorId();
+            return matchingDigitalStorage.getStorageId();
         } else {
             return null;
         }

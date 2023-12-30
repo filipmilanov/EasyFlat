@@ -12,7 +12,7 @@ public record ItemListDto(
     @NotEmpty
     Double quantityTotal,
     @NotEmpty
-    Long storId,
+    Long storageId,
     UnitDto unit
 
 

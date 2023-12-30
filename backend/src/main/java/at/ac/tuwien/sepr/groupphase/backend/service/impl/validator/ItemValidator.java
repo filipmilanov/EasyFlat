@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -56,13 +57,13 @@ public class ItemValidator {
             errors.add("The Id must be null");
         }
 
-        if (itemDto.digitalStorage() == null || itemDto.digitalStorage().storId() == null) {
+        if (itemDto.digitalStorage() == null || itemDto.digitalStorage().storageId() == null) {
             errors.add("There is no Digital Storage defined");
         } else if (digitalStorageList == null
             || digitalStorageList.stream()
-            .map(DigitalStorage::getStorId)
+            .map(DigitalStorage::getStorageId)
             .noneMatch(id ->
-                Objects.equals(id, itemDto.digitalStorage().storId())
+                Objects.equals(id, itemDto.digitalStorage().storageId())
             )
         ) {
             errors.add("The given Digital Storage does not exists");
@@ -111,13 +112,13 @@ public class ItemValidator {
             errors.add("The item id can't be null");
         }
 
-        if (itemDto.digitalStorage() == null || itemDto.digitalStorage().storId() == null) {
+        if (itemDto.digitalStorage() == null || itemDto.digitalStorage().storageId() == null) {
             errors.add("There is no Digital Storage defined");
         } else if (digitalStorageList == null
             || digitalStorageList.stream()
-            .map(DigitalStorage::getStorId)
+            .map(DigitalStorage::getStorageId)
             .noneMatch(id ->
-                Objects.equals(id, itemDto.digitalStorage().storId())
+                Objects.equals(id, itemDto.digitalStorage().storageId())
             )
         ) {
             errors.add("The given Digital Storage does not exist");
@@ -137,5 +138,4 @@ public class ItemValidator {
             throw new ConflictException("There is a conflict with persisted data", errors);
         }
     }
-
 }

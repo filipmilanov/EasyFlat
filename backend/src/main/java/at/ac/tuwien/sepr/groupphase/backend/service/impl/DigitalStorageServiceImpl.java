@@ -8,7 +8,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockDigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -30,6 +29,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -49,10 +49,10 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final DigitalStorageRepository digitalStorageRepository;
+    private final ItemRepository itemRepository;
     private final DigitalStorageMapper digitalStorageMapper;
     private final DigitalStorageValidator digitalStorageValidator;
     private final ShoppingItemRepository shoppingItemRepository;
-    private final ItemMapper itemMapper;
     private final IngredientMapper ingredientMapper;
     private final Authorization authorization;
     private final AuthService authService;
@@ -60,22 +60,21 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final SharedFlatService sharedFlatService;
     private final ShoppingListRepository shoppingListRepository;
     private final ItemValidator itemValidator;
-    private final ItemRepository itemRepository;
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
+                                     ItemRepository itemRepository,
                                      DigitalStorageMapper digitalStorageMapper,
                                      DigitalStorageValidator digitalStorageValidator,
                                      SharedFlatService sharedFlatService,
                                      ShoppingItemRepository shoppingItemRepository,
-                                     ItemMapper itemMapper,
                                      IngredientMapper ingredientMapper,
                                      AuthService authService,
                                      Authorization authorization,
                                      ShoppingListRepository shoppingListRepository,
                                      UnitService unitService,
-                                     ItemValidator itemValidator,
-                                     ItemRepository itemRepository) {
+                                     ItemValidator itemValidator) {
         this.digitalStorageRepository = digitalStorageRepository;
+        this.itemRepository = itemRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
         this.shoppingItemRepository = shoppingItemRepository;
@@ -86,8 +85,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         this.shoppingListRepository = shoppingListRepository;
         this.unitService = unitService;
         this.itemValidator = itemValidator;
-        this.itemMapper = itemMapper;
-        this.itemRepository = itemRepository;
     }
 
     @Override
@@ -129,19 +126,14 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<DigitalStorageItem> findAllItemsOfStorageOrdered(Long id, ItemOrderType orderType) {
-        return null;
-    }
-
-    @Override
     public List<ItemListDto> searchItems(ItemSearchDto searchItem, String jwt) throws ValidationException, AuthenticationException, ConflictException {
         LOGGER.trace("searchItems({})", searchItem);
+
         digitalStorageValidator.validateForSearchItems(searchItem);
 
-        Long storId = getStorIdForUser(jwt);
+        Long storageId = getStorageIdForUser(jwt);
 
-
-        Class alwaysInStock = null;
+        Class alwaysInStock;
         if (searchItem.alwaysInStock() == null || !searchItem.alwaysInStock()) {
             alwaysInStock = DigitalStorageItem.class;
         } else {
@@ -149,7 +141,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
 
         List<DigitalStorageItem> allDigitalStorageItems = digitalStorageRepository.searchItems(
-            storId,
+            storageId,
             (searchItem.productName() != null) ? searchItem.productName() : null,
             (searchItem.fillLevel() != null) ? searchItem.fillLevel() : null,
             alwaysInStock
@@ -182,6 +174,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }).toList();
     }
 
+    @Transactional
     @Override
     public DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("create({})", storageDto);
@@ -206,32 +199,9 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         return digitalStorageRepository.save(storage);
     }
 
+    @Transactional
     @Override
-    public DigitalStorage update(DigitalStorageDto storage) {
-        return null;
-    }
-
-    @Override
-    public void remove(Long id) {
-
-    }
-
-    @Override
-    public DigitalStorageItem updateItemQuantity(long storageId, long itemId, long quantity) {
-        LOGGER.trace("updateItemQuantity({}, {}, {})", storageId, itemId, quantity);
-
-        return digitalStorageRepository.updateItemQuantity(storageId, itemId, quantity);
-    }
-
-    @Override
-    public List<DigitalStorageItem> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException {
-        Long storId = getStorIdForUser(jwt);
-        return this.itemRepository.findAllByDigitalStorage_StorIdAndItemCache_GeneralName(storId, name);
-    }
-
-
-    @Override
-    public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException {
+    public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException {
         LOGGER.trace("addItemToShopping({})", itemDto);
 
         ApplicationUser applicationUser = authService.getUserFromToken();
@@ -241,7 +211,8 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         ShoppingList shoppingList = shoppingListRepository.findByNameAndSharedFlatIs("Default", applicationUser.getSharedFlat());
         ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto,
             ingredientMapper.dtoListToEntityList(itemDto.ingredients()),
-            shoppingList);
+            shoppingList
+        );
         return shoppingItemRepository.save(shoppingItem);
     }
 
@@ -293,18 +264,14 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
                 .map(ApplicationUser::getId)
                 .toList();
 
-
             authorization.authenticateUser(
                 allowedUser,
                 "The given digital storage does not belong to the user's shared flat!"
             );
 
-
-            return matchingDigitalStorage.getStorId();
+            return matchingDigitalStorage.getStorageId();
         } else {
             return null;
         }
     }
-
-
 }

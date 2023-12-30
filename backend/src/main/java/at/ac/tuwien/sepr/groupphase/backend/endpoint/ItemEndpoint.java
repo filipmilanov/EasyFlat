@@ -44,6 +44,25 @@ public class ItemEndpoint {
     }
 
     @Secured("ROLE_USER")
+    @GetMapping("{itemId}")
+    public ItemDto findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+        LOGGER.info("findById({})", itemId);
+
+        return itemMapper.entityToDto(
+            itemService.findById(itemId, jwt)
+        );
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/ean/{ean}")
+    public ItemDto findByEan(@PathVariable Long ean) throws ConflictException, JsonProcessingException {
+        LOGGER.info("findByEan({})", ean);
+        return itemMapper.openFoodFactItemDtoToItemDto(
+            openFoodFactsService.findByEan(ean)
+        );
+    }
+
+    @Secured("ROLE_USER")
     @GetMapping("search")
     @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> findByFields(ItemFieldSearchDto itemFieldSearchDto) {
@@ -53,6 +72,14 @@ public class ItemEndpoint {
         );
     }
 
+    @Secured("ROLE_USER")
+    @GetMapping("/general-name/{generalName}")
+    public List<ItemDto> findByGeneralName(@PathVariable("generalName") String name, @RequestHeader("Authorization") String jwt) {
+        LOGGER.info("findByGeneralName({})", name);
+        return itemMapper.entityListToItemDtoList(
+            itemService.getItemWithGeneralName(name, jwt)
+        );
+    }
 
     @Secured("ROLE_USER")
     @PostMapping
@@ -62,15 +89,6 @@ public class ItemEndpoint {
         return itemMapper.entityToDto(
             itemService.create(itemDto, jwt)
         );
-    }
-
-    @Secured("ROLE_USER")
-    @GetMapping("{itemId}")
-    public ItemDto findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
-        LOGGER.info("findById({})", itemId);
-        DigitalStorageItem item = itemService.findById(itemId, jwt);
-
-        return itemMapper.entityToDto(item);
     }
 
     @Secured("ROLE_USER")
@@ -85,18 +103,8 @@ public class ItemEndpoint {
     @Secured("ROLE_USER")
     @DeleteMapping("{itemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public void delete(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthorizationException {
         LOGGER.info("delete({})", itemId);
         itemService.delete(itemId, jwt);
     }
-
-    @Secured("ROLE_USER")
-    @GetMapping("/ean/{ean}")
-    public ItemDto findByEan(@PathVariable Long ean) throws ConflictException, JsonProcessingException {
-        LOGGER.info("findByEan({})", ean);
-        return itemMapper.openFoodFactItemDtoToItemDto(
-            openFoodFactsService.findByEan(ean)
-        );
-    }
-
 }

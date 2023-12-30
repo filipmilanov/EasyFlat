@@ -4,7 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
@@ -35,20 +35,20 @@ public class CookingEndPoint {
 
     @PermitAll
     @GetMapping
-    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthorizationException {
         return cookingService.getRecipeSuggestion(type, jwt);
     }
 
     @PermitAll
     @GetMapping("/cookbook")
-    public List<RecipeSuggestionDto> getCookbook(@RequestHeader("Authorization") String jwt) throws ValidationException, AuthenticationException {
+    public List<RecipeSuggestionDto> getCookbook(@RequestHeader("Authorization") String jwt) throws ValidationException, AuthorizationException {
         return cookingService.getCookbook(jwt);
     }
 
     @PermitAll
     @PostMapping("/cookbook")
     public RecipeSuggestionDto createCookbookRecipe(@RequestBody RecipeSuggestionDto recipe, @RequestHeader("Authorization") String jwt)
-        throws ConflictException, ValidationException, AuthenticationException {
+        throws ConflictException, ValidationException, AuthorizationException {
         return recipeMapper.entityToRecipeSuggestionDto(cookingService.createCookbookRecipe(recipe, jwt));
     }
 
@@ -62,20 +62,20 @@ public class CookingEndPoint {
     @PermitAll
     @PutMapping("/cookbook/{id}")
     public RecipeSuggestionDto updateCookbookRecipe(@PathVariable Long id, @RequestBody RecipeSuggestionDto recipe, @RequestHeader("Authorization") String jwt)
-        throws ConflictException, ValidationException, AuthenticationException {
+        throws ConflictException, ValidationException, AuthorizationException {
         return recipeMapper.entityToRecipeSuggestionDto(cookingService.updateCookbookRecipe(recipe.withId(id), jwt));
     }
 
     @PermitAll
     @DeleteMapping("/cookbook/{id}")
-    public RecipeSuggestionDto deleteCookbookRecipe(@PathVariable Long id, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public RecipeSuggestionDto deleteCookbookRecipe(@PathVariable Long id, @RequestHeader("Authorization") String jwt) throws AuthorizationException {
         return recipeMapper.entityToRecipeSuggestionDto(cookingService.deleteCookbookRecipe(id, jwt));
     }
 
     @PermitAll
     @GetMapping("/cookbook/missing/{id}")
     public RecipeSuggestionDto getMissingIngredients(@PathVariable Long id, @RequestHeader("Authorization") String jwt)
-        throws AuthenticationException, ValidationException, ConflictException {
+        throws AuthorizationException, ValidationException, ConflictException {
         return cookingService.getMissingIngredients(id, jwt);
     }
 
@@ -87,7 +87,7 @@ public class CookingEndPoint {
 
     @PermitAll
     @PutMapping("/cook")
-    public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthorizationException {
         return cookingService.cookRecipe(recipeToCook, jwt);
     }
 

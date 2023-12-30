@@ -54,7 +54,7 @@ public class ItemServiceImpl implements ItemService {
                            ItemValidator itemValidator,
                            ItemStatsRepository itemStatsRepository,
                            Authorization authorization,
-                           SharedFlatService sharedFlatService, UnitService unitService) {
+                           SharedFlatService sharedFlatService, CustomUserDetailService customUserDetailService, UnitService unitService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
@@ -70,13 +70,13 @@ public class ItemServiceImpl implements ItemService {
     public DigitalStorageItem findById(Long id, String jwt) throws AuthenticationException {
         LOGGER.trace("findById({})", id);
         if (id == null) {
-            throw new NotFoundException("Item ID can't be null");
+            throw new NotFoundException("No item ID given!");
         }
 
         Optional<DigitalStorageItem> item = itemRepository.findById(id);
 
         if (item.isEmpty()) {
-            throw new NotFoundException("Item could not be found");
+            throw new NotFoundException("The given item ID could not be found in the database!");
         }
         List<Long> allowedUser = item.get().getDigitalStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
         authorization.authenticateUser(
@@ -99,6 +99,17 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public List<DigitalStorageItem> getItemWithGeneralName(String generalName, String jwt) {
+        LOGGER.trace("getItemWithGeneralName({})", generalName);
+
+        ApplicationUser user = customUserDetailService.getUser(jwt);
+
+        DigitalStorage digitalStorage = user.getSharedFlat().getDigitalStorage();
+
+        return itemRepository.findAllByDigitalStorageIsAndGeneralNameIs(digitalStorage, generalName);
+    }
+
+    @Override
     @Transactional
     public DigitalStorageItem create(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("create({})", itemDto);
@@ -113,9 +124,9 @@ public class ItemServiceImpl implements ItemService {
 
         ItemDto finalItemDto = itemDto;
         DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
-            .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
-            .findFirst()
-            .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
+                .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storageId(), digitalStorage.getStorageId()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Given digital storage does not exist in the database!"));
 
         List<Long> allowedUser = sharedFlatService.findById(
                 matchingDigitalStorage.getSharedFlat().getId(),
@@ -165,9 +176,9 @@ public class ItemServiceImpl implements ItemService {
 
         ItemDto finalItemDto = itemDto;
         DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
-            .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
+            .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storageId(), digitalStorage.getStorageId()))
             .findFirst()
-            .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
+            .orElseThrow(() -> new NotFoundException("Given digital storage does not exist in the database!"));
 
         List<Long> allowedUser = sharedFlatService.findById(
                 matchingDigitalStorage.getSharedFlat().getId(),
