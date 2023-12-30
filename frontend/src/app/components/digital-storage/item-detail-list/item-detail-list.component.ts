@@ -39,8 +39,9 @@ export class ItemDetailListComponent implements OnInit {
             if (res.length === 0) {
               this.router.navigate(['/digital-storage/']);
               this.notification.error(`Items of type ${generalName} could not be loaded`, "Error");
+            } else {
+              this.items = res;
             }
-            this.items = res;
           },
           error: error => {
             console.error(`Items of type ${generalName} could not be loaded: ${error}`);
