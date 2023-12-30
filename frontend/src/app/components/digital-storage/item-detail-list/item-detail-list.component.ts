@@ -51,7 +51,7 @@ export class ItemDetailListComponent implements OnInit {
         })
       },
       error: error => {
-        console.error(`Item could not be retrieved using the ID from the URL: ${error.error.message}`);
+        console.error(`Item could not be retrieved using the name from the URL: ${error.error.message}`);
         this.router.navigate(['/digital-storage/']);
         this.notification.error(`Items could not be loaded`, "Error");
       }
@@ -158,7 +158,7 @@ export class ItemDetailListComponent implements OnInit {
       next: () => {
         this.notification.success(`Item ${item.productName} successfully added to the shopping list.`, "Success");
         this.shoppingService.getShoppingListByName('Default').subscribe({
-          next: res => {
+          next: () => {
             this.router.navigate([`/shopping-list/default`]);
           }
         })
