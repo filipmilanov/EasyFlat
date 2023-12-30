@@ -62,68 +62,61 @@ export class ItemDetailListComponent implements OnInit {
     const previousCurrentQuantity: number = item.quantityCurrent;
     const previousTotalQuantity: number = item.quantityTotal;
 
-    if (quantityInput < 0.01 ) {
-      this.notification.error("Only numbers greater than 0 can be entered", "Error");
-
+    if (quantityInput == null) {
+      this.notification.error("The quantity you provided is not valid!", "Error");
+      this.quantityInputs[item.itemId] = 0;
       return;
     }
 
-    if (quantityInput != null) {
-
-      const numberInputAsString: string = quantityInput.toString();
-      const decimalIndex: number = numberInputAsString.indexOf('.');
-
-      // check if number has at most 2 decimal places
-      if (decimalIndex !== -1 && numberInputAsString.length - decimalIndex - 1 > 2) {
-        this.notification.error("Only numbers with at most 2 decimal places can be entered", "Error");
-        this.quantityInputs[item.itemId] = null;
-        return;
-      }
-
-      // necessary to ensure that we only work with 2 decimal places
-      quantityInput = parseFloat(quantityInput.toFixed(2));
-
-      let isQuantityUpdated: boolean = false;
-
-      if (mode === QuantityChange.INCREASE) {
-        const newQuantity: number = item.quantityCurrent + quantityInput;
-        if (item.quantityCurrent !== newQuantity) {
-          item.quantityCurrent = parseFloat(newQuantity.toFixed(2));
-          isQuantityUpdated = true;
-        }
-
-      } else if (mode === QuantityChange.DECREASE) {
-        const newQuantity: number = Math.max(0, item.quantityCurrent - quantityInput);
-        if (item.quantityCurrent !== newQuantity) {
-          item.quantityCurrent = parseFloat(newQuantity.toFixed(2));
-          isQuantityUpdated = true;
-        }
-      }
-
-      if (item.quantityCurrent > item.quantityTotal) {
-        item.quantityTotal = item.quantityCurrent;
-      }
-
-      if (isQuantityUpdated) {
-        this.itemService.updateItem(item).subscribe({
-          next: () => {
-            this.notification.success(`Item ${item.productName} was successfully ${mode} by ${quantityInput}`, "Success");
-          },
-          error: error => {
-            item.quantityCurrent = previousCurrentQuantity;
-            item.quantityTotal = previousTotalQuantity;
-            this.quantityInputs[item.itemId] = null;
-            console.error(`Item could not be deleted: ${error}`);
-            this.notification.error(`Item ${item.productName} could not be ${mode} by ${quantityInput}`, "Error");
-
-          }
-        });
-      } else {
-        this.notification.info("The quantity is the same as before", "Info")
-      }
-    } else {
-      this.notification.error("The quantity you provided is not valid!", "Error");
+    if (quantityInput < 0.01) {
+      this.notification.error("Only numbers greater than 0 can be entered", "Error");
+      this.quantityInputs[item.itemId] = null;
+      return;
     }
+
+    if(!(this.checkDecimalPlaces(quantityInput, item))){
+      return;
+    }
+
+    // necessary to ensure that we only work with 2 decimal places
+    quantityInput = parseFloat(quantityInput.toFixed(2));
+
+    let isQuantityUpdated: boolean = false;
+
+    // Determine the adjustment amount based on the mode
+    const adjustment: number = mode === QuantityChange.INCREASE ? quantityInput : -quantityInput;
+
+    // Calculate new quantity, ensuring it doesn't fall below zero for decrease mode
+    const newQuantity: number = Math.max(0, item.quantityCurrent + adjustment);
+
+    // Update the item's current quantity if it has changed
+    if (item.quantityCurrent !== newQuantity) {
+      item.quantityCurrent = parseFloat(newQuantity.toFixed(2));
+      isQuantityUpdated = true;
+    }
+
+    if (item.quantityCurrent > item.quantityTotal) {
+      item.quantityTotal = item.quantityCurrent;
+    }
+
+    if (!isQuantityUpdated) {
+      this.notification.info("The quantity is the same as before", "Info");
+      return;
+    }
+
+    this.itemService.updateItem(item).subscribe({
+      next: () => {
+        this.notification.success(`Item ${item.productName} was successfully ${mode} by ${quantityInput}`, "Success");
+      },
+      error: error => {
+        item.quantityCurrent = previousCurrentQuantity;
+        item.quantityTotal = previousTotalQuantity;
+        this.quantityInputs[item.itemId] = null;
+        console.error(`Item could not be deleted: ${error}`);
+        this.notification.error(`Item ${item.productName} could not be ${mode} by ${quantityInput}`, "Error");
+
+      }
+    });
   }
 
   public delete(item: ItemDto): void {
@@ -167,6 +160,20 @@ export class ItemDetailListComponent implements OnInit {
         this.notification.error(`Item ${item.productName} could not be added to the shopping list`, "Error");
       }
     });
+  }
+
+  private checkDecimalPlaces(quantityInput: number, item: ItemDto): boolean {
+    const numberInputAsString: string = quantityInput.toString();
+    const decimalIndex: number = numberInputAsString.indexOf('.');
+
+    // check if number has at most 2 decimal places
+    if (decimalIndex !== -1 && numberInputAsString.length - decimalIndex - 1 > 2) {
+      this.notification.error("Only numbers with at most 2 decimal places can be entered", "Error");
+      this.quantityInputs[item.itemId] = null;
+      return false;
+    }
+
+    return true;
   }
 
   protected readonly QuantityChange = QuantityChange;
