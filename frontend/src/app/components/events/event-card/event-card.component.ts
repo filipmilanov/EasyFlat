@@ -46,6 +46,28 @@ export class EventCardComponent {
 
   export(id: number) {
     console.log(id)
+    this.eventService.exportEvent(id.toString()).subscribe(
+      (icsContent: string) => {
+        this.downloadICSFile(icsContent);
+      },
+      (error) => {
+        console.error('Error exporting event:', error);
+        this.notification.error('Error exporting event ' + this.event.title);
+      }
+    );
+  }
 
+  private downloadICSFile(icsContent: string) {
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    const fileName = this.event.title + '.ics';
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+
+    link.click();
+    document.body.removeChild(link);
   }
 }

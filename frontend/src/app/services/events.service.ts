@@ -59,5 +59,7 @@ export class EventsService {
     return this.http.get(this.baseUri + '/export', { responseType: 'text' });
   }
 
-
+  exportEvent(id: string): Observable<string> {
+    return this.http.get(this.baseUri + '/export/' + id, { responseType: 'text' });
+  }
 }

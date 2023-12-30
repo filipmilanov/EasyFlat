@@ -79,4 +79,10 @@ public class EventsEndPoint {
     public String exportAll() {
         return eventsService.exportAll();
     }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/export/{id}")
+    public String exportEvent(@PathVariable String id) throws AuthorizationException {
+        return eventsService.exportEvent(Long.valueOf(id));
+    }
 }

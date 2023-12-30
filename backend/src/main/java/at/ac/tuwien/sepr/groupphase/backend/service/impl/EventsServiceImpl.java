@@ -196,6 +196,40 @@ public class EventsServiceImpl implements EventsService {
         return icsContent.toString();
     }
 
+    @Override
+    public String exportEvent(Long id) throws AuthorizationException {
+        Optional<Event> eventOptional = eventsRepository.findById(id);
+
+        if (eventOptional.isPresent()) {
+            Event event = eventOptional.get();
+            ApplicationUser user = authService.getUserFromToken();
+            if (user.getSharedFlat().equals(event.getSharedFlat())) {
+                StringBuilder icsContent = new StringBuilder();
+
+                icsContent.append("BEGIN:VCALENDAR\n");
+                icsContent.append("VERSION:2.0\n");
+                icsContent.append("PRODID:-//EasyFlat//\n");
+                icsContent.append("BEGIN:VEVENT\n");
+
+                String uuid = UUID.randomUUID().toString();
+
+                icsContent.append("UID:").append(uuid).append("\n");
+                icsContent.append("SUMMARY:").append(event.getTitle()).append("\n");
+                icsContent.append("DESCRIPTION:").append(event.getDescription()).append("\n");
+                icsContent.append("DTSTART:").append(formatDate(event.getDate())).append("\n");
+                icsContent.append("DTEND:").append(formatDate(event.getDate().plusDays(1))).append("\n");
+                icsContent.append("END:VEVENT\n");
+                icsContent.append("END:VCALENDAR");
+
+                return icsContent.toString();
+            } else {
+                throw new AuthorizationException("User does not have access to this event", new ArrayList<String>());
+            }
+        } else {
+            throw new EntityNotFoundException("Event not found with id: " + id);
+        }
+    }
+
     private String formatDate(LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         return date.format(formatter);

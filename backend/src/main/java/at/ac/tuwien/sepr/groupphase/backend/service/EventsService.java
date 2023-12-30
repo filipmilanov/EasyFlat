@@ -67,8 +67,16 @@ public interface EventsService {
     /**
      * Creates a string for an ics-File for all events.
      *
-     * @return A string  representing all information for an ics-File.
+     * @return A string  representing all information for an ics-File for all events.
      */
     String exportAll();
+
+    /**
+     * Creates a string for an ics-File for an event with given id.
+     *
+     * @return A string  representing all information for an ics-File for a single event.
+     * @throws AuthorizationException If the user is not authorized to access the events.
+     */
+    String exportEvent(Long id) throws AuthorizationException;
 }
 
