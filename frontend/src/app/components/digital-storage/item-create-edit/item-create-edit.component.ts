@@ -296,7 +296,6 @@ export class ItemCreateEditComponent implements OnInit {
       },
       error: error => {
         console.error(`Item could not be deleted: ${error}`);
-        this.router.navigate(['/digital-storage/']);
         this.notification.error(`Item ${this.item.generalName} could not be deleted`, "Error");
       }
     });

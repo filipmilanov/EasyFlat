@@ -134,7 +134,6 @@ export class ItemDetailListComponent implements OnInit {
       },
       error: error => {
         console.error(`Item could not be deleted: ${error}`);
-        this.router.navigate(['/digital-storage/']);
         this.notification.error(`Item ${item.generalName} could not be deleted`, "Error");
       }
     });

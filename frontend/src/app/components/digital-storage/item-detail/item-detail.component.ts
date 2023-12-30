@@ -65,13 +65,12 @@ export class ItemDetailComponent implements OnInit {
 
   public delete() {
     this.service.deleteItem(this.item.itemId).subscribe({
-      next: data => {
+      next: () => {
         this.router.navigate(['/digital-storage/']);
         this.notification.success(`Item ${this.item.generalName} was successfully deleted`, "Success");
       },
       error: error => {
         console.error(`Item could not be deleted: ${error}`);
-        this.router.navigate(['/digital-storage/']);
         this.notification.error(`Item ${this.item.generalName} could not be deleted`, "Error");
       }
     });
