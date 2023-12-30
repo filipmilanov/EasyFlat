@@ -10,7 +10,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -31,7 +30,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -81,8 +79,10 @@ class DigitalStorageServiceTest {
         Optional<DigitalStorage> actual = service.findById(id);
 
         // then
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getStorageId()).isEqualTo(id);
+        assertAll(
+            () -> assertTrue(actual.isPresent()),
+            () -> assertThat(actual.get().getStorageId()).isEqualTo(id)
+        );
     }
 
     @Test
@@ -126,14 +126,16 @@ class DigitalStorageServiceTest {
             .build();
 
         // when
-        DigitalStorage actual = service.create(digitalStorageDto, "");
+        DigitalStorage actual = service.create(digitalStorageDto);
 
         // then
         Optional<DigitalStorage> persisted = service.findById(actual.getStorageId());
 
-        assertTrue(persisted.isPresent());
-        assertThat(actual).isEqualTo(persisted.get());
-        assertThat(actual.getTitle()).isEqualTo(digitalStorageDto.title());
+        assertAll(
+            () -> assertTrue(persisted.isPresent()),
+            () -> assertThat(actual).isEqualTo(persisted.get()),
+            () -> assertThat(actual.getTitle()).isEqualTo(digitalStorageDto.title())
+        );
     }
 
     @Test
@@ -144,7 +146,7 @@ class DigitalStorageServiceTest {
             .build();
 
         // when + then
-        assertThrows(ValidationException.class, () -> service.create(digitalStorageDto, "Bearer token"));
+        assertThrows(ValidationException.class, () -> service.create(digitalStorageDto));
     }
 
     @Test
@@ -152,28 +154,28 @@ class DigitalStorageServiceTest {
     void givenInvalidStorageWhenSearchItemsThenValidationExceptionIsThrown() {
         // given
         Long iD = -1111L;
-        ItemSearchDto searchParams = new ItemSearchDto(null, null, null, null, null);
+        ItemSearchDto searchParams = new ItemSearchDto(null, null, null, null);
 
         // when + then
-        assertThrows(ValidationException.class, () -> service.searchItems(searchParams, ""));
+        assertThrows(ValidationException.class, () -> service.searchItems(searchParams));
     }
 
     @Test
-    void givenValidSearchParamsWhenSearchItemsThenReturnList() throws ValidationException, AuthenticationException, ConflictException {
+    void givenValidSearchParamsWhenSearchItemsThenReturnList() throws ValidationException, AuthenticationException {
         // given
-        ItemSearchDto searchParams = new ItemSearchDto(null, false, null, null, null);
+        ItemSearchDto searchParams = new ItemSearchDto(false, null, null, null);
         ItemListDto itemListDto = ItemListDtoBuilder.builder()
             .generalName("apples")
-            .quantityCurrent(10.0)
-            .quantityTotal(20.0)
+            .quantityCurrent(1.0)
+            .quantityTotal(1.0)
             .storageId(1L)
             .unit(UnitDtoBuilder.builder().name("kg").build())
             .build();
 
         // when
-        List<ItemListDto> result = service.searchItems(searchParams, "Bearer Token");
+        List<ItemListDto> result = service.searchItems(searchParams);
 
-
+        // then
         assertAll(
             () -> assertThat(result).isNotEmpty(),
             () -> assertThat(result).contains(itemListDto)
@@ -183,29 +185,9 @@ class DigitalStorageServiceTest {
     @Test
     void givenInvalidSearchParamsWhenSearchItemsThenThrowValidationException() {
         // given
-        ItemSearchDto invalidSearchParams = new ItemSearchDto(null, null, null, null, null);
-
+        ItemSearchDto invalidSearchParams = new ItemSearchDto(null, null, null, null);
 
         // when + then
-        assertThrows(ValidationException.class, () -> service.searchItems(invalidSearchParams, "Bearer Token"));
-    }
-
-    @Test
-    void givenValidSearchParamsWhenGetItemsWithGeneralNameThenReturnList() throws ValidationException, AuthenticationException, ConflictException {
-        // given
-        String itemName = "apples";
-        String jwt = "Bearer Token";
-
-
-        // when
-        List<DigitalStorageItem> result = service.getItemWithGeneralName(itemName, jwt);
-
-
-        // then
-        assertAll(
-            () -> assertThat(result).isNotEmpty(),
-            () -> assertThat(result).isNotNull(),
-            () -> assertEquals(result.size(), 1)
-        );
+        assertThrows(ValidationException.class, () -> service.searchItems(invalidSearchParams));
     }
 }

@@ -29,6 +29,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -136,11 +137,11 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt)
+        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
 
-
-        List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, true, null, null, null), jwt);
-        List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, false, null, null, null), jwt);
+        List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, null, null, null));
+        List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, null, null, null));
 
         List<ItemListDto> items = new LinkedList<>();
         items.addAll(alwaysInStockItems);
@@ -426,7 +427,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthenticationException {
+    public RecipeSuggestionDto getMissingIngredients(Long id, String jwt) {
         ApplicationUser user = customUserDetailService.getUser(jwt);
         DigitalStorage digitalStorageOfUser = user.getSharedFlat().getDigitalStorage();
 
@@ -443,7 +444,7 @@ public class CookingServiceImpl implements CookingService {
         if (recipeSuggestionDto != null) {
             List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
             for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
-                List<DigitalStorageItem> items = itemRepository.findAllByDigitalStorageIsAndGeneralNameIs(digitalStorageOfUser, ingredient.name());
+                List<DigitalStorageItem> items = itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_GeneralName(digitalStorageOfUser.getStorageId(), ingredient.name());
                 if (items.isEmpty()) {
                     missingIngredients.add(ingredient);
                     continue;
@@ -519,19 +520,19 @@ public class CookingServiceImpl implements CookingService {
                 if (digitalStorageItem.getQuantityCurrent() >= ingAmountMin) {
                     if (digitalStorageItem.getItemCache().getUnit().equals(digitalStorageItems.get(i).getItemCache().getUnit())) {
                         ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity((digitalStorageItem.getQuantityCurrent() - ingAmountMin));
-                        itemService.update(updatedItem, jwt);
+                        itemService.update(updatedItem);
                     } else {
                         Double updatedQuantity = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), digitalStorageItems.get(i).getItemCache().getUnit(), digitalStorageItem.getQuantityCurrent() - ingAmountMin);
                         digitalStorageItem.getItemCache().setUnit(digitalStorageItems.get(i).getItemCache().getUnit());
                         ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(updatedQuantity);
-                        itemService.update(updatedItem, jwt);
+                        itemService.update(updatedItem);
                     }
                     break;
                 } else {
                     ingAmountMin -= digitalStorageItem.getQuantityCurrent();
                     digitalStorageItem.getItemCache().setUnit(digitalStorageItems.get(i).getItemCache().getUnit());
                     ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(0.0);
-                    itemService.update(updatedItem, jwt);
+                    itemService.update(updatedItem);
 
                 }
             }

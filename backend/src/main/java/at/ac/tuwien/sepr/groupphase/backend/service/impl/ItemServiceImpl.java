@@ -15,6 +15,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemStatsRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
@@ -30,7 +31,6 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -43,8 +43,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final ItemValidator itemValidator;
     private final ItemStatsRepository itemStatsRepository;
+    private final AuthService authService;
     private final Authorization authorization;
-    private final SharedFlatService sharedFlatService;
     private final UnitService unitService;
 
     public ItemServiceImpl(ItemRepository itemRepository,
@@ -53,21 +53,22 @@ public class ItemServiceImpl implements ItemService {
                            ItemMapper itemMapper,
                            ItemValidator itemValidator,
                            ItemStatsRepository itemStatsRepository,
+                           AuthService authService,
                            Authorization authorization,
-                           SharedFlatService sharedFlatService, CustomUserDetailService customUserDetailService, UnitService unitService) {
+                           UnitService unitService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
         this.itemMapper = itemMapper;
         this.itemValidator = itemValidator;
         this.itemStatsRepository = itemStatsRepository;
+        this.authService = authService;
         this.authorization = authorization;
-        this.sharedFlatService = sharedFlatService;
         this.unitService = unitService;
     }
 
     @Override
-    public DigitalStorageItem findById(Long id, String jwt) throws AuthenticationException {
+    public DigitalStorageItem findById(Long id) throws AuthenticationException {
         LOGGER.trace("findById({})", id);
         if (id == null) {
             throw new NotFoundException("No item ID given!");
@@ -99,20 +100,25 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<DigitalStorageItem> getItemWithGeneralName(String generalName, String jwt) {
+    public List<DigitalStorageItem> getItemWithGeneralName(String generalName) {
         LOGGER.trace("getItemWithGeneralName({})", generalName);
 
-        ApplicationUser user = customUserDetailService.getUser(jwt);
+        ApplicationUser user = authService.getUserFromToken();
 
-        DigitalStorage digitalStorage = user.getSharedFlat().getDigitalStorage();
+        Long digitalStorageId = user.getSharedFlat().getDigitalStorage().getStorageId();
 
-        return itemRepository.findAllByDigitalStorageIsAndGeneralNameIs(digitalStorage, generalName);
+        return itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_GeneralName(digitalStorageId, generalName);
     }
 
     @Override
     @Transactional
-    public DigitalStorageItem create(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
+    public DigitalStorageItem create(ItemDto itemDto) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("create({})", itemDto);
+
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        if (applicationUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+        }
 
         if (itemDto.alwaysInStock() == null) {
             itemDto = itemDto.withAlwaysInStock(false);
@@ -122,23 +128,14 @@ public class ItemServiceImpl implements ItemService {
         List<Unit> unitList = unitService.findAll();
         itemValidator.validateForCreate(itemDto, digitalStorageList, unitList);
 
-        ItemDto finalItemDto = itemDto;
-        DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
-                .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storageId(), digitalStorage.getStorageId()))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Given digital storage does not exist in the database!"));
-
-        List<Long> allowedUser = sharedFlatService.findById(
-                matchingDigitalStorage.getSharedFlat().getId(),
-                jwt
-            ).getUsers().stream()
+        List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
             .map(ApplicationUser::getId)
             .toList();
+
         authorization.authenticateUser(
-            allowedUser,
+            allowedUsers,
             "The given digital storage does not belong to the user's shared flat!"
         );
-
 
         List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
@@ -163,7 +160,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public DigitalStorageItem update(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
+    public DigitalStorageItem update(ItemDto itemDto) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("update({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
@@ -174,20 +171,11 @@ public class ItemServiceImpl implements ItemService {
         List<Unit> unitList = unitService.findAll();
         itemValidator.validateForUpdate(itemDto, digitalStorageList, unitList);
 
-        ItemDto finalItemDto = itemDto;
-        DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
-            .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storageId(), digitalStorage.getStorageId()))
-            .findFirst()
-            .orElseThrow(() -> new NotFoundException("Given digital storage does not exist in the database!"));
-
-        List<Long> allowedUser = sharedFlatService.findById(
-                matchingDigitalStorage.getSharedFlat().getId(),
-                jwt
-            ).getUsers().stream()
+        List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
             .map(ApplicationUser::getId)
             .toList();
         authorization.authenticateUser(
-            allowedUser,
+            allowedUsers,
             "The given digital storage does not belong to the user's shared flat!"
         );
 
@@ -200,11 +188,11 @@ public class ItemServiceImpl implements ItemService {
             digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null);
         }
 
-        DigitalStorageItem presistedDigitalStorageItem = this.findById(itemDto.itemId(), jwt);
+        DigitalStorageItem presistedDigitalStorageItem = this.findById(itemDto.itemId());
 
         // necessary because JPA cannot convert an Entity to another Entity
         if (digitalStorageItem.alwaysInStock() != presistedDigitalStorageItem.alwaysInStock()) {
-            this.delete(itemDto.itemId(), jwt);
+            this.delete(itemDto.itemId());
         }
 
         DigitalStorageItem updatedDigitalStorageItem = itemRepository.save(digitalStorageItem);
@@ -213,15 +201,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void delete(Long id, String jwt) throws AuthenticationException {
+    @Transactional
+    public void delete(Long id) throws AuthenticationException {
         LOGGER.trace("delete({})", id);
 
-        DigitalStorageItem itemToDelete = this.findById(id, jwt);
-
-        Long sharedFlatId = itemToDelete.getDigitalStorage().getSharedFlat().getId();
-
-        List<Long> allowedUsers = sharedFlatService.findById(sharedFlatId, jwt)
-            .getUsers().stream()
+        List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
             .map(ApplicationUser::getId)
             .toList();
 

@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestio
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
@@ -77,7 +78,7 @@ public class CookingServiceTest {
 
     @Test
     @Disabled
-    void testGetRecipeSuggestion() throws ValidationException, ConflictException, AuthenticationException {
+    void testGetRecipeSuggestion() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
 
         when(jwtTokenizer.getEmailFromToken(any(String.class))).thenReturn(applicationUser.getEmail());
 
@@ -98,7 +99,7 @@ public class CookingServiceTest {
 
     @Test
     @Disabled
-    void testCookRecipeReturnTheCookedRecipe() throws ValidationException, ConflictException, AuthenticationException {
+    void testCookRecipeReturnTheCookedRecipe() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
         // given
         Set<UnitDto> subUnit = new HashSet<>();
         subUnit.add(new UnitDto("g", null, null));
@@ -162,7 +163,7 @@ public class CookingServiceTest {
 
     @Test
     @Disabled
-    void testCookRecipeRemoveItemsQuantityFromStorage() throws ValidationException, ConflictException, AuthenticationException {
+    void testCookRecipeRemoveItemsQuantityFromStorage() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
         // given
         Set<UnitDto> subUnit = new HashSet<>();
         subUnit.add(new UnitDto("g", null, null));
@@ -208,18 +209,18 @@ public class CookingServiceTest {
             .summary("How to cook")
             .build();
 
-        ItemSearchDto searchParamsIS = new ItemSearchDto(null, false, null, null, null);
-        ItemSearchDto searchParamsAIS = new ItemSearchDto(null, true, null, null, null);
-        List<ItemListDto> itemsFromDigitalStorageIS = digitalStorageService.searchItems(searchParamsIS, "jwt");
-        List<ItemListDto> itemsFromDigitalStorageAIS = digitalStorageService.searchItems(searchParamsAIS, "jwt");
+        ItemSearchDto searchParamsIS = new ItemSearchDto(null, null, null, null);
+        ItemSearchDto searchParamsAIS = new ItemSearchDto(null, null, null, null);
+        List<ItemListDto> itemsFromDigitalStorageIS = digitalStorageService.searchItems(searchParamsIS);
+        List<ItemListDto> itemsFromDigitalStorageAIS = digitalStorageService.searchItems(searchParamsAIS);
         List<ItemListDto> items = new LinkedList<>();
         items.addAll(itemsFromDigitalStorageIS);
         items.addAll(itemsFromDigitalStorageAIS);
         // when
         RecipeSuggestionDto result = cookingService.cookRecipe(testRecipe, "jwt");
 
-        List<ItemListDto> itemsFromDigitalStorageIST = digitalStorageService.searchItems(searchParamsIS, "jwt");
-        List<ItemListDto> itemsFromDigitalStorageAIST = digitalStorageService.searchItems(searchParamsAIS, "jwt");
+        List<ItemListDto> itemsFromDigitalStorageIST = digitalStorageService.searchItems(searchParamsIS);
+        List<ItemListDto> itemsFromDigitalStorageAIST = digitalStorageService.searchItems(searchParamsAIS);
         List<ItemListDto> itemsT = new LinkedList<>();
         items.addAll(itemsFromDigitalStorageIST);
         items.addAll(itemsFromDigitalStorageAIST);
