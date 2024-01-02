@@ -440,24 +440,23 @@ public class CookingServiceImpl implements CookingService {
             recipeEntity = getRecipeFromApi(id);
         }
 
+
+
         RecipeSuggestionDto recipeSuggestionDto = recipeMapper.entityToRecipeSuggestionDto(recipeEntity);
         if (recipeSuggestionDto != null) {
             List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
             for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
-                List<DigitalStorageItem> items = itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_GeneralName(digitalStorageOfUser.getStorageId(), ingredient.name());
+                List<DigitalStorageItem> items = itemRepository.findAllByDigitalStorage_StorageId(digitalStorageOfUser.getStorageId());
                 if (items.isEmpty()) {
                     missingIngredients.add(ingredient);
                     continue;
                 }
 
                 Unit ingredientUnit = unitMapper.unitDtoToEntity(ingredient.unitEnum());
-                if (!getMinUnit(ingredientUnit).equals(getMinUnit(items.get(0).getItemCache().getUnit()))) {
-                    missingIngredients.add(ingredient);
-                    continue;
-                }
+
                 try {
                     Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), ingredient.amount());
-                    Double itemQuantityTotal = getItemQuantityTotalInMinQuantity(items);
+                    Double itemQuantityTotal = getItemQuantityTotalInMinQuantity(items,ingredient);
 
                     if (ingAmountMin > itemQuantityTotal) {
                         if (ingredientUnit.getConvertFactor() == null) {
@@ -479,8 +478,8 @@ public class CookingServiceImpl implements CookingService {
                             RecipeIngredientDto newIngredient = new RecipeIngredientDto(
                                 ingredient.id(),
                                 ingredient.name(),
-                                items.get(0).getItemCache().getUnit().getName(),
-                                unitMapper.entityToUnitDto(items.get(0).getItemCache().getUnit()),
+                                unitMapper.unitDtoToEntity(ingredient.unitEnum()).getName(),
+                                unitMapper.entityToUnitDto(unitMapper.unitDtoToEntity(ingredient.unitEnum())),
                                 updatedQuantity
                             );
                             missingIngredients.add(newIngredient);
@@ -593,17 +592,19 @@ public class CookingServiceImpl implements CookingService {
         return null;
     }
 
-    private Double getItemQuantityTotalInMinQuantity(List<DigitalStorageItem> digitalStorageItems) throws ValidationException, ConflictException {
+    private Double getItemQuantityTotalInMinQuantity(List<DigitalStorageItem> digitalStorageItems,RecipeIngredientDto ingredient) throws ValidationException, ConflictException {
 
         Double toRet = 0.0;
 
-        Unit test = getMinUnit(digitalStorageItems.get(0).getItemCache().getUnit());
+        Unit test = getMinUnit(unitMapper.unitDtoToEntity(ingredient.unitEnum()));
         for (DigitalStorageItem digitalStorageItem : digitalStorageItems) {
-            if (digitalStorageItem.getItemCache().getUnit().equals(test)) {
-                toRet += digitalStorageItem.getQuantityCurrent();
-            } else {
-                Double convert = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), test, digitalStorageItem.getQuantityCurrent());
-                toRet += convert;
+            if(digitalStorageItem.getItemCache().getProductName().equals(ingredient.name())) {
+                if (digitalStorageItem.getItemCache().getUnit().equals(test)) {
+                    toRet += digitalStorageItem.getQuantityCurrent();
+                } else {
+                    Double convert = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), test, digitalStorageItem.getQuantityCurrent());
+                    toRet += convert;
+                }
             }
         }
         return toRet;
