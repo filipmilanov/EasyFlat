@@ -3,7 +3,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
@@ -36,6 +35,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeSuggestionRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.RecipeIngredientService;
@@ -90,6 +90,7 @@ public class CookingServiceImpl implements CookingService {
     private final ShoppingListService shoppingListService;
     private final ShoppingListMapper shoppingListMapper;
     private final DigitalStorageMapper digitalStorageMapper;
+    private final AuthService authService;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
 
     public CookingServiceImpl(RestTemplate restTemplate,
@@ -110,7 +111,7 @@ public class CookingServiceImpl implements CookingService {
                               CustomUserDetailService customUserDetailService,
                               ShoppingListService shoppingListService,
                               ShoppingListMapper shoppingListMapper,
-                              DigitalStorageMapper digitalStorageMapper) {
+                              DigitalStorageMapper digitalStorageMapper, AuthService authService) {
         this.repository = repository;
         this.restTemplate = restTemplate;
         this.digitalStorageService = digitalStorageService;
@@ -134,18 +135,17 @@ public class CookingServiceImpl implements CookingService {
         this.digitalStorageMapper = digitalStorageMapper;
         this.itemRepository = itemRepository;
         this.customUserDetailService = customUserDetailService;
+        this.authService = authService;
     }
 
     @Override
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt)
         throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
 
-        List<ItemListDto> alwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, null, null, null));
-        List<ItemListDto> notAlwaysInStockItems = digitalStorageService.searchItems(new ItemSearchDto(null, null, null, null));
+        ApplicationUser user = authService.getUserFromToken();
 
-        List<ItemListDto> items = new LinkedList<>();
-        items.addAll(alwaysInStockItems);
-        items.addAll(notAlwaysInStockItems);
+        List<ItemDto> items = itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId()).stream().map(itemMapper::entityToDto).toList();
+
 
         String requestString = getRequestStringForRecipeSearch(items);
         ResponseEntity<List<RecipeDto>> exchange = restTemplate.exchange(requestString, HttpMethod.GET, null, new ParameterizedTypeReference<List<RecipeDto>>() {
@@ -557,10 +557,10 @@ public class CookingServiceImpl implements CookingService {
     }
 
 
-    private String getRequestStringForRecipeSearch(List<ItemListDto> items) {
+    private String getRequestStringForRecipeSearch(List<ItemDto> items) {
         List<String> ingredients = new LinkedList<>();
-        for (ItemListDto item : items) {
-            ingredients.add(item.generalName());
+        for (ItemDto item : items) {
+            ingredients.add(item.productName());
         }
 
         String requestString = apiUrl;

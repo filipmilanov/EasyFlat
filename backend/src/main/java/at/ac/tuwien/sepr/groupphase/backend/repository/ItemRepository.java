@@ -18,4 +18,8 @@ public interface ItemRepository extends JpaRepository<DigitalStorageItem, Long> 
         Long storageId,
         String generalName
     );
+
+    List<DigitalStorageItem> findAllByDigitalStorage_StorageId(
+        Long storageId
+    );
 }
