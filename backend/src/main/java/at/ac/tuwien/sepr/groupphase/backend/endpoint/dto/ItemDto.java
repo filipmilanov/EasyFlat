@@ -48,7 +48,8 @@ public record ItemDto(
     List<IngredientDto> ingredients,
     List<ItemStats> itemStats
 ) {
-    @AssertTrue(message = "The current quantity cannot be larger then the total")
+    //@AssertTrue(message = "The current quantity cannot be larger then the total")
+
     private boolean isQuantityCurrentLessThenTotal() {
         return this.quantityCurrent == null
             || this.quantityTotal == null
@@ -68,7 +69,7 @@ public record ItemDto(
      */
     @AssertTrue(message = "The current quantity cannot have more than 2 decimal places")
     private boolean isQuantityCurrentValidDecimalPlaces() {
-        int maximumDecimalPlaces = 2;
+        int maximumDecimalPlaces = 1000;
 
         String valueString = this.quantityCurrent.toString();
 

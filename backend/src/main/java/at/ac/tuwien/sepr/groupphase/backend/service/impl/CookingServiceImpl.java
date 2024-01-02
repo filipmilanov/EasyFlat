@@ -441,7 +441,6 @@ public class CookingServiceImpl implements CookingService {
         }
 
 
-
         RecipeSuggestionDto recipeSuggestionDto = recipeMapper.entityToRecipeSuggestionDto(recipeEntity);
         if (recipeSuggestionDto != null) {
             List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
@@ -456,7 +455,7 @@ public class CookingServiceImpl implements CookingService {
 
                 try {
                     Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), ingredient.amount());
-                    Double itemQuantityTotal = getItemQuantityTotalInMinQuantity(items,ingredient);
+                    Double itemQuantityTotal = getItemQuantityTotalInMinQuantity(items, ingredient);
 
                     if (ingAmountMin > itemQuantityTotal) {
                         if (ingredientUnit.getConvertFactor() == null) {
@@ -474,7 +473,7 @@ public class CookingServiceImpl implements CookingService {
                             missingIngredients.add(newIngredient);
                         } else {
 
-                            Double updatedQuantity = unitService.convertUnits(getMinUnit(ingredientUnit), items.get(0).getItemCache().getUnit(), ingAmountMin - itemQuantityTotal);
+                            Double updatedQuantity = unitService.convertUnits(getMinUnit(ingredientUnit), ingredientUnit, ingAmountMin - itemQuantityTotal);
                             RecipeIngredientDto newIngredient = new RecipeIngredientDto(
                                 ingredient.id(),
                                 ingredient.name(),
@@ -508,31 +507,32 @@ public class CookingServiceImpl implements CookingService {
         Long storageId = this.getStorageIdForUser(jwt);
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
-            List<DigitalStorageItem> digitalStorageItems = itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_GeneralName(storageId, recipeIngredientDto.name());
+            List<DigitalStorageItem> digitalStorageItems = itemRepository.findAllByDigitalStorage_StorageId(storageId);
             Unit ingredientUnit = unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum());
             Double ingAmountMin = unitService.convertUnits(ingredientUnit, getMinUnit(ingredientUnit), recipeIngredientDto.amount());
             List<DigitalStorageItem> itemsWithMinUnits = minimizeUnits(digitalStorageItems);
             for (int i = 0; i < itemsWithMinUnits.size(); i++) {
+                if (digitalStorageItems.get(i).getItemCache().getProductName().equals(recipeIngredientDto.name())) {
+                    DigitalStorageItem digitalStorageItem = itemsWithMinUnits.get(i);
 
-                DigitalStorageItem digitalStorageItem = itemsWithMinUnits.get(i);
-
-                if (digitalStorageItem.getQuantityCurrent() >= ingAmountMin) {
-                    if (digitalStorageItem.getItemCache().getUnit().equals(digitalStorageItems.get(i).getItemCache().getUnit())) {
-                        ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity((digitalStorageItem.getQuantityCurrent() - ingAmountMin));
-                        itemService.update(updatedItem);
+                    if (digitalStorageItem.getQuantityCurrent() >= ingAmountMin) {
+                        if (digitalStorageItem.getItemCache().getUnit().equals(digitalStorageItems.get(i).getItemCache().getUnit())) {
+                            ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity((digitalStorageItem.getQuantityCurrent() - ingAmountMin));
+                            itemService.update(updatedItem);
+                        } else {
+                            Double updatedQuantity = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), digitalStorageItems.get(i).getItemCache().getUnit(), digitalStorageItem.getQuantityCurrent() - ingAmountMin);
+                            digitalStorageItem.getItemCache().setUnit(digitalStorageItems.get(i).getItemCache().getUnit());
+                            ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(updatedQuantity);
+                            itemService.update(updatedItem);
+                        }
+                        break;
                     } else {
-                        Double updatedQuantity = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), digitalStorageItems.get(i).getItemCache().getUnit(), digitalStorageItem.getQuantityCurrent() - ingAmountMin);
+                        ingAmountMin -= digitalStorageItem.getQuantityCurrent();
                         digitalStorageItem.getItemCache().setUnit(digitalStorageItems.get(i).getItemCache().getUnit());
-                        ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(updatedQuantity);
+                        ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(0.0);
                         itemService.update(updatedItem);
-                    }
-                    break;
-                } else {
-                    ingAmountMin -= digitalStorageItem.getQuantityCurrent();
-                    digitalStorageItem.getItemCache().setUnit(digitalStorageItems.get(i).getItemCache().getUnit());
-                    ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(0.0);
-                    itemService.update(updatedItem);
 
+                    }
                 }
             }
         }
@@ -592,13 +592,13 @@ public class CookingServiceImpl implements CookingService {
         return null;
     }
 
-    private Double getItemQuantityTotalInMinQuantity(List<DigitalStorageItem> digitalStorageItems,RecipeIngredientDto ingredient) throws ValidationException, ConflictException {
+    private Double getItemQuantityTotalInMinQuantity(List<DigitalStorageItem> digitalStorageItems, RecipeIngredientDto ingredient) throws ValidationException, ConflictException {
 
         Double toRet = 0.0;
 
         Unit test = getMinUnit(unitMapper.unitDtoToEntity(ingredient.unitEnum()));
         for (DigitalStorageItem digitalStorageItem : digitalStorageItems) {
-            if(digitalStorageItem.getItemCache().getProductName().equals(ingredient.name())) {
+            if (digitalStorageItem.getItemCache().getProductName().equals(ingredient.name())) {
                 if (digitalStorageItem.getItemCache().getUnit().equals(test)) {
                     toRet += digitalStorageItem.getQuantityCurrent();
                 } else {
@@ -624,13 +624,13 @@ public class CookingServiceImpl implements CookingService {
             minimizedDigitalStorageItem.setItemId(digitalStorageItem.getItemId());
             minimizedDigitalStorageItem.getItemCache().setUnit(minUnit);
             minimizedDigitalStorageItem.setQuantityCurrent(convertedQuantity);
-            minimizedDigitalStorageItem.getItemCache().setEan(digitalStorageItems.get(0).getItemCache().getEan());
-            minimizedDigitalStorageItem.getItemCache().setGeneralName(digitalStorageItems.get(0).getItemCache().getGeneralName());
-            minimizedDigitalStorageItem.getItemCache().setProductName(digitalStorageItems.get(0).getItemCache().getProductName());
-            minimizedDigitalStorageItem.getItemCache().setBrand(digitalStorageItems.get(0).getItemCache().getBrand());
-            minimizedDigitalStorageItem.getItemCache().setQuantityTotal(digitalStorageItems.get(0).getItemCache().getQuantityTotal());
+            minimizedDigitalStorageItem.getItemCache().setEan(digitalStorageItem.getItemCache().getEan());
+            minimizedDigitalStorageItem.getItemCache().setGeneralName(digitalStorageItem.getItemCache().getGeneralName());
+            minimizedDigitalStorageItem.getItemCache().setProductName(digitalStorageItem.getItemCache().getProductName());
+            minimizedDigitalStorageItem.getItemCache().setBrand(digitalStorageItem.getItemCache().getBrand());
+            minimizedDigitalStorageItem.getItemCache().setQuantityTotal(digitalStorageItem.getItemCache().getQuantityTotal());
             minimizedDigitalStorageItem.setExpireDate(digitalStorageItem.getExpireDate());
-            minimizedDigitalStorageItem.getItemCache().setDescription(digitalStorageItems.get(0).getItemCache().getDescription());
+            minimizedDigitalStorageItem.getItemCache().setDescription(digitalStorageItem.getItemCache().getDescription());
             minimizedDigitalStorageItem.setPriceInCent(digitalStorageItem.getPriceInCent());
             minimizedDigitalStorageItem.setBoughtAt(digitalStorageItem.getBoughtAt());
             minimizedDigitalStorageItem.setDigitalStorage(digitalStorageItem.getDigitalStorage());
