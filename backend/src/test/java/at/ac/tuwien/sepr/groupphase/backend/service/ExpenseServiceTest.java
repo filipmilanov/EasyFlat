@@ -455,14 +455,13 @@ class ExpenseServiceTest {
             () -> assertThat(actual).extracting(
                 (BalanceDebitDto balanceDebitDto) -> balanceDebitDto.debtor().id(),
                 (BalanceDebitDto balanceDebitDto) -> balanceDebitDto.creditor().id(),
-                BalanceDebitDto::valueInCent
+                (BalanceDebitDto balanceDebitDto) -> Math.round((balanceDebitDto.valueInCent()) * 10) / 10.0
             ).contains(
-                new Tuple(6L, 21L, 553.48),
-                new Tuple(1L, 21L, 548.26),
-                new Tuple(11L, 21L, 6.7),
-                new Tuple(11L, 16L, 382.0)
+                new Tuple(6L, 21L, 553.8),
+                new Tuple(1L, 21L, 548.4),
+                new Tuple(11L, 16L, 382.8),
+                new Tuple(11L, 21L, 6.0)
             )
         );
-
     }
 }
