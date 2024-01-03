@@ -105,7 +105,9 @@ export class ExpenseCreateEditComponent implements OnInit {
     this.expense.createdAt = new Date(
       this.expenseDate.year,
       this.expenseDate.month - 1,
-      this.expenseDate.day
+      this.expenseDate.day,
+      this.expenseTime.hour,
+      this.expenseTime.minute,
     );
     this.expense.amountInCents = this.amountInEuro * 100;
     if (this.selectedSplitBy === SplitBy.EQUAL || this.selectedSplitBy === SplitBy.UNEQUAL) {
