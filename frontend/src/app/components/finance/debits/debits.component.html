@@ -1,0 +1,13 @@
+<div *ngFor="let debit of balanceDebits"
+     class="row w-50 p-2 align-items-center align-content-center border rounded m-1">
+    <div class="col-8">
+        {{formatUserName(debit.debtor)}}
+        owes {{formatUserName(debit.creditor)}} {{convertAmountToEuro(debit.valueInCent)}} €
+    </div>
+    <div class="btn-group col-4"
+         role="group"
+         aria-label="Basic example">
+        <button type="button" class="btn btn-secondary">Pay Back</button>
+        <button type="button" class="btn btn-secondary">PayPall</button>
+    </div>
+</div>
