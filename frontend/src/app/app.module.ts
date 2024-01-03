@@ -10,7 +10,13 @@ import {FooterComponent} from './components/footer/footer.component';
 import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
 import {MessageComponent} from './components/message/message.component';
-import {NgbAlertModule, NgbDatepickerModule, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbAlertModule,
+  NgbDatepickerModule,
+  NgbModule,
+  NgbTimepickerConfig,
+  NgbTimepickerModule
+} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
 import {DigitalStorageComponent} from './components/digital-storage/digital-storage.component';
 import {ItemCardComponent} from './components/digital-storage/item-card/item-card.component';
@@ -108,10 +114,14 @@ LOAD_WASM().subscribe();
     NgOptimizedImage,
     NgxScannerQrcodeModule,
     NgbDatepickerModule,
+    NgbTimepickerModule,
     NgbAlertModule,
     JsonPipe
   ],
-  providers: [httpInterceptorProviders],
+  providers: [
+    httpInterceptorProviders,
+    NgbTimepickerConfig
+  ],
   bootstrap: [AppComponent]
 })
 

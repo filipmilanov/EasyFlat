@@ -65,8 +65,8 @@
           <input
             class="form-control"
             placeholder="dd-mm-yyyy"
-            id="createdAt"
-            name="createdAt"
+            id="createdAtDate"
+            name="createdAtDate"
             [(ngModel)]="expenseDate"
             ngbDatepicker
             #date="ngbDatepicker"
@@ -76,6 +76,10 @@
                   (click)="date.toggle()"
                   type="button">
           </button>
+          <ngb-timepicker id="createdAtTime"
+                          name="createdAtTime"
+                          [(ngModel)]="expenseTime"
+          />
         </div>
       </div>
 

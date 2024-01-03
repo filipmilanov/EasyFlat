@@ -7,7 +7,7 @@ import {ToastrService} from "ngx-toastr";
 import {UserService} from "../../../services/user.service";
 import {UserListDto} from "../../../dtos/user";
 import {AuthService} from "../../../services/auth.service";
-import {NgbDate, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDateStruct, NgbTimepickerConfig, NgbTimeStruct} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-expense-create-edit',
@@ -24,6 +24,7 @@ export class ExpenseCreateEditComponent implements OnInit {
   submitButtonText: string = 'Create';
   users: UserListDto[] = [];
   expenseDate: NgbDateStruct;
+  expenseTime: NgbTimeStruct = {hour: 13, minute: 30, second: 0};
 
   constructor(
     private userService: UserService,
@@ -31,7 +32,9 @@ export class ExpenseCreateEditComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private notification: ToastrService,
+    config: NgbTimepickerConfig
   ) {
+    config.spinners = false;
   }
 
   ngOnInit(): void {
@@ -63,8 +66,9 @@ export class ExpenseCreateEditComponent implements OnInit {
         this.notification.error("Could not load flatmates", "Error");
       }
     });
-    let today = new Date();
-    this.expenseDate = new NgbDate(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    let now = new Date();
+    this.expenseDate = {year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate()}
+    this.expenseTime = {hour: now.getHours(), minute: now.getMinutes(), second: now.getSeconds()};
   }
 
   onSubmit(form: NgForm) {
