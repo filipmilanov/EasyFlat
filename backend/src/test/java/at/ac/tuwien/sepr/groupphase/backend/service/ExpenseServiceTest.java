@@ -19,6 +19,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -157,19 +158,19 @@ class ExpenseServiceTest {
     static List<Arguments> data() {
         List<DebitDto> debitUsers = new ArrayList<>();
         UserListDto userDetailDto1 = UserListDtoBuilder.builder()
-            .id(1L)
-            .build();
-
-        UserListDto userDetailDto2 = UserListDtoBuilder.builder()
-            .id(6L)
-            .build();
-
-        UserListDto userDetailDto3 = UserListDtoBuilder.builder()
             .id(11L)
             .build();
 
-        UserListDto userDetailDto4 = UserListDtoBuilder.builder()
+        UserListDto userDetailDto2 = UserListDtoBuilder.builder()
             .id(16L)
+            .build();
+
+        UserListDto userDetailDto3 = UserListDtoBuilder.builder()
+            .id(21L)
+            .build();
+
+        UserListDto userDetailDto4 = UserListDtoBuilder.builder()
+            .id(1L)
             .build();
 
         return List.of(
@@ -435,5 +436,12 @@ class ExpenseServiceTest {
         assertThrows(ConflictException.class, () ->
             service.create(expenseDto)
         );
+    }
+
+
+    @Test
+    @DisplayName("Are debits calculated right, so that after paying the expense, the balance is 0?")
+    void areDebitsCalculatedRight() {
+
     }
 }

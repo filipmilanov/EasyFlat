@@ -51,7 +51,7 @@ public class ExpenseDataGenerator {
 
 
             ApplicationUser paidByUser = new ApplicationUser();
-            paidByUser.setId(random.nextLong(5) + 1);
+            paidByUser.setId(random.nextLong(25) + 1);
             List<ApplicationUser> paidForUsers = new ArrayList<>(userRepository.findById(paidByUser.getId()).orElseThrow()
                 .getSharedFlat()
                 .getUsers()
