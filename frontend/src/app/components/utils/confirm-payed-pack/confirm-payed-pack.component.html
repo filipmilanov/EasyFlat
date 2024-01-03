@@ -3,11 +3,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirm-payback-modal-title">
-                    Pay {{convertAmountToEuro(debit.valueInCent)}}</h5>
+                    Payback {{convertAmountToEuro(debit.valueInCent)}} €</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Did you gave {{formatUserName(debit.creditor)}} {{convertAmountToEuro(debit.valueInCent)}} €?
+                Did you gave {{formatUserName(debit.creditor)}} <span
+                    style="font-weight: bold;">{{convertAmountToEuro(debit.valueInCent)}} €</span>?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary"

@@ -2,7 +2,8 @@
      class="row w-50 p-2 align-items-center align-content-center border rounded m-1">
     <div class="col-8">
         {{formatUserName(debit.debtor)}}
-        owes {{formatUserName(debit.creditor)}} {{convertAmountToEuro(debit.valueInCent)}} €
+        owes {{formatUserName(debit.creditor)}} <span
+            style="font-weight: bold;">{{convertAmountToEuro(debit.valueInCent)}} €</span>
     </div>
     <div class="btn-group col-4"
          role="group"
@@ -21,7 +22,7 @@
     <app-confirm-payed-pack
             [mId]="i"
             [debit]="debit"
-            (confirm)="1+1">
+            (confirm)="payback(debit)">
     </app-confirm-payed-pack>
 </div>
 
