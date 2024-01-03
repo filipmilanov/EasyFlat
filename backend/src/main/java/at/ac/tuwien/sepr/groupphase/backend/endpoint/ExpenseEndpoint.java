@@ -51,7 +51,7 @@ public class ExpenseEndpoint {
     public List<BalanceDebitDto> calculateDebits() throws AuthenticationException {
         LOGGER.info("calculateDebits");
 
-        throw new UnsupportedOperationException("Not implemented yet");
+        return expenseService.calculateDebits();
     }
 
     @Secured("ROLE_USER")
