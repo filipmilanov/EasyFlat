@@ -1,11 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DebitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Debit;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
@@ -26,7 +28,10 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,19 +44,22 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final DebitMapper debitMapper;
     private final Authorization authorization;
     private final AuthService authService;
+    private final UserMapper userMapper;
 
     public ExpenseServiceImpl(ExpenseRepository expenseRepository,
                               ExpenseMapper expenseMapper,
                               ExpenseValidator expenseValidator,
                               DebitMapper debitMapper,
                               Authorization authorization,
-                              AuthService authService) {
+                              AuthService authService,
+                              UserMapper userMapper) {
         this.expenseRepository = expenseRepository;
         this.expenseMapper = expenseMapper;
         this.expenseValidator = expenseValidator;
         this.debitMapper = debitMapper;
         this.authorization = authorization;
         this.authService = authService;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -75,7 +83,77 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<BalanceDebitDto> calculateDebits() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        LOGGER.info("calculateDebits()");
+
+        Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
+
+        Map<ApplicationUser, Double> totalAmountPaidPerUserFound = expenseRepository.findByPaidByIsIn(
+            usersOfSharedFlat
+        ).stream().collect(
+            Collectors.groupingBy(
+                Expense::getPaidBy,
+                Collectors.summingDouble(Expense::getAmountInCents)
+            )
+        );
+
+        Map<ApplicationUser, Double> totalAmountPaidPerUser = new HashMap<>();
+        for (ApplicationUser user : usersOfSharedFlat) {
+            totalAmountPaidPerUser.put(user, totalAmountPaidPerUserFound.getOrDefault(user, 0.0));
+        }
+
+        Map<ApplicationUser, Double> totalAmountOwedPerUser = expenseRepository.findByPaidByIsIn(
+            usersOfSharedFlat
+        ).stream().flatMap(
+            expense -> expense.getDebitUsers().stream()
+        ).collect(
+            Collectors.groupingBy(
+                debit -> debit.getId().getUser(),
+                Collectors.summingDouble(debit ->
+                    debit.getId()
+                        .getExpense()
+                        .getAmountInCents() * debit.getPercent() / 100.0
+                )
+            )
+        );
+
+        List<Pair> balancesOrdered = totalAmountPaidPerUser.entrySet().stream().map(
+                entry -> new Pair(
+                    entry.getKey(),
+                    entry.getValue() - totalAmountOwedPerUser.getOrDefault(entry.getKey(), 0.0)
+                )
+            ).sorted()
+            .collect(Collectors.toList());
+
+        List<BalanceDebitDto> balanceDebitDtos = new ArrayList<>();
+
+        while (balancesOrdered.size() > 1) {
+            Pair debtor = balancesOrdered.get(0);
+            Pair creditor = balancesOrdered.get(balancesOrdered.size() - 1);
+
+            double toPay = Math.min(-debtor.getAmount(), creditor.getAmount());
+
+            creditor.amount -= toPay;
+            debtor.amount += toPay;
+
+            BalanceDebitDto balanceDebitDto = BalanceDebitDtoBuilder.builder()
+                .debtor(userMapper.entityToUserListDto(debtor.getUser()))
+                .creditor(userMapper.entityToUserListDto(creditor.getUser()))
+                .valueInCent(toPay)
+                .build();
+
+            balanceDebitDtos.add(balanceDebitDto);
+
+            if (debtor.getAmount() == 0) {
+                balancesOrdered.remove(debtor);
+            }
+            if (creditor.getAmount() == 0) {
+                balancesOrdered.remove(creditor);
+            }
+
+            balancesOrdered.sort(Pair::compareTo);
+        }
+
+        return balanceDebitDtos;
     }
 
     @Override
@@ -137,5 +215,29 @@ public class ExpenseServiceImpl implements ExpenseService {
                 throw new ValidationException("Unexpected value: " + splitBy, List.of("Unexpected value: " + splitBy));
         }
         return debitList;
+    }
+
+    private class Pair implements Comparable<Pair> {
+        private ApplicationUser user;
+        private Double amount;
+
+        public Pair(ApplicationUser user, Double amount) {
+            this.user = user;
+            this.amount = amount;
+        }
+
+        public ApplicationUser getUser() {
+            return user;
+        }
+
+        public Double getAmount() {
+            return amount;
+        }
+
+
+        @Override
+        public int compareTo(Pair o) {
+            return this.amount.compareTo(o.amount);
+        }
     }
 }
