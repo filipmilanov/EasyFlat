@@ -74,6 +74,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    public List<BalanceDebitDto> calculateDebits() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
     @Transactional
     public Expense create(ExpenseDto expenseDto) throws ValidationException, ConflictException, AuthenticationException {
         LOGGER.info("create: {}", expenseDto);

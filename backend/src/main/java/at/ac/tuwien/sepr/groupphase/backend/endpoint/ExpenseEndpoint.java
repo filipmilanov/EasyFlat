@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/expense")
@@ -43,6 +44,14 @@ public class ExpenseEndpoint {
         return expenseMapper.entityToExpenseDto(
             expenseService.findById(id)
         );
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("debits")
+    public List<BalanceDebitDto> calculateDebits() throws AuthenticationException {
+        LOGGER.info("calculateDebits");
+
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Secured("ROLE_USER")
