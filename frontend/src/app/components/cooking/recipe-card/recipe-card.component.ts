@@ -39,6 +39,7 @@ export class RecipeCardComponent {
   addToCookBook() {
 
     this.recipeID = this.recipe.id;
+    console.log(this.recipeID)
     this.cookingService.createCookbookRecipe(this.recipe).subscribe({
       next: data => {
         this.isSaveButtonDisabled = true;
@@ -58,8 +59,10 @@ export class RecipeCardComponent {
   }
 
   cook() {
+    console.log(this.recipe)
     this.cookingService.getMissingIngredients(this.recipe.id).subscribe({
       next: (missingIngredients: RecipeSuggestion) => {
+        console.log(missingIngredients)
         if (missingIngredients && missingIngredients.missedIngredients.length > 0) {
           this.cookClicked.emit(this.recipe);
         } else {

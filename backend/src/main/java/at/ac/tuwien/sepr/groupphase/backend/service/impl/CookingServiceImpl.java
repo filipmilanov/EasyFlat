@@ -253,30 +253,12 @@ public class CookingServiceImpl implements CookingService {
             List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
             List<RecipeIngredientDto> updatedMissedIngredients = new LinkedList<>();
             for (RecipeIngredientDto recipeIngredient : recipeSuggestion.extendedIngredients()) {
-                UnitDto unitDto;
-                if (recipeIngredient.unit().isEmpty()) {
-                    unitDto = unitMapper.entityToUnitDto(unitService.findByName("pcs"));
-                } else {
-                    unitDto = unitMapper.entityToUnitDto(unitService.findByName(recipeIngredient.unit()));
-                }
-                updatedIngredients.add(new RecipeIngredientDto(recipeIngredient.id(),
-                    recipeIngredient.name(),
-                    recipeIngredient.unit(),
-                    unitDto,
-                    recipeIngredient.amount()));
+                updatedIngredients.add(this.normalizeIngredient(recipeIngredient));
             }
-            for (RecipeIngredientDto recipeIngredient : recipeSuggestion.missedIngredients()) {
-                UnitDto unitDto;
-                if (recipeIngredient.unit().isEmpty()) {
-                    unitDto = unitMapper.entityToUnitDto(unitService.findByName("pcs"));
-                } else {
-                    unitDto = unitMapper.entityToUnitDto(unitService.findByName(recipeIngredient.unit()));
+            if (recipeSuggestion.missedIngredients() != null) {
+                for (RecipeIngredientDto recipeIngredient : recipeSuggestion.missedIngredients()) {
+                    updatedMissedIngredients.add(this.normalizeIngredient(recipeIngredient));
                 }
-                updatedMissedIngredients.add(new RecipeIngredientDto(recipeIngredient.id(),
-                    recipeIngredient.name(),
-                    recipeIngredient.unit(),
-                    unitDto,
-                    recipeIngredient.amount()));
             }
             updatedRecipeList.add(new RecipeSuggestionDto(recipeSuggestion.id(),
                 recipeSuggestion.title(),
@@ -431,6 +413,7 @@ public class CookingServiceImpl implements CookingService {
     public RecipeSuggestionDto getMissingIngredients(Long id) {
         ApplicationUser user = this.authService.getUserFromToken();
         DigitalStorage digitalStorageOfUser = user.getSharedFlat().getDigitalStorage();
+        boolean fromApi = false;
 
         RecipeSuggestion recipeEntity;
         try {
@@ -439,10 +422,14 @@ public class CookingServiceImpl implements CookingService {
             });
         } catch (NotFoundException e) {
             recipeEntity = getRecipeFromApi(id);
+            fromApi = true;
         }
 
-
         RecipeSuggestionDto recipeSuggestionDto = recipeMapper.entityToRecipeSuggestionDto(recipeEntity);
+        if (fromApi) {
+            List<RecipeSuggestionDto> recipes = this.saveUnitsAlsUnits(List.of(recipeSuggestionDto));
+            recipeSuggestionDto = recipes.get(0);
+        }
         if (recipeSuggestionDto != null) {
             List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
             for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
@@ -544,7 +531,7 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt)
         throws AuthenticationException, ValidationException, ConflictException {
-        ShoppingList shoppingList = shoppingListService.getShoppingListByName("Default", jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        ShoppingList shoppingList = shoppingListService.getShoppingListByName("Shopping List (Default)", jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         ShoppingListDto shoppingListDto = shoppingListMapper.entityToDto(shoppingList);
         Long storageId = this.getStorageIdForUser();
         DigitalStorage storage = digitalStorageService.findById(storageId).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
@@ -584,6 +571,9 @@ public class CookingServiceImpl implements CookingService {
     }
 
     private Unit getMinUnit(Unit unit) {
+        if (unit == null) {
+            return null;
+        }
         if (unit.getSubUnit().isEmpty()) {
             return unit;
         }
@@ -693,5 +683,27 @@ public class CookingServiceImpl implements CookingService {
             recipeEntity.setVersion(2);
             repository.save(recipeEntity);
         }
+    }
+
+    private RecipeIngredientDto normalizeIngredient(RecipeIngredientDto ingredient) {
+        String unitName = ingredient.unit();
+        double amount = ingredient.amount();
+
+        Unit unit;
+        if (unitName.isEmpty()) {
+            unit = unitService.findByName("pcs");
+        } else {
+            unit = unitService.findByName(unitName);
+        }
+        Unit minUnit = getMinUnit(unit);
+        double convertedAmount = unitService.convertUnits(unit, minUnit, amount);
+
+        return new RecipeIngredientDto(
+            ingredient.id(),
+            ingredient.name(),
+            unitMapper.entityToUnitDto(minUnit).name(),
+            unitMapper.entityToUnitDto(minUnit),
+            convertedAmount
+        );
     }
 }
