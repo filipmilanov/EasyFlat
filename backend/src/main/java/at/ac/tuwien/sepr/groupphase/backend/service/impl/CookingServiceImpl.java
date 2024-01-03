@@ -139,7 +139,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt)
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
         throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
 
         ApplicationUser user = authService.getUserFromToken();
@@ -502,9 +502,10 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook) throws ValidationException, ConflictException, AuthenticationException {
         recipeValidator.validateForCook(recipeToCook);
-        Long storageId = this.getStorageIdForUser(jwt);
+        ApplicationUser user = authService.getUserFromToken();
+        Long storageId = user.getSharedFlat().getDigitalStorage().getStorageId();
         List<RecipeIngredientDto> ingredientToRemoveFromStorage = recipeToCook.extendedIngredients();
         for (RecipeIngredientDto recipeIngredientDto : ingredientToRemoveFromStorage) {
             List<DigitalStorageItem> digitalStorageItems = itemRepository.findAllByDigitalStorage_StorageId(storageId);

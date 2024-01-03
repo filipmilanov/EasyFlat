@@ -22,7 +22,7 @@ public interface CookingService {
      * @return A list of recipe suggestions.
      * @throws ValidationException If there is a validation error.
      */
-    List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt)
+    List<RecipeSuggestionDto> getRecipeSuggestion(String type)
         throws ValidationException, ConflictException, AuthorizationException, AuthenticationException;
 
     /**
@@ -89,7 +89,7 @@ public interface CookingService {
      */
     RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthorizationException, ValidationException, ConflictException;
 
-    RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt)
+    RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook)
         throws ValidationException, ConflictException, AuthorizationException, AuthenticationException;
 
     RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt) throws AuthenticationException, ValidationException, ConflictException;

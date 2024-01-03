@@ -36,9 +36,9 @@ public class CookingEndPoint {
 
     @PermitAll
     @GetMapping
-    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, @RequestHeader("Authorization") String jwt)
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
         throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
-        return cookingService.getRecipeSuggestion(type, jwt);
+        return cookingService.getRecipeSuggestion(type);
     }
 
     @PermitAll
@@ -91,9 +91,9 @@ public class CookingEndPoint {
 
     @PermitAll
     @PutMapping("/cook")
-    public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook, @RequestHeader("Authorization") String jwt)
+    public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook)
         throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
-        return cookingService.cookRecipe(recipeToCook, jwt);
+        return cookingService.cookRecipe(recipeToCook);
     }
 
     @PermitAll

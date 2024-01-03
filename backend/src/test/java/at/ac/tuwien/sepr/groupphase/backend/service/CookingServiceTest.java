@@ -83,7 +83,7 @@ public class CookingServiceTest {
         when(jwtTokenizer.getEmailFromToken(any(String.class))).thenReturn(applicationUser.getEmail());
 
         // when
-        List<RecipeSuggestionDto> result = cookingService.getRecipeSuggestion("", "Bearer Token");
+        List<RecipeSuggestionDto> result = cookingService.getRecipeSuggestion("");
 
         // then
         assertThat(result)
@@ -146,7 +146,7 @@ public class CookingServiceTest {
             .build();
 
         // when
-        RecipeSuggestionDto result = cookingService.cookRecipe(testRecipe, "jwt");
+        RecipeSuggestionDto result = cookingService.cookRecipe(testRecipe);
 
         // then
         assertAll(
@@ -217,7 +217,7 @@ public class CookingServiceTest {
         items.addAll(itemsFromDigitalStorageIS);
         items.addAll(itemsFromDigitalStorageAIS);
         // when
-        RecipeSuggestionDto result = cookingService.cookRecipe(testRecipe, "jwt");
+        RecipeSuggestionDto result = cookingService.cookRecipe(testRecipe);
 
         List<ItemListDto> itemsFromDigitalStorageIST = digitalStorageService.searchItems(searchParamsIS);
         List<ItemListDto> itemsFromDigitalStorageAIST = digitalStorageService.searchItems(searchParamsAIS);
