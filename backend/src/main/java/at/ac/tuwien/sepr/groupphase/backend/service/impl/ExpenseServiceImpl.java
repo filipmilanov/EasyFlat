@@ -87,34 +87,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
 
-        Map<ApplicationUser, Double> totalAmountPaidPerUserFound = expenseRepository.findByPaidByIsIn(
-            usersOfSharedFlat
-        ).stream().collect(
-            Collectors.groupingBy(
-                Expense::getPaidBy,
-                Collectors.summingDouble(Expense::getAmountInCents)
-            )
-        );
+        Map<ApplicationUser, Double> totalAmountPaidPerUser = calculateTotalAmountPaiedPerUserOfSharedFlat(usersOfSharedFlat);
 
-        Map<ApplicationUser, Double> totalAmountPaidPerUser = new HashMap<>();
-        for (ApplicationUser user : usersOfSharedFlat) {
-            totalAmountPaidPerUser.put(user, totalAmountPaidPerUserFound.getOrDefault(user, 0.0));
-        }
-
-        Map<ApplicationUser, Double> totalAmountOwedPerUser = expenseRepository.findByPaidByIsIn(
-            usersOfSharedFlat
-        ).stream().flatMap(
-            expense -> expense.getDebitUsers().stream()
-        ).collect(
-            Collectors.groupingBy(
-                debit -> debit.getId().getUser(),
-                Collectors.summingDouble(debit ->
-                    debit.getId()
-                        .getExpense()
-                        .getAmountInCents() * debit.getPercent() / 100.0
-                )
-            )
-        );
+        Map<ApplicationUser, Double> totalAmountOwedPerUser = calculateTotalAmountOwedPerUserOfSharedFlat(usersOfSharedFlat);
 
         List<Pair> balancesOrdered = totalAmountPaidPerUser.entrySet().stream().map(
                 entry -> new Pair(
@@ -154,6 +129,40 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
 
         return balanceDebitDtos;
+    }
+
+    private Map<ApplicationUser, Double> calculateTotalAmountOwedPerUserOfSharedFlat(Set<ApplicationUser> usersOfSharedFlat) {
+        return expenseRepository.findByPaidByIsIn(
+            usersOfSharedFlat
+        ).stream().flatMap(
+            expense -> expense.getDebitUsers().stream()
+        ).collect(
+            Collectors.groupingBy(
+                debit -> debit.getId().getUser(),
+                Collectors.summingDouble(debit ->
+                    debit.getId()
+                        .getExpense()
+                        .getAmountInCents() * debit.getPercent() / 100.0
+                )
+            )
+        );
+    }
+
+    private Map<ApplicationUser, Double> calculateTotalAmountPaiedPerUserOfSharedFlat(Set<ApplicationUser> usersOfSharedFlat) {
+        Map<ApplicationUser, Double> totalAmountPaidPerUserFound = expenseRepository.findByPaidByIsIn(
+            usersOfSharedFlat
+        ).stream().collect(
+            Collectors.groupingBy(
+                Expense::getPaidBy,
+                Collectors.summingDouble(Expense::getAmountInCents)
+            )
+        );
+
+        Map<ApplicationUser, Double> totalAmountPaidPerUser = new HashMap<>();
+        for (ApplicationUser user : usersOfSharedFlat) {
+            totalAmountPaidPerUser.put(user, totalAmountPaidPerUserFound.getOrDefault(user, 0.0));
+        }
+        return totalAmountPaidPerUser;
     }
 
     @Override
