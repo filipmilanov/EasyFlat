@@ -4,6 +4,8 @@ import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
@@ -442,11 +444,36 @@ class ExpenseServiceTest {
     @Test
     @DisplayName("Are debits calculated right, so that after paying the expense, the balance is 0?")
     void areDebitsCalculatedRight() {
-        // given
-
+        // given = debits defined via test data generator
+        List<BalanceDebitDto> expected = List.of(
+            buildBalanceDebitDto(1L, 21L, 548.26),
+            buildBalanceDebitDto(6L, 21L, 553.48),
+            buildBalanceDebitDto(11L, 21L, 6.7),
+            buildBalanceDebitDto(11L, 16L, 382.0)
+        );
 
         // when
+        List<BalanceDebitDto> actual = service.calculateDebits();
 
         // then
+        assertAll(
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).isEqualTo(expected)
+        );
+
+    }
+
+    private UserListDto buildUserListDto(Long id) {
+        return UserListDtoBuilder.builder()
+            .id(id)
+            .build();
+    }
+
+    private BalanceDebitDto buildBalanceDebitDto(Long debtorId, Long creditorId, Double valueInCent) {
+        return BalanceDebitDtoBuilder.builder()
+            .debtor(buildUserListDto(debtorId))
+            .creditor(buildUserListDto(creditorId))
+            .valueInCent(valueInCent)
+            .build();
     }
 }
