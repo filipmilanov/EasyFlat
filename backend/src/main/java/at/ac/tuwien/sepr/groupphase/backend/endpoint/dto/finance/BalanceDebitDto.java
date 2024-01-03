@@ -1,12 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 @RecordBuilder
 public record BalanceDebitDto(
-    ApplicationUser debtor,
-    ApplicationUser creditor,
+    UserListDto debtor,
+    UserListDto creditor,
     Double valueInCent
 ) {
 }
+
