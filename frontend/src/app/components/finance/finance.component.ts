@@ -21,6 +21,10 @@ export class FinanceComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.reloadData();
+  }
+
+  reloadData() {
     let o = this.financeService.findBalanceDebits().subscribe({
       next: (balanceDebits) => {
         console.log(balanceDebits);
