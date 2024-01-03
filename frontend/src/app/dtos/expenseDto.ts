@@ -23,7 +23,7 @@ export class DebitDto {
 export class BalanceDebitDto {
   debtor?: UserListDto;
   creditor?: UserListDto;
-  amountInCents?: number;
+  valueInCent?: number;
 }
 
 
