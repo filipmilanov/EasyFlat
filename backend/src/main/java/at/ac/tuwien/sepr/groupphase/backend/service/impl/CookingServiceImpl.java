@@ -329,19 +329,20 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public Cookbook createCookbook(CookbookDto cookbookDto, String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public Cookbook createCookbook(CookbookDto cookbookDto) throws ValidationException, ConflictException, AuthenticationException {
 
         cookbookValidator.validateForCreate(cookbookDto);
 
+        ApplicationUser user = this.authService.getUserFromToken();
+        if (user == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+        }
 
-        List<Long> allowedUser = sharedFlatService.findById(
-                cookbookDto.sharedFlat().getId(),
-                jwt
-            ).getUsers().stream()
+        List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
             .map(ApplicationUser::getId)
             .toList();
         authorization.authenticateUser(
-            allowedUser,
+            allowedUsers,
             "The given cookbook does not belong to the user's shared flat!"
         );
 
@@ -351,8 +352,8 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<Cookbook> findAllCookbooks(String jwt) throws AuthenticationException {
-        ApplicationUser applicationUser = userService.getUser(jwt);
+    public List<Cookbook> findAllCookbooks() throws AuthenticationException {
+        ApplicationUser applicationUser = this.authService.getUserFromToken();
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exists"));
         }
@@ -360,9 +361,9 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<RecipeSuggestionDto> getCookbook(String jwt) throws ValidationException, AuthenticationException {
+    public List<RecipeSuggestionDto> getCookbook() throws ValidationException, AuthenticationException {
         List<RecipeSuggestionDto> recipesDto = new LinkedList<>();
-        Long cookbookId = this.getCookbookIdForUser(jwt);
+        Long cookbookId = this.getCookbookIdForUser();
         Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
         List<RecipeSuggestion> recipes = cookbook.getRecipes();
         for (RecipeSuggestion recipe : recipes) {
@@ -372,12 +373,12 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe, String jwt) throws ConflictException, ValidationException,
+    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException, ValidationException,
         AuthenticationException {
         recipeValidator.validateForCreate(recipe);
         List<RecipeIngredient> ingredientList = ingredientService.createAll(recipe.extendedIngredients());
         RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipe, ingredientList);
-        Long cookbookId = this.getCookbookIdForUser(jwt);
+        Long cookbookId = this.getCookbookIdForUser();
         Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
         recipeEntity.setCookbook(cookbook);
         RecipeSuggestion createdRecipe = repository.save(recipeEntity);
@@ -386,7 +387,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public Optional<RecipeSuggestion> getCookbookRecipe(Long id, String jwt) {
+    public Optional<RecipeSuggestion> getCookbookRecipe(Long id) {
         if (id == null) {
             return Optional.empty();
         }
@@ -395,11 +396,11 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe, String jwt) throws ValidationException, AuthenticationException {
+    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException, AuthenticationException {
         recipeValidator.validateForUpdate(recipe);
-        RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id(), jwt)
+        RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id())
             .orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
-        Long cookbookId = this.getCookbookIdForUser(jwt);
+        Long cookbookId = this.getCookbookIdForUser();
         Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
 
         oldRecipe.setTitle(recipe.title());
@@ -419,16 +420,16 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion deleteCookbookRecipe(Long id, String jwt) throws AuthenticationException {
-        RecipeSuggestion deletedRecipe = this.getCookbookRecipe(id, jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
-        this.getCookbookIdForUser(jwt);
+    public RecipeSuggestion deleteCookbookRecipe(Long id) throws AuthenticationException {
+        RecipeSuggestion deletedRecipe = this.getCookbookRecipe(id).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        this.getCookbookIdForUser();
         repository.delete(deletedRecipe);
         return deletedRecipe;
     }
 
     @Override
-    public RecipeSuggestionDto getMissingIngredients(Long id, String jwt) {
-        ApplicationUser user = customUserDetailService.getUser(jwt);
+    public RecipeSuggestionDto getMissingIngredients(Long id) {
+        ApplicationUser user = this.authService.getUserFromToken();
         DigitalStorage digitalStorageOfUser = user.getSharedFlat().getDigitalStorage();
 
         RecipeSuggestion recipeEntity;
@@ -545,7 +546,7 @@ public class CookingServiceImpl implements CookingService {
         throws AuthenticationException, ValidationException, ConflictException {
         ShoppingList shoppingList = shoppingListService.getShoppingListByName("Default", jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         ShoppingListDto shoppingListDto = shoppingListMapper.entityToDto(shoppingList);
-        Long storageId = this.getStorageIdForUser(jwt);
+        Long storageId = this.getStorageIdForUser();
         DigitalStorage storage = digitalStorageService.findById(storageId).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         DigitalStorageDto storageDto = digitalStorageMapper.entityToDto(storage);
         for (RecipeIngredientDto ingredient : recipeToCook.missedIngredients()) {
@@ -644,53 +645,40 @@ public class CookingServiceImpl implements CookingService {
 
     }
 
-    private Long getCookbookIdForUser(String jwt) throws AuthenticationException {
-        List<Cookbook> cookbookList = findAllCookbooks(jwt);
+    private Long getCookbookIdForUser() throws AuthenticationException {
+        List<Cookbook> cookbookList = findAllCookbooks();
         Cookbook matchingCookbook = null;
         if (!cookbookList.isEmpty()) {
             matchingCookbook = cookbookList.stream().toList().get(0);
         }
         if (matchingCookbook != null) {
-            List<Long> allowedUser = sharedFlatService.findById(
-                    matchingCookbook.getSharedFlat().getId(),
-                    jwt
-                ).getUsers().stream()
+            List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
                 .map(ApplicationUser::getId)
                 .toList();
-
-
             authorization.authenticateUser(
-                allowedUser,
+                allowedUsers,
                 "The given cookbook does not belong to the user's shared flat!"
             );
-
-
             return matchingCookbook.getId();
         } else {
             return null;
         }
     }
 
-    private Long getStorageIdForUser(String jwt) throws AuthenticationException {
+    private Long getStorageIdForUser() throws AuthenticationException {
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         DigitalStorage matchingDigitalStorage = null;
         if (!digitalStorageList.isEmpty()) {
             matchingDigitalStorage = digitalStorageList.stream().toList().get(0);
         }
         if (matchingDigitalStorage != null) {
-            List<Long> allowedUser = sharedFlatService.findById(
-                    matchingDigitalStorage.getSharedFlat().getId(),
-                    jwt
-                ).getUsers().stream()
+            List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
                 .map(ApplicationUser::getId)
                 .toList();
-
-
             authorization.authenticateUser(
-                allowedUser,
-                "The given digital storage does not belong to the user's shared flat!"
+                allowedUsers,
+                "The given cookbook does not belong to the user's shared flat!"
             );
-
 
             return matchingDigitalStorage.getStorageId();
         } else {
