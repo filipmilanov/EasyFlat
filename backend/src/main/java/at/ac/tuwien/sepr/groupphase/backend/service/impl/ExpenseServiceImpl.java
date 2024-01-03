@@ -91,13 +91,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         Map<ApplicationUser, Double> totalAmountOwedPerUser = calculateTotalAmountOwedPerUserOfSharedFlat(usersOfSharedFlat);
 
-        List<Pair> differenceOrdered = totalAmountPaidPerUser.entrySet().stream().map(
-                entry -> new Pair(
-                    entry.getKey(),
-                    entry.getValue() - totalAmountOwedPerUser.getOrDefault(entry.getKey(), 0.0)
-                )
-            ).sorted()
-            .collect(Collectors.toList());
+        List<Pair> differenceOrdered = calculateDiffrenceBetweenPaiedAndOwedAmountPerUser(totalAmountPaidPerUser, totalAmountOwedPerUser);
 
         List<BalanceDebitDto> balanceDebitDtos = new ArrayList<>();
 
@@ -110,13 +104,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             creditor.amount -= toPay;
             debtor.amount += toPay;
 
-            BalanceDebitDto balanceDebitDto = BalanceDebitDtoBuilder.builder()
-                .debtor(userMapper.entityToUserListDto(debtor.getUser()))
-                .creditor(userMapper.entityToUserListDto(creditor.getUser()))
-                .valueInCent(toPay)
-                .build();
-
-            balanceDebitDtos.add(balanceDebitDto);
+            addDebitToList(debtor, creditor, toPay, balanceDebitDtos);
 
             if (debtor.getAmount() == 0) {
                 differenceOrdered.remove(debtor);
@@ -129,6 +117,26 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
 
         return balanceDebitDtos;
+    }
+
+    private void addDebitToList(Pair debtor, Pair creditor, double toPay, List<BalanceDebitDto> balanceDebitDtos) {
+        BalanceDebitDto balanceDebitDto = BalanceDebitDtoBuilder.builder()
+            .debtor(userMapper.entityToUserListDto(debtor.getUser()))
+            .creditor(userMapper.entityToUserListDto(creditor.getUser()))
+            .valueInCent(toPay)
+            .build();
+
+        balanceDebitDtos.add(balanceDebitDto);
+    }
+
+    private List<Pair> calculateDiffrenceBetweenPaiedAndOwedAmountPerUser(Map<ApplicationUser, Double> totalAmountPaidPerUser, Map<ApplicationUser, Double> totalAmountOwedPerUser) {
+        return totalAmountPaidPerUser.entrySet().stream().map(
+                entry -> new Pair(
+                    entry.getKey(),
+                    entry.getValue() - totalAmountOwedPerUser.getOrDefault(entry.getKey(), 0.0)
+                )
+            ).sorted()
+            .collect(Collectors.toList());
     }
 
     private Map<ApplicationUser, Double> calculateTotalAmountOwedPerUserOfSharedFlat(Set<ApplicationUser> usersOfSharedFlat) {
