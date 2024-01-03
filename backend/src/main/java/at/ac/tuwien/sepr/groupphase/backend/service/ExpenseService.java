@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;

@@ -1,6 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;

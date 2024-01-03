@@ -1,5 +1,6 @@
-package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
+package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import io.soabase.recordbuilder.core.RecordBuilder;
 

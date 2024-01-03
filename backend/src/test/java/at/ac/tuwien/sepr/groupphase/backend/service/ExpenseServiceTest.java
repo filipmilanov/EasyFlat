@@ -1,13 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DebitDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DebitDtoBuilder;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
@@ -442,6 +442,11 @@ class ExpenseServiceTest {
     @Test
     @DisplayName("Are debits calculated right, so that after paying the expense, the balance is 0?")
     void areDebitsCalculatedRight() {
+        // given
 
+
+        // when
+
+        // then
     }
 }
