@@ -91,7 +91,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         Map<ApplicationUser, Double> totalAmountOwedPerUser = calculateTotalAmountOwedPerUserOfSharedFlat(usersOfSharedFlat);
 
-        List<Pair> balancesOrdered = totalAmountPaidPerUser.entrySet().stream().map(
+        List<Pair> differenceOrdered = totalAmountPaidPerUser.entrySet().stream().map(
                 entry -> new Pair(
                     entry.getKey(),
                     entry.getValue() - totalAmountOwedPerUser.getOrDefault(entry.getKey(), 0.0)
@@ -101,9 +101,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         List<BalanceDebitDto> balanceDebitDtos = new ArrayList<>();
 
-        while (balancesOrdered.size() > 1) {
-            Pair debtor = balancesOrdered.get(0);
-            Pair creditor = balancesOrdered.get(balancesOrdered.size() - 1);
+        while (differenceOrdered.size() > 1) {
+            Pair debtor = differenceOrdered.get(0);
+            Pair creditor = differenceOrdered.get(differenceOrdered.size() - 1);
 
             double toPay = Math.min(-debtor.getAmount(), creditor.getAmount());
 
@@ -119,13 +119,13 @@ public class ExpenseServiceImpl implements ExpenseService {
             balanceDebitDtos.add(balanceDebitDto);
 
             if (debtor.getAmount() == 0) {
-                balancesOrdered.remove(debtor);
+                differenceOrdered.remove(debtor);
             }
             if (creditor.getAmount() == 0) {
-                balancesOrdered.remove(creditor);
+                differenceOrdered.remove(creditor);
             }
 
-            balancesOrdered.sort(Pair::compareTo);
+            differenceOrdered.sort(Pair::compareTo);
         }
 
         return balanceDebitDtos;
