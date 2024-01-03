@@ -20,10 +20,18 @@ export class DebitDto {
   value?: number;
 }
 
+export class BalanceDebitDto {
+  debtor?: UserListDto;
+  creditor?: UserListDto;
+  amountInCents?: number;
+}
+
+
 export enum SplitBy {
   EQUAL = "EQUAL",
   UNEQUAL = "UNEQUAL",
   PERCENTAGE = "PERCENTAGE",
   PROPORTIONAL = "PROPORTIONAL",
 }
+
 
