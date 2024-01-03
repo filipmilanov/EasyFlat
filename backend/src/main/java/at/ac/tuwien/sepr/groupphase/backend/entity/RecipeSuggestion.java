@@ -16,6 +16,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -33,7 +34,8 @@ public class RecipeSuggestion {
     @Column
     private Integer readyInMinutes;
 
-    @Version Integer version;
+    @Version
+    Integer version;
     @OneToMany(fetch = FetchType.EAGER)
     private List<RecipeIngredient> extendedIngredients;
 
@@ -117,5 +119,28 @@ public class RecipeSuggestion {
 
     public void setCookbook(Cookbook cookbook) {
         this.cookbook = cookbook;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RecipeSuggestion that = (RecipeSuggestion) o;
+        for (int i = 0; i < extendedIngredients.size(); i++) {
+            if (!extendedIngredients.get(i).equals(that.extendedIngredients.get(i))) {
+                return false;
+            }
+        }
+
+        return Objects.equals(title, that.title) && Objects.equals(servings, that.servings) && Objects.equals(readyInMinutes, that.readyInMinutes) && Objects.equals(summary, that.summary);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, servings, readyInMinutes, extendedIngredients, summary, cookbook);
     }
 }

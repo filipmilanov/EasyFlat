@@ -15,9 +15,10 @@ export class RecipeCardComponent {
   @Input() recipe: RecipeSuggestion;
   @Output() recipeAddedToCookbook: EventEmitter<string> = new EventEmitter();
   @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
-  @Output() detailsClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
+  @Output() detailsClicked: EventEmitter<string> = new EventEmitter<string>();
   @Output() recipeCooked: EventEmitter<string> = new EventEmitter();
   isSaveButtonDisabled = false;
+  recipeID: string;
 
   constructor(
     private cookingService: CookingService,
@@ -26,7 +27,6 @@ export class RecipeCardComponent {
     private notification: ToastrService,
   ) {
   }
-
 
 
   getTruncatedSummary(): string {
@@ -38,6 +38,7 @@ export class RecipeCardComponent {
 
   addToCookBook() {
 
+    this.recipeID = this.recipe.id;
     this.cookingService.createCookbookRecipe(this.recipe).subscribe({
       next: data => {
         this.isSaveButtonDisabled = true;
@@ -45,6 +46,13 @@ export class RecipeCardComponent {
       },
       error: error => {
         console.error(`Error ${error}`);
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
       }
     });
   }
@@ -54,7 +62,7 @@ export class RecipeCardComponent {
       next: (missingIngredients: RecipeSuggestion) => {
         if (missingIngredients && missingIngredients.missedIngredients.length > 0) {
           this.cookClicked.emit(this.recipe);
-        }else {
+        } else {
           this.cookingService.cookRecipe(this.recipe).subscribe({
             next: res => {
               this.recipeCooked.emit(this.recipe.title);
@@ -74,11 +82,10 @@ export class RecipeCardComponent {
     });
   }
 
-showDetails(){
-this.detailsClicked.emit(this.recipe);
-}
-
-
+  showDetails() {
+    console.log(this.recipeID);
+    this.detailsClicked.emit(this.recipeID);
+  }
 
 
 }

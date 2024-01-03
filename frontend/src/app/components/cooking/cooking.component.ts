@@ -53,10 +53,10 @@ export class CookingComponent implements OnInit {
     console.log(recipe + "from Modal");
     modalRef.componentInstance.recipe = recipe;
   }
-   openDetailModal(recipe: RecipeSuggestion) {
+   openDetailModal(recipeID:string) {
     const modalRef = this.modalService.open(RecipeDetailComponent, { size: 'lg' });
 
-    modalRef.componentInstance.recipe = recipe;
+    modalRef.componentInstance.recipeID= recipeID;
   }
 
   handleRecipeAddedToCookbook(recipeTitle: string) {
