@@ -1,4 +1,4 @@
-<div *ngFor="let debit of balanceDebits"
+<div *ngFor="let debit of balanceDebits; let i = index"
      class="row w-50 p-2 align-items-center align-content-center border rounded m-1">
     <div class="col-8">
         {{formatUserName(debit.debtor)}}
@@ -7,7 +7,22 @@
     <div class="btn-group col-4"
          role="group"
          aria-label="Basic example">
-        <button type="button" class="btn btn-secondary">Pay Back</button>
+        <button type="button"
+                class="btn btn-secondary"
+                [attr.data-bs-toggle]="'modal'"
+                [attr.data-bs-target]="'#confirm-payback-modal-' + i"
+        >
+            Pay Back
+        </button>
         <button type="button" class="btn btn-secondary">PayPall</button>
     </div>
+
+
+    <app-confirm-payed-pack
+            [mId]="i"
+            [debit]="debit"
+            (confirm)="1+1">
+    </app-confirm-payed-pack>
 </div>
+
+

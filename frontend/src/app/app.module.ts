@@ -55,6 +55,7 @@ import {UserDropdownComponent} from './components/utils/user-dropdown/user-dropd
 
 import {ShoppingListCardComponent} from './components/shopping-list/shopping-list-card/shopping-list-card.component';
 import {DebitsComponent} from './components/finance/debits/debits.component';
+import {ConfirmPayedPackComponent} from './components/utils/confirm-payed-pack/confirm-payed-pack.component';
 
 LOAD_WASM().subscribe();
 
@@ -96,6 +97,7 @@ LOAD_WASM().subscribe();
     ShowUserForExpenseComponent,
     UserDropdownComponent,
     DebitsComponent,
+    ConfirmPayedPackComponent,
   ],
   imports: [
     BrowserModule,

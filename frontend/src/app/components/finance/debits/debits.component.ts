@@ -17,4 +17,6 @@ export class DebitsComponent {
   convertAmountToEuro(amountInCent: number): string {
     return (amountInCent / 100.0).toFixed(2);
   }
+
+
 }

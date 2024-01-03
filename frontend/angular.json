@@ -34,11 +34,13 @@
             "styles": [
               "src/styles.scss",
               "node_modules/bootstrap/dist/css/bootstrap.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.slim.min.js",
-              "node_modules/bootstrap/dist/js/bootstrap.bundle.js"
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
