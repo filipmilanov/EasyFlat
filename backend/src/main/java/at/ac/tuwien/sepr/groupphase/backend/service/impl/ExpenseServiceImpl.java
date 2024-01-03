@@ -104,7 +104,9 @@ public class ExpenseServiceImpl implements ExpenseService {
             creditor.amount -= toPay;
             debtor.amount += toPay;
 
-            addDebitToList(debtor, creditor, toPay, balanceDebitDtos);
+            if (toPay >= 1) {
+                addDebitToList(debtor, creditor, toPay, balanceDebitDtos);
+            }
 
             if (debtor.getAmount() == 0) {
                 differenceOrdered.remove(debtor);
