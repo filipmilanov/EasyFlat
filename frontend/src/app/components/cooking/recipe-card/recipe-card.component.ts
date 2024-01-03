@@ -86,6 +86,8 @@ export class RecipeCardComponent {
   }
 
   showDetails() {
+    console.log(this.recipe)
+    this.recipeID = this.recipe.id;
     console.log(this.recipeID);
     this.detailsClicked.emit(this.recipeID);
   }
