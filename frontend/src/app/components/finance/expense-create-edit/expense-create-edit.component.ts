@@ -7,6 +7,7 @@ import {ToastrService} from "ngx-toastr";
 import {UserService} from "../../../services/user.service";
 import {UserListDto} from "../../../dtos/user";
 import {AuthService} from "../../../services/auth.service";
+import {NgbDate, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-expense-create-edit',
@@ -22,6 +23,7 @@ export class ExpenseCreateEditComponent implements OnInit {
   selectedSplitBy: SplitBy = SplitBy.EQUAL;
   submitButtonText: string = 'Create';
   users: UserListDto[] = [];
+  expenseDate: NgbDateStruct;
 
   constructor(
     private userService: UserService,
@@ -61,7 +63,8 @@ export class ExpenseCreateEditComponent implements OnInit {
         this.notification.error("Could not load flatmates", "Error");
       }
     });
-    this.expense.createdAt = new Date();
+    let today = new Date();
+    this.expenseDate = new NgbDate(today.getFullYear(), today.getMonth() + 1, today.getDate());
   }
 
   onSubmit(form: NgForm) {
@@ -95,6 +98,11 @@ export class ExpenseCreateEditComponent implements OnInit {
   }
 
   private prepareExpense() {
+    this.expense.createdAt = new Date(
+      this.expenseDate.year,
+      this.expenseDate.month - 1,
+      this.expenseDate.day
+    );
     this.expense.amountInCents = this.amountInEuro * 100;
     if (this.selectedSplitBy === SplitBy.EQUAL || this.selectedSplitBy === SplitBy.UNEQUAL) {
       this.expense.debitUsers.forEach(user => {
