@@ -29,6 +29,7 @@ export class ChoreService {
     if (searchParams.endDate) {
       params = params.append('endDate', formatDate(searchParams.endDate, 'YYYY-MM-dd', 'en-DK'));
     }
+    console.log(searchParams);
     return this.httpClient.get<ChoresDto[]>(this.choreBaseUri, {params});
   }
 
