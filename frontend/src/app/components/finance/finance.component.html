@@ -1,5 +1,6 @@
 <h1>Statistics</h1>
-<app-barchart-vertical></app-barchart-vertical>
+<app-barchart-vertical [reloadSubject]="reloadGraph.asObservable()">
+</app-barchart-vertical>
 <app-radar></app-radar>
 
 <h1>Debits</h1>

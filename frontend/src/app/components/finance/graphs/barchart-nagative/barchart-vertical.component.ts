@@ -1,8 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {EChartsOption} from "echarts";
 import {FinanceService} from "../../../../services/finance.service";
 import {ToastrService} from "ngx-toastr";
 import {UserValuePairDto} from "../../../../dtos/expenseDto";
+import {Subject} from "rxjs";
 
 
 @Component({
@@ -11,6 +12,7 @@ import {UserValuePairDto} from "../../../../dtos/expenseDto";
   styleUrls: ['./barchart-vertical.component.scss']
 })
 export class BarchartVerticalComponent implements OnInit {
+  @Input() reloadSubject: Subject<boolean> = new Subject();
 
   chartOption: EChartsOption;
 
@@ -21,6 +23,16 @@ export class BarchartVerticalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.reload();
+
+    this.reloadSubject.subscribe((reload) => {
+      if (reload) {
+        this.reload();
+      }
+    });
+  }
+
+  reload(): void {
     this.financeService.findBalanceExpenses().subscribe({
       next: (data) => {
         this.initChart(data);

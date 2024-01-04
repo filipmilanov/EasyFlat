@@ -3,6 +3,7 @@ import {BalanceDebitDto} from "../../dtos/expenseDto";
 import {ToastrService} from "ngx-toastr";
 import {FinanceService} from "../../services/finance.service";
 import {ActivatedRoute} from "@angular/router";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-finance',
@@ -12,6 +13,7 @@ import {ActivatedRoute} from "@angular/router";
 export class FinanceComponent implements OnInit {
 
   balanceDebits: BalanceDebitDto[] = [];
+  reloadGraph: Subject<boolean> = new Subject<boolean>();
 
   constructor(
       private financeService: FinanceService,
@@ -25,6 +27,8 @@ export class FinanceComponent implements OnInit {
   }
 
   reloadData() {
+    this.reloadGraph.next(true);
+
     let o = this.financeService.findBalanceDebits().subscribe({
       next: (balanceDebits) => {
         console.log(balanceDebits);
