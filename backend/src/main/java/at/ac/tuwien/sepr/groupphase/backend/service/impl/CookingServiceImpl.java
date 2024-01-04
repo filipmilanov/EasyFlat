@@ -150,7 +150,7 @@ public class CookingServiceImpl implements CookingService {
 
         List<ItemDto> items = itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId()).stream().map(itemMapper::entityToDto).toList();
 
-        String requestString = getRequestStringForRecipeSearch2(items);
+        String requestString = getRequestStringForRecipeSearch(items);
         ResponseEntity<List<RecipeDto>> exchange = restTemplate.exchange(requestString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<List<RecipeDto>>() {
         });
 
@@ -554,7 +554,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
 
-    private String getRequestStringForRecipeSearch2(List<ItemDto> items) {
+    private String getRequestStringForRecipeSearch(List<ItemDto> items) {
         List<String> ingredients = new LinkedList<>();
         for (ItemDto item : items) {
             ingredients.add(item.productName());
