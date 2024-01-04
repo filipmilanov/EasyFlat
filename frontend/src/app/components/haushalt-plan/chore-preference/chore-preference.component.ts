@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {ChoresDto} from "../../../dtos/chores";
 import {Observable} from "rxjs";
@@ -17,13 +17,22 @@ import {PreferenceService} from "../../../services/preference.service";
   templateUrl: './chore-preference.component.html',
   styleUrls: ['./chore-preference.component.scss']
 })
-export class ChorePreferenceComponent {
-  preference: Preference;
+export class ChorePreferenceComponent implements OnInit{
+  preference: Preference = {
+    first: null,
+    second: null,
+    third: null,
+    fourth:null
+};
+  chores: ChoresDto[] = [];
+
+  private searchParams: string;
   constructor(
     private preferenceService: PreferenceService,
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
+    private choreService: ChoreService,
   ) {
   }
 
@@ -44,5 +53,16 @@ export class ChorePreferenceComponent {
         }
       });
     }
+  }
+
+  ngOnInit(): void {
+    this.choreService.getChores(this.searchParams).subscribe({
+      next: (chores: any[]) => {
+        this.chores = chores;
+      },
+      error: (error: any) => {
+        console.error('Error fetching chores:', error);
+      }
+    });
   }
 }

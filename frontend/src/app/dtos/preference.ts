@@ -1,9 +1,9 @@
 import {ChoresDto} from "./chores";
 
 export class Preference {
-  public first: ChoresDto
-  public second: ChoresDto
-  public third: ChoresDto
-  public fourth: ChoresDto
+  public first: String
+  public second: String
+  public third: String
+  public fourth: String
 
 }

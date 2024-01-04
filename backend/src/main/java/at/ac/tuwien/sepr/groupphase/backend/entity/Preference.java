@@ -1,11 +1,18 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity(name = "preference") // name of the table
@@ -16,57 +23,64 @@ public class Preference {
     private Long id;
 
     @Column
-    private String first;
-
+    private Long firstId;
     @Column
-    private String second;
-
+    private Long secondId;
     @Column
-    private String third;
-
+    private Long thirdId;
     @Column
-    private String fourth;
+    private Long fourthId;
+    @OneToOne
+    private ApplicationUser user;
 
     public Long getId() {
         return id;
     }
 
-    public String getFirst() {
-        return first;
+
+    public Long getFirstId() {
+        return firstId;
     }
 
-    public String getSecond() {
-        return second;
+    public Long getSecondId() {
+        return secondId;
     }
 
-    public String getThird() {
-        return third;
+    public Long getThirdId() {
+        return thirdId;
     }
 
-    public String getFourth() {
-        return fourth;
+    public Long getFourthId() {
+        return fourthId;
+    }
+
+    public ApplicationUser getUser() {
+        return user;
+    }
+
+    public void setUserId(ApplicationUser user) {
+        this.user = user;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setFirst(String first) {
-        this.first = first;
+    public void setFirstId(Long firstId) {
+        this.firstId = firstId;
     }
 
-    public void setSecond(String second) {
-        this.second = second;
+    public void setSecondId(Long secondId) {
+        this.secondId = secondId;
     }
 
-    public void setThird(String third) {
-        this.third = third;
+    public void setThirdId(Long thirdId) {
+        this.thirdId = thirdId;
     }
 
-    public void setFourth(String fourth) {
-        this.fourth = fourth;
+    public void setFourthId(Long fourthId) {
+        this.fourthId = fourthId;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -77,11 +91,16 @@ public class Preference {
             return false;
         }
         Preference that = (Preference) o;
-        return Objects.equals(id, that.id) && Objects.equals(first, that.first) && Objects.equals(second, that.second) && Objects.equals(third, that.third) && Objects.equals(fourth, that.fourth);
+        return Objects.equals(id, that.id) && Objects.equals(firstId, that.firstId)
+            && Objects.equals(secondId, that.secondId)
+            && Objects.equals(thirdId, that.thirdId)
+            && Objects.equals(fourthId, that.fourthId)
+            && Objects.equals(user, that.user);
     }
+
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, first, second, third, fourth);
+        return Objects.hash(id, firstId, secondId, thirdId, fourthId, user);
     }
 }

@@ -17,6 +17,7 @@ import {UnitService} from "../../../services/unit.service";
 })
 export class NewChoreComponent {
   chore: ChoresDto = {
+    id: null,
     choreName: '',
     description: '',
     endDate: new Date(),

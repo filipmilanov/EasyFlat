@@ -1,5 +1,9 @@
 <h1 class="display-4">All Chores</h1>
-<hr>
+<button class="btn btn-primary float-end p-2" (click)="assignChores()" >
+  Assign Chores
+</button>
+<br>
+<hr style="margin-top: 40px">
 
 <div style="width: 100%;margin-top: 20px; height: 100%;"></div>
 <div class="row row-cols-4">
@@ -17,7 +21,7 @@
   </div>
 </div>
 
-<button class="btn btn-primary float-end p-2" (click)="navigateToNewChore()" >
+<button class="btn btn-primary float-end p-2" style="margin-top: 20px" (click)="navigateToNewChore()" >
   Add Chore
 </button>
 
