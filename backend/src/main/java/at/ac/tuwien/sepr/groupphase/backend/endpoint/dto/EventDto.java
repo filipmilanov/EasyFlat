@@ -27,6 +27,6 @@ public record EventDto(
 
     @AssertTrue(message = "Start time must be before end time")
     public boolean isStartTimeBeforeEndTime() {
-        return startTime.isBefore(endTime);
+        return startTime == null || endTime == null || startTime.isBefore(endTime);
     }
 }
