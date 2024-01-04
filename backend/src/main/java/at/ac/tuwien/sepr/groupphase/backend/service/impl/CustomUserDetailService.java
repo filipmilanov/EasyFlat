@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CustomUserDetailService implements UserService {
@@ -185,6 +186,15 @@ public class CustomUserDetailService implements UserService {
         }
         throw new BadCredentialsException("");
 
+    }
+
+    @Override
+    public ApplicationUser updatePoints(Long userId, Integer points) {
+        ApplicationUser existingUser = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        existingUser.setPoints(points);
+        return userRepository.save(existingUser);
     }
 
 }

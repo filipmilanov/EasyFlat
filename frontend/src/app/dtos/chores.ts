@@ -11,5 +11,4 @@ export class ChoresDto {
   user: UserDetail;
   sharedFlat: SharedFlat;
   completed: boolean;
-
 }

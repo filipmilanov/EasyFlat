@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.Map;
+
 public interface UserService extends UserDetailsService {
 
     /**
@@ -50,4 +52,5 @@ public interface UserService extends UserDetailsService {
 
     UserDetailDto signOut(String flatName, String authToken);
 
+    ApplicationUser updatePoints(Long userId, Integer points);
 }

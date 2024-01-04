@@ -6,6 +6,8 @@ import {ShoppingListService} from "../../../services/shopping-list.service";
 import {ToastrService} from "ngx-toastr";
 import {ChoreService} from "../../../services/chore.service";
 import {forEach} from "lodash";
+import {AuthService} from "../../../services/auth.service";
+import {resolve} from "@angular/compiler-cli";
 
 @Component({
   selector: 'app-all-chore',
@@ -19,7 +21,8 @@ export class AllChoreComponent {
 
   constructor(private router: Router,
   private choreService: ChoreService,
-  private notification: ToastrService) { }
+  private notification: ToastrService,
+              private authService: AuthService) { }
 
   navigateToNewChore() {
     this.router.navigate(['/chores', 'add']);
@@ -72,6 +75,7 @@ export class AllChoreComponent {
     return this.choreService.deleteChores(this.completedChores).subscribe({
       next: res => {
         this.notification.success(`Chores completed.`, "Success");
+        this.awardPoints();
         for (let i = 0; i < res.length; i++) {
           this.chores = this.chores.filter(chore => chore.id !== res[i].id);
         }
@@ -81,5 +85,20 @@ export class AllChoreComponent {
         console.error("Chores could not be deleted");
       }
     });
+  }
+
+  awardPoints() {
+    for (let i = 0; i < this.completedChores.length; i++) {
+      let curr = this.chores[i];
+      let points = curr.points + curr.user.points;
+      this.authService.updatePoints(points, curr.user.id).subscribe({
+        next: res => {
+          this.notification.success("Points awarded.", "Success");
+        },
+        error: err => {
+          console.error("Application users could not be update");
+        }
+      });
+    }
   }
 }
