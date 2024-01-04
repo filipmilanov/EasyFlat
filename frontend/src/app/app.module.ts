@@ -58,6 +58,7 @@ import {DebitsComponent} from './components/finance/debits/debits.component';
 import {ConfirmPayedPackComponent} from './components/utils/confirm-payed-pack/confirm-payed-pack.component';
 import {BarchartVerticalComponent} from './components/finance/graphs/barchart-nagative/barchart-vertical.component';
 import {NgxEchartsModule} from "ngx-echarts";
+import {RadarComponent} from './components/finance/graphs/radar/radar.component';
 
 LOAD_WASM().subscribe();
 
@@ -101,6 +102,7 @@ LOAD_WASM().subscribe();
     DebitsComponent,
     ConfirmPayedPackComponent,
     BarchartVerticalComponent,
+    RadarComponent,
   ],
   imports: [
     BrowserModule,
