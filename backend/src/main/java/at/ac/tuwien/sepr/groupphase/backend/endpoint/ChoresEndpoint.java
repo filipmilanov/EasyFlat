@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.ChoreService;
 import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/v1/chores")
@@ -57,7 +60,17 @@ public class ChoresEndpoint {
     @GetMapping("/user")
     public List<ChoreDto> getChoresByUser() throws AuthenticationException {
         LOGGER.trace("getChoresByUser()");
-        List<Chore> lists = choreService.getChoresByUser();
-        return choreMapper.entityListToDtoList(lists);
+        List<Chore> chores = choreService.getChoresByUser();
+        return choreMapper.entityListToDtoList(chores);
+    }
+
+    @DeleteMapping("/delete")
+    public List<ChoreDto> deleteChores(@RequestParam(name = "choreIds") String choreIdsString) {
+        LOGGER.trace("deleteChores({})", choreIdsString);
+        List<Long> choreIds = Arrays.stream(choreIdsString.split(","))
+            .map(Long::valueOf)
+            .collect(Collectors.toList());
+        List<Chore> deletedChores = choreService.deleteChores(choreIds);
+        return choreMapper.entityListToDtoList(deletedChores);
     }
 }

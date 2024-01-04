@@ -10,5 +10,6 @@ export class ChoresDto {
   points: number;
   user: UserDetail;
   sharedFlat: SharedFlat;
+  completed: boolean;
 
 }

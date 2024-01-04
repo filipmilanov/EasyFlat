@@ -6,6 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Preference;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ChoreRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PreferenceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
@@ -247,6 +248,17 @@ public class ChoreServiceImpl implements ChoreService {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
         return choreRepository.findAllByUser(applicationUser);
+    }
+
+    @Override
+    public List<Chore> deleteChores(List<Long> choreIds) {
+        LOGGER.trace("deleteChores({})", choreIds);
+        List<Chore> toDelete = choreRepository.findAllById(choreIds);
+        if (toDelete.size() != choreIds.size()) {
+            throw new NotFoundException("The given chores do not exist in the persistent data");
+        }
+        choreRepository.deleteAllById(choreIds);
+        return toDelete;
     }
 
     private Chore getRandomChore(List<Chore> chores) {

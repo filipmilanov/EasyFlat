@@ -15,4 +15,6 @@ public interface ChoreService {
     List<ChoreDto> assignChores() throws AuthenticationException;
 
     List<Chore> getChoresByUser() throws AuthenticationException;
+
+    List<Chore> deleteChores(List<Long> choreIds);
 }

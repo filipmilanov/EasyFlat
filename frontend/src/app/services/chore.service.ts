@@ -24,7 +24,6 @@ export class ChoreService {
     if (searchParams) {
       params = params.append('searchParams', searchParams);
     }
-    console.log(searchParams);
     return this.httpClient.get<ChoresDto[]>(this.choreBaseUri, {params});
   }
 
@@ -36,5 +35,10 @@ export class ChoreService {
   getChoresByUser(searchParams: string) {
     return this.httpClient.get<ChoresDto[]>(this.choreBaseUri + '/user');
 
+  }
+
+  deleteChores(completedChores: ChoresDto[]) {
+    const choreIds = completedChores.map(chore => chore.id);
+    return this.httpClient.delete<ChoresDto[]>(this.choreBaseUri + '/delete', { params: { choreIds: choreIds.join(',') } });
   }
 }

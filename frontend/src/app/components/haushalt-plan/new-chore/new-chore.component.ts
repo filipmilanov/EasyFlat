@@ -23,7 +23,8 @@ export class NewChoreComponent {
     endDate: new Date(),
     points: 0,
     user: null,
-    sharedFlat: null
+    sharedFlat: null,
+    completed: false
   };
 
   constructor(
