@@ -13,4 +13,6 @@ public interface ChoreService {
     List<Chore> getChores(String searchParams) throws AuthenticationException;
 
     List<ChoreDto> assignChores() throws AuthenticationException;
+
+    List<Chore> getChoresByUser() throws AuthenticationException;
 }

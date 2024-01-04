@@ -53,4 +53,11 @@ public class ChoresEndpoint {
         LOGGER.trace("assignChores()");
         return this.choreService.assignChores();
     }
+
+    @GetMapping("/user")
+    public List<ChoreDto> getChoresByUser() throws AuthenticationException {
+        LOGGER.trace("getChoresByUser()");
+        List<Chore> lists = choreService.getChoresByUser();
+        return choreMapper.entityListToDtoList(lists);
+    }
 }

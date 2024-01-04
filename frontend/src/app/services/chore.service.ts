@@ -32,4 +32,9 @@ export class ChoreService {
     console.log("Before Request");
     return this.httpClient.put<ChoresDto[]>(`${this.choreBaseUri}`,{});
   }
+
+  getChoresByUser(searchParams: string) {
+    return this.httpClient.get<ChoresDto[]>(this.choreBaseUri + '/user');
+
+  }
 }
