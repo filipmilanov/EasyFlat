@@ -12,6 +12,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -26,6 +27,10 @@ public class Event {
     private String description;
     @Column
     private LocalDate date;
+    @Column
+    private LocalTime startTime;
+    @Column
+    private LocalTime endTime;
     @ManyToOne
     private SharedFlat sharedFlat;
     @ManyToMany(fetch = FetchType.EAGER)
@@ -77,5 +82,21 @@ public class Event {
 
     public void setLabels(List<EventLabel> labels) {
         this.labels = labels;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
     }
 }

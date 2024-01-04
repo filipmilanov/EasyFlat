@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
@@ -81,7 +82,7 @@ public class EventEndpointTest {
     @Test
     public void givenEventWhenCreateThenEventIsCreated() throws Exception {
         // given
-        EventDto eventDto = new EventDto(null, "Test Event", "Description", LocalDate.now().plusDays(1), null,null);
+        EventDto eventDto = new EventDto(null, "Test Event", "Description", LocalTime.now(),LocalTime.now().plusHours(2),LocalDate.now().plusDays(1), null,null);
 
 
         // when
@@ -110,7 +111,7 @@ public class EventEndpointTest {
     @Test
     public void givenInvalidEventWhenCreateThenValidationException() throws Exception {
         // given
-        EventDto invalidEventDto = new EventDto(null, "", "", LocalDate.now(), null,null);
+        EventDto invalidEventDto = new EventDto(null, "", "",LocalTime.now(),LocalTime.now().plusHours(2), LocalDate.now(), null,null);
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(post(BASE_URI)
@@ -132,7 +133,7 @@ public class EventEndpointTest {
         // given
         Long eventId = 1L;
         SharedFlat sharedFlat = new SharedFlat().setId(1L);
-        EventDto eventDto = new EventDto(eventId, "House Meeting", "Discussing important matters regarding the shared living space.", LocalDate.now().plusDays(7), sharedFlatMapper.entityToWgDetailDto(sharedFlat),null);
+        EventDto eventDto = new EventDto(eventId, "House Meeting", "Discussing important matters regarding the shared living space.", LocalTime.now(),LocalTime.now().plusHours(2),LocalDate.now().plusDays(7), sharedFlatMapper.entityToWgDetailDto(sharedFlat),null);
 
 
         // when
@@ -184,7 +185,7 @@ public class EventEndpointTest {
     @Test
     public void givenEventWithInvalidDateWhenCreateThenValidationException() throws Exception {
         // given
-        EventDto invalidDateEvent = new EventDto(null, "Invalid Date Event", "Description", LocalDate.now().minusDays(22), null,null);
+        EventDto invalidDateEvent = new EventDto(null, "Invalid Date Event", "Description", LocalTime.now(),LocalTime.now(),LocalDate.now().minusDays(22), null,null);
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(post(BASE_URI)

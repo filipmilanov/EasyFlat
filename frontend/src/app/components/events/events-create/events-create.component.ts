@@ -23,10 +23,12 @@ export enum EventsMode {
 })
 export class EventsCreateComponent implements OnInit {
   event: EventDto = {
-  title: '',
-  description: '',
-  date: '',
-};
+    title: '',
+    description: '',
+    date: '',
+    startTime: '',
+    endTime: ''
+  };
 
   mode: EventsMode = EventsMode.create;
   selectedLabelColor = '#ffffff';

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Profile({"generateData", "test"})
 @Component("EventDataGenerator")
@@ -32,18 +33,24 @@ public class EventDataGenerator {
         test1.setTitle("House Meeting");
         test1.setDescription("Discussing important matters regarding the shared living space.");
         test1.setSharedFlat(sharedFlat);
+        test1.setStartTime(LocalTime.now());
+        test1.setEndTime(LocalTime.now().plusHours(2));
         test1.setDate(LocalDate.now().plusDays(7)); // Set a date one week from now
 
         Event test2 = new Event();
         test2.setTitle("Cleaning Day");
         test2.setDescription("A day dedicated to cleaning and maintaining the shared areas.");
         test2.setSharedFlat(sharedFlat);
+        test2.setStartTime(LocalTime.now());
+        test2.setEndTime(LocalTime.now().plusHours(2));
         test2.setDate(LocalDate.now().plusDays(14)); // Set a date two weeks from now
 
         Event test3 = new Event();
         test3.setTitle("Movie Night");
         test3.setDescription("Gathering for a cozy movie night in the common area.");
         test3.setSharedFlat(sharedFlat);
+        test3.setStartTime(LocalTime.now());
+        test3.setEndTime(LocalTime.now().plusHours(2));
         test3.setDate(LocalDate.now().plusDays(21)); // Set a date three weeks from now
 
         eventsRepository.save(test1);

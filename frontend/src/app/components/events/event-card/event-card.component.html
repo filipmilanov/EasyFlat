@@ -1,4 +1,4 @@
-<div class="card mt-3" style="width: 18rem; height: 200px;">
+<div class="card mt-3" style="width: 18rem; height: 225px;">
   <div class="card-header text-black">
     <div class=" d-flex justify-content-between align-items-center">
       <h5 class="card-title">{{ truncateString(event.title, 20) }}</h5>
@@ -14,10 +14,13 @@
       <p class="card-text"><strong>Date:</strong> {{event.date}}</p>
     </div>
     <div>
+      <div class="row">
+        <p class="card-text"><strong>Time:</strong> {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}</p>
+      </div>
       <strong>Label: </strong>
       <ng-container *ngFor="let label of event.labels; let last = last">
         <span [style.color]="label.labelColour">{{ label.labelName }}</span>
-        <ng-container *ngIf="!last">, </ng-container>
+        <ng-container *ngIf="!last">,</ng-container>
       </ng-container>
     </div>
 

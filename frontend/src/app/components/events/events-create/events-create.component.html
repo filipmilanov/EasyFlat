@@ -51,6 +51,36 @@
       </div>
 
       <div class="row p-2">
+        <label for="startTime"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          Start Time
+        </label>
+        <div class="col-md-4 col-lg-3">
+          <input type="time"
+                 class="form-control"
+                 id="startTime"
+                 name="date"
+                 [(ngModel)]="event.startTime">
+        </div>
+      </div>
+      <div class="row p-2">
+        <label for="endTime"
+               class="col-form-label text-muted col-md-2 col-lg-4"
+        >
+          End Time
+        </label>
+        <div class="col-md-4 col-lg-3">
+          <input type="time"
+                 class="form-control"
+                 id="endTime"
+                 name="date"
+                 [(ngModel)]="event.endTime">
+        </div>
+      </div>
+
+
+      <div class="row p-2">
         <label for="labels" class="col-form-label text-muted col-md-2 col-lg-4">Labels</label>
         <div class="col-md-10 col-lg-8" id="labels">
     <span *ngFor="let labelDto of event.labels; let i = index" class="p-2">

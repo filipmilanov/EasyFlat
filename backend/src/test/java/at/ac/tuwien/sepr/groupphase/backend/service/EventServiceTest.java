@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,6 +77,8 @@ public class EventServiceTest {
             .title("Test Title")
             .description("Test Description")
             .date(LocalDate.now().plusDays(1))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
             .sharedFlat(sharedFlatMapper.entityToWgDetailDto(sharedFlat))
             .build();
 
@@ -103,6 +106,8 @@ public class EventServiceTest {
             .title("Updated Title")
             .description("Updated Description")
             .date(LocalDate.now().plusDays(2))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
             .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
             .build();
 
@@ -119,13 +124,16 @@ public class EventServiceTest {
     }
 
     @Test
-    void givenInvalidEventDtoWhenCreateThenThrowValidationException() {
-        // Negative test for create method with an invalid event
-        EventDto invalidEventDto = EventDtoBuilder.builder()
-            // Set invalid fields or missing required fields
-            .title("")
-            .build();
+    void givenInvalidEventDtoWithEmptyTitleWhenCreateThenThrowValidationException() {
 
+        EventDto invalidEventDto = EventDtoBuilder.builder()
+            .title("")
+            .description("")
+            .date(LocalDate.now().plusDays(2))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
+            .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
+            .build();
 
 
         assertThrows(ValidationException.class, () -> eventsService.create(invalidEventDto));
@@ -138,6 +146,8 @@ public class EventServiceTest {
             .title("Updated Title")
             .description("Updated Description")
             .date(LocalDate.now().plusDays(2))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
             .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
             .build();
 
@@ -154,6 +164,8 @@ public class EventServiceTest {
             .title("Updated Title")
             .description("Updated Description")
             .date(LocalDate.now().plusDays(2))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
             .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
             .build();
 
@@ -229,4 +241,17 @@ public class EventServiceTest {
         assertThrows(EntityNotFoundException.class, () -> eventsService.getEventWithId(nonExistingEventId));
     }
 
+    @Test
+    void givenInvalidEventDtoWithEndTimeBeforeStartTimeWhenCreateThenThrowValidationException() {
+
+        EventDto invalidEventDto = EventDtoBuilder.builder()
+            .title("Title")
+            .startTime(LocalTime.of(12, 0))
+            .endTime(LocalTime.of(11, 0))
+            .date(LocalDate.now().plusDays(1))
+            .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
+            .build();
+
+        assertThrows(ValidationException.class, () -> eventsService.create(invalidEventDto));
+    }
 }
