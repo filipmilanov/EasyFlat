@@ -1,8 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {EChartsOption} from "echarts";
 import {FinanceService} from "../../../../services/finance.service";
 import {ToastrService} from "ngx-toastr";
 import {UserValuePairDto} from "../../../../dtos/expenseDto";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-radar',
@@ -10,6 +11,7 @@ import {UserValuePairDto} from "../../../../dtos/expenseDto";
   styleUrls: ['./radar.component.scss']
 })
 export class RadarComponent {
+  @Input() reloadSubject: Subject<boolean> = new Subject();
   chartOption: EChartsOption;
 
   constructor(
@@ -19,6 +21,16 @@ export class RadarComponent {
   }
 
   ngOnInit(): void {
+    this.reload();
+
+    this.reloadSubject.subscribe((reload) => {
+      if (reload) {
+        this.reload();
+      }
+    });
+  }
+
+  reload() {
     this.financeService.findTotalExpensesPerUser().subscribe({
       next: (data) => {
         this.financeService.findTotalDebitsPerUser().subscribe({
