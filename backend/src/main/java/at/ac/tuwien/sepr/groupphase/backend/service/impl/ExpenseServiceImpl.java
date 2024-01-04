@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DebitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
@@ -82,6 +83,21 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    public List<UserValuePairDto> calculateTotalExpensesPerUser() {
+        return null;
+    }
+
+    @Override
+    public List<UserValuePairDto> calculateTotalDebitsPerUser() {
+        return null;
+    }
+
+    @Override
+    public List<UserValuePairDto> calculateBalancePerUser() {
+        return null;
+    }
+
+    @Override
     public List<BalanceDebitDto> calculateDebits() {
         LOGGER.info("calculateDebits()");
 
@@ -120,6 +136,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         return balanceDebitDtos;
     }
+
 
     @Override
     @Transactional
