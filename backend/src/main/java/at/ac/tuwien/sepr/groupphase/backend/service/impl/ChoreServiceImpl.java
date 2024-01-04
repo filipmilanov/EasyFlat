@@ -261,6 +261,16 @@ public class ChoreServiceImpl implements ChoreService {
         return toDelete;
     }
 
+    @Override
+    public List<Chore> getChoresByUser() throws AuthenticationException {
+        LOGGER.trace("getChoresByUser()");
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        if (applicationUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+        }
+        return choreRepository.findAllByUser(applicationUser);
+    }
+
     private Chore getRandomChore(List<Chore> chores) {
         if (chores == null || chores.isEmpty()) {
             throw new IllegalArgumentException("List is empty or null");

@@ -24,6 +24,7 @@ export class ChoreService {
     if (searchParams) {
       params = params.append('searchParams', searchParams);
     }
+    console.log(searchParams);
     return this.httpClient.get<ChoresDto[]>(this.choreBaseUri, {params});
   }
 
