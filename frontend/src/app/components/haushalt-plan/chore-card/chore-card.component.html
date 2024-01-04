@@ -1,12 +1,10 @@
 <div class="card">
-  <div class="card-body" [class.completed-chore]="completed">
   <div class = "card-header">
     <h5 class="card-title">{{ choreName }}</h5>
   </div>
   <div class="card-body">
     <p class="card-text">{{ description }}</p>
     <p class="card-text">End Date: {{ endDate | date }}</p>
-    <p class="card-text">Points: {{ points }}</p>
     <p class="card-text">User: {{ user }}</p>
     <!-- Additional chore details can be displayed here -->
   </div>
@@ -14,4 +12,4 @@
     <p class="card-text">Points: {{ points }}</p>
   </div>
 </div>
-</div>
+
