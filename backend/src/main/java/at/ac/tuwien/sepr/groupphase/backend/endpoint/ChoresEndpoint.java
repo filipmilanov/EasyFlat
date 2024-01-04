@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,8 +43,14 @@ public class ChoresEndpoint {
     @PermitAll
     @GetMapping()
     public List<ChoreDto> getChores(@RequestParam(name = "searchParams", required = false) String searchParams) throws AuthenticationException {
-        LOGGER.info("getChores({})", searchParams);
+        LOGGER.trace("getChores({})", searchParams);
         List<Chore> lists = choreService.getChores(searchParams);
         return choreMapper.entityListToDtoList(lists);
+    }
+
+    @PutMapping
+    public List<ChoreDto> assignChores() throws AuthenticationException {
+        LOGGER.trace("assignChores()");
+        return this.choreService.assignChores();
     }
 }

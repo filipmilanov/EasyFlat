@@ -4,6 +4,7 @@ import {Globals} from "../global/globals";
 import {ChoresDto} from "../dtos/chores";
 import {ShoppingListDto} from "../dtos/shoppingList";
 import {Observable} from "rxjs";
+import {Preference} from "../dtos/preference";
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,12 @@ export class ChoreService {
     if (searchParams) {
       params = params.append('searchParams', searchParams);
     }
+    console.log(searchParams);
     return this.httpClient.get<ChoresDto[]>(this.choreBaseUri, {params});
+  }
+
+  assginChores() {
+    console.log("Before Request");
+    return this.httpClient.put<ChoresDto[]>(`${this.choreBaseUri}`,{});
   }
 }

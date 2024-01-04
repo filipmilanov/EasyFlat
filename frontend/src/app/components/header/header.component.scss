@@ -1,0 +1,9 @@
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: #fff; /* Dropdown menu background color */
+  /* Other styles for the dropdown menu */
+}
+.dropdown-menu.show {
+  display: block;
+}

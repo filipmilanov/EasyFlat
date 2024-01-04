@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -36,6 +34,11 @@ public class Chore {
     @JoinColumn(name = "shared_flat_id")
     private SharedFlat sharedFlat;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private ApplicationUser user;
+
+
     public Chore() {
     }
 
@@ -61,9 +64,16 @@ public class Chore {
         return endDate;
     }
 
-    public Chore setEndDate(LocalDate endDate) {
+    public ApplicationUser getUser() {
+        return user;
+    }
+
+    public void setUser(ApplicationUser user) {
+        this.user = user;
+    }
+
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-        return this;
     }
 
     public int getPoints() {

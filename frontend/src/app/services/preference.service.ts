@@ -14,6 +14,7 @@ export class PreferenceService {
   }
 
   editPreference(preference: Preference) {
-    return this.httpClient.put<Preference>(`${this.choreBaseUri}/`, preference)
+    return this.httpClient.put<Preference>(`${this.choreBaseUri}`, preference)
   }
+
 }

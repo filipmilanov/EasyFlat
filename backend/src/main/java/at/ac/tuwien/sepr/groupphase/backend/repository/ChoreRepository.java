@@ -12,4 +12,11 @@ import java.util.List;
 public interface ChoreRepository extends JpaRepository<Chore, Long> {
     @Query("SELECT c FROM chore c WHERE c.sharedFlat.id = :id")
     List<Chore> findAllBySharedFlatId(@Param("id") Long id);
+
+    @Query("SELECT c FROM chore c WHERE c.name = :name")
+    Chore findByName(@Param("name") String name);
+
+    @Query("SELECT c FROM chore c WHERE c.user = :user")
+    boolean existsByUserId(@Param("user") Long user
+    );
 }

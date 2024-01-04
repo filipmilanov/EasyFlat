@@ -113,6 +113,7 @@ public class CustomUserDetailService implements UserService {
         newUser.setEmail(userDetailDto.getEmail());
         newUser.setPassword(passwordEncoder.encode(userDetailDto.getPassword()));
         newUser.setAdmin(false);
+        newUser.setPoints(0);
         userRepository.save(newUser);
 
         UserDetails userDetails = loadUserByUsername(userDetailDto.getEmail());
@@ -142,6 +143,7 @@ public class CustomUserDetailService implements UserService {
             user.setLastName(userDetailDto.getLastName());
             user.setEmail(userDetailDto.getEmail());
             user.setSharedFlat(user.getSharedFlat());
+            user.setPoints(user.getPoints());
             if (userDetailDto.getPassword().length() >= 8) {
                 user.setPassword(passwordEncoder.encode(userDetailDto.getPassword()));
             }

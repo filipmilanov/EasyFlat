@@ -15,8 +15,10 @@ import {ShoppingListDto} from "../../dtos/shoppingList";
 })
 export class HeaderComponent implements OnInit {
 
+  isChoresDropdownOpen = false;
+
   constructor(public authService: AuthService, private sharedFlatService: SharedFlatService, private httpClient: HttpClient,
-              private shoppingService: ShoppingListService) {
+              private shoppingService: ShoppingListService, private router: Router) {
   }
 
   ngOnInit() {
@@ -31,4 +33,47 @@ export class HeaderComponent implements OnInit {
     this.authService.logoutUser();
   }
 
+  navigateTo(route: string) {
+    switch (route) {
+      case 'allChores':
+        this.router.navigate(['/allChores']);
+        break;
+      case 'myChores':
+        this.router.navigate(['/myChores']);
+        break;
+      case 'chorePreference':
+        this.router.navigate(['/chorePreference']);
+        break;
+      case 'newChore':
+        this.router.navigate(['/newChore']);
+        break;
+      default:
+        this.router.navigate(['']);
+        break;
+    }
+  }
+
+
+  navigateToAllChores() {
+    console.log("Start");
+    this.router.navigate(['/allChores']);
+    console.log("After");
+  }
+
+  navigateToMyChores() {
+    this.router.navigate(['/myChores']);
+  }
+
+  navigateToPreference() {
+    this.router.navigate(['/chorePreference']);
+  }
+
+  navigateToNewChore() {
+    this.router.navigate(['/newChore'])
+  }
+
+  toggleChoresDropdown(event: Event) {
+    event.preventDefault();
+    this.isChoresDropdownOpen = !this.isChoresDropdownOpen;
+  }
 }
