@@ -9,25 +9,30 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredien
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -37,6 +42,9 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,11 +73,23 @@ public class CookingServiceTest {
     @MockBean
     private CustomUserDetailService customUserDetailService;
 
+    @MockBean
+    private AuthService authService;
+
+
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private UnitService unitService;
+
+    @Autowired
+    private SharedFlatService sharedFlatService;
+
+    @Autowired
+    private SharedFlatMapper sharedFlatMapper;
+
+
 
     private ApplicationUser applicationUser;
 
@@ -77,7 +97,8 @@ public class CookingServiceTest {
     public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
         applicationUser = userRepository.findById(1L).orElseThrow();
-        when(customUserDetailService.getUser(any(String.class))).thenReturn(applicationUser);
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
+
     }
 
     @Test
@@ -244,5 +265,101 @@ public class CookingServiceTest {
 
     }
 
+    @Test
+    @DisplayName("Positive test for creating a valid cookbook recipe")
+    void createValidCookbookRecipeShouldSucceed() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
+        RecipeSuggestionDto recipe = RecipeSuggestionDtoBuilder.builder()
+            .title("Test recipe")
+            .servings(2)
+            .readyInMinutes(20)
+            .summary("This is only a test recipe")
+            .extendedIngredients(new ArrayList<>())
+            .build();
+
+        RecipeSuggestion createdRecipe = cookingService.createCookbookRecipe(recipe);
+
+        assertNotNull(createdRecipe);
+        assertEquals(recipe.title(), createdRecipe.getTitle());
+        assertEquals(recipe.servings(), createdRecipe.getServings());
+        assertEquals(recipe.readyInMinutes(), createdRecipe.getReadyInMinutes());
+        assertEquals(recipe.summary(), createdRecipe.getSummary());
+        assertNotNull(createdRecipe.getId());
+    }
+
+    @Test
+    @DisplayName("Negative test for creating a non-valid cookbook recipe")
+    void createNonValidCookbookRecipeShouldThrowValidationException() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
+        RecipeSuggestionDto recipe = RecipeSuggestionDtoBuilder.builder()
+            .title("")
+            .summary("This is a non-valid test recipe")
+            .extendedIngredients(new ArrayList<>())
+            .build();
+
+        assertThrows(ValidationException.class, () -> cookingService.createCookbookRecipe(recipe));
+    }
+
+    @Test
+    @DisplayName("Positive test for updating a cookbook recipe")
+    void updateCookbookRecipeShouldSucceed() throws ValidationException, AuthenticationException, NotFoundException, ConflictException, AuthorizationException {
+        // Mock data
+        RecipeSuggestionDto updatedRecipeDto = RecipeSuggestionDtoBuilder.builder()
+            .id(1L)
+            .title("Updated Test Recipe")
+            .servings(4)
+            .readyInMinutes(30)
+            .summary("This is an updated test recipe")
+            .extendedIngredients(new ArrayList<>())
+            .build();
+
+        RecipeSuggestion oldRecipe = cookingService.getCookbookRecipe(1L).orElseThrow();
+
+
+        RecipeSuggestion updatedRecipe = cookingService.updateCookbookRecipe(updatedRecipeDto);
+
+        assertNotNull(updatedRecipe);
+        assertEquals(updatedRecipeDto.id(), updatedRecipe.getId());
+        assertEquals(updatedRecipeDto.title(), updatedRecipe.getTitle());
+        assertEquals(updatedRecipeDto.servings(), updatedRecipe.getServings());
+        assertEquals(updatedRecipeDto.readyInMinutes(), updatedRecipe.getReadyInMinutes());
+        assertEquals(updatedRecipeDto.summary(), updatedRecipe.getSummary());
+        // Additional assertions as needed
+    }
+
+    @Test
+    @DisplayName("Negative test for updating a non-existing cookbook recipe")
+    void updateNonExistingCookbookRecipeShouldThrowNotFoundException() {
+        // Mock data for non-existing recipe
+        RecipeSuggestionDto updatedRecipeDto = RecipeSuggestionDtoBuilder.builder()
+            .id(1000L)
+            .title("Updated Test Recipe")
+            .servings(2)
+            .readyInMinutes(20)
+            .summary("This is an updated test recipe")
+            .extendedIngredients(new ArrayList<>())
+            .build();
+
+
+        assertThrows(NotFoundException.class, () -> cookingService.updateCookbookRecipe(updatedRecipeDto));
+    }
+
+    @Test
+    @DisplayName("Test for deleting a cookbook recipe")
+    void deleteCookbookRecipeShouldSucceed() throws AuthenticationException, NotFoundException, AuthorizationException {
+
+        RecipeSuggestion existing = cookingService.getCookbookRecipe(1L).orElseThrow();
+
+        RecipeSuggestion deleted = cookingService.deleteCookbookRecipe(1L);
+
+        assertNotNull(deleted);
+        assertEquals(existing.getId(), deleted.getId());
+        assertEquals(existing.getTitle(), deleted.getTitle());
+        assertEquals(existing.getSummary(), deleted.getSummary());
+    }
+
+    @Test
+    @DisplayName("Negative test for deleting a non-existing cookbook recipe")
+    void deleteNonExistingCookbookRecipeShouldThrowNotFoundException() {
+        assertThrows(NotFoundException.class, () -> cookingService.deleteCookbookRecipe(1000L));
+    }
 
 }

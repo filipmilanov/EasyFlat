@@ -131,8 +131,10 @@ public class RecipeSuggestion {
         }
         RecipeSuggestion that = (RecipeSuggestion) o;
         for (int i = 0; i < extendedIngredients.size(); i++) {
-            if (!extendedIngredients.get(i).equals(that.extendedIngredients.get(i))) {
-                return false;
+            if (!extendedIngredients.isEmpty() && !that.extendedIngredients.isEmpty()) {
+                if (!extendedIngredients.get(i).equals(that.extendedIngredients.get(i))) {
+                    return false;
+                }
             }
         }
 
