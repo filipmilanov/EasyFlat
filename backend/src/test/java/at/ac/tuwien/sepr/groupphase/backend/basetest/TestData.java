@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -84,4 +85,7 @@ public interface TestData {
         null,
         null,
         null);
+
+    ApplicationUser testUser = new ApplicationUser(null, "", "", "user@email.com", "password", Boolean.FALSE, null);
+
 }
