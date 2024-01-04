@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
@@ -461,6 +462,78 @@ class ExpenseServiceTest {
                 new Tuple(1L, 21L, 548.4),
                 new Tuple(11L, 16L, 382.8),
                 new Tuple(11L, 21L, 6.0)
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Are total expenses calculated right?")
+    void areTotalExpensesCalculatedRight() {
+        // given = expenses defined via test data generator
+
+        // when
+        List<UserValuePairDto> actual = service.calculateTotalExpensesPerUser();
+
+        // then
+        assertAll(
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).extracting(
+                (UserValuePairDto userValuePairDto) -> userValuePairDto.user().id(),
+                (UserValuePairDto userValuePairDto) -> Math.round((userValuePairDto.value()) * 10) / 10.0
+            ).containsExactlyInAnyOrder(
+                new Tuple(1L, 0.0),
+                new Tuple(6L, 0.0),
+                new Tuple(11L, 161.1),
+                new Tuple(16L, 929.8),
+                new Tuple(21L, 1663.1)
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Are total debits calculated right?")
+    void areTotalDebitsCalculatedRight() {
+        // given = expenses defined via test data generator
+
+        // when
+        List<UserValuePairDto> actual = service.calculateTotalDebitsPerUser();
+
+        // then
+        assertAll(
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).extracting(
+                (UserValuePairDto userValuePairDto) -> userValuePairDto.user().id(),
+                (UserValuePairDto userValuePairDto) -> Math.round((userValuePairDto.value()) * 10) / 10.0
+            ).containsExactlyInAnyOrder(
+                new Tuple(1L, 548.4),
+                new Tuple(6L, 553.8),
+                new Tuple(11L, 549.9),
+                new Tuple(16L, 547.0),
+                new Tuple(21L, 554.9)
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Are balances calculated right?")
+    void areBalancesCalculatedRight() {
+        // given = expenses defined via test data generator
+
+        // when
+        List<UserValuePairDto> actual = service.calculateBalancePerUser();
+
+        // then
+        assertAll(
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).extracting(
+                (UserValuePairDto userValuePairDto) -> userValuePairDto.user().id(),
+                (UserValuePairDto userValuePairDto) -> Math.round((userValuePairDto.value()) * 10) / 10.0
+            ).containsExactlyInAnyOrder(
+                new Tuple(1L, -548.4),
+                new Tuple(6L, -553.8),
+                new Tuple(11L, -388.8),
+                new Tuple(16L, 382.8),
+                new Tuple(21L, 1108.2)
             )
         );
     }
