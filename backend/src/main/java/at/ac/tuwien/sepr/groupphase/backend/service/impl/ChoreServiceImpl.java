@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -74,22 +73,102 @@ public class ChoreServiceImpl implements ChoreService {
     @Secured("ROLE_USER")
     public List<ChoreDto> assignChores() throws AuthenticationException {
         LOGGER.trace("assignChores()");
+        //check the user
         ApplicationUser applicationUser = authService.getUserFromToken();
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        List<ApplicationUser> users = userRepository.findAllBySharedFlat(applicationUser.getSharedFlat());
+        //all chores from this flat
         List<Chore> chores = choreRepository.findAllBySharedFlatId(applicationUser.getSharedFlat().getId());
+
+        return assignChoresHelp(chores);
+    }
+
+    private List<ChoreDto> assignChoresHelp(List<Chore> chores) throws AuthenticationException {
+        LOGGER.trace("assignChoresHelp({})", chores);
+        //check the user
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        if (applicationUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+        }
+        //all users from this flat
+        List<ApplicationUser> users = userRepository.findAllBySharedFlat(applicationUser.getSharedFlat());
+        //all chores without user from this flat are stored in chores list.
+
+        //sort the users list by points
         this.sortUsersByPoints(users);
+        //list for users, which preferences are already taken.
+        List<ApplicationUser> notAssignedUsers = new ArrayList<>();
+        //list for chores, that are not assigned
+        List<Chore> notAssignedChores = new ArrayList<>();
 
-        //implement please an algorithm, for every user form users you take the first preference.first(), which has as preference.user = null.
-        //if you assign a chore to a user remove it form the list of chores
-        //if all the preferences for the given users are with user (preference.user != null), than add this user to new List named random.
-        //after you go to every user assign randomly the rest of the chores from the list chores
+        //5users - 6 chores
+        //5users - 5 chores
+        if (users.size() <= chores.size()) {
+            for (int i = 0; i < users.size(); i++) { // size 5
+                //list of chores for one user
+                List<Chore> choresUser = getPreferences(users.get(i)); //max size 4
+                int count = 0;
+                //loop for the chores of the user
+                for (int j = 0; j < choresUser.size(); j++) {
+                    if (choresUser.get(j) != null && choresUser.get(j).getUser() == null) {
+                        Chore toUpdate = choresUser.get(j);
+                        chores.remove(toUpdate);
+                        toUpdate.setUser(users.get(i));
+                        count++;
+                        choreRepository.save(toUpdate);
+                        break;
+                    }
+                }
+                //if the user didn't take any chore he is added to the list of notAssignedUsers
+                if (count == 0) {
+                    notAssignedUsers.add(users.get(i));
+                }
+            }
+            //assign randomly all not assigned Users
+            for (ApplicationUser user : notAssignedUsers) {
+                Chore toAssign = getRandomChore(chores);
+                toAssign.setUser(user);
+                chores.remove(toAssign);
+            }
+            // rest of the chores that are not assigned
+            //recursively add the rest of the chores
+            if (!chores.isEmpty()) {
+                assignChoresHelp(chores);
+            }
 
+        } else {
+            //20users - 5chores
+            for (int i = users.size() - chores.size(); i < users.size(); i++) {
+                //list of chores for one user
+                List<Chore> choresUser = getPreferences(users.get(i));
+                int count = 0;
+                //loop for the chores of the user
+                for (int j = 0; j < choresUser.size(); j++) {
+                    if (choresUser.get(j) != null && choresUser.get(j).getUser() == null) {
+                        Chore toUpdate = choresUser.get(j);
+                        chores.remove(toUpdate);
+                        toUpdate.setUser(users.get(i));
+                        count++;
+                        choreRepository.save(toUpdate);
+                        break;
+                    }
+                }
+                //if the user didn't take any chore he is added to the list of notAssignedUsers
+                if (count == 0) {
+                    notAssignedUsers.add(users.get(i));
+                }
+                //assign randomly all not assigned Users
+                for (ApplicationUser user : notAssignedUsers) {
+                    Chore toAssign = getRandomChore(chores);
+                    toAssign.setUser(user);
+                    chores.remove(toAssign);
+                }
+
+            }
+        }
 
         return choreMapper.entityListToDtoList(choreRepository.findAllBySharedFlatId(applicationUser.getId()));
-
     }
 
     private Chore getRandomChore(List<Chore> chores) {
