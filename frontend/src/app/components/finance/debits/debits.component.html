@@ -1,5 +1,5 @@
 <div *ngFor="let debit of balanceDebits; let i = index"
-     class="row w-50 p-2 align-items-center align-content-center border rounded m-1">
+     class="row w-100 p-2 align-items-center align-content-center border rounded m-1">
     <div class="col-8">
         {{formatUserName(debit.debtor)}}
         owes {{formatUserName(debit.creditor)}} <span
