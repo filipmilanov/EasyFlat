@@ -1,5 +1,5 @@
 <div *ngFor="let debit of balanceDebits; let i = index"
-     class="row w-100 p-2 align-items-center align-content-center border rounded m-1">
+     class="row p-2 align-items-center align-content-center border rounded m-1">
     <div class="col-8">
         {{formatUserName(debit.debtor)}}
         owes {{formatUserName(debit.creditor)}} <span
@@ -13,7 +13,7 @@
                 [attr.data-bs-toggle]="'modal'"
                 [attr.data-bs-target]="'#confirm-payback-modal-' + i"
         >
-            Pay Back
+            Pay
         </button>
         <button type="button" class="btn btn-secondary">PayPall</button>
     </div>
