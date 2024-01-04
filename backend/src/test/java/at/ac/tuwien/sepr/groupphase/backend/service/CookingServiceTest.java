@@ -71,25 +71,13 @@ public class CookingServiceTest {
     private RestTemplate restTemplate;
 
     @MockBean
-    private CustomUserDetailService customUserDetailService;
-
-    @MockBean
     private AuthService authService;
-
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private UnitService unitService;
-
-    @Autowired
-    private SharedFlatService sharedFlatService;
-
-    @Autowired
-    private SharedFlatMapper sharedFlatMapper;
-
-
 
     private ApplicationUser applicationUser;
 

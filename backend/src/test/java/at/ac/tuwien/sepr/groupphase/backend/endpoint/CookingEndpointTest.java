@@ -13,9 +13,11 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +44,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -64,6 +69,8 @@ public class CookingEndpointTest {
     private SecurityProperties securityProperties;
 
     private final String BASE_URI = "/api/v1/cooking";
+
+    private final String COOKBOOK_BASE_URI = "/api/v1/cooking/cookbook";
 
     @Autowired
     private TestDataGenerator testDataGenerator;
@@ -229,6 +236,130 @@ public class CookingEndpointTest {
         assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
 
 
+    }
+
+    @Test
+    @DisplayName("Positive test for creating a recipe with status 200")
+    void createValidRecipeShouldReturnStatus200() throws Exception {
+        RecipeSuggestionDto recipe = RecipeSuggestionDtoBuilder.builder()
+            .title("Test recipe")
+            .servings(2)
+            .readyInMinutes(20)
+            .summary("This is only a test recipe")
+            .extendedIngredients(new ArrayList<>())
+            .build();
+
+        String body = objectMapper.writeValueAsString(recipe);
+
+        MvcResult mvcResult = this.mockMvc.perform(post(COOKBOOK_BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
+    }
+
+    @Test
+    @DisplayName("Negative test for creating a recipe with status 422")
+    void createNonValidRecipeShouldReturnStatus422() throws Exception {
+        RecipeSuggestionDto recipe = RecipeSuggestionDtoBuilder.builder()
+            .summary("This is a non-valid test recipe")
+            .extendedIngredients(new ArrayList<>())
+            .build();
+
+        String body = objectMapper.writeValueAsString(recipe);
+
+        MvcResult mvcResult = this.mockMvc.perform(post(COOKBOOK_BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
+    }
+
+    @Test
+    @DisplayName("Positive test for updating a recipe with status 200")
+    void updateRecipeWithValidDataShouldReturnStatus200() throws Exception {
+        RecipeSuggestionDto updatedRecipeDto = RecipeSuggestionDtoBuilder.builder()
+            .id(1L)
+            .title("Updated Test Recipe")
+            .servings(4)
+            .readyInMinutes(30)
+            .summary("This is an updated test recipe")
+            .extendedIngredients(new ArrayList<>())
+            .build();
+
+        String body = objectMapper.writeValueAsString(updatedRecipeDto);
+
+        MvcResult mvcResult = this.mockMvc.perform(put(COOKBOOK_BASE_URI + "/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
+    }
+
+    @Test
+    @DisplayName("Negative test for updating a recipe with status 404")
+    void updateNonExistingRecipeShouldReturnStatus404() throws Exception {
+        RecipeSuggestionDto updatedRecipeDto = RecipeSuggestionDtoBuilder.builder()
+            .id(1000L)
+            .title("Updated Test Recipe")
+            .servings(4)
+            .readyInMinutes(30)
+            .summary("This is an updated test recipe")
+            .extendedIngredients(new ArrayList<>())
+            .build();
+
+        String body = objectMapper.writeValueAsString(updatedRecipeDto);
+
+        MvcResult mvcResult = this.mockMvc.perform(put(COOKBOOK_BASE_URI + "/1000")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+    }
+
+    @Test
+    @DisplayName("Positive test for updating a recipe with status 200")
+    void deleteExistingRecipeReturnStatus200() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(delete(COOKBOOK_BASE_URI + "/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
+    }
+
+    @Test
+    @DisplayName("Negative test for updating a recipe with status 404")
+    void deleteNonExistingRecipeReturnStatus404() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(delete(COOKBOOK_BASE_URI + "/1000")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
     }
 
 
