@@ -1,8 +1,10 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 import {CookingService} from "../../../services/cooking.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
+import {error} from "@angular/compiler-cli/src/transformers/util";
+
 
 
 @Component({
@@ -10,7 +12,7 @@ import {ToastrService} from "ngx-toastr";
   templateUrl: './recipe-card.component.html',
   styleUrls: ['./recipe-card.component.scss']
 })
-export class RecipeCardComponent {
+export class RecipeCardComponent implements OnInit {
 
   @Input() recipe: RecipeSuggestion;
   @Output() recipeAddedToCookbook: EventEmitter<string> = new EventEmitter();
@@ -26,24 +28,25 @@ export class RecipeCardComponent {
     private route: ActivatedRoute,
     private notification: ToastrService,
   ) {
+
+
   }
 
 
-  getTruncatedSummary(): string {
-    const maxLength = 100; // Adjust as needed
+  getTruncated(text:string,maxLength:number): string {
     return this.recipe.summary.length > maxLength ?
-      this.recipe.summary.slice(0, maxLength) + '...' :
-      this.recipe.summary;
+      text.slice(0, maxLength) + '...' :
+      text;
   }
 
   addToCookBook() {
 
-    this.recipeID = this.recipe.id;
     console.log(this.recipeID)
     this.cookingService.createCookbookRecipe(this.recipe).subscribe({
       next: data => {
         this.isSaveButtonDisabled = true;
         this.recipeAddedToCookbook.emit(this.recipe.title);
+        console.log(this.recipeID)
       },
       error: error => {
         console.error(`Error ${error}`);
@@ -86,10 +89,14 @@ export class RecipeCardComponent {
   }
 
   showDetails() {
-    console.log(this.recipe)
-    this.recipeID = this.recipe.id;
-    console.log(this.recipeID);
+    console.log(this.recipeID + " from showDetails")
     this.detailsClicked.emit(this.recipeID);
+  }
+
+  ngOnInit(): void {
+    console.log(this.recipeID + "from card (1)")
+    this.recipeID = this.recipe.id;
+    console.log(this.recipeID + "from card")
   }
 
 

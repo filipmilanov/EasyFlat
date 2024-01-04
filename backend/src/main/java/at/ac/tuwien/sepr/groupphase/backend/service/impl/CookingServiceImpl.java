@@ -49,6 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -92,6 +94,8 @@ public class CookingServiceImpl implements CookingService {
     private final DigitalStorageMapper digitalStorageMapper;
     private final AuthService authService;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
+    private final String apiUrlNew = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients";
+
 
     public CookingServiceImpl(RestTemplate restTemplate,
                               RecipeSuggestionRepository repository,
@@ -146,24 +150,23 @@ public class CookingServiceImpl implements CookingService {
 
         List<ItemDto> items = itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId()).stream().map(itemMapper::entityToDto).toList();
 
-
-        String requestString = getRequestStringForRecipeSearch(items);
-        ResponseEntity<List<RecipeDto>> exchange = restTemplate.exchange(requestString, HttpMethod.GET, null, new ParameterizedTypeReference<List<RecipeDto>>() {
+        String requestString = getRequestStringForRecipeSearch2(items);
+        ResponseEntity<List<RecipeDto>> exchange = restTemplate.exchange(requestString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<List<RecipeDto>>() {
         });
 
-        String newReqString = "https://api.spoonacular.com/recipes/informationBulk?apiKey=" + apiKey + "&ids=";
-        List<RecipeSuggestionDto> recipeSuggestions = new LinkedList<>();
+
+        List<RecipeSuggestionDto> recipeInfo = new LinkedList<>();
         if (exchange.getBody() != null) {
             for (RecipeDto recipeDto : exchange.getBody()) {
-                String recipeId = String.valueOf(recipeDto.id());
-                newReqString += "," + recipeId;
+                String newReqString = getNewReqStringForInformation(recipeDto.id());
+                ResponseEntity<RecipeSuggestionDto> response = restTemplate.exchange(newReqString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<RecipeSuggestionDto>() {
+                });
+                recipeInfo.add(response.getBody());
             }
         }
-        newReqString += "&includeNutrition=false";
-        ResponseEntity<List<RecipeSuggestionDto>> response = restTemplate.exchange(newReqString, HttpMethod.GET, null, new ParameterizedTypeReference<List<RecipeSuggestionDto>>() {
-        });
 
-        List<RecipeSuggestionDto> toReturn = getRecipeSuggestionDtos(response, exchange);
+
+        List<RecipeSuggestionDto> toReturn = getRecipeSuggestionDtos(recipeInfo, exchange);
 
         if (type != null) {
             toReturn = filterSuggestions(toReturn, type);
@@ -173,6 +176,12 @@ public class CookingServiceImpl implements CookingService {
 
 
         return toReturn;
+    }
+
+    private static String getNewReqStringForInformation(Long id) {
+        String newReqString = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/" + id + "/information";
+        newReqString += "?includeNutrition=false";
+        return newReqString;
     }
 
     private List<RecipeSuggestionDto> filterSuggestions(List<RecipeSuggestionDto> recipeSuggestions, String type) {
@@ -224,12 +233,12 @@ public class CookingServiceImpl implements CookingService {
         return recipesToRet;
     }
 
-    private static List<RecipeSuggestionDto> getRecipeSuggestionDtos(ResponseEntity<List<RecipeSuggestionDto>> response, ResponseEntity<List<RecipeDto>> exchange) {
+    private static List<RecipeSuggestionDto> getRecipeSuggestionDtos(List<RecipeSuggestionDto> response, ResponseEntity<List<RecipeDto>> exchange) {
         List<RecipeSuggestionDto> toReturn = new LinkedList<>();
-        if (response.getBody() != null) {
-            for (int i = 0; i < response.getBody().size(); i++) {
+        if (response != null) {
+            for (int i = 0; i < response.size(); i++) {
                 RecipeDto hereWeHaveMissIng = exchange.getBody().get(i);
-                RecipeSuggestionDto details = response.getBody().get(i);
+                RecipeSuggestionDto details = response.get(i);
                 RecipeSuggestionDto toAdd = new RecipeSuggestionDto(
                     details.id(),
                     details.title(),
@@ -275,12 +284,12 @@ public class CookingServiceImpl implements CookingService {
     @Override
     @Cacheable("addresses")
     public RecipeDetailDto getRecipeDetails(Long recipeId) {
-        String reqString = "https://api.spoonacular.com/recipes/" + recipeId + "/information" + "?apiKey=" + apiKey + "&includeNutrition=false";
-        ResponseEntity<RecipeDetailDto> response = restTemplate.exchange(reqString, HttpMethod.GET, null, new ParameterizedTypeReference<RecipeDetailDto>() {
+        String reqString = getNewReqStringForInformation(recipeId);
+        ResponseEntity<RecipeDetailDto> response = restTemplate.exchange(reqString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<RecipeDetailDto>() {
         });
 
-        String stepsReqString = "https://api.spoonacular.com/recipes/" + recipeId + "/analyzedInstructions" + "?apiKey=" + apiKey + "&stepBreakdown=true";
-        ResponseEntity<List<CookingSteps>> responseSteps = restTemplate.exchange(stepsReqString, HttpMethod.GET, null, new ParameterizedTypeReference<List<CookingSteps>>() {
+        String stepsReqString = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/" + recipeId + "/analyzedInstructions" + "?stepBreakdown=true";
+        ResponseEntity<List<CookingSteps>> responseSteps = restTemplate.exchange(stepsReqString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<List<CookingSteps>>() {
         });
 
         RecipeDetailDto recipeDetailDto = response.getBody();
@@ -545,21 +554,21 @@ public class CookingServiceImpl implements CookingService {
     }
 
 
-    private String getRequestStringForRecipeSearch(List<ItemDto> items) {
+    private String getRequestStringForRecipeSearch2(List<ItemDto> items) {
         List<String> ingredients = new LinkedList<>();
         for (ItemDto item : items) {
             ingredients.add(item.productName());
         }
 
-        String requestString = apiUrl;
-        requestString += "?apiKey=" + apiKey;
+        String requestString = apiUrlNew + "?";
+
         boolean isFirst = true;
         for (String ingredient : ingredients) {
             if (isFirst) {
-                requestString += "&ingredients=" + ingredient;
+                requestString += "ingredients=" + ingredient;
                 isFirst = false;
             } else {
-                requestString += ",+" + ingredient;
+                requestString += "%2C" + ingredient;
             }
         }
         requestString += "&number=2";
@@ -693,7 +702,12 @@ public class CookingServiceImpl implements CookingService {
         if (unitName.isEmpty()) {
             unit = unitService.findByName("pcs");
         } else {
-            unit = unitService.findByName(unitName);
+            try {
+                unit = unitService.findByName(unitName);
+            } catch (NotFoundException notFoundException) {
+                unit = unitService.findByName("pcs");
+            }
+
         }
         Unit minUnit = getMinUnit(unit);
         double convertedAmount = unitService.convertUnits(unit, minUnit, amount);
@@ -705,5 +719,13 @@ public class CookingServiceImpl implements CookingService {
             unitMapper.entityToUnitDto(minUnit),
             convertedAmount
         );
+    }
+
+    private HttpEntity<String> getHttpEntity() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-RapidAPI-Key", "ae23e73d96msh9381960a9bfdf3dp189734jsne7387514766a");
+        headers.set("X-RapidAPI-Host", "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com");
+        HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+        return httpEntity;
     }
 }

@@ -16,7 +16,7 @@ import {RecipeDetailComponent} from "./recipe-detail/recipe-detail.component";
 export class CookingComponent implements OnInit {
   recipes: RecipeSuggestion[];
   empty: boolean = true;
-  type:string;
+  type: string;
   @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
 
   constructor(private cookingService: CookingService,
@@ -33,6 +33,7 @@ export class CookingComponent implements OnInit {
   onTypeChange(): void {
     console.log(`Type changed to: ${this.type}`);
   }
+
   reloadRecipes() {
     this.cookingService.loadRecipes(this.type).subscribe({
 
@@ -48,21 +49,22 @@ export class CookingComponent implements OnInit {
     })
 
   }
+
   openRecipeModal(recipe: RecipeSuggestion) {
-    const modalRef = this.modalService.open(CookingModalComponent, { size: 'lg' });
+    const modalRef = this.modalService.open(CookingModalComponent, {size: 'lg'});
     console.log(recipe + "from Modal");
     modalRef.componentInstance.recipe = recipe;
   }
-   openDetailModal(recipeID:string) {
-    const modalRef = this.modalService.open(RecipeDetailComponent, { size: 'lg' });
 
-    modalRef.componentInstance.recipeID= recipeID;
+  openDetailModal(recipeID: string) {
+    const modalRef = this.modalService.open(RecipeDetailComponent, {size: 'lg'});
+    console.log(recipeID + "from openDetailModal")
+    modalRef.componentInstance.recipeID = recipeID;
   }
 
   handleRecipeAddedToCookbook(recipeTitle: string) {
     this.notification.success(`Recipe ${recipeTitle} successfully added to the cookbook.`, "Success");
   }
-
 
 
   public addTestData() {
@@ -75,12 +77,12 @@ export class CookingComponent implements OnInit {
         servings: 4,
         readyInMinutes: 30,
         extendedIngredients: [
-          { id: 1, name: 'Ground beef', unit: 'g', amount: 500 },
-          { id: 2, name: 'Tomato sauce', unit: 'ml', amount: 400 },
+          {id: 1, name: 'Ground beef', unit: 'g', amount: 500},
+          {id: 2, name: 'Tomato sauce', unit: 'ml', amount: 400},
           // Add more ingredients as needed
         ],
-        missedIngredients:[
-          { id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2 },
+        missedIngredients: [
+          {id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2},
         ]
       },
       {
@@ -90,18 +92,17 @@ export class CookingComponent implements OnInit {
         servings: 3,
         readyInMinutes: 20,
         extendedIngredients: [
-          { id: 3, name: 'Chicken breast', unit: 'g', amount: 300 },
-          { id: 4, name: 'Broccoli', unit: 'g', amount: 200 },
+          {id: 3, name: 'Chicken breast', unit: 'g', amount: 300},
+          {id: 4, name: 'Broccoli', unit: 'g', amount: 200},
           // Add more ingredients as needed
         ],
-        missedIngredients:[
-          { id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2 },
+        missedIngredients: [
+          {id: 5, name: 'Ingredient 5', unit: 'tsp', amount: 2},
         ]
       },
       // Add more recipes as needed
     ];
   }
-
 
 
 }
