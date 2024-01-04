@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {BalanceDebitDto, ExpenseDto} from "../dtos/expenseDto";
+import {BalanceDebitDto, ExpenseDto, UserValuePairDto} from "../dtos/expenseDto";
 import {Observable} from "rxjs";
 
 @Injectable({
@@ -18,6 +18,18 @@ export class FinanceService {
   createExpense(expense: ExpenseDto): Observable<ExpenseDto> {
     console.log("Create expense: " + expense.debitUsers);
     return this.http.post<ExpenseDto>(this.baseUri, expense);
+  }
+
+  findTotalExpensesPerUser(): Observable<UserValuePairDto[]> {
+    return this.http.get<UserValuePairDto[]>(this.baseUri + '/statistics/expenses');
+  }
+
+  findTotalDebitsPerUser(): Observable<UserValuePairDto[]> {
+    return this.http.get<UserValuePairDto[]>(this.baseUri + '/statistics/debits');
+  }
+
+  findBalanceExpenses(): Observable<UserValuePairDto[]> {
+    return this.http.get<UserValuePairDto[]>(this.baseUri + '/statistics/balance');
   }
 
   findBalanceDebits(): Observable<BalanceDebitDto[]> {

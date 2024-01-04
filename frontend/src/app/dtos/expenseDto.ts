@@ -26,6 +26,10 @@ export class BalanceDebitDto {
   valueInCent?: number;
 }
 
+export class UserValuePairDto {
+  user?: UserListDto;
+  value?: number;
+}
 
 export enum SplitBy {
   EQUAL = "EQUAL",
