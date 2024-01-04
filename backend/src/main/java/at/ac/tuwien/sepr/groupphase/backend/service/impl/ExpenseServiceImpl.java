@@ -92,7 +92,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         return totalAmountPaidPerUser.entrySet().stream().map(
             entry -> new UserValuePairDto(
                 userMapper.entityToUserListDto(entry.getKey()),
-                entry.getValue()
+                (Math.abs(entry.getValue()) < 1) ? 0 : entry.getValue()
             )
         ).collect(Collectors.toList());
     }
@@ -107,7 +107,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         return totalAmountOwedPerUser.entrySet().stream().map(
             entry -> new UserValuePairDto(
                 userMapper.entityToUserListDto(entry.getKey()),
-                entry.getValue()
+                (Math.abs(entry.getValue()) < 1) ? 0 : entry.getValue()
             )
         ).collect(Collectors.toList());
     }
@@ -130,7 +130,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         return balancesPerUser.entrySet().stream().map(
             entry -> new UserValuePairDto(
                 userMapper.entityToUserListDto(entry.getKey()),
-                entry.getValue()
+                (Math.abs(entry.getValue()) < 1) ? 0 : entry.getValue()
             )
         ).collect(Collectors.toList());
     }
