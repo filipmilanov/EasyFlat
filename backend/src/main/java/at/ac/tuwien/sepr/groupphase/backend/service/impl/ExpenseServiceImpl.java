@@ -84,7 +84,17 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<UserValuePairDto> calculateTotalExpensesPerUser() {
-        return null;
+        LOGGER.info("calculateTotalExpensesPerUser()");
+
+        Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
+        Map<ApplicationUser, Double> totalAmountPaidPerUser = calculateTotalAmountPaiedPerUserOfSharedFlat(usersOfSharedFlat);
+
+        return totalAmountPaidPerUser.entrySet().stream().map(
+            entry -> new UserValuePairDto(
+                userMapper.entityToUserListDto(entry.getKey()),
+                entry.getValue()
+            )
+        ).collect(Collectors.toList());
     }
 
     @Override
