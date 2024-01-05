@@ -30,6 +30,7 @@ export class AllChoreComponent {
 
   ngOnInit() {
     this.loadChores();
+    console.log(this.chores)
   }
 
   loadChores() {
@@ -65,6 +66,7 @@ export class AllChoreComponent {
       }
     }
     this.completedChores = this.chores.filter(chore => chore.completed);
+    console.log(this.completedChores)
   }
 
   completedChoresIsEmpty() {
@@ -75,11 +77,12 @@ export class AllChoreComponent {
     return this.choreService.deleteChores(this.completedChores).subscribe({
       next: res => {
         this.notification.success(`Chores completed.`, "Success");
-        this.awardPoints();
         for (let i = 0; i < res.length; i++) {
           this.chores = this.chores.filter(chore => chore.id !== res[i].id);
         }
+        this.awardPoints();
         this.completedChores = [];
+
       },
       error: err => {
         console.error("Chores could not be deleted");
@@ -89,8 +92,8 @@ export class AllChoreComponent {
 
   awardPoints() {
     for (let i = 0; i < this.completedChores.length; i++) {
-      let curr = this.chores[i];
-      let points = curr.points + curr.user.points;
+      let curr = this.completedChores[i];
+      let points = curr.points + 20;
       this.authService.updatePoints(points, curr.user.id).subscribe({
         next: res => {
           this.notification.success("Points awarded.", "Success");
