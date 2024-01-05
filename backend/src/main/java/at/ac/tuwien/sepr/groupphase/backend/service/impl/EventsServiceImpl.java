@@ -181,6 +181,10 @@ public class EventsServiceImpl implements EventsService {
 
         List<Event> events = eventsRepository.getBySharedFlatIs(user.getSharedFlat());
 
+        if (events.isEmpty()) {
+            throw new EntityNotFoundException("Events not found for shared flat " + user.getSharedFlat().getName());
+        }
+
         for (Event event : events) {
             icsContent.append("BEGIN:VEVENT\n");
 
