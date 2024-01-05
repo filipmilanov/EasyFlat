@@ -48,6 +48,9 @@ import { AllChoreComponent } from './components/haushalt-plan/all-chore/all-chor
 import { MyChoresComponent } from './components/haushalt-plan/my-chores/my-chores.component';
 import { NewChoreComponent } from './components/haushalt-plan/new-chore/new-chore.component';
 import { ChoreCardComponent } from './components/haushalt-plan/chore-card/chore-card.component';
+import { LeaderboardComponent } from './components/haushalt-plan/leaderboard/leaderboard.component';
+import { MatListModule } from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
 import { ChorePreferenceCardComponent } from './components/haushalt-plan/chore-preference-card/chore-preference-card.component';
 
 
@@ -93,6 +96,7 @@ LOAD_WASM().subscribe();
     MyChoresComponent,
     NewChoreComponent,
     ChoreCardComponent,
+    LeaderboardComponent,
     ChorePreferenceCardComponent
   ],
   imports: [
@@ -106,7 +110,9 @@ LOAD_WASM().subscribe();
     BrowserAnimationsModule,
     ColorPickerModule,
     NgOptimizedImage,
-    NgxScannerQrcodeModule
+    NgxScannerQrcodeModule,
+    MatListModule,
+    MatCardModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

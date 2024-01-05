@@ -1,0 +1,18 @@
+<div class="leaderboard-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Leaderboard</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-nav-list>
+        <ng-container *ngFor="let user of users; let i = index">
+          <mat-list-item>
+            <div matLine>{{ i + 1 }}</div>
+            <div matLine>{{ user.firstName }}</div>
+            <div matLine class="points">{{ user.points }} points</div>
+          </mat-list-item>
+        </ng-container>
+      </mat-nav-list>
+    </mat-card-content>
+  </mat-card>
+</div>

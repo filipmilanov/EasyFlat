@@ -5,6 +5,7 @@ import {ChoresDto} from "../dtos/chores";
 import {ShoppingListDto} from "../dtos/shoppingList";
 import {Observable} from "rxjs";
 import {Preference} from "../dtos/preference";
+import {UserDetail} from "../dtos/auth-request";
 
 @Injectable({
   providedIn: 'root'
@@ -40,5 +41,9 @@ export class ChoreService {
   deleteChores(completedChores: ChoresDto[]) {
     const choreIds = completedChores.map(chore => chore.id);
     return this.httpClient.delete<ChoresDto[]>(this.choreBaseUri + '/delete', { params: { choreIds: choreIds.join(',') } });
+  }
+
+  getUsers() {
+    return this.httpClient.get<UserDetail[]>(this.choreBaseUri + '/users');
   }
 }

@@ -33,6 +33,7 @@ import {ChorePreferenceComponent} from "./components/haushalt-plan/chore-prefere
 import {AllChoreComponent} from "./components/haushalt-plan/all-chore/all-chore.component";
 import {MyChoresComponent} from "./components/haushalt-plan/my-chores/my-chores.component";
 import {NewChoreComponent} from "./components/haushalt-plan/new-chore/new-chore.component";
+import {LeaderboardComponent} from "./components/haushalt-plan/leaderboard/leaderboard.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -77,6 +78,7 @@ const routes: Routes = [
       {path: 'all', component: AllChoreComponent},
       {path: 'my', component: MyChoresComponent},
       {path: 'add', component: NewChoreComponent},
+      {path: 'leaderboard', component: LeaderboardComponent},
     ]},
   {path: 'account', component: AccountComponent},
   {path: 'wgLogin', component: LoginFlatComponent},

@@ -346,5 +346,14 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
 
+    @Override
+    public List<ApplicationUser> getUsers() throws AuthenticationException {
+        ApplicationUser existingUser = authService.getUserFromToken();
+        if (existingUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+        }
+
+        return userRepository.findAllBySharedFlat(existingUser.getSharedFlat());
+    }
 }
 

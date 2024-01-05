@@ -1,7 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ChoreMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ChoreService;
@@ -32,9 +35,12 @@ public class ChoresEndpoint {
 
     private final ChoreMapper choreMapper;
 
-    public ChoresEndpoint(ChoreService choreService, ChoreMapper choreMapper) {
+    private final UserMapper userMapper;
+
+    public ChoresEndpoint(ChoreService choreService, ChoreMapper choreMapper, UserMapper userMapper) {
         this.choreService = choreService;
         this.choreMapper = choreMapper;
+        this.userMapper = userMapper;
     }
 
     @PostMapping
@@ -72,5 +78,14 @@ public class ChoresEndpoint {
             .collect(Collectors.toList());
         List<Chore> deletedChores = choreService.deleteChores(choreIds);
         return choreMapper.entityListToDtoList(deletedChores);
+    }
+
+    @GetMapping("/users")
+    public List<UserDetailDto> getUsers() throws AuthenticationException {
+        LOGGER.trace("getUsers()");
+
+        List<ApplicationUser> users = choreService.getUsers();
+
+        return userMapper.entityListToDtoList(users);
     }
 }

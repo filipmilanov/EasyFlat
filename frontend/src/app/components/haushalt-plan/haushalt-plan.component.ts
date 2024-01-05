@@ -25,4 +25,8 @@ export class HaushaltPlanComponent {
   navigateToNewChore() {
     this.router.navigate(['/chores/add'])
   }
+
+  navigateToLeaderboard() {
+    this.router.navigate(['/chores/leaderboard']);
+  }
 }
