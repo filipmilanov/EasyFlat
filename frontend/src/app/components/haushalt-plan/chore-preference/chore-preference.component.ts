@@ -11,6 +11,7 @@ import {ToastrService} from "ngx-toastr";
 import {UnitService} from "../../../services/unit.service";
 import {Preference} from "../../../dtos/preference";
 import {PreferenceService} from "../../../services/preference.service";
+import {PreferenceStorageService} from "../../../services/preference-storage-service";
 
 @Component({
   selector: 'app-chore-preference',
@@ -26,6 +27,13 @@ export class ChorePreferenceComponent implements OnInit{
 };
   chores: ChoresDto[] = [];
 
+  oldPreference: Preference = {
+    first:null,
+    second:null,
+    third:null,
+    fourth:null
+  };
+
   private searchParams: string;
   constructor(
     private preferenceService: PreferenceService,
@@ -33,11 +41,13 @@ export class ChorePreferenceComponent implements OnInit{
     private route: ActivatedRoute,
     private notification: ToastrService,
     private choreService: ChoreService,
+    private preferenceStorage: PreferenceStorageService,
   ) {
   }
 
   public onSubmit(form: NgForm): void {
     console.log('is form valid?', form.valid, this.preference);
+    this.oldPreference = this.preference;
 
     if (form.valid) {
       let observable: Observable<Preference>;
@@ -53,9 +63,16 @@ export class ChorePreferenceComponent implements OnInit{
         }
       });
     }
+    if (form.valid) {
+      this.preferenceStorage.setLastPickedOptions(this.oldPreference);
+    }
   }
 
   ngOnInit(): void {
+    const lastPickedOptions = this.preferenceStorage.getLastPickedOptions();
+    if (lastPickedOptions) {
+      this.oldPreference = lastPickedOptions;
+    }
     this.choreService.getChores(this.searchParams).subscribe({
       next: (chores: any[]) => {
         this.chores = chores;

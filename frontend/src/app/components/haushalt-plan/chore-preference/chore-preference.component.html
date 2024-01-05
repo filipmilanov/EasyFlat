@@ -1,89 +1,72 @@
 <h1 class="display-4">Edit Chore Preference List</h1>
 <hr>
 
-<form #form="ngForm" [class.was-validated]="form.submitted" (submit)="onSubmit(form)">
-
-  <div class="row row-cols-1">
-
-    <div class="row p-2">
-      <label for="choreName1"
-             class="col-form-label text-muted col-md-2 col-lg-4"
-      >
-        1
-      </label>
-        <div class="form-elements">
-          <div class="col-md-2 col-lg-2 mt-2">
-            <select class="form-select form-select-md"
-                    name="selectedChore"
-                    [(ngModel)]="preference.first">
-              <option *ngFor="let chore of chores" [value]="chore.choreName">
-                {{ chore.choreName }}
-              </option>
-            </select>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <form #form="ngForm" [class.was-validated]="form.submitted" (submit)="onSubmit(form)">
+        <div class="row p-2">
+          <label class="col-form-label text-muted col-md-2 col-lg-4">First Chore</label>
+          <div class="form-elements">
+            <div class="col-md-2 col-lg-2 mt-2">
+              <select style="width: 250px" class="form-select form-select-md" name="selectedChore" [(ngModel)]="preference.first">
+                <option *ngFor="let chore of chores" [value]="chore.choreName">{{ chore.choreName }}</option>
+              </select>
+            </div>
           </div>
         </div>
 
+        <!-- Second Chore -->
+        <div class="row p-2">
+          <label class="col-form-label text-muted col-md-2 col-lg-4">Second Chore</label>
+          <div class="form-elements">
+            <div class="col-md-2 col-lg-2 mt-2">
+              <select style="width: 250px" class="form-select form-select-md" name="selectedShoppingList" [(ngModel)]="preference.second">
+                <option *ngFor="let chore of chores" [value]="chore.choreName">{{ chore.choreName }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Third Chore -->
+        <div class="row p-2">
+          <label class="col-form-label text-muted col-md-2 col-lg-4">Third Chore</label>
+          <div class="form-elements">
+            <div class="col-md-2 col-lg-2 mt-2">
+              <select style="width: 250px" class="form-select form-select-md" name="selectedShoppingList" [(ngModel)]="preference.third">
+                <option *ngFor="let chore of chores" [value]="chore.choreName">{{ chore.choreName }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fourth Chore -->
+        <div class="row p-2">
+          <label class="col-form-label text-muted col-md-2 col-lg-4">Fourth Chore</label>
+          <div class="form-elements">
+            <div class="col-md-2 col-lg-2 mt-2">
+              <select style="width: 250px" class="form-select form-select-md" name="selectedShoppingList" [(ngModel)]="preference.fourth">
+                <option *ngFor="let chore of chores" [value]="chore.choreName">{{ chore.choreName }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary p-2" [disabled]="!form.valid">Save</button>
+
+      </form>
     </div>
 
-    <div class="row p-2">
-      <label for="choreName2"
-             class="col-form-label text-muted col-md-2 col-lg-4"
-      >
-        2
-      </label>
-        <div class="form-elements">
-          <div class="col-md-2 col-lg-2 mt-2">
-            <select class="form-select form-select-md"
-                    name="selectedShoppingList"
-                    [(ngModel)]="preference.second">
-              <option *ngFor="let chore of chores" [value]="chore.choreName" >
-                {{ chore.choreName }}
-              </option>
-            </select>
-          </div>
-        </div>
+    <!-- Div placed next to the chore menus -->
+    <div class="col-md-6" style="margin-top: 50px">
+      <div class="col-md-4 col-lg-6 mt-2" >
+        <app-chore-preference-card [first]="oldPreference.first"
+                        [second]="oldPreference.second"
+                        [third]="oldPreference.third"
+                        [fourth]="oldPreference.fourth" >
+        </app-chore-preference-card>
+      </div>
     </div>
-    <div class="row p-2">
-      <label for="choreName3"
-             class="col-form-label text-muted col-md-2 col-lg-4"
-      >
-        3
-      </label>
-        <div class="form-elements">
-          <div class="col-md-2 col-lg-2 mt-2">
-            <select class="form-select form-select-md"
-                    name="selectedShoppingList"
-                    [(ngModel)]="preference.third">
-              <option *ngFor="let chore of chores" [value]="chore.choreName" >
-                {{ chore.choreName }}
-              </option>
-            </select>
-          </div>
-        </div>
-    </div>
-    <div class="row p-2">
-      <label for="choreName4"
-             class="col-form-label text-muted col-md-2 col-lg-4"
-      >
-        4
-      </label>
-        <div class="form-elements">
-          <div class="col-md-2 col-lg-2 mt-2">
-            <select class="form-select form-select-md"
-                    name="selectedShoppingList"
-                    [(ngModel)]="preference.fourth">
-              <option *ngFor="let chore of chores" [value]="chore.choreName">
-                {{ chore.choreName }}
-              </option>
-            </select>
-          </div>
-        </div>
-    </div>
-    </div>
-  <button type="submit"
-          class="btn btn-primary float-end p-2"
-          [disabled] = "!form.valid"
-  >
-    Save
-  </button>
-</form>
+  </div>
+</div>
+
