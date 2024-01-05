@@ -58,7 +58,7 @@ export class EventCardComponent {
   }
 
   private downloadICSFile(icsContent: string) {
-    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const blob = new Blob([icsContent], {type: 'text/calendar'});
     const url = window.URL.createObjectURL(blob);
 
     const link = document.createElement('a');
@@ -71,7 +71,14 @@ export class EventCardComponent {
     document.body.removeChild(link);
   }
 
-  formatTime(time: string): string {
+  formatTime(time: string | null | undefined): string {
+    if (time == null) {
+      return '';
+    }
+    if (time.trim() === '') {
+      return '';
+    }
+
     const [hours, minutes] = time.split(':');
     return `${hours}:${minutes}`;
   }

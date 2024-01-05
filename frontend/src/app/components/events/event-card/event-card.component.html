@@ -15,7 +15,8 @@
     </div>
     <div>
       <div class="row">
-        <p class="card-text"><strong>Time:</strong> {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}</p>
+        <p class="card-text"><strong>Time:</strong> {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
+        </p>
       </div>
       <strong>Label: </strong>
       <ng-container *ngFor="let label of event.labels; let last = last">
@@ -35,7 +36,7 @@
     <button type="button"
             class="btn btn-danger btn-sm"
             data-bs-toggle="modal"
-            data-bs-target="#confirm-delete-modal"
+            [attr.data-bs-target]="'#confirm-delete-modal' + event.title"
     >
       <i class="bi bi-trash"></i>
     </button>
