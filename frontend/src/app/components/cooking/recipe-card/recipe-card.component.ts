@@ -62,11 +62,12 @@ export class RecipeCardComponent implements OnInit {
   }
 
   cook() {
-    console.log(this.recipe)
-    this.cookingService.getMissingIngredients(this.recipe.id).subscribe({
+    console.log(this.recipeID)
+    this.cookingService.getMissingIngredients(this.recipeID).subscribe({
       next: (missingIngredients: RecipeSuggestion) => {
         console.log(missingIngredients)
         if (missingIngredients && missingIngredients.missedIngredients.length > 0) {
+          this.recipe.id = this.recipeID;
           this.cookClicked.emit(this.recipe);
         } else {
           this.cookingService.cookRecipe(this.recipe).subscribe({

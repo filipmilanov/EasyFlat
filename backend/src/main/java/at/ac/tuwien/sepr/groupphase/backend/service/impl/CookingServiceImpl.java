@@ -297,7 +297,7 @@ public class CookingServiceImpl implements CookingService {
 
         RecipeDetailDto recipeDetailDto = response.getBody();
         CookingSteps steps = null;
-        if (responseSteps.getBody() != null) {
+        if (responseSteps.getBody() != null && !responseSteps.getBody().isEmpty()) {
             steps = responseSteps.getBody().get(0);
         }
         if (recipeDetailDto != null) {
