@@ -11,7 +11,7 @@ import {Subject} from "rxjs";
   styleUrls: ['./finance.component.scss']
 })
 export class FinanceComponent implements OnInit {
-
+  selectedGraphType: string = 'barchart';
   balanceDebits: BalanceDebitDto[] = [];
   reloadGraph: Subject<boolean> = new Subject<boolean>();
 
