@@ -116,7 +116,8 @@ export class AuthService {
   }
 
   updatePoints(points: number, userId: string) {
-    const updatePayload = { [points]: points };
-    return this.httpClient.patch<UserDetail>(this.authBaseUri + '/' + userId, points);
+    const requestBody = { points };
+    console.log(requestBody)
+    return this.httpClient.patch<UserDetail>(this.authBaseUri + '/' + userId, requestBody);
   }
 }
