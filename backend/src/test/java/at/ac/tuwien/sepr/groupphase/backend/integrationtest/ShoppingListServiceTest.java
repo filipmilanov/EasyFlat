@@ -86,11 +86,10 @@ public class ShoppingListServiceTest implements TestData {
     @Mock
     private Logger logger;
 
-    /*
+
     @Test
     public void testCreate() throws AuthenticationException, ValidationException, ConflictException {
         String jwt = "mockedJWT";
-
 
         // Mock the necessary method calls
         //when(shoppingListService.getShoppingLists("", jwt)).thenReturn(new ShoppingList());
@@ -125,8 +124,6 @@ public class ShoppingListServiceTest implements TestData {
             () -> assertEquals("pear", result.getGeneralName())
         );
     }
-
-     */
 
 
 }
