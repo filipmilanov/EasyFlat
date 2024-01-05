@@ -52,7 +52,7 @@ export class RadarComponent {
   initChart(totalExpenses: UserValuePairDto[], totalDebits: UserValuePairDto[]): void {
     let highestExpense = totalExpenses.reduce((prev, current) => (prev.value > current.value) ? prev : current).value;
     let highestDebit = totalDebits.reduce((prev, current) => (prev.value > current.value) ? prev : current).value;
-    let highestValue = Math.max(highestExpense, highestDebit);
+    let highestValue = Math.trunc(Math.max(highestExpense, highestDebit) / 100.0) + 1;
     this.chartOption = {
       tooltip: {},
       legend: {
@@ -68,11 +68,11 @@ export class RadarComponent {
         type: 'radar',
         data: [
           {
-            value: totalExpenses.map((value) => value.value),
+            value: totalExpenses.map((value) => (value.value / 100.0).toFixed(2)),
             name: 'Total Expenses'
           },
           {
-            value: totalDebits.map((value) => value.value),
+            value: totalDebits.map((value) => (value.value / 100.0).toFixed(2)),
             name: 'Total Debits'
           }
         ]

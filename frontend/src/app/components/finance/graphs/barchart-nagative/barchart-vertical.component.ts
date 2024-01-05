@@ -72,7 +72,7 @@ export class BarchartVerticalComponent implements OnInit {
             formatter: '{b}'
           },
           data: data.map((value) => ({
-            value: value.value,
+            value: (value.value / 100.0).toFixed(2),
             itemStyle: {
               color: value.value < 0 ? '#d9534f' : '#5cb85c'
             }
