@@ -80,8 +80,69 @@ public class ChoreServiceImpl implements ChoreService {
         }
         //all chores from this flat
         List<Chore> chores = choreRepository.findAllBySharedFlatId(applicationUser.getSharedFlat().getId());
+        List<Chore> choresAfterAssign = choreRepository.findAllBySharedFlatIdWhereUserIsNull(applicationUser.getSharedFlat().getId());
+        if (choresAfterAssign.size() == 0) {
+            throw new UnsupportedOperationException("All of the chores are assigned to users");
+        } else if (choresAfterAssign.size() == chores.size()) {
+            return assignChoresHelp(chores);
+        } else {
+            return secondAssign(choresAfterAssign);
+        }
+    }
 
-        return assignChoresHelp(chores);
+    private List<ChoreDto> secondAssign(List<Chore> choresAfterAssign) throws AuthenticationException {
+        LOGGER.trace("secondAssign({})", choresAfterAssign);
+        //check the user
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        if (applicationUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+        }
+        //all chores for this flat
+        List<Chore> chores = choreRepository.findAllBySharedFlatId(applicationUser.getSharedFlat().getId());
+        //all users from this flat
+        List<ApplicationUser> users = userRepository.findAllBySharedFlat(applicationUser.getSharedFlat());
+        //sort the users by points
+        sortUsersByPoints(users);
+        //5-5 or 5-6
+        if (chores.size() >= users.size()) {
+            //3-6 then all users have the same amount of chores
+            if (chores.size() % users.size() == 0) {
+                for (int i = users.size() - choresAfterAssign.size(); i < users.size(); i++) {
+                    Chore toAssign = getRandomChore(choresAfterAssign);
+                    toAssign.setUser(users.get(i));
+                    choresAfterAssign.remove(toAssign);
+                    choreRepository.save(toAssign);
+                }
+                //3-5 then some users have one chore more than the others
+            } else {
+                while (!choresAfterAssign.isEmpty()) {
+                    int globalCount = (int) Math.floor((double) (chores.size() - choresAfterAssign.size()) / users.size());
+                    for (int j = users.size() - 1; j >= 0; j--) {
+                        if (choreRepository.allChoresByUserId(users.get(j).getSharedFlat().getId(), users.get(j).getId()).size() == globalCount) {
+                            Chore toAssign = getRandomChore(choresAfterAssign);
+                            toAssign.setUser(users.get(j));
+                            choresAfterAssign.remove(toAssign);
+                            choreRepository.save(toAssign);
+                        }
+                    }
+                }
+            }
+            //5-3 then some users have no chores
+        } else {
+            while (!choresAfterAssign.isEmpty()) {
+                int globalCount = (int) Math.floor((double) (chores.size() - choresAfterAssign.size()) / users.size());
+                for (int j = users.size() - 1; j >= 0; j--) {
+                    if (choreRepository.allChoresByUserId(users.get(j).getSharedFlat().getId(), users.get(j).getId()).size() == globalCount) {
+                        Chore toAssign = getRandomChore(choresAfterAssign);
+                        toAssign.setUser(users.get(j));
+                        choresAfterAssign.remove(toAssign);
+                        choreRepository.save(toAssign);
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     private List<ChoreDto> assignChoresHelp(List<Chore> chores) throws AuthenticationException {
@@ -128,6 +189,7 @@ public class ChoreServiceImpl implements ChoreService {
                 Chore toAssign = getRandomChore(chores);
                 toAssign.setUser(user);
                 chores.remove(toAssign);
+                choreRepository.save(toAssign);
             }
             // rest of the chores that are not assigned
             //recursively add the rest of the chores
@@ -156,13 +218,13 @@ public class ChoreServiceImpl implements ChoreService {
                 if (count == 0) {
                     notAssignedUsers.add(users.get(i));
                 }
-                //assign randomly all not assigned Users
-                for (ApplicationUser user : notAssignedUsers) {
-                    Chore toAssign = getRandomChore(chores);
-                    toAssign.setUser(user);
-                    chores.remove(toAssign);
-                }
-
+            }
+            //assign randomly all not assigned Users
+            for (ApplicationUser user : notAssignedUsers) {
+                Chore toAssign = getRandomChore(chores);
+                toAssign.setUser(user);
+                chores.remove(toAssign);
+                choreRepository.save(toAssign);
             }
         }
 
@@ -180,8 +242,11 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     private List<Chore> getPreferences(ApplicationUser user) {
-        Preference preference = preferenceRepository.findByUserId(user);
         List<Chore> toReturn = new ArrayList<>();
+        if (!preferenceRepository.existsByUserId(user)) {
+            return toReturn;
+        }
+        Preference preference = preferenceRepository.findByUserId(user);
         Optional<Chore> firstChore = choreRepository.findById(preference.getFirstId());
         if (firstChore.isPresent()) {
             Chore choreToAdd = firstChore.get();

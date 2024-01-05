@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Preference;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ChoreRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PreferenceRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.PreferenceService;
 import org.slf4j.Logger;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,12 +32,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     private final ChoreRepository choreRepository;
 
+    private final UserRepository userRepository;
 
-    public PreferenceServiceImpl(AuthService authService, PreferenceRepository preferenceRepository, PreferenceMapper preferenceMapper, ChoreRepository choreRepository) {
+
+    public PreferenceServiceImpl(AuthService authService, PreferenceRepository preferenceRepository, PreferenceMapper preferenceMapper, ChoreRepository choreRepository, UserRepository userRepository) {
         this.authService = authService;
         this.preferenceRepository = preferenceRepository;
         this.preferenceMapper = preferenceMapper;
         this.choreRepository = choreRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -68,8 +71,12 @@ public class PreferenceServiceImpl implements PreferenceService {
             existing.setSecondId(preference.getSecondId());
             existing.setThirdId(preference.getThirdId());
             existing.setFourthId(preference.getFourthId());
+            applicationUser.setPreference(existing);
+            userRepository.save(applicationUser);
             return preferenceMapper.entityToPreferenceDto(preferenceRepository.save(existing));
         } else {
+            applicationUser.setPreference(preference);
+            userRepository.save(applicationUser);
             return preferenceMapper.entityToPreferenceDto(preferenceRepository.save(preference));
         }
     }

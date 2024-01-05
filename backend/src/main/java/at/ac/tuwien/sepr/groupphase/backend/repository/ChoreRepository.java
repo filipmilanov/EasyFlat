@@ -19,4 +19,12 @@ public interface ChoreRepository extends JpaRepository<Chore, Long> {
     @Query("SELECT c FROM chore c WHERE c.user = :user")
     boolean existsByUserId(@Param("user") Long user
     );
+
+    @Query("SELECT c FROM chore c WHERE c.sharedFlat.id = :id AND c.user IS NULL")
+    List<Chore> findAllBySharedFlatIdWhereUserIsNull(@Param("id") Long id);
+
+    @Query("SELECT c FROM chore c WHERE c.sharedFlat.id = :id AND c.user.id = :userId")
+    List<Chore> allChoresByUserId(@Param("id") Long id, @Param("userId") Long userId);
+
+
 }

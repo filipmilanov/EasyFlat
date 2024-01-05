@@ -43,10 +43,11 @@ export class AllChoreComponent {
     this.choreService.assginChores().subscribe({
       next: res => {
         this.chores = res;
+        this.router.navigate(['/chores/all']);
       },
       error: err => {
         console.error("Error fetching chores with users")
-        this.notification.error("Error loading chores")
+        this.notification.error("Error assigning chores with users")
       }
     });
   }
