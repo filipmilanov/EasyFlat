@@ -3,6 +3,8 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventLabelDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventLabelDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
@@ -13,6 +15,7 @@ import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
@@ -68,6 +72,7 @@ public class EventEndpointTest {
     private AuthService authService;
 
     private final String BASE_URI = "/api/v1/events";
+    private final String EXPORT_BASE_URI = "/api/v1/events/export";
     private ApplicationUser applicationUser;
     @Autowired
     private SharedFlatMapper sharedFlatMapper;
@@ -200,5 +205,63 @@ public class EventEndpointTest {
         // then
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
     }
+
+    @Test
+    @DisplayName("Negative test for events with non-valid labels with status 422")
+    public void givenEventWithInvalidLabelsShouldReturnStatus422() throws Exception {
+
+        EventLabelDto label1 = EventLabelDtoBuilder.builder()
+            .labelName("label1")
+            .build();
+        EventLabelDto label2 = EventLabelDtoBuilder.builder()
+            .labelName("label2")
+            .build();
+        EventLabelDto label3 = EventLabelDtoBuilder.builder()
+            .labelName("label3")
+            .build();
+        EventLabelDto label4 = EventLabelDtoBuilder.builder()
+            .labelName("label4")
+            .build();
+        List<EventLabelDto> labels = new ArrayList<>();
+        labels.addAll(List.of(label1, label2, label3, label4));
+
+        EventDto invalidDateEvent = new EventDto(null, "Invalid Date Event", "Description", LocalTime.now(),LocalTime.now(),LocalDate.now().minusDays(22), null,labels);
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(post(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidDateEvent))
+                .header("Authorization", "Bearer " + jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
+    }
+
+    @Test
+    @DisplayName("Positive test for exporting event with valid id with status 200")
+    public void givenValidEventIdForExportShouldReturnStatus200() throws Exception {
+        // given
+        Long validEventId = 1L;
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(EXPORT_BASE_URI + "/{id}", validEventId)
+                .header("Authorization", "Bearer " + jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+
+        String retrievedExport = response.getContentAsString();
+
+        assertAll(
+            () -> assertNotNull(retrievedExport)
+        );
+    }
+
 
 }
