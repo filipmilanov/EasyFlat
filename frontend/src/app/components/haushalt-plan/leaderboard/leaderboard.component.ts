@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import {Router} from "@angular/router";
 import {ChoreService} from "../../../services/chore.service";
 import {ToastrService} from "ngx-toastr";
-import {AuthService} from "../../../services/auth.service";
 import {UserDetail} from "../../../dtos/auth-request";
 
 @Component({
@@ -26,5 +25,17 @@ export class LeaderboardComponent {
         console.error("Error getting users from the persistent data");
       }
     });
+  }
+
+  getRowNumberStyle(rank: number): any {
+    if (rank === 1) {
+      return { color: 'gold' };
+    } else if (rank === 2) {
+      return { color: 'silver' };
+    } else if (rank === 3) {
+      return { color: '#cd7f32' };
+    } else {
+      return { color: 'grey' };
+    }
   }
 }

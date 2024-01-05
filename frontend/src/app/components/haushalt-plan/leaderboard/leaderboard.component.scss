@@ -1,11 +1,24 @@
 .leaderboard-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  height: 100vh;
+}
+
+.mat-card {
+  margin-bottom: 10px;
+}
+
+.row-number-container {
+  display: flex;
+  align-items: center;
+}
+
+.row-number {
+  font-size: 22px;
+  font-weight: bold;
 }
 
 .points {
-  font-weight: bold;
-  color: #4caf50; // Green color for points
+  font-style: italic;
+  color: #4caf50;
 }
