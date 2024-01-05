@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +82,8 @@ public class EventsServiceImpl implements EventsService {
                 existingEvent.setTitle(event.title());
                 existingEvent.setDescription(event.description());
                 existingEvent.setDate(event.date());
+                existingEvent.setStartTime(event.startTime());
+                existingEvent.setEndTime(event.endTime());
 
                 if (event.labels() != null) {
                     List<EventLabel> labels = this.findLabelsAndCreateMissing(event.labels());
@@ -186,8 +189,12 @@ public class EventsServiceImpl implements EventsService {
             icsContent.append("UID:").append(uuid).append("\n");
             icsContent.append("SUMMARY:").append(event.getTitle()).append("\n");
             icsContent.append("DESCRIPTION:").append(event.getDescription()).append("\n");
-            icsContent.append("DTSTART:").append(formatDate(event.getDate())).append("\n");
-            icsContent.append("DTEND:").append(formatDate(event.getDate().plusDays(1))).append("\n");
+
+            LocalDateTime eventStartDateTime = LocalDateTime.of(event.getDate(), event.getStartTime());
+            LocalDateTime eventEndDateTime = LocalDateTime.of(event.getDate(), event.getEndTime());
+
+            icsContent.append("DTSTART:").append(formatDate(eventStartDateTime)).append("\n");
+            icsContent.append("DTEND:").append(formatDate(eventEndDateTime)).append("\n");
             icsContent.append("END:VEVENT\n");
         }
 
@@ -216,8 +223,12 @@ public class EventsServiceImpl implements EventsService {
                 icsContent.append("UID:").append(uuid).append("\n");
                 icsContent.append("SUMMARY:").append(event.getTitle()).append("\n");
                 icsContent.append("DESCRIPTION:").append(event.getDescription()).append("\n");
-                icsContent.append("DTSTART:").append(formatDate(event.getDate())).append("\n");
-                icsContent.append("DTEND:").append(formatDate(event.getDate().plusDays(1))).append("\n");
+
+                LocalDateTime eventStartDateTime = LocalDateTime.of(event.getDate(), event.getStartTime());
+                LocalDateTime eventEndDateTime = LocalDateTime.of(event.getDate(), event.getEndTime());
+
+                icsContent.append("DTSTART:").append(formatDate(eventStartDateTime)).append("\n");
+                icsContent.append("DTEND:").append(formatDate(eventEndDateTime)).append("\n");
                 icsContent.append("END:VEVENT\n");
                 icsContent.append("END:VCALENDAR");
 
@@ -230,11 +241,10 @@ public class EventsServiceImpl implements EventsService {
         }
     }
 
-    private String formatDate(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        return date.format(formatter);
+    private String formatDate(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss");
+        return dateTime.format(formatter);
     }
-
 
     private List<EventLabel> findLabelsAndCreateMissing(List<EventLabelDto> labels) {
         LOGGER.trace("findLabelsAndCreateMissing({})", labels);

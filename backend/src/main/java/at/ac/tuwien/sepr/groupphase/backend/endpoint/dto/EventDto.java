@@ -17,9 +17,11 @@ public record EventDto(
     @NotEmpty(message = "Title must not be empty")
     String title,
     String description,
+    @NotNull(message = "The start time must be given")
     LocalTime startTime,
+    @NotNull(message = "The end time must be given")
     LocalTime endTime,
-    @FutureOrPresent(message = "The date must be in the present or in the future")
+    @FutureOrPresent(message = "The date must be in the present or in the future") @NotNull(message = "The date must be given")
     LocalDate date,
     WgDetailDto sharedFlat,
     List<EventLabelDto> labels

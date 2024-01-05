@@ -4,11 +4,11 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="col-md-3">
       <label for="searchTitle" class="col-form-label">
-        Label
+        Filter by Label
       </label>
       <input type="text" id="searchTitle" name="searchTitle" class="form-control" [(ngModel)]="label" (input)="findEventsByLabel()">
     </div>
-    <button type="button" class="btn btn-secondary bi-save" style="margin-left: 10px;" (click)="exportAll()">
+    <button *ngIf="events.length > 0" type="button" class="btn btn-secondary bi-save" style="margin-left: 10px;" (click)="exportAll()">
       Export all events
     </button>
   </div>

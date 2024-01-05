@@ -18,7 +18,6 @@
         <p class="card-text"><strong>Time:</strong> {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
         </p>
       </div>
-      <strong>Label: </strong>
       <ng-container *ngFor="let label of event.labels; let last = last">
         <span [style.color]="label.labelColour">{{ label.labelName }}</span>
         <ng-container *ngIf="!last">,</ng-container>
