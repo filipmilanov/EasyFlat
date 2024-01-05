@@ -261,48 +261,6 @@ public class ChoreServiceImpl implements ChoreService {
         return toDelete;
     }
 
-    @Override
-    public List<Chore> getChoresByUser() throws AuthenticationException {
-        LOGGER.trace("getChoresByUser()");
-        ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-        return choreRepository.findAllByUser(applicationUser);
-    }
-
-    @Override
-    public List<Chore> deleteChores(List<Long> choreIds) {
-        LOGGER.trace("deleteChores({})", choreIds);
-        List<Chore> toDelete = choreRepository.findAllById(choreIds);
-        if (toDelete.size() != choreIds.size()) {
-            throw new NotFoundException("The given chores do not exist in the persistent data");
-        }
-        choreRepository.deleteAllById(choreIds);
-        return toDelete;
-    }
-
-    @Override
-    public List<Chore> getChoresByUser() throws AuthenticationException {
-        LOGGER.trace("getChoresByUser()");
-        ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-        return choreRepository.findAllByUser(applicationUser);
-    }
-
-    @Override
-    public List<Chore> deleteChores(List<Long> choreIds) {
-        LOGGER.trace("deleteChores({})", choreIds);
-        List<Chore> toDelete = choreRepository.findAllById(choreIds);
-        if (toDelete.size() != choreIds.size()) {
-            throw new NotFoundException("The given chores do not exist in the persistent data");
-        }
-        choreRepository.deleteAllById(choreIds);
-        return toDelete;
-    }
-
     private Chore getRandomChore(List<Chore> chores) {
         if (chores == null || chores.isEmpty()) {
             throw new IllegalArgumentException("List is empty or null");
