@@ -149,6 +149,9 @@ public class CookingServiceImpl implements CookingService {
         ApplicationUser user = authService.getUserFromToken();
 
         List<ItemDto> items = itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId()).stream().map(itemMapper::entityToDto).toList();
+        if (items.isEmpty()) {
+            throw new ConflictException("Storage is empty", List.of("Please add some ingredients."));
+        }
 
         String requestString = getRequestStringForRecipeSearch(items);
         ResponseEntity<List<RecipeDto>> exchange = restTemplate.exchange(requestString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<List<RecipeDto>>() {

@@ -43,8 +43,13 @@ export class CookingComponent implements OnInit {
         this.empty = false;
       },
       error: err => {
-        console.error("Error loading recipes:", err);
-        this.notification.error("Error loading recipes");
+        let firstBracket = err.error.indexOf('[');
+        let lastBracket = err.error.indexOf(']');
+        let errorMessages = err.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = err.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
       }
     })
 
