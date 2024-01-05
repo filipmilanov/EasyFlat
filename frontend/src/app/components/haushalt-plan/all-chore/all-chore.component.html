@@ -7,7 +7,7 @@
 
 <div style="width: 100%;margin-top: 20px; height: 100%;"></div>
 <div class="row row-cols-4">
-  <div class="col" *ngFor="let chore of chores">
+  <div style="margin-bottom: 20px;" class="col" *ngFor="let chore of chores">
     <a style="text-decoration: none"
        [routerLink]="['chores', 'details', chore.id]"
        aria-label="Show chore details">

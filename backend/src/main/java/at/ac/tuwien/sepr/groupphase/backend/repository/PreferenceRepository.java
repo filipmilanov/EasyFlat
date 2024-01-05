@@ -15,4 +15,7 @@ public interface PreferenceRepository extends JpaRepository<Preference, Long> {
 
     @Query("SELECT c FROM preference c WHERE c.user = :user")
     Preference findByUserId(@Param("user") ApplicationUser user);
+
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM preference p WHERE p.user = :user")
+    boolean existsByUserId(@Param("user") ApplicationUser user);
 }
