@@ -99,8 +99,6 @@ public class ChoreServiceImpl implements ChoreService {
         this.sortUsersByPoints(users);
         //list for users, which preferences are already taken.
         List<ApplicationUser> notAssignedUsers = new ArrayList<>();
-        //list for chores, that are not assigned
-        List<Chore> notAssignedChores = new ArrayList<>();
 
         //5users - 6 chores
         //5users - 5 chores
