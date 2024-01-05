@@ -36,64 +36,64 @@ public class CookingEndPoint {
 
     @PermitAll
     @GetMapping
-    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, @RequestHeader("Authorization") String jwt)
+    public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
         throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
-        return cookingService.getRecipeSuggestion(type, jwt);
+        return cookingService.getRecipeSuggestion(type);
     }
 
     @PermitAll
     @GetMapping("/cookbook")
-    public List<RecipeSuggestionDto> getCookbook(@RequestHeader("Authorization") String jwt)
+    public List<RecipeSuggestionDto> getCookbook()
         throws ValidationException, AuthorizationException, AuthenticationException {
-        return cookingService.getCookbook(jwt);
+        return cookingService.getCookbook();
     }
 
     @PermitAll
     @PostMapping("/cookbook")
-    public RecipeSuggestionDto createCookbookRecipe(@RequestBody RecipeSuggestionDto recipe, @RequestHeader("Authorization") String jwt)
+    public RecipeSuggestionDto createCookbookRecipe(@RequestBody RecipeSuggestionDto recipe)
         throws ConflictException, ValidationException, AuthorizationException, AuthenticationException {
-        return recipeMapper.entityToRecipeSuggestionDto(cookingService.createCookbookRecipe(recipe, jwt));
+        return recipeMapper.entityToRecipeSuggestionDto(cookingService.createCookbookRecipe(recipe));
     }
 
     @PermitAll
     @GetMapping("/cookbook/{id}")
-    public Optional<RecipeSuggestionDto> getCookbookRecipe(@PathVariable Long id, @RequestHeader("Authorization") String jwt) {
-        Optional<RecipeSuggestion> recipe = cookingService.getCookbookRecipe(id, jwt);
+    public Optional<RecipeSuggestionDto> getCookbookRecipe(@PathVariable Long id) {
+        Optional<RecipeSuggestion> recipe = cookingService.getCookbookRecipe(id);
         return recipe.flatMap(currentRecipe -> Optional.ofNullable(recipeMapper.entityToRecipeSuggestionDto(currentRecipe)));
     }
 
     @PermitAll
     @PutMapping("/cookbook/{id}")
-    public RecipeSuggestionDto updateCookbookRecipe(@PathVariable Long id, @RequestBody RecipeSuggestionDto recipe, @RequestHeader("Authorization") String jwt)
+    public RecipeSuggestionDto updateCookbookRecipe(@PathVariable Long id, @RequestBody RecipeSuggestionDto recipe)
         throws ConflictException, ValidationException, AuthorizationException, AuthenticationException {
-        return recipeMapper.entityToRecipeSuggestionDto(cookingService.updateCookbookRecipe(recipe.withId(id), jwt));
+        return recipeMapper.entityToRecipeSuggestionDto(cookingService.updateCookbookRecipe(recipe.withId(id)));
     }
 
     @PermitAll
     @DeleteMapping("/cookbook/{id}")
-    public RecipeSuggestionDto deleteCookbookRecipe(@PathVariable Long id, @RequestHeader("Authorization") String jwt)
+    public RecipeSuggestionDto deleteCookbookRecipe(@PathVariable Long id)
         throws AuthorizationException, AuthenticationException {
-        return recipeMapper.entityToRecipeSuggestionDto(cookingService.deleteCookbookRecipe(id, jwt));
+        return recipeMapper.entityToRecipeSuggestionDto(cookingService.deleteCookbookRecipe(id));
     }
 
     @PermitAll
     @GetMapping("/cookbook/missing/{id}")
-    public RecipeSuggestionDto getMissingIngredients(@PathVariable Long id, @RequestHeader("Authorization") String jwt)
+    public RecipeSuggestionDto getMissingIngredients(@PathVariable Long id)
         throws AuthorizationException, ValidationException, ConflictException {
-        return cookingService.getMissingIngredients(id, jwt);
+        return cookingService.getMissingIngredients(id);
     }
 
     @PermitAll
     @GetMapping("/detail/{id}")
-    public RecipeDetailDto getRecipeDetail(@PathVariable Long id, @RequestHeader("Authorization") String jwt) {
+    public RecipeDetailDto getRecipeDetail(@PathVariable Long id) {
         return cookingService.getRecipeDetails(id);
     }
 
     @PermitAll
     @PutMapping("/cook")
-    public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook, @RequestHeader("Authorization") String jwt)
+    public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook)
         throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
-        return cookingService.cookRecipe(recipeToCook, jwt);
+        return cookingService.cookRecipe(recipeToCook);
     }
 
     @PermitAll

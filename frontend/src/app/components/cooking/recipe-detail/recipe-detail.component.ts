@@ -12,7 +12,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
   styleUrls: ['./recipe-detail.component.scss']
 })
 export class RecipeDetailComponent implements OnInit {
-  @Input() recipe: RecipeSuggestion;
+  @Input() recipeID: string;
   recipeDetail: RecipeDetailDto;
 
   constructor(
@@ -30,8 +30,8 @@ export class RecipeDetailComponent implements OnInit {
 
   load() {
 
-    console.log(this.recipe)
-    this.service.getRecipeDetails(this.recipe.id.toString()).subscribe({
+    console.log("DEATILS" + this.recipeID);
+    this.service.getRecipeDetails(this.recipeID).subscribe({
       next: res => {
         this.recipeDetail = res;
       },

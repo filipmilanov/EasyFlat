@@ -177,7 +177,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             .toList();
         authorization.authenticateUser(
             allowedUsers,
-            "The given digital storage does not belong to the user's shared flat!"
+            "The given cookbook does not belong to the user's shared flat!"
         );
 
         DigitalStorage storage = digitalStorageMapper.dtoToEntity(storageDto);
@@ -231,4 +231,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
         return toRet;
     }
+
+
 }
