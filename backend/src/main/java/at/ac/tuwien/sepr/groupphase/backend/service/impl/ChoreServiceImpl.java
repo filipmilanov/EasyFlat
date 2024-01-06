@@ -338,5 +338,14 @@ public class ChoreServiceImpl implements ChoreService {
 
         return userRepository.findAllBySharedFlat(existingUser.getSharedFlat());
     }
+
+    @Override
+    public ApplicationUser updatePoints(Long userId, Integer points) {
+        ApplicationUser existingUser = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        existingUser.setPoints(points);
+        return userRepository.save(existingUser);
+    }
 }
 

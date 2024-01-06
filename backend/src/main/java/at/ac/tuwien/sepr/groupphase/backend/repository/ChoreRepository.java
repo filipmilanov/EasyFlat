@@ -31,8 +31,10 @@ public interface ChoreRepository extends JpaRepository<Chore, Long> {
 
     List<Chore> findAllByUser(ApplicationUser applicationUser);
 
-    @Query("SELECT c FROM chore c WHERE c.sharedFlat.id = :id AND "
-        + "(:userName IS NULL OR (:userName IS NOT NULL AND c.user IS NOT NULL AND LOWER(CONCAT(c.user.firstName, ' ', c.user.lastName)) LIKE LOWER(CONCAT('%', :userName, '%')))) AND "
-        + "(:endDate IS NULL OR c.endDate >= :endDate)")
+    @Query("SELECT c FROM chore c "
+        + "LEFT JOIN c.user u "
+        + "WHERE c.sharedFlat.id = :id "
+        + "AND (:userName IS NULL OR LOWER(CONCAT(c.user.firstName, ' ', c.user.lastName)) LIKE LOWER(CONCAT('%', :userName, '%'))) "
+        + "AND (:endDate IS NULL OR c.endDate >= :endDate)")
     List<Chore> searchChores(@Param("userName") String userName, @Param("endDate") LocalDate endDate, @Param("id") Long id);
 }

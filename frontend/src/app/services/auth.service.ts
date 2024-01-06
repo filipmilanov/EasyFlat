@@ -115,9 +115,4 @@ export class AuthService {
     return !!this.getToken() && event;
   }
 
-  updatePoints(points: number, userId: string) {
-    const requestBody = { points };
-    console.log(requestBody)
-    return this.httpClient.patch<UserDetail>(this.authBaseUri + '/' + userId, requestBody);
-  }
 }

@@ -52,6 +52,7 @@ import { LeaderboardComponent } from './components/haushalt-plan/leaderboard/lea
 import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 import { ChorePreferenceCardComponent } from './components/haushalt-plan/chore-preference-card/chore-preference-card.component';
+import { MyChoreCardComponent } from './components/haushalt-plan/my-chore-card/my-chore-card.component';
 
 
 LOAD_WASM().subscribe();
@@ -97,7 +98,8 @@ LOAD_WASM().subscribe();
     NewChoreComponent,
     ChoreCardComponent,
     LeaderboardComponent,
-    ChorePreferenceCardComponent
+    ChorePreferenceCardComponent,
+    MyChoreCardComponent
   ],
   imports: [
     BrowserModule,

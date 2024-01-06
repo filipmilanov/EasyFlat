@@ -2,18 +2,17 @@
 <hr>
 
 <div style="width: 100%;margin-top: 20px; height: 100%;"></div>
-<div class="row row-cols-4">
+<div class="row row-cols-4" *ngIf="chores.length > 0">
   <div class="col" *ngFor="let chore of chores">
     <a style="text-decoration: none"
-       [routerLink]="['chores', 'details', chore.id]"
        aria-label="Show chore details">
-      <app-chore-card [choreName]="chore.choreName"
+      <app-my-chore-card [choreName]="chore.choreName"
                       [description]="chore.description"
                       [endDate]="chore.endDate"
                       [points]="chore.points"
                       [completed]="chore.completed"
                       (click)="updateChoreComplete(chore)">
-      </app-chore-card>
+      </app-my-chore-card>
     </a>
   </div>
 </div>
@@ -23,4 +22,4 @@
   Completed
 </button>
 
-
+<h3 *ngIf="chores.length === 0" style="color: #4caf50">You have completed all your tasks! Good job!</h3>

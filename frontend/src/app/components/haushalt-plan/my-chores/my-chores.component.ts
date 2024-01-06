@@ -11,7 +11,7 @@ import {AuthService} from "../../../services/auth.service";
   styleUrls: ['./my-chores.component.scss']
 })
 export class MyChoresComponent {
-  chores: ChoresDto[];
+  chores: ChoresDto[] = [];
   completedChores: ChoresDto[] = [];
   private searchParams: string;
 
@@ -23,9 +23,6 @@ export class MyChoresComponent {
   ngOnInit() {
     this.choreService.getChoresByUser(this.searchParams).subscribe({
       next: res => {
-        if (res.length == 0) {
-          this.notification.success("You've completed all of your tasks. Good job!")
-        }
         this.chores = res;
       },
       error: err => {
@@ -53,7 +50,6 @@ export class MyChoresComponent {
   deleteCompletedChores() {
     return this.choreService.deleteChores(this.completedChores).subscribe({
       next: res => {
-        this.notification.success(`Chores completed.`, "Success");
         for (let i = 0; i < res.length; i++) {
           this.chores = this.chores.filter(chore => chore.id !== res[i].id);
         }
@@ -70,10 +66,10 @@ export class MyChoresComponent {
   awardPoints() {
     for (let i = 0; i < this.completedChores.length; i++) {
       let curr = this.completedChores[i];
-      let points = curr.points + 20;
-      this.authService.updatePoints(points, curr.user.id).subscribe({
+      let points = curr.points;
+      this.choreService.updatePoints(points, curr.user.id).subscribe({
         next: res => {
-          this.notification.success("Points awarded.", "Success");
+          this.notification.success("Chores completed and points awarded.", "Success");
         },
         error: err => {
           console.error("Application users could not be update");

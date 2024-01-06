@@ -21,4 +21,6 @@ public interface ChoreService {
     List<Chore> deleteChores(List<Long> choreIds);
 
     List<ApplicationUser> getUsers() throws AuthenticationException;
+
+    ApplicationUser updatePoints(Long userId, Integer points);
 }

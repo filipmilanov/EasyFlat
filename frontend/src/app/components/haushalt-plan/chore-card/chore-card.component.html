@@ -3,7 +3,7 @@
     <h5 class="card-title">{{ choreName }}</h5>
   </div>
   <div class="card-body">
-    <p class="card-text">{{ description }}</p>
+    <p class="card-text" *ngIf="description">{{ description }}</p>
     <p class="card-text">End Date: {{ endDate | date }}</p>
     <p class="card-text">User: {{ user }}</p>
     <!-- Additional chore details can be displayed here -->
