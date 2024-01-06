@@ -124,6 +124,9 @@ public class ChoreServiceImpl implements ChoreService {
                             choresAfterAssign.remove(toAssign);
                             choreRepository.save(toAssign);
                         }
+                        if (choresAfterAssign.size() == 0) {
+                            break;
+                        }
                     }
                 }
             }
@@ -138,11 +141,14 @@ public class ChoreServiceImpl implements ChoreService {
                         choresAfterAssign.remove(toAssign);
                         choreRepository.save(toAssign);
                     }
+                    if (choresAfterAssign.size() == 0) {
+                        break;
+                    }
                 }
             }
         }
 
-        return null;
+        return choreMapper.entityListToDtoList(choreRepository.findAllBySharedFlatId(applicationUser.getId()));
     }
 
     private List<ChoreDto> assignChoresHelp(List<Chore> chores) throws AuthenticationException {

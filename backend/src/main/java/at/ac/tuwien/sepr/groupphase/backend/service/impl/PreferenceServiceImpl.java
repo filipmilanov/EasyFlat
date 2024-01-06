@@ -51,16 +51,24 @@ public class PreferenceServiceImpl implements PreferenceService {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
 
-        Chore firstChore = getChoreFromName(preferenceDto.first());
-        Chore secondChore = getChoreFromName(preferenceDto.second());
-        Chore thirdChore = getChoreFromName(preferenceDto.third());
-        Chore fourthChore = getChoreFromName(preferenceDto.fourth());
 
         Preference preference = preferenceMapper.preferenceDtoToEntity(preferenceDto);
-        preference.setFirstId(firstChore.getId());
-        preference.setSecondId(secondChore.getId());
-        preference.setThirdId(thirdChore.getId());
-        preference.setFourthId(fourthChore.getId());
+        Chore firstChore = getChoreFromName(preferenceDto.first());
+        if (firstChore != null) {
+            preference.setFirstId(firstChore.getId());
+        }
+        Chore secondChore = getChoreFromName(preferenceDto.second());
+        if (secondChore != null) {
+            preference.setSecondId(secondChore.getId());
+        }
+        Chore thirdChore = getChoreFromName(preferenceDto.third());
+        if (thirdChore != null) {
+            preference.setThirdId(thirdChore.getId());
+        }
+        Chore fourthChore = getChoreFromName(preferenceDto.fourth());
+        if (fourthChore != null) {
+            preference.setFourthId(fourthChore.getId());
+        }
         preference.setUserId(applicationUser);
 
         Optional<Preference> existingPreference = Optional.ofNullable(preferenceRepository.findByUserId(applicationUser));
@@ -71,13 +79,16 @@ public class PreferenceServiceImpl implements PreferenceService {
             existing.setSecondId(preference.getSecondId());
             existing.setThirdId(preference.getThirdId());
             existing.setFourthId(preference.getFourthId());
+
+            Preference toSave = preferenceRepository.save(existing);
             applicationUser.setPreference(existing);
             userRepository.save(applicationUser);
-            return preferenceMapper.entityToPreferenceDto(preferenceRepository.save(existing));
+            return preferenceMapper.entityToPreferenceDto(toSave);
         } else {
+            Preference toSave = preferenceRepository.save(preference);
             applicationUser.setPreference(preference);
             userRepository.save(applicationUser);
-            return preferenceMapper.entityToPreferenceDto(preferenceRepository.save(preference));
+            return preferenceMapper.entityToPreferenceDto(toSave);
         }
     }
 
