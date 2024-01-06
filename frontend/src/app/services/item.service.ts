@@ -97,4 +97,9 @@ export class ItemService {
     return this.http.delete<ItemDto>(this.baseUri + '/' + itemId);
   }
 
+  findByName(productName:string): Observable<ItemDto> {
+    console.log('Find by name: ' + productName);
+    return this.http.get<ItemDto>(this.baseUri + '/name/' + productName)
+  }
+
 }

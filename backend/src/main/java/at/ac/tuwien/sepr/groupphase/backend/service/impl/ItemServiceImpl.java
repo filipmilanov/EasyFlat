@@ -216,4 +216,13 @@ public class ItemServiceImpl implements ItemService {
 
         itemRepository.deleteById(id);
     }
+
+    @Override
+    public List<DigitalStorageItem> findByName(String name) {
+        ApplicationUser user = authService.getUserFromToken();
+        List<DigitalStorageItem> items = itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_ProductNameStartingWith(user.getSharedFlat().getDigitalStorage().getStorageId(), name);
+        return items;
+    }
+
+
 }
