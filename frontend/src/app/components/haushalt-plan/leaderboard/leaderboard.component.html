@@ -9,7 +9,7 @@
       </div>
       <ng-container *ngFor="let user of group.users; let j = index">
         <mat-list-item>
-          <div style="font-weight: bold">{{ user.firstName }} {{user.lastName}}</div>
+          <div style="font-weight: bold">{{ user.firstName }} {{ user.lastName }}</div>
         </mat-list-item>
       </ng-container>
       <div class="points">{{ group.points }} points</div>

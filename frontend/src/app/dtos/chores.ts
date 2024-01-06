@@ -12,3 +12,8 @@ export class ChoresDto {
   sharedFlat: SharedFlat;
   completed: boolean;
 }
+
+export class ChoreSearchDto {
+  userName?: string;
+  endDate?: Date;
+}

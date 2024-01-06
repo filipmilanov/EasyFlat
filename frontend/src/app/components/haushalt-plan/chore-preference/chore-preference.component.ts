@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
-import {ChoresDto} from "../../../dtos/chores";
+import {ChoresDto, ChoreSearchDto} from "../../../dtos/chores";
 import {Observable} from "rxjs";
 import {ShoppingItemDto} from "../../../dtos/item";
 import {ItemCreateEditMode} from "../../digital-storage/item-create-edit/item-create-edit.component";
@@ -34,7 +34,10 @@ export class ChorePreferenceComponent implements OnInit{
     fourth:null
   };
 
-  private searchParams: string;
+  private searchParams: ChoreSearchDto = {
+    userName: '',
+    endDate: null,
+  };
   constructor(
     private preferenceService: PreferenceService,
     private router: Router,

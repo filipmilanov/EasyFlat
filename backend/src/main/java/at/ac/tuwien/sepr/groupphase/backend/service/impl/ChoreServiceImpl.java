@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ChoreMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
@@ -61,13 +62,16 @@ public class ChoreServiceImpl implements ChoreService {
 
     @Override
     @Secured("ROLE_USER")
-    public List<Chore> getChores(String searchParams) throws AuthenticationException {
+    public List<Chore> getChores(ChoreSearchDto searchParams) throws AuthenticationException {
         LOGGER.trace("createChore({})", searchParams);
         ApplicationUser applicationUser = authService.getUserFromToken();
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        return choreRepository.findAllBySharedFlatId(applicationUser.getSharedFlat().getId());
+        return choreRepository.searchChores(
+            (searchParams.userName() != null) ? searchParams.userName() : null,
+            (searchParams.endDate() != null) ? searchParams.endDate() : null,
+            applicationUser.getSharedFlat().getId());
     }
 
     @Override

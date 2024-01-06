@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {Router} from "@angular/router";
-import {ChoresDto} from "../../../dtos/chores";
+import {ChoresDto, ChoreSearchDto} from "../../../dtos/chores";
 import {ShoppingListService} from "../../../services/shopping-list.service";
 import {ToastrService} from "ngx-toastr";
 import {ChoreService} from "../../../services/chore.service";
@@ -17,7 +17,10 @@ import {resolve} from "@angular/compiler-cli";
 export class AllChoreComponent {
   chores: ChoresDto[];
   completedChores: ChoresDto[] = [];
-  private searchParams: string;
+  searchParams: ChoreSearchDto = {
+    userName: '',
+    endDate: null,
+  };
 
   constructor(private router: Router,
   private choreService: ChoreService,

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -28,6 +29,10 @@ public interface ChoreRepository extends JpaRepository<Chore, Long> {
     List<Chore> allChoresByUserId(@Param("id") Long id, @Param("userId") Long userId);
 
 
-
     List<Chore> findAllByUser(ApplicationUser applicationUser);
+
+    @Query("SELECT c FROM chore c WHERE c.sharedFlat.id = :id AND "
+        + "(:userName IS NULL OR (:userName IS NOT NULL AND c.user IS NOT NULL AND LOWER(CONCAT(c.user.firstName, ' ', c.user.lastName)) LIKE LOWER(CONCAT('%', :userName, '%')))) AND "
+        + "(:endDate IS NULL OR c.endDate >= :endDate)")
+    List<Chore> searchChores(@Param("userName") String userName, @Param("endDate") LocalDate endDate, @Param("id") Long id);
 }

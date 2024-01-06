@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ChoreMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
@@ -51,7 +52,7 @@ public class ChoresEndpoint {
 
     @PermitAll
     @GetMapping()
-    public List<ChoreDto> getChores(@RequestParam(name = "searchParams", required = false) String searchParams) throws AuthenticationException {
+    public List<ChoreDto> getChores(ChoreSearchDto searchParams) throws AuthenticationException {
         LOGGER.trace("getChores({})", searchParams);
         List<Chore> lists = choreService.getChores(searchParams);
         return choreMapper.entityListToDtoList(lists);

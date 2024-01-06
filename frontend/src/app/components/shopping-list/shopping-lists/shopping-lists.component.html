@@ -9,7 +9,7 @@
     </label>
     <input type="text" id="searchTitle" name="searchTitle"
            class="form-control" [(ngModel)]="searchParams"
-           (change)="loadLists()"
+           (ngModelChange)="loadLists()"
     >
   </div>
 

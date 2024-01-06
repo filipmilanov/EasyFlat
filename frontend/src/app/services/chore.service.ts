@@ -1,11 +1,12 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Globals} from "../global/globals";
-import {ChoresDto} from "../dtos/chores";
+import {ChoresDto, ChoreSearchDto} from "../dtos/chores";
 import {ShoppingListDto} from "../dtos/shoppingList";
 import {Observable} from "rxjs";
 import {Preference} from "../dtos/preference";
 import {UserDetail} from "../dtos/auth-request";
+import {formatDate} from "@angular/common";
 
 @Injectable({
   providedIn: 'root'
@@ -20,10 +21,13 @@ export class ChoreService {
     return this.httpClient.post<ShoppingListDto>(this.choreBaseUri, chore);
   }
 
-  getChores(searchParams: string): Observable<ChoresDto[]> {
+  getChores(searchParams: ChoreSearchDto): Observable<ChoresDto[]> {
     let params = new HttpParams();
-    if (searchParams) {
-      params = params.append('searchParams', searchParams);
+    if (searchParams.userName) {
+      params = params.append('userName', searchParams.userName);
+    }
+    if (searchParams.endDate) {
+      params = params.append('endDate', formatDate(searchParams.endDate, 'YYYY-MM-dd', 'en-DK'));
     }
     return this.httpClient.get<ChoresDto[]>(this.choreBaseUri, {params});
   }
