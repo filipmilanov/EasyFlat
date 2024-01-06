@@ -68,4 +68,12 @@ public interface ItemService {
      * @throws AuthenticationException if the user is not authenticated
      */
     void delete(Long id) throws AuthenticationException;
+
+    /**
+     * Searches for items in the database with names matching the specified name.
+     *
+     * @param name The name to search for.
+     * @return A list of ItemDto objects with names matching the search criteria.
+     */
+    List<DigitalStorageItem> findByName(String name);
 }

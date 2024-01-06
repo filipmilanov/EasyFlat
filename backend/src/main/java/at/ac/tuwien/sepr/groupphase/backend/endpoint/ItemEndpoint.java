@@ -108,7 +108,9 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("/name/{name}")
-    public ItemDto findByName(@PathVariable String name) {
-        return null;
+    public List<ItemDto> findByName(@PathVariable String name) {
+        return itemMapper.entityListToItemDtoList(
+            itemService.findByName(name)
+        );
     }
 }

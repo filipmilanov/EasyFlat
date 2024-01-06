@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {RecipeIngredient} from "../../../dtos/cookingDtos/recipeIngredient";
 import {ItemDto} from "../../../dtos/item";
-import {of} from "rxjs";
+import {map, Observable, of} from "rxjs";
 import {CookingService} from "../../../services/cooking.service";
 import {ItemService} from "../../../services/item.service";
 
@@ -22,12 +22,19 @@ export class MatchingModalComponent implements OnInit {
   }
 
   formatGeneralName(item: ItemDto | null): string {
-    return item ? item as any as string : '';
+    return item ? item.productName : '';
   }
 
-  generalNameSuggestions = (input: string) => (input === '')
-    ? of([])
-    : this.itemService.findByGeneralName(input);
+  nameSuggestions = (input: string): Observable<any[]> => {
+    if (!input.trim()) {
+      return of([]); // Return an empty array if the input is empty or contains only whitespaces
+    }
 
+    const suggestions$ = this.itemService.findByName(input);
+
+    return suggestions$.pipe(
+      map(suggestions => Array.isArray(suggestions) ? suggestions : [suggestions])
+    );
+  }
 
 }
