@@ -11,5 +11,5 @@ export class ChoreCardComponent {
   @Input() description: string;
   @Input() endDate: Date;
   @Input() points: number;
-  @Input() user: UserDetail;
+  @Input() user: String;
 }
