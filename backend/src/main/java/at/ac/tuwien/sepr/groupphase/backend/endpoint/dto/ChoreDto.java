@@ -14,6 +14,8 @@ public record ChoreDto(
 
     Date endDate,
 
-    Integer points
+    Integer points,
+
+    UserDetailDto user
 ) {
 }
