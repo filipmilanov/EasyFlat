@@ -8,7 +8,8 @@ import {Router} from "@angular/router";
 })
 export class HaushaltPlanComponent {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+  }
 
   navigateToAllChores() {
     this.router.navigate(['/chores/all']);

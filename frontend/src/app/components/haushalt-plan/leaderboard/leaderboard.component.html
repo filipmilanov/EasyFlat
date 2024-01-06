@@ -2,16 +2,17 @@
 <hr>
 
 <div class="leaderboard-container">
-  <mat-card *ngFor="let user of users; let i = index">
+  <mat-card *ngFor="let group of groupedUsers; let i = index">
     <mat-card-content>
-      <mat-list-item>
-        <div class="row-number-container">
-          <span [ngStyle]="getRowNumberStyle(i + 1)" class="row-number">{{ i + 1 }}</span>
-        </div>
-        <hr>
-        <div style="font-weight: bold">{{ user.firstName }} {{user.lastName}}</div>
-        <div class="points">{{ user.points }} points</div>
-      </mat-list-item>
+      <div class="row-number-container">
+        <span [ngStyle]="getRowNumberStyle(i + 1)" class="row-number">{{ i + 1 }}</span>
+      </div>
+      <ng-container *ngFor="let user of group.users; let j = index">
+        <mat-list-item>
+          <div style="font-weight: bold">{{ user.firstName }} {{user.lastName}}</div>
+        </mat-list-item>
+      </ng-container>
+      <div class="points">{{ group.points }} points</div>
     </mat-card-content>
   </mat-card>
 </div>
