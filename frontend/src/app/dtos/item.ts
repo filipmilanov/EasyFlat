@@ -23,6 +23,7 @@ export class ItemDto {
   addToFiance: boolean;
   ingredients?: [IngredientDto];
   digitalStorage?: DigitalStorageDto;
+  alternativeNames?: AlternativeName[];
 }
 
 export class ItemFieldSearchDto {
@@ -42,4 +43,9 @@ export class ShoppingItemSearchDto {
   itemId?: string;
   productName?: string;
   label?: string;
+}
+
+export class AlternativeName {
+  id:number;
+  name:string;
 }

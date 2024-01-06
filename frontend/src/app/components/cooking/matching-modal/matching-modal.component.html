@@ -30,11 +30,15 @@
             placeholder="digital storage item"
             [formatModel]="formatGeneralName"
             [suggestions]="nameSuggestions"
+            [(ngModel)]="selectedItem"
             aria-describedby="generalNameHelp"
           ></app-autocomplete>
         </div>
+
       </div>
     </div>
   </div>
-  <button type="button" class="btn btn-success position-absolute bottom-0 end-0" style="margin: 20px">Match</button>
+  <button type="button" class="btn btn-success position-absolute bottom-0 end-0" style="margin: 20px" (click)="match()">
+    Match
+  </button>
 </div>

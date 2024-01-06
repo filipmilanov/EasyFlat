@@ -46,7 +46,11 @@ public record ItemDto(
     @NotNull(message = "An item needs to be linked to a storage")
     DigitalStorageDto digitalStorage,
     List<IngredientDto> ingredients,
-    List<ItemStats> itemStats
+    List<ItemStats> itemStats,
+
+    List<AlternativeNameDto> alternativeNames
+
+
 ) {
     //@AssertTrue(message = "The current quantity cannot be larger then the total")
     private boolean isQuantityCurrentLessThenTotal() {
@@ -116,7 +120,8 @@ public record ItemDto(
             boughtAt,
             digitalStorage,
             ingredients,
-            itemStats
+            itemStats,
+            alternativeNames
         );
     }
 
@@ -138,7 +143,8 @@ public record ItemDto(
             boughtAt,
             digitalStorage,
             ingredients,
-            itemStats
+            itemStats,
+            alternativeNames
         );
     }
 
@@ -182,7 +188,8 @@ public record ItemDto(
             boughtAt,
             digitalStorage,
             ingredients,
-            itemStats
+            itemStats,
+            alternativeNames
         );
     }
 }

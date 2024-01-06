@@ -45,7 +45,6 @@ public class ItemCache {
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     private List<AlternativeName> alternativeNames = new ArrayList<>();
 
-
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Ingredient> ingredientList = new ArrayList<>();
 
