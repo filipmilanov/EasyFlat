@@ -1,10 +1,12 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {RecipeDetailDto, RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 import {ItemService} from "../../../services/item.service";
 import {ToastrService} from "ngx-toastr";
 import {ActivatedRoute, Router} from "@angular/router";
 import {CookingService} from "../../../services/cooking.service";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {MatchingModalComponent} from "../matching-modal/matching-modal.component";
+import {RecipeIngredient} from "../../../dtos/cookingDtos/recipeIngredient";
 
 @Component({
   selector: 'app-recipe-detail',
@@ -14,6 +16,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 export class RecipeDetailComponent implements OnInit {
   @Input() recipeID: string;
   recipeDetail: RecipeDetailDto;
+  @Output() matchingClicked: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
     private service: CookingService,
@@ -21,6 +24,7 @@ export class RecipeDetailComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     public activeModal: NgbActiveModal,
+    private modalService: NgbModal
   ) {
   }
 
@@ -41,6 +45,15 @@ export class RecipeDetailComponent implements OnInit {
     })
 
   }
+
+
+
+  openMatchModal(ingredient: RecipeIngredient) {
+    const modalRef = this.modalService.open(MatchingModalComponent, {size: 'lg'});
+    modalRef.componentInstance.ingredient = ingredient;
+  }
+
+
 
   addTestItems() {
 

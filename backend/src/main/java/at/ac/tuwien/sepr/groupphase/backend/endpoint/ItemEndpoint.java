@@ -105,4 +105,10 @@ public class ItemEndpoint {
         LOGGER.info("delete({})", itemId);
         itemService.delete(itemId);
     }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/name/{name}")
+    public ItemDto findByName(@PathVariable String name) {
+        return null;
+    }
 }
