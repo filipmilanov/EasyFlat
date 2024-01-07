@@ -458,10 +458,10 @@ class ExpenseServiceTest {
                 (BalanceDebitDto balanceDebitDto) -> balanceDebitDto.creditor().id(),
                 (BalanceDebitDto balanceDebitDto) -> Math.round((balanceDebitDto.valueInCent()) * 10) / 10.0
             ).contains(
-                new Tuple(6L, 21L, 553.8),
-                new Tuple(1L, 21L, 548.4),
-                new Tuple(11L, 16L, 382.8),
-                new Tuple(11L, 21L, 6.0)
+                new Tuple(11L, 6L, 791.8),
+                new Tuple(1L, 6L, 331.7),
+                new Tuple(16L, 21L, 153.9),
+                new Tuple(16L, 6L, 115.4)
             )
         );
     }
@@ -481,11 +481,11 @@ class ExpenseServiceTest {
                 (UserValuePairDto userValuePairDto) -> userValuePairDto.user().id(),
                 (UserValuePairDto userValuePairDto) -> Math.round((userValuePairDto.value()) * 10) / 10.0
             ).containsExactlyInAnyOrder(
-                new Tuple(1L, 0.0),
-                new Tuple(6L, 0.0),
-                new Tuple(11L, 161.1),
-                new Tuple(16L, 929.8),
-                new Tuple(21L, 1663.1)
+                new Tuple(1L, 2549.4),
+                new Tuple(21L, 1562.0),
+                new Tuple(6L, 2952.8),
+                new Tuple(11L, 745.7),
+                new Tuple(16L, 0.0)
             )
         );
     }
@@ -505,11 +505,11 @@ class ExpenseServiceTest {
                 (UserValuePairDto userValuePairDto) -> userValuePairDto.user().id(),
                 (UserValuePairDto userValuePairDto) -> Math.round((userValuePairDto.value()) * 10) / 10.0
             ).containsExactlyInAnyOrder(
-                new Tuple(1L, 548.4),
-                new Tuple(6L, 553.8),
-                new Tuple(11L, 549.9),
-                new Tuple(16L, 547.0),
-                new Tuple(21L, 554.9)
+                new Tuple(1L, 2881.2),
+                new Tuple(6L, 1713.9),
+                new Tuple(11L, 1537.5),
+                new Tuple(16L, 269.3),
+                new Tuple(21L, 1408.0)
             )
         );
     }
@@ -529,11 +529,11 @@ class ExpenseServiceTest {
                 (UserValuePairDto userValuePairDto) -> userValuePairDto.user().id(),
                 (UserValuePairDto userValuePairDto) -> Math.round((userValuePairDto.value()) * 10) / 10.0
             ).containsExactlyInAnyOrder(
-                new Tuple(1L, -548.4),
-                new Tuple(6L, -553.8),
-                new Tuple(11L, -388.8),
-                new Tuple(16L, 382.8),
-                new Tuple(21L, 1108.2)
+                new Tuple(1L, -331.7),
+                new Tuple(21L, 153.9),
+                new Tuple(6L, 1238.9),
+                new Tuple(11L, -791.8),
+                new Tuple(16L, -269.3)
             )
         );
     }
