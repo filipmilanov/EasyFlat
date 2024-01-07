@@ -19,6 +19,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeIngredientMapp
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.AlternativeName;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -285,7 +286,6 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    @Cacheable("addresses")
     public RecipeDetailDto getRecipeDetails(Long recipeId) {
         String reqString = getNewReqStringForInformation(recipeId);
         ResponseEntity<RecipeDetailDto> response = restTemplate.exchange(reqString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<RecipeDetailDto>() {
@@ -297,21 +297,47 @@ public class CookingServiceImpl implements CookingService {
 
         RecipeDetailDto recipeDetailDto = response.getBody();
         CookingSteps steps = null;
+
         if (responseSteps.getBody() != null && !responseSteps.getBody().isEmpty()) {
             steps = responseSteps.getBody().get(0);
         }
+        List<RecipeIngredientDto> matchedIngredients = getMatchedIngredients(response.getBody().extendedIngredients());
         if (recipeDetailDto != null) {
             return new RecipeDetailDto(
                 recipeId,
                 recipeDetailDto.title(),
                 recipeDetailDto.servings(),
                 recipeDetailDto.readyInMinutes(),
-                recipeDetailDto.extendedIngredients(),
+                matchedIngredients,
                 recipeDetailDto.summary(),
                 steps
             );
         }
         return null;
+    }
+
+    private List<RecipeIngredientDto> getMatchedIngredients(List<RecipeIngredientDto> ingredientDtos){
+        ApplicationUser user = authService.getUserFromToken();
+        List<DigitalStorageItem> itemsInStorage= itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId());
+
+        List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
+
+        for(RecipeIngredientDto recipeIngredient : ingredientDtos){
+            boolean matched = false;
+           for(DigitalStorageItem digitalStorageItem : itemsInStorage){
+               for(AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()){
+                   if(alternativeName.getName().equals(recipeIngredient.name())){
+                       RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),digitalStorageItem.getItemCache().getProductName(),recipeIngredient.unit(),recipeIngredient.unitEnum(),recipeIngredient.amount(),true);
+                       updatedIngredients.add(updatedIngredient);
+                       matched = true;
+                   }
+               }
+           }
+           if(!matched){
+               updatedIngredients.add(recipeIngredient);
+           }
+        }
+        return updatedIngredients;
     }
 
     public RecipeSuggestion getRecipeFromApi(Long recipeId) {
@@ -468,7 +494,8 @@ public class CookingServiceImpl implements CookingService {
                                 ingredient.name(),
                                 getMinUnit(ingredientUnit).getName(),
                                 unitMapper.entityToUnitDto(getMinUnit(ingredientUnit)),
-                                ingAmountMin - itemQuantityTotal
+                                ingAmountMin - itemQuantityTotal,
+                                false
                             );
                             missingIngredients.add(newIngredient);
                         } else {
@@ -479,7 +506,8 @@ public class CookingServiceImpl implements CookingService {
                                 ingredient.name(),
                                 unitMapper.unitDtoToEntity(ingredient.unitEnum()).getName(),
                                 unitMapper.entityToUnitDto(unitMapper.unitDtoToEntity(ingredient.unitEnum())),
-                                updatedQuantity
+                                updatedQuantity,
+                                false
                             );
                             missingIngredients.add(newIngredient);
                         }
@@ -720,7 +748,8 @@ public class CookingServiceImpl implements CookingService {
             ingredient.name(),
             unitMapper.entityToUnitDto(minUnit).name(),
             unitMapper.entityToUnitDto(minUnit),
-            convertedAmount
+            convertedAmount,
+            false
         );
     }
 
