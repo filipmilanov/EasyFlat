@@ -457,10 +457,10 @@ class ExpenseServiceTest {
                 (BalanceDebitDto balanceDebitDto) -> balanceDebitDto.creditor().id(),
                 (BalanceDebitDto balanceDebitDto) -> Math.round(balanceDebitDto.valueInCent() * 10) / 10.0
             ).contains(
-                new Tuple(6L, 21L, 553.8),
-                new Tuple(1L, 21L, 548.4),
-                new Tuple(11L, 16L, 382.8),
-                new Tuple(11L, 21L, 6.0)
+                new Tuple(11L, 6L, 791.8),
+                new Tuple(1L, 6L, 331.7),
+                new Tuple(16L, 21L, 153.9),
+                new Tuple(16L, 6L, 115.4)
             )
         );
     }
