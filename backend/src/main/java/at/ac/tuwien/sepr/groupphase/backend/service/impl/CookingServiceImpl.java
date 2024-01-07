@@ -316,26 +316,31 @@ public class CookingServiceImpl implements CookingService {
         return null;
     }
 
-    private List<RecipeIngredientDto> getMatchedIngredients(List<RecipeIngredientDto> ingredientDtos){
+    private List<RecipeIngredientDto> getMatchedIngredients(List<RecipeIngredientDto> ingredientDtos) {
         ApplicationUser user = authService.getUserFromToken();
-        List<DigitalStorageItem> itemsInStorage= itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId());
+        List<DigitalStorageItem> itemsInStorage = itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId());
 
         List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
 
-        for(RecipeIngredientDto recipeIngredient : ingredientDtos){
+        for (RecipeIngredientDto recipeIngredient : ingredientDtos) {
             boolean matched = false;
-           for(DigitalStorageItem digitalStorageItem : itemsInStorage){
-               for(AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()){
-                   if(alternativeName.getName().equals(recipeIngredient.name())){
-                       RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),digitalStorageItem.getItemCache().getProductName(),recipeIngredient.unit(),recipeIngredient.unitEnum(),recipeIngredient.amount(),true);
-                       updatedIngredients.add(updatedIngredient);
-                       matched = true;
-                   }
-               }
-           }
-           if(!matched){
-               updatedIngredients.add(recipeIngredient);
-           }
+            for (DigitalStorageItem digitalStorageItem : itemsInStorage) {
+                for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
+                    if (alternativeName.getName().equals(recipeIngredient.name())) {
+                        RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
+                            digitalStorageItem.getItemCache().getProductName(),
+                            recipeIngredient.unit(),
+                            recipeIngredient.unitEnum(),
+                            recipeIngredient.amount(),
+                            true);
+                        updatedIngredients.add(updatedIngredient);
+                        matched = true;
+                    }
+                }
+            }
+            if (!matched) {
+                updatedIngredients.add(recipeIngredient);
+            }
         }
         return updatedIngredients;
     }

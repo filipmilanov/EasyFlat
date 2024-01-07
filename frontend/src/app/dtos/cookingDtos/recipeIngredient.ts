@@ -7,4 +7,5 @@ export class RecipeIngredient {
   unit?: string;
   unitEnum?:Unit;
   amount?:number;
+  matched:boolean;
 }

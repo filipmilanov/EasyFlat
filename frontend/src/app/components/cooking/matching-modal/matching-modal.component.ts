@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {RecipeIngredient} from "../../../dtos/cookingDtos/recipeIngredient";
 import {AlternativeName, ItemDto} from "../../../dtos/item";
@@ -14,6 +14,7 @@ import {ToastrService} from "ngx-toastr";
 })
 export class MatchingModalComponent implements OnInit {
   @Input() ingredient: RecipeIngredient;
+  @Output() matchingDone: EventEmitter<void> = new EventEmitter<void>();
   availableItems: ItemDto[];
   selectedItem: ItemDto;
 
@@ -34,6 +35,8 @@ export class MatchingModalComponent implements OnInit {
     this.itemService.updateItem(this.selectedItem).subscribe({
       next: () => {
         this.notification.success(`Ingredient ${this.ingredient.name} successfully matched to Item ${this.selectedItem.productName}.`, "Success");
+        this.activeModal.dismiss();
+        this.matchingDone.emit();
       },
       error: error => {
         console.error(`Error item was not matched: ${error}`);
