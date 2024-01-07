@@ -87,11 +87,11 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
 
-        Map<ApplicationUser, Double> totalAmountPaidPerUser = calculateTotalAmountPaiedPerUserOfSharedFlat(usersOfSharedFlat);
+        Map<ApplicationUser, Double> totalAmountPaidPerUser = calculateTotalAmountPaidPerUserOfSharedFlat(usersOfSharedFlat);
 
         Map<ApplicationUser, Double> totalAmountOwedPerUser = calculateTotalAmountOwedPerUserOfSharedFlat(usersOfSharedFlat);
 
-        List<Pair> differenceOrdered = calculateDiffrenceBetweenPaiedAndOwedAmountPerUser(totalAmountPaidPerUser, totalAmountOwedPerUser);
+        List<Pair> differenceOrdered = calculateDifferenceBetweenPaidAndOwedAmountPerUser(totalAmountPaidPerUser, totalAmountOwedPerUser);
 
         List<BalanceDebitDto> balanceDebitDtos = new ArrayList<>();
 
@@ -192,7 +192,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         balanceDebitDtos.add(balanceDebitDto);
     }
 
-    private List<Pair> calculateDiffrenceBetweenPaiedAndOwedAmountPerUser(Map<ApplicationUser, Double> totalAmountPaidPerUser, Map<ApplicationUser, Double> totalAmountOwedPerUser) {
+    private List<Pair> calculateDifferenceBetweenPaidAndOwedAmountPerUser(Map<ApplicationUser, Double> totalAmountPaidPerUser, Map<ApplicationUser, Double> totalAmountOwedPerUser) {
         return totalAmountPaidPerUser.entrySet().stream().map(
                 entry -> new Pair(
                     entry.getKey(),
@@ -219,7 +219,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         );
     }
 
-    private Map<ApplicationUser, Double> calculateTotalAmountPaiedPerUserOfSharedFlat(Set<ApplicationUser> usersOfSharedFlat) {
+    private Map<ApplicationUser, Double> calculateTotalAmountPaidPerUserOfSharedFlat(Set<ApplicationUser> usersOfSharedFlat) {
         Map<ApplicationUser, Double> totalAmountPaidPerUserFound = expenseRepository.findByPaidByIsIn(
             usersOfSharedFlat
         ).stream().collect(
