@@ -57,4 +57,8 @@ export class ChoreService {
     console.log(requestBody);
     return this.httpClient.patch<UserDetail>(this.choreBaseUri + '/' + userId, requestBody);
   }
+
+  generateChoreListPDF() {
+    return this.httpClient.get(this.choreBaseUri + '/pdf');
+  }
 }

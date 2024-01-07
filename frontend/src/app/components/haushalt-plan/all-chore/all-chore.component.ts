@@ -53,4 +53,16 @@ export class AllChoreComponent {
       }
     });
   }
+
+  exportPDF() {
+    this.choreService.generateChoreListPDF().subscribe({
+      next: res => {
+        this.notification.success("PDF exported.", "Success")
+    },
+      error: err => {
+        console.error("PDF could not be exported");
+        this.notification.error("Error exporting PDF");
+      }
+    })
+  }
 }
