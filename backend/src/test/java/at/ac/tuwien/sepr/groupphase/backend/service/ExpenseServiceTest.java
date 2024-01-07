@@ -73,7 +73,7 @@ class ExpenseServiceTest {
     @Test
     void givenValidIdWhenFindByIdThenExpenseWithCorrectIdIsReturned() throws AuthenticationException {
         // given
-        long id = 6L;
+        long id = 5L;
 
         // when
         Expense actual = service.findById(id);

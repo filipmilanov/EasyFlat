@@ -14,10 +14,11 @@ import java.util.List;
 public abstract class DebitMapper {
 
     @Mapping(target = "user", source = "debit.id.user")
-    @Mapping(target = "value", source = "debit.percent")
+    @Mapping(target = "value", expression = "java( convertPercentToValue(debit.getPercent(), totalValue, splitBy) )")
     @Mapping(target = "splitBy", expression = "java( splitBy )")
     public abstract DebitDto entityToDebitDto(Debit debit,
-                                              SplitBy splitBy);
+                                              SplitBy splitBy,
+                                              double totalValue);
 
 
     @Mapping(target = "id.user", source = "debitDto.user")
@@ -36,8 +37,24 @@ public abstract class DebitMapper {
     public List<DebitDto> entityListToDebitDtoList(Expense expense) {
         return expense.getDebitUsers().stream()
             .map(debit ->
-                entityToDebitDto(debit, expense.getSplitBy())
+                entityToDebitDto(debit, expense.getSplitBy(), expense.getAmountInCents())
             ).toList();
     }
 
+    /**
+     * Converts a percent value to a value.
+     *
+     * @param percent    percent value
+     * @param totalValue total value
+     * @param splitBy    split by strategy
+     * @return value according to the split by strategy
+     */
+    protected double convertPercentToValue(double percent,
+                                           double totalValue,
+                                           SplitBy splitBy) {
+        return switch (splitBy) {
+            case EQUAL, UNEQUAL -> percent * totalValue / 100.0;
+            case PERCENTAGE, PROPORTIONAL -> percent;
+        };
+    }
 }

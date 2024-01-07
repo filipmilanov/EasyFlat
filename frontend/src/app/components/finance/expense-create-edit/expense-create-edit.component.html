@@ -56,22 +56,35 @@
       </div>
 
       <div class="row p-2">
-        <label for="createdAt"
+        <label for="createdAtDate"
                class="col-form-label text-muted col-3"
         >
           Timestamp*
         </label>
-        <div class="col-md-10 col-lg-8">
-          <input type="date"
-                 class="form-control"
-                 id="createdAt"
-                 name="createdAt"
-                 placeholder="Timestamp"
-                 [selectionStart]="expense.createdAt"
-                 [ngModel]="expense.createdAt | date:'dd.MM.yyyy'"
-                 (ngModelChange)="expense.createdAt = $event"
-                 required>
+        <div class="col-4">
+          <input
+            class="form-control"
+            placeholder="dd-mm-yyyy"
+            id="createdAtDate"
+            name="createdAtDate"
+            [(ngModel)]="expenseDate"
+            ngbDatepicker
+            #date="ngbDatepicker"
+            required
+          />
         </div>
+        <div class="col-1">
+          <button class="btn btn-outline-secondary bi bi-calendar3"
+                  (click)="date.toggle()"
+                  type="button">
+          </button>
+        </div>
+        <div class="col-4">
+          <ngb-timepicker id="createdAtTime"
+                          name="createdAtTime"
+                          [(ngModel)]="expenseTime"/>
+        </div>
+
       </div>
 
       <div class="row p-2">
