@@ -1,8 +1,6 @@
-import { Component } from '@angular/core';
-import {NgForm} from "@angular/forms";
+import {Component} from '@angular/core';
 import {Router} from "@angular/router";
 import {ChoresDto, ChoreSearchDto} from "../../../dtos/chores";
-import {ShoppingListService} from "../../../services/shopping-list.service";
 import {ToastrService} from "ngx-toastr";
 import {ChoreService} from "../../../services/chore.service";
 
@@ -33,7 +31,9 @@ export class AllChoreComponent {
   loadChores() {
     this.choreService.getChores(this.searchParams).subscribe({
       next: res => {
-        this.chores = res;
+        this.chores = res.sort((a: ChoresDto, b: ChoresDto) => {
+          return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
+        });
       },
       error: err => {
         console.error("Error fetching chores", err);

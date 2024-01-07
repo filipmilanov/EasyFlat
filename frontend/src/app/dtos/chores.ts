@@ -6,7 +6,7 @@ export class ChoresDto {
   id: number;
   choreName: string;
   description: string;
-  endDate?: Date;
+  endDate: Date;
   points: number;
   user: UserDetail;
   sharedFlat: SharedFlat;

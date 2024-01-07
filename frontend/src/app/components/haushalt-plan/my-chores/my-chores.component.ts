@@ -23,7 +23,9 @@ export class MyChoresComponent {
   ngOnInit() {
     this.choreService.getChoresByUser(this.searchParams).subscribe({
       next: res => {
-        this.chores = res;
+        this.chores = res.sort((a: ChoresDto, b: ChoresDto) => {
+          return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
+        });
       },
       error: err => {
         console.error("Error fetching chores", err);
