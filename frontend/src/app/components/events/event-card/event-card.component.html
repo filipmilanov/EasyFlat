@@ -15,7 +15,7 @@
     </div>
     <div>
       <div class="row">
-        <p class="card-text"><strong>Time:</strong> {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
+        <p *ngIf="event.startTime!=='00:00:00' && event.endTime!=='23:59:00'" class="card-text"><strong>Time:</strong> {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
         </p>
       </div>
       <ng-container *ngFor="let label of event.labels; let last = last">

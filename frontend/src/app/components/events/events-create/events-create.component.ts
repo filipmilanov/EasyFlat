@@ -29,6 +29,7 @@ export class EventsCreateComponent implements OnInit {
     startTime: '',
     endTime: ''
   };
+  allDay: boolean = false;
 
   mode: EventsMode = EventsMode.create;
   selectedLabelColor = '#ffffff';
@@ -108,6 +109,10 @@ export class EventsCreateComponent implements OnInit {
 
   public onSubmit(form: NgForm): void {
     console.log('is form valid?', form.valid, this.event);
+    if(this.allDay) {
+      this.event.startTime =  '00:00:00';
+      this.event.endTime =  '23:59:00';
+    }
 
     if (form.valid) {
       let observable: Observable<EventDto>;

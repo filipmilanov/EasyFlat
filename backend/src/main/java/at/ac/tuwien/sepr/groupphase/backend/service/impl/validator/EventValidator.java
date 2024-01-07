@@ -40,13 +40,16 @@ public class EventValidator {
         for (ConstraintViolation<EventDto> violation : validationViolations) {
             errors.add(violation.getMessage());
         }
-        if (event.labels().size() > 3) {
-            errors.add("You cannot add more thant 3 labels");
-        }
-        if (!event.labels().isEmpty()) {
-            for (EventLabelDto label : event.labels()) {
-                if (label.labelName().length() > 9) {
-                    errors.add("Label name " + label.labelName() + " should be shorter (maximum of 9 chars)");
+        if (event.labels() != null) {
+            if (event.labels().size() > 3) {
+                errors.add("You cannot add more thant 3 labels");
+            }
+
+            if (!event.labels().isEmpty()) {
+                for (EventLabelDto label : event.labels()) {
+                    if (label.labelName().length() > 9) {
+                        errors.add("Label name " + label.labelName() + " should be shorter (maximum of 9 chars)");
+                    }
                 }
             }
         }
