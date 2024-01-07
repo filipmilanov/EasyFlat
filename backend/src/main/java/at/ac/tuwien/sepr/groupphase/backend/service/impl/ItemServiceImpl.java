@@ -190,8 +190,10 @@ public class ItemServiceImpl implements ItemService {
         List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
         DigitalStorageItem digitalStorageItem;
-        if (!itemDto.alternativeNames().isEmpty()) {
-            alternativeNameService.creteIfNotExist(itemDto.alternativeNames().get(itemDto.alternativeNames().size() - 1));
+        if (itemDto.alternativeNames() != null) {
+            if (!itemDto.alternativeNames().isEmpty()) {
+                alternativeNameService.creteIfNotExist(itemDto.alternativeNames().get(itemDto.alternativeNames().size() - 1));
+            }
         }
         if (itemDto.alwaysInStock()) {
             digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null, itemMapper.alternativeNamesDtoToEntityList(itemDto.alternativeNames()));
@@ -208,7 +210,6 @@ public class ItemServiceImpl implements ItemService {
 
         DigitalStorageItem updatedDigitalStorageItem = itemRepository.save(digitalStorageItem);
         updatedDigitalStorageItem.setIngredientList(ingredientList);
-
 
         return updatedDigitalStorageItem;
     }
