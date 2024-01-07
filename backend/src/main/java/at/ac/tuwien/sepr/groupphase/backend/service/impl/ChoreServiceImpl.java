@@ -103,47 +103,49 @@ public class ChoreServiceImpl implements ChoreService {
         List<ApplicationUser> users = userRepository.findAllBySharedFlat(applicationUser.getSharedFlat());
         //sort the users by points
         sortUsersByPoints(users);
+        List<ApplicationUser> notAssignedUsers = new ArrayList<>();
         //5-5 or 5-6
-        if (chores.size() >= users.size()) {
-            //3-6 then all users have the same amount of chores
-            if (chores.size() % users.size() == 0) {
-                for (int i = users.size() - choresAfterAssign.size(); i < users.size(); i++) {
-                    Chore toAssign = getRandomChore(choresAfterAssign);
-                    toAssign.setUser(users.get(i));
-                    choresAfterAssign.remove(toAssign);
-                    choreRepository.save(toAssign);
-                }
-                //3-5 then some users have one chore more than the others
-            } else {
-                while (!choresAfterAssign.isEmpty()) {
-                    int globalCount = (int) Math.floor((double) (chores.size() - choresAfterAssign.size()) / users.size());
-                    for (int j = users.size() - 1; j >= 0; j--) {
-                        if (choreRepository.allChoresByUserId(users.get(j).getSharedFlat().getId(), users.get(j).getId()).size() == globalCount) {
-                            Chore toAssign = getRandomChore(choresAfterAssign);
-                            toAssign.setUser(users.get(j));
-                            choresAfterAssign.remove(toAssign);
-                            choreRepository.save(toAssign);
-                        }
-                        if (choresAfterAssign.size() == 0) {
-                            break;
-                        }
-                    }
-                }
+        if (chores.size() >= users.size() && (chores.size() - choresAfterAssign.size()) % users.size() == 0) {
+            for (int i = users.size() - choresAfterAssign.size(); i < users.size(); i++) {
+                Chore toAssign = getRandomChore(choresAfterAssign);
+                toAssign.setUser(users.get(i));
+                choresAfterAssign.remove(toAssign);
+                choreRepository.save(toAssign);
             }
+            //3-5 then some users have one chore more than the others
             //5-3 then some users have no chores
         } else {
             while (!choresAfterAssign.isEmpty()) {
                 int globalCount = (int) Math.floor((double) (chores.size() - choresAfterAssign.size()) / users.size());
                 for (int j = users.size() - 1; j >= 0; j--) {
-                    if (choreRepository.allChoresByUserId(users.get(j).getSharedFlat().getId(), users.get(j).getId()).size() == globalCount) {
-                        Chore toAssign = getRandomChore(choresAfterAssign);
-                        toAssign.setUser(users.get(j));
-                        choresAfterAssign.remove(toAssign);
-                        choreRepository.save(toAssign);
+                    if (choreRepository.allChoresByUserId(users.get(j).getSharedFlat().getId(), users.get(j).getId()).size() <= globalCount) {
+                        List<Chore> choresUser = getPreferences(users.get(j));
+                        int count = 0;
+                        for (Chore choreToAssign : choresUser) {
+                            if (choreToAssign.getUser() == null) {
+                                choreToAssign.setUser(users.get(j));
+                                choresAfterAssign.remove(choreToAssign);
+                                choreRepository.save(choreToAssign);
+                                count++;
+                                break;
+                            }
+                        }
+                        if (count == 0) {
+                            notAssignedUsers.add(users.get(j));
+                        }
                     }
+                }
+                for (ApplicationUser user : notAssignedUsers) {
                     if (choresAfterAssign.size() == 0) {
                         break;
                     }
+                    Chore toAssign = getRandomChore(choresAfterAssign);
+                    toAssign.setUser(user);
+                    choresAfterAssign.remove(toAssign);
+                    choreRepository.save(toAssign);
+                }
+                if (choresAfterAssign.size() == 0) {
+                    break;
                 }
             }
         }
@@ -253,25 +255,33 @@ public class ChoreServiceImpl implements ChoreService {
             return toReturn;
         }
         Preference preference = preferenceRepository.findByUserId(user);
-        Optional<Chore> firstChore = choreRepository.findById(preference.getFirstId());
-        if (firstChore.isPresent()) {
-            Chore choreToAdd = firstChore.get();
-            toReturn.add(choreToAdd);
+        if (preference.getFirstId() != null) {
+            Optional<Chore> firstChore = choreRepository.findById(preference.getFirstId());
+            if (firstChore.isPresent()) {
+                Chore choreToAdd = firstChore.get();
+                toReturn.add(choreToAdd);
+            }
         }
-        Optional<Chore> secondChore = choreRepository.findById(preference.getSecondId());
-        if (secondChore.isPresent()) {
-            Chore choreToAdd = secondChore.get();
-            toReturn.add(choreToAdd);
+        if (preference.getSecondId() != null) {
+            Optional<Chore> secondChore = choreRepository.findById(preference.getSecondId());
+            if (secondChore.isPresent()) {
+                Chore choreToAdd = secondChore.get();
+                toReturn.add(choreToAdd);
+            }
         }
-        Optional<Chore> thirdChore = choreRepository.findById(preference.getThirdId());
-        if (thirdChore.isPresent()) {
-            Chore choreToAdd = thirdChore.get();
-            toReturn.add(choreToAdd);
+        if (preference.getThirdId() != null) {
+            Optional<Chore> thirdChore = choreRepository.findById(preference.getThirdId());
+            if (thirdChore.isPresent()) {
+                Chore choreToAdd = thirdChore.get();
+                toReturn.add(choreToAdd);
+            }
         }
-        Optional<Chore> fourthChore = choreRepository.findById(preference.getFourthId());
-        if (fourthChore.isPresent()) {
-            Chore choreToAdd = fourthChore.get();
-            toReturn.add(choreToAdd);
+        if (preference.getFourthId() != null) {
+            Optional<Chore> fourthChore = choreRepository.findById(preference.getFourthId());
+            if (fourthChore.isPresent()) {
+                Chore choreToAdd = fourthChore.get();
+                toReturn.add(choreToAdd);
+            }
         }
         return toReturn;
     }
