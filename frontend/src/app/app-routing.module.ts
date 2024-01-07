@@ -30,6 +30,7 @@ import {CookbookDetailComponent} from "./components/cookbook/cookbook-detail/coo
 import {ShoppingListsComponent} from "./components/shopping-list/shopping-lists/shopping-lists.component";
 import {ExpenseCreateEditComponent} from "./components/finance/expense-create-edit/expense-create-edit.component";
 import {FinanceComponent} from "./components/finance/finance.component";
+import {ExpenseDetailComponent} from "./components/finance/expense-detail/expense-detail.component";
 
 const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -88,18 +89,30 @@ const routes: Routes = [
             {path: '', component: FinanceComponent}
         ]
     },
+    {path: 'register', component: RegisterComponent},
+    {path: 'account', component: AccountComponent},
+    {path: 'wgLogin', component: LoginFlatComponent},
+    {path: 'wgCreate', component: CreateFlatComponent},
+    {
+        path: 'expense', children: [
+        {path: '', component: DigitalStorageComponent},
+        {path: 'create', component: ExpenseCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
+        {path: ':id', component: ExpenseDetailComponent},
+
+        ]
+    },
     {
         path: 'cooking', children: [
-            {path: '', component: CookingComponent},
-            {path: ':id/detail', component: RecipeDetailComponent}
+        {path: '', component: CookingComponent},
+        {path: ':id/detail', component: RecipeDetailComponent}
         ]
     },
     {
         path: 'cookbook', children: [
-            {path: '', component: CookbookComponent},
-            {path: 'create', component: CookbookCreateComponent, data: {mode: CookbookMode.create}},
-            {path: ':id/edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}},
-            {path: ':id/detail', component: CookbookDetailComponent}
+        {path: '', component: CookbookComponent},
+        {path: 'create', component: CookbookCreateComponent, data: {mode: CookbookMode.create}},
+        {path: ':id/edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}},
+        {path: ':id/detail', component: CookbookDetailComponent}
         ]
     }
 ];
