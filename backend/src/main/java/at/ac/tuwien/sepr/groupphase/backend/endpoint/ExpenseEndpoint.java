@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/expense")
@@ -42,6 +44,14 @@ public class ExpenseEndpoint {
         return expenseMapper.entityToExpenseDto(
             expenseService.findById(id)
         );
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("debits")
+    public List<BalanceDebitDto> calculateDebits() throws AuthenticationException {
+        LOGGER.info("calculateDebits");
+
+        return expenseService.calculateDebits();
     }
 
     @Secured("ROLE_USER")

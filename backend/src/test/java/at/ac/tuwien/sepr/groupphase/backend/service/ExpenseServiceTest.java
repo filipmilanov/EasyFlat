@@ -1,13 +1,14 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DebitDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DebitDtoBuilder;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ExpenseDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
@@ -18,7 +19,9 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -157,19 +160,19 @@ class ExpenseServiceTest {
     static List<Arguments> data() {
         List<DebitDto> debitUsers = new ArrayList<>();
         UserListDto userDetailDto1 = UserListDtoBuilder.builder()
-            .id(1L)
-            .build();
-
-        UserListDto userDetailDto2 = UserListDtoBuilder.builder()
-            .id(6L)
-            .build();
-
-        UserListDto userDetailDto3 = UserListDtoBuilder.builder()
             .id(11L)
             .build();
 
-        UserListDto userDetailDto4 = UserListDtoBuilder.builder()
+        UserListDto userDetailDto2 = UserListDtoBuilder.builder()
             .id(16L)
+            .build();
+
+        UserListDto userDetailDto3 = UserListDtoBuilder.builder()
+            .id(21L)
+            .build();
+
+        UserListDto userDetailDto4 = UserListDtoBuilder.builder()
+            .id(1L)
             .build();
 
         return List.of(
@@ -434,6 +437,31 @@ class ExpenseServiceTest {
         // when + then
         assertThrows(ConflictException.class, () ->
             service.create(expenseDto)
+        );
+    }
+
+
+    @Test
+    @DisplayName("Are debits calculated right, so that after paying the expense, the balance is 0?")
+    void areDebitsCalculatedRight() {
+        // given = debits defined via test data generator
+
+        // when
+        List<BalanceDebitDto> actual = service.calculateDebits();
+
+        // then
+        assertAll(
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).extracting(
+                (BalanceDebitDto balanceDebitDto) -> balanceDebitDto.debtor().id(),
+                (BalanceDebitDto balanceDebitDto) -> balanceDebitDto.creditor().id(),
+                (BalanceDebitDto balanceDebitDto) -> Math.round(balanceDebitDto.valueInCent() * 10) / 10.0
+            ).contains(
+                new Tuple(11L, 6L, 791.8),
+                new Tuple(1L, 6L, 331.7),
+                new Tuple(16L, 21L, 153.9),
+                new Tuple(16L, 6L, 115.4)
+            )
         );
     }
 }
