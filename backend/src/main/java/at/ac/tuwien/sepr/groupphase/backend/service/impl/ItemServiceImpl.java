@@ -190,6 +190,8 @@ public class ItemServiceImpl implements ItemService {
 
         DigitalStorageItem presistedDigitalStorageItem = this.findById(itemDto.itemId());
 
+        presistedDigitalStorageItem.getItemCache().setId(itemDto.itemId());
+
         // necessary because JPA cannot convert an Entity to another Entity
         if (digitalStorageItem.alwaysInStock() != presistedDigitalStorageItem.alwaysInStock()) {
             this.delete(itemDto.itemId());
