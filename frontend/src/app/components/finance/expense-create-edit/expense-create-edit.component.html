@@ -1,8 +1,27 @@
 <div class="container">
-  <h1 class="display-4">{{ heading }}</h1>
-  <div style="width: 100%; height: 100%; border: 1px black solid"></div>
-
   <form #form="ngForm" (submit)="onSubmit(form)">
+    <div class="row">
+      <div class="col-md-8 col-lg-7">
+        <h1 class="display-5">{{ heading }}</h1>
+      </div>
+      <div class="col-md-4 mt-4 col-lg-5 text-end">
+        <button type="submit"
+                class="btn btn-primary me-2"
+                [disabled]="!form.valid"
+        >
+          <i class="bi" [class.bi-plus-square]="true"></i>
+          {{ submitButtonText }}
+        </button>
+        <button type="button"
+                class="btn btn-secondary"
+                [routerLink]="['/finance']">
+          <i class="bi" [class.bi-arrow-left]="true"></i>
+          Back
+        </button>
+      </div>
+    </div>
+    <div style="width: 100%; height: 100%; border: 1px black solid"></div>
+
 
     <div class="row row-cols-1">
       <div class="row p-2">
@@ -134,12 +153,6 @@
       </div>
 
     </div>
-    <button type="submit"
-            class="btn btn-primary float-end"
-            [disabled]="!form.valid"
-    >
-      {{ submitButtonText }}
-    </button>
 
   </form>
 </div>

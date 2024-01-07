@@ -81,7 +81,7 @@ export class ExpenseCreateEditComponent implements OnInit {
     let o = this.financeService.createExpense(this.expense).subscribe({
       next: (expense: ExpenseDto) => {
         this.notification.success("Expense created", "Success");
-        this.router.navigate(['/expense']);
+        this.router.navigate(['/finance']);
       },
       error: (error) => {
         console.log(error);
