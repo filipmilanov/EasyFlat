@@ -15,7 +15,7 @@
                       [description]="chore.description"
                       [endDate]="chore.endDate"
                       [points]="chore.points"
-                      [user]="chore.user.firstName + ' ' + chore.user.lastName">
+                      [user]="chore.user?.firstName + ' ' + chore.user?.lastName">
       </app-chore-card>
     </a>
   </div>
