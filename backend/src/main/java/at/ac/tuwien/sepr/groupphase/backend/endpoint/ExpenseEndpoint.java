@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -52,6 +53,30 @@ public class ExpenseEndpoint {
         LOGGER.info("calculateDebits");
 
         return expenseService.calculateDebits();
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("statistics/expenses")
+    public List<UserValuePairDto> calculateTotalExpensesPerUser() throws AuthenticationException {
+        LOGGER.info("calculateExpenses()");
+
+        return expenseService.calculateTotalExpensesPerUser();
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("statistics/debits")
+    public List<UserValuePairDto> calculateTotalDebitsPerUser() throws AuthenticationException {
+        LOGGER.info("calculateDebits()");
+
+        return expenseService.calculateTotalDebitsPerUser();
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("statistics/balance")
+    public List<UserValuePairDto> calculateBalancePerUser() throws AuthenticationException {
+        LOGGER.info("calculateBalance()");
+
+        return expenseService.calculateBalancePerUser();
     }
 
     @Secured("ROLE_USER")

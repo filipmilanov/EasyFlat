@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -30,6 +31,27 @@ public interface ExpenseService {
      * @return a List of BalanceDebitDtos which represent the debits
      */
     List<BalanceDebitDto> calculateDebits();
+
+    /**
+     * Calculates the total expenses per user.
+     *
+     * @return a List of UserValuePairDtos which represent the total expenses per user. The User is the key
+     */
+    List<UserValuePairDto> calculateTotalExpensesPerUser();
+
+    /**
+     * Calculates the total debits per user.
+     *
+     * @return a List of UserValuePairDtos which represent the total debits per user. The User is the key
+     */
+    List<UserValuePairDto> calculateTotalDebitsPerUser();
+
+    /**
+     * Calculates the balance per user.
+     *
+     * @return a List of UserValuePairDtos which represent the balance per user. The User is the key
+     */
+    List<UserValuePairDto> calculateBalancePerUser();
 
     /**
      * Creates a new expense.

@@ -62,6 +62,9 @@ import {UserDropdownComponent} from './components/utils/user-dropdown/user-dropd
 import {ShoppingListCardComponent} from './components/shopping-list/shopping-list-card/shopping-list-card.component';
 import {DebitsComponent} from './components/finance/debits/debits.component';
 import {ConfirmPayedPackComponent} from './components/utils/confirm-payed-pack/confirm-payed-pack.component';
+import {BarchartVerticalComponent} from './components/finance/graphs/barchart-nagative/barchart-vertical.component';
+import {NgxEchartsModule} from "ngx-echarts";
+import {RadarComponent} from './components/finance/graphs/radar/radar.component';
 import {ExpenseDetailComponent} from './components/finance/expense-detail/expense-detail.component';
 import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
 
@@ -106,6 +109,8 @@ LOAD_WASM().subscribe();
     UserDropdownComponent,
     DebitsComponent,
     ConfirmPayedPackComponent,
+    BarchartVerticalComponent,
+    RadarComponent,
     ExpenseDetailComponent,
     ConfirmDeleteDialogComponent
   ],
@@ -121,6 +126,13 @@ LOAD_WASM().subscribe();
     ColorPickerModule,
     NgOptimizedImage,
     NgxScannerQrcodeModule,
+    NgxEchartsModule.forRoot({
+      /**
+       * This will import all modules from echarts.
+       * but only when they are called
+       */
+      echarts: () => import('echarts'), // or import('./path-to-my-custom-echarts')
+    }),
     NgbDatepickerModule,
     NgbTimepickerModule,
     NgbAlertModule,

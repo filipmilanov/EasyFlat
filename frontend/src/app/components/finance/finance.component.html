@@ -1,3 +1,19 @@
+<h1>Statistics</h1>
+<div class="form-group">
+  <select class="form-control w-25" id="graphType" [(ngModel)]="selectedGraphType">
+    <option value="barchart">Bar Chart</option>
+    <option value="radar">Radar Chart</option>
+  </select>
+</div>
+
+<ng-container *ngIf="selectedGraphType === 'barchart'">
+  <app-barchart-vertical [reloadSubject]="reloadGraph.asObservable()"></app-barchart-vertical>
+</ng-container>
+
+<ng-container *ngIf="selectedGraphType === 'radar'">
+  <app-radar [reloadSubject]="reloadGraph.asObservable()"></app-radar>
+</ng-container>
+
 <h1>Debits</h1>
 <div class="d-flex justify-content-center">
     <app-debits [balanceDebits]="balanceDebits"

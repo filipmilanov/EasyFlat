@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DebitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
@@ -82,6 +83,59 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    public List<UserValuePairDto> calculateTotalExpensesPerUser() {
+        LOGGER.info("calculateTotalExpensesPerUser()");
+
+        Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
+        Map<ApplicationUser, Double> totalAmountPaidPerUser = calculateTotalAmountPaidPerUserOfSharedFlat(usersOfSharedFlat);
+
+        return totalAmountPaidPerUser.entrySet().stream().map(
+            entry -> new UserValuePairDto(
+                userMapper.entityToUserListDto(entry.getKey()),
+                (Math.abs(entry.getValue()) < 1) ? 0 : entry.getValue()
+            )
+        ).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserValuePairDto> calculateTotalDebitsPerUser() {
+        LOGGER.info("calculateTotalDebitsPerUser()");
+
+        Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
+        Map<ApplicationUser, Double> totalAmountOwedPerUser = calculateTotalAmountOwedPerUserOfSharedFlat(usersOfSharedFlat);
+
+        return totalAmountOwedPerUser.entrySet().stream().map(
+            entry -> new UserValuePairDto(
+                userMapper.entityToUserListDto(entry.getKey()),
+                (Math.abs(entry.getValue()) < 1) ? 0 : entry.getValue()
+            )
+        ).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserValuePairDto> calculateBalancePerUser() {
+        LOGGER.info("calculateBalancePerUser()");
+
+        Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
+        Map<ApplicationUser, Double> balancesPerUser = this.calculateDifferenceBetweenPaidAndOwedAmountPerUser(
+            calculateTotalAmountPaidPerUserOfSharedFlat(usersOfSharedFlat),
+            calculateTotalAmountOwedPerUserOfSharedFlat(usersOfSharedFlat)
+        ).stream().collect(
+            Collectors.toMap(
+                Pair::getUser,
+                Pair::getAmount
+            )
+        );
+
+        return balancesPerUser.entrySet().stream().map(
+            entry -> new UserValuePairDto(
+                userMapper.entityToUserListDto(entry.getKey()),
+                (Math.abs(entry.getValue()) < 1) ? 0 : entry.getValue()
+            )
+        ).collect(Collectors.toList());
+    }
+
+    @Override
     public List<BalanceDebitDto> calculateDebits() {
         LOGGER.info("calculateDebits()");
 
@@ -120,6 +174,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         return balanceDebitDtos;
     }
+
 
     @Override
     @Transactional
