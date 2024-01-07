@@ -13,13 +13,15 @@ public record RecipeIngredientDto(
     String name,
     String unit,
     UnitDto unitEnum,
-    double amount) {
+
+    double amount,
+    boolean matched) {
 
 
-    public static RecipeIngredientDto createWithCustomLogic(Long id, String name, String unit, UnitDto unitEnum, double amount) {
+    public static RecipeIngredientDto createWithCustomLogic(Long id, String name, String unit, UnitDto unitEnum, double amount,boolean matched) {
 
         // Return the new instance of RecipeIngredientDto
-        return new RecipeIngredientDto(id, name, unit, unitEnum, amount);
+        return new RecipeIngredientDto(id, name, unit, unitEnum, amount,matched);
     }
 
 
