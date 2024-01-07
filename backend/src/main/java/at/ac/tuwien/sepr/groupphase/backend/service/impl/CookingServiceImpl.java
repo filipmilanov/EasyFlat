@@ -237,18 +237,20 @@ public class CookingServiceImpl implements CookingService {
         return recipesToRet;
     }
 
-    private static List<RecipeSuggestionDto> getRecipeSuggestionDtos(List<RecipeSuggestionDto> response, ResponseEntity<List<RecipeDto>> exchange) {
+    private List<RecipeSuggestionDto> getRecipeSuggestionDtos(List<RecipeSuggestionDto> response, ResponseEntity<List<RecipeDto>> exchange) {
         List<RecipeSuggestionDto> toReturn = new LinkedList<>();
+
         if (response != null) {
             for (int i = 0; i < response.size(); i++) {
                 RecipeDto hereWeHaveMissIng = exchange.getBody().get(i);
                 RecipeSuggestionDto details = response.get(i);
+                List<RecipeIngredientDto> matchedIngredients = getMatchedIngredients(details.extendedIngredients());
                 RecipeSuggestionDto toAdd = new RecipeSuggestionDto(
                     details.id(),
                     details.title(),
                     details.servings(),
                     details.readyInMinutes(),
-                    details.extendedIngredients(),
+                    matchedIngredients,
                     details.summary(),
                     hereWeHaveMissIng.missedIngredients(),
                     details.dishTypes()
@@ -285,6 +287,22 @@ public class CookingServiceImpl implements CookingService {
         return updatedRecipeList;
     }
 
+    private RecipeDetailDto saveUnitAlsUnitsForDetail(RecipeDetailDto recipeSuggestion) {
+        List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
+        for (RecipeIngredientDto recipeIngredient : recipeSuggestion.extendedIngredients()) {
+            updatedIngredients.add(this.normalizeIngredient(recipeIngredient));
+        }
+
+        return new RecipeDetailDto(recipeSuggestion.id(),
+            recipeSuggestion.title(),
+            recipeSuggestion.servings(),
+            recipeSuggestion.readyInMinutes(),
+            updatedIngredients,
+            recipeSuggestion.summary(),
+            recipeSuggestion.steps()
+        );
+    }
+
     @Override
     public RecipeDetailDto getRecipeDetails(Long recipeId) {
         String reqString = getNewReqStringForInformation(recipeId);
@@ -303,7 +321,7 @@ public class CookingServiceImpl implements CookingService {
         }
         List<RecipeIngredientDto> matchedIngredients = getMatchedIngredients(response.getBody().extendedIngredients());
         if (recipeDetailDto != null) {
-            return new RecipeDetailDto(
+            return saveUnitAlsUnitsForDetail(new RecipeDetailDto(
                 recipeId,
                 recipeDetailDto.title(),
                 recipeDetailDto.servings(),
@@ -311,7 +329,7 @@ public class CookingServiceImpl implements CookingService {
                 matchedIngredients,
                 recipeDetailDto.summary(),
                 steps
-            );
+            ));
         }
         return null;
     }
@@ -325,6 +343,17 @@ public class CookingServiceImpl implements CookingService {
         for (RecipeIngredientDto recipeIngredient : ingredientDtos) {
             boolean matched = false;
             for (DigitalStorageItem digitalStorageItem : itemsInStorage) {
+                if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name())) {
+                    RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
+                        digitalStorageItem.getItemCache().getProductName(),
+                        recipeIngredient.unit(),
+                        recipeIngredient.unitEnum(),
+                        recipeIngredient.amount(),
+                        true);
+                    updatedIngredients.add(updatedIngredient);
+                    matched = true;
+                    continue;
+                }
                 for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
                     if (alternativeName.getName().equals(recipeIngredient.name())) {
                         RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
@@ -349,8 +378,13 @@ public class CookingServiceImpl implements CookingService {
         String reqString = "https://api.spoonacular.com/recipes/" + recipeId + "/information" + "?apiKey=" + apiKey + "&includeNutrition=false";
         ResponseEntity<RecipeSuggestion> response = restTemplate.exchange(reqString, HttpMethod.GET, null, new ParameterizedTypeReference<RecipeSuggestion>() {
         });
+        RecipeSuggestion recipe = response.getBody();
+        List<RecipeIngredientDto> matchedIngredients = getMatchedIngredients(ingredientMapper.entityListToDtoList(response.getBody().getExtendedIngredients()));
 
-        return response.getBody();
+        RecipeSuggestionDto toReturn = new RecipeSuggestionDto(recipeId, recipe.getTitle(), recipe.getServings(), recipe.getReadyInMinutes(), matchedIngredients, recipe.getSummary(), null, null);
+
+
+        return recipeMapper.dtoToEntity(toReturn, ingredientMapper.dtoListToEntityList(matchedIngredients));
     }
 
     @Override
@@ -611,10 +645,6 @@ public class CookingServiceImpl implements CookingService {
         return requestString + "&ranking=2";
     }
 
-    private String getRequestStringForDetails(String recipeId) {
-        return "https://api.spoonacular.com/recipes/" + recipeId + "/analyzedInstructions" + "?apiKey=" + apiKey;
-    }
-
     private Unit getMinUnit(Unit unit) {
         if (unit == null) {
             return null;
@@ -721,15 +751,6 @@ public class CookingServiceImpl implements CookingService {
         }
     }
 
-    private void saveRecipes(List<RecipeSuggestionDto> recipes) {
-        for (RecipeSuggestionDto recipeSuggestionDto : recipes) {
-            List<RecipeIngredient> ingredientList = ingredientService.createAll(recipeSuggestionDto.extendedIngredients());
-            RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipeSuggestionDto, ingredientList);
-            recipeEntity.setVersion(2);
-            repository.save(recipeEntity);
-        }
-    }
-
     private RecipeIngredientDto normalizeIngredient(RecipeIngredientDto ingredient) {
         String unitName = ingredient.unit();
         double amount = ingredient.amount();
@@ -754,7 +775,7 @@ public class CookingServiceImpl implements CookingService {
             unitMapper.entityToUnitDto(minUnit).name(),
             unitMapper.entityToUnitDto(minUnit),
             convertedAmount,
-            false
+            ingredient.matched()
         );
     }
 
@@ -765,4 +786,6 @@ public class CookingServiceImpl implements CookingService {
         HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
         return httpEntity;
     }
+
+
 }
