@@ -10,7 +10,13 @@ import {FooterComponent} from './components/footer/footer.component';
 import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
 import {MessageComponent} from './components/message/message.component';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbAlertModule,
+  NgbDatepickerModule,
+  NgbModule,
+  NgbTimepickerConfig,
+  NgbTimepickerModule
+} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
 import {DigitalStorageComponent} from './components/digital-storage/digital-storage.component';
 import {ItemCardComponent} from './components/digital-storage/item-card/item-card.component';
@@ -33,7 +39,7 @@ import {
 } from './components/shopping-list/shopping-list-create/shopping-list-create.component';
 import {CookingComponent} from './components/cooking/cooking.component';
 import {RecipeCardComponent} from './components/cooking/recipe-card/recipe-card.component';
-import {NgOptimizedImage} from "@angular/common";
+import {JsonPipe, NgOptimizedImage} from "@angular/common";
 import {CookbookComponent} from './components/cookbook/cookbook.component';
 import {CookbookCardComponent} from './components/cookbook/cookbook-card/cookbook-card.component';
 import {RecipeDetailComponent} from './components/cooking/recipe-detail/recipe-detail.component';
@@ -59,6 +65,8 @@ import {ConfirmPayedPackComponent} from './components/utils/confirm-payed-pack/c
 import {BarchartVerticalComponent} from './components/finance/graphs/barchart-nagative/barchart-vertical.component';
 import {NgxEchartsModule} from "ngx-echarts";
 import {RadarComponent} from './components/finance/graphs/radar/radar.component';
+import {ExpenseDetailComponent} from './components/finance/expense-detail/expense-detail.component';
+import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
 
 LOAD_WASM().subscribe();
 
@@ -103,6 +111,8 @@ LOAD_WASM().subscribe();
     ConfirmPayedPackComponent,
     BarchartVerticalComponent,
     RadarComponent,
+    ExpenseDetailComponent,
+    ConfirmDeleteDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -122,9 +132,16 @@ LOAD_WASM().subscribe();
        * but only when they are called
        */
       echarts: () => import('echarts'), // or import('./path-to-my-custom-echarts')
-    })
+    }),
+    NgbDatepickerModule,
+    NgbTimepickerModule,
+    NgbAlertModule,
+    JsonPipe
   ],
-  providers: [httpInterceptorProviders],
+  providers: [
+    httpInterceptorProviders,
+    NgbTimepickerConfig
+  ],
   bootstrap: [AppComponent]
 })
 

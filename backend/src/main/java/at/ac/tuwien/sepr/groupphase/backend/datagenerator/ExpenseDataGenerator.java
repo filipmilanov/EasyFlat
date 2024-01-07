@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -44,6 +45,14 @@ public class ExpenseDataGenerator {
             expense.setTitle(generateRandomExpenseTitle());
             expense.setDescription(generateRandomExpenseDescription());
             expense.setAmountInCents(random.nextDouble(2000));
+            expense.setCreatedAt(LocalDateTime.of(
+                random.nextInt(3) + 2020,
+                random.nextInt(12) + 1,
+                random.nextInt(28) + 1,
+                random.nextInt(24),
+                random.nextInt(60),
+                random.nextInt(60)
+            ));
 
             // Generate a random SplitBy option
             SplitBy splitBy = getRandomSplitByOption();

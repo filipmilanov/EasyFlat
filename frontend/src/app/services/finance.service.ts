@@ -35,4 +35,13 @@ export class FinanceService {
   findBalanceDebits(): Observable<BalanceDebitDto[]> {
     return this.http.get<BalanceDebitDto[]>(this.baseUri + '/debits');
   }
+
+  /**
+   * Find expense with given id.
+   *
+   * @param id of the expense
+   */
+  findById(id: number): Observable<ExpenseDto> {
+    return this.http.get<ExpenseDto>(this.baseUri + '/' + id);
+  }
 }
