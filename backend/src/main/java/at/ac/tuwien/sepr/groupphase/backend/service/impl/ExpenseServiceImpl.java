@@ -87,7 +87,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         LOGGER.info("calculateTotalExpensesPerUser()");
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
-        Map<ApplicationUser, Double> totalAmountPaidPerUser = calculateTotalAmountPaiedPerUserOfSharedFlat(usersOfSharedFlat);
+        Map<ApplicationUser, Double> totalAmountPaidPerUser = calculateTotalAmountPaidPerUserOfSharedFlat(usersOfSharedFlat);
 
         return totalAmountPaidPerUser.entrySet().stream().map(
             entry -> new UserValuePairDto(
@@ -117,8 +117,8 @@ public class ExpenseServiceImpl implements ExpenseService {
         LOGGER.info("calculateBalancePerUser()");
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
-        Map<ApplicationUser, Double> balancesPerUser = this.calculateDiffrenceBetweenPaiedAndOwedAmountPerUser(
-            calculateTotalAmountPaiedPerUserOfSharedFlat(usersOfSharedFlat),
+        Map<ApplicationUser, Double> balancesPerUser = this.calculateDifferenceBetweenPaidAndOwedAmountPerUser(
+            calculateTotalAmountPaidPerUserOfSharedFlat(usersOfSharedFlat),
             calculateTotalAmountOwedPerUserOfSharedFlat(usersOfSharedFlat)
         ).stream().collect(
             Collectors.toMap(
