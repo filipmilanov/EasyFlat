@@ -8,11 +8,18 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 })
 export class ConfirmDeleteDialogComponent {
 
-    @Input() deleteInfo = '?';
-    @Input() deleteName = '';
+  @Input() deleteInfo = '?';
+  @Input() deleteName = '';
+  @Input() deleteId = '';
 
-    @Output() confirm = new EventEmitter<void>();
+  @Output() confirm = new EventEmitter<void>();
 
-    constructor() {
-    }
+  constructor() {
+  }
+
+
+  getIdForm(): string {
+    return `${this.deleteName}${this.deleteId}`.replace(/\s/g, '');
+  }
+
 }

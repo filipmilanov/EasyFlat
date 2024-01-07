@@ -35,7 +35,7 @@
     <button type="button"
             class="btn btn-danger btn-sm"
             data-bs-toggle="modal"
-            [attr.data-bs-target]="'#confirm-delete-modal' + event.title"
+            [attr.data-bs-target]="'#confirm-delete-modal' + getIdForm()"
     >
       <i class="bi bi-trash"></i>
     </button>
@@ -44,5 +44,6 @@
 <app-confirm-delete-dialog
   [deleteInfo]="'Event'"
   [deleteName]="truncateString(event.title, 20)"
+  [deleteId]="event.id.toString()"
   (confirm)="deleteEvent()"
 ></app-confirm-delete-dialog>
