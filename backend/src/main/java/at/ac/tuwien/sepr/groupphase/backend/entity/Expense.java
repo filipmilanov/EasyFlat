@@ -92,6 +92,22 @@ public class Expense {
         return paidBy;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public SharedFlat getSharedFlat() {
+        return sharedFlat;
+    }
+
+    public void setSharedFlat(SharedFlat sharedFlat) {
+        this.sharedFlat = sharedFlat;
+    }
+
     public void setPaidBy(ApplicationUser paidBy) {
         this.paidBy = paidBy;
         paidBy.getMyExpense().add(this);

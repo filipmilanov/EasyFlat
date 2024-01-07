@@ -19,4 +19,13 @@ export class FinanceService {
     console.log("Create expense: " + expense.debitUsers);
     return this.http.post<ExpenseDto>(this.baseUri, expense);
   }
+
+  /**
+   * Find expense with given id.
+   *
+   * @param id of the expense
+   */
+  findById(id: number): Observable<ExpenseDto> {
+    return this.http.get<ExpenseDto>(this.baseUri + '/' + id);
+  }
 }
