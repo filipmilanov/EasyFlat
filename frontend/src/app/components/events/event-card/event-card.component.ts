@@ -27,7 +27,6 @@ export class EventCardComponent {
       return input;
     }
 
-    // Truncate the string and append ellipsis
     const truncated = input.substring(0, maxLength - 3);
     return truncated + '...';
   }
@@ -81,5 +80,9 @@ export class EventCardComponent {
 
     const [hours, minutes] = time.split(':');
     return `${hours}:${minutes}`;
+  }
+
+  getIdForm(): string {
+    return `${this.event.title}${this.event.id.toString()}`.replace(/\s/g, '');
   }
 }
