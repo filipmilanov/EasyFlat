@@ -145,9 +145,9 @@ export class ItemDetailListComponent implements OnInit {
     this.storageService.addItemToShoppingList(item).subscribe({
       next: () => {
         this.notification.success(`Item ${item.productName} successfully added to the shopping list.`, "Success");
-        this.shoppingService.getShoppingListByName('Default').subscribe({
-          next: () => {
-            this.router.navigate([`/shopping-list/default`]);
+        this.shoppingService.getShoppingListByName('Shopping List (Default)').subscribe({
+          next: res => {
+            this.router.navigate([`/shopping-lists/list/` + res.id]);
           }
         })
       },

@@ -194,7 +194,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        ShoppingList shoppingList = shoppingListRepository.findByNameAndSharedFlatIs("Default", applicationUser.getSharedFlat());
+        ShoppingList shoppingList = shoppingListRepository.findByNameAndSharedFlatIs("Shopping List (Default)", applicationUser.getSharedFlat());
         ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto,
             ingredientMapper.dtoListToEntityList(itemDto.ingredients()),
             shoppingList

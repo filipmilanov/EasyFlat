@@ -73,6 +73,7 @@ export class ShoppingListComponent implements OnInit {
     this.shoppingListService.getItemsWithShopId(this.shopId, this.searchParams).subscribe({
       next: res => {
         this.items = res;
+        console.log(this.items)
       },
       error: err => {
         console.error("Error finding items:", err);

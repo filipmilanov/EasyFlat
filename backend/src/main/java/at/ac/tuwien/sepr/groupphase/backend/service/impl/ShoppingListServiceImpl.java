@@ -252,7 +252,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage", applicationUser.getSharedFlat());
+        List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage " + applicationUser.getSharedFlat().getName(), applicationUser.getSharedFlat());
         List<DigitalStorageItem> itemsList = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
             DigitalStorageItem item;
