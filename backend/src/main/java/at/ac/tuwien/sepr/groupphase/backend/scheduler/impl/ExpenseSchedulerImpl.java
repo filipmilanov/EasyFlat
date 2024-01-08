@@ -34,7 +34,7 @@ public class ExpenseSchedulerImpl implements ExpenseScheduler {
     @Override
     @Scheduled(cron = "0 0 0 * * *")
     public void createRepeatingExpense() {
-        LOGGER.info("Creating repeating expenses");
+        LOGGER.info("createRepeatingExpense() called");
 
         List<Expense> repeatingExpenses = expenseService.findRepeatingExpenses();
 
@@ -58,6 +58,7 @@ public class ExpenseSchedulerImpl implements ExpenseScheduler {
 
     private ExpenseDto convertToNewExpense(Expense expense) {
         expense.setCreatedAt(LocalDateTime.now());
+        expense.setId(null);
         return expenseMapper.entityToExpenseDto(expense);
     }
 }
