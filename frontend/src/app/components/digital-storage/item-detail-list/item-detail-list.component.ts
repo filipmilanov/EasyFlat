@@ -174,7 +174,7 @@ export class ItemDetailListComponent implements OnInit {
 
   protected readonly QuantityChange = QuantityChange;
 
-  getIdFormForDeleteModal(item:ItemDto): string {
+  getIdFormatForDeleteModal(item:ItemDto): string {
     return `${item.productName}${item.itemId.toString()}`.replace(/\s/g, '');
   }
 }
