@@ -2,10 +2,8 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookbookDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookingSteps;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
@@ -42,7 +40,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.RecipeIngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authorization.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.CookbookValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.RecipeValidator;
 import org.slf4j.Logger;
@@ -323,19 +321,16 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public Cookbook createCookbook(CookbookDto cookbookDto) throws ValidationException, ConflictException, AuthenticationException {
+    public Cookbook createCookbook(CookbookDto cookbookDto) throws ValidationException, ConflictException, AuthorizationException {
 
         cookbookValidator.validateForCreate(cookbookDto);
 
         ApplicationUser user = this.authService.getUserFromToken();
-        if (user == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
 
         List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
             .map(ApplicationUser::getId)
             .toList();
-        authorization.authenticateUser(
+        authorization.authorizeUser(
             allowedUsers,
             "The given cookbook does not belong to the user's shared flat!"
         );
@@ -346,16 +341,14 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public List<Cookbook> findAllCookbooks() throws AuthenticationException {
+    public List<Cookbook> findAllCookbooks() {
         ApplicationUser applicationUser = this.authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exists"));
-        }
+
         return cookbookRepository.findBySharedFlatIs(applicationUser.getSharedFlat());
     }
 
     @Override
-    public List<RecipeSuggestionDto> getCookbook() throws ValidationException, AuthenticationException {
+    public List<RecipeSuggestionDto> getCookbook() throws ValidationException, AuthorizationException {
         List<RecipeSuggestionDto> recipesDto = new LinkedList<>();
         Long cookbookId = this.getCookbookIdForUser();
         Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
@@ -367,7 +360,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException, ValidationException,
+    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws AuthorizationException, ConflictException, ValidationException,
         AuthenticationException {
         recipeValidator.validateForCreate(recipe);
         List<RecipeIngredient> ingredientList = ingredientService.createAll(recipe.extendedIngredients());
@@ -390,7 +383,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException, AuthenticationException {
+    public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException, AuthorizationException {
         recipeValidator.validateForUpdate(recipe);
         RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id())
             .orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
@@ -414,7 +407,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion deleteCookbookRecipe(Long id) throws AuthenticationException {
+    public RecipeSuggestion deleteCookbookRecipe(Long id) throws AuthorizationException {
         RecipeSuggestion deletedRecipe = this.getCookbookRecipe(id).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         this.getCookbookIdForUser();
         repository.delete(deletedRecipe);
@@ -502,7 +495,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook) throws ValidationException, ConflictException, AuthenticationException {
+    public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook) throws ValidationException, ConflictException, AuthorizationException {
         recipeValidator.validateForCook(recipeToCook);
         ApplicationUser user = authService.getUserFromToken();
         Long storageId = user.getSharedFlat().getDigitalStorage().getStorageId();
@@ -542,7 +535,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt)
-        throws AuthenticationException, ValidationException, ConflictException {
+        throws AuthenticationException, ValidationException, ConflictException, AuthorizationException {
         ShoppingList shoppingList = shoppingListService.getShoppingListByName("Shopping List (Default)", jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         ShoppingListDto shoppingListDto = shoppingListMapper.entityToDto(shoppingList);
         Long storageId = this.getStorageIdForUser();
@@ -647,7 +640,7 @@ public class CookingServiceImpl implements CookingService {
 
     }
 
-    private Long getCookbookIdForUser() throws AuthenticationException {
+    private Long getCookbookIdForUser() throws AuthorizationException {
         List<Cookbook> cookbookList = findAllCookbooks();
         Cookbook matchingCookbook = null;
         if (!cookbookList.isEmpty()) {
@@ -657,7 +650,9 @@ public class CookingServiceImpl implements CookingService {
             List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
                 .map(ApplicationUser::getId)
                 .toList();
-            authorization.authenticateUser(
+
+
+            authorization.authorizeUser(
                 allowedUsers,
                 "The given cookbook does not belong to the user's shared flat!"
             );
@@ -667,7 +662,7 @@ public class CookingServiceImpl implements CookingService {
         }
     }
 
-    private Long getStorageIdForUser() throws AuthenticationException {
+    private Long getStorageIdForUser() throws AuthorizationException {
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         DigitalStorage matchingDigitalStorage = null;
         if (!digitalStorageList.isEmpty()) {
@@ -677,7 +672,7 @@ public class CookingServiceImpl implements CookingService {
             List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
                 .map(ApplicationUser::getId)
                 .toList();
-            authorization.authenticateUser(
+            authorization.authorizeUser(
                 allowedUsers,
                 "The given cookbook does not belong to the user's shared flat!"
             );

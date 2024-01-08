@@ -10,7 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
@@ -46,7 +46,7 @@ public class StorageEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping
-    public List<DigitalStorageDto> findAll(DigitalStorageSearchDto digitalStorageDto) throws AuthenticationException {
+    public List<DigitalStorageDto> findAll(DigitalStorageSearchDto digitalStorageDto) throws AuthorizationException {
         LOGGER.info("findAll({})", digitalStorageDto);
 
         return digitalStorageMapper.entityListToDtoList(
@@ -57,7 +57,7 @@ public class StorageEndpoint {
     @Secured("ROLE_USER")
     @GetMapping("/items")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemListDto> getStorageItems(ItemSearchDto itemSearchDto) throws ValidationException, AuthenticationException, ConflictException {
+    public List<ItemListDto> getStorageItems(ItemSearchDto itemSearchDto) throws ValidationException, AuthorizationException, ConflictException {
         LOGGER.info("getStorageItems({})", itemSearchDto);
         return digitalStorageService.searchItems(itemSearchDto);
     }
@@ -65,7 +65,7 @@ public class StorageEndpoint {
     @Secured("ROLE_USER")
     @PostMapping("/shop")
     @ResponseStatus(HttpStatus.CREATED)
-    public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto) throws AuthenticationException, ValidationException, ConflictException {
+    public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.info("addItemToShopping({})", itemDto);
         ShoppingItem item = digitalStorageService.addItemToShopping(itemDto);
         return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));

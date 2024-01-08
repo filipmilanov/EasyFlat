@@ -11,7 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
@@ -98,7 +98,7 @@ class DigitalStorageServiceTest {
     }
 
     @Test
-    void givenNothingWhenFindAllThenAllDigitalStoragesOfActiveUserAreReturned() throws AuthenticationException {
+    void givenNothingWhenFindAllThenAllDigitalStoragesOfActiveUserAreReturned() throws AuthorizationException {
         // when
         List<DigitalStorage> actual = service.findAll(null);
 
@@ -161,7 +161,7 @@ class DigitalStorageServiceTest {
     }
 
     @Test
-    void givenValidSearchParamsWhenSearchItemsThenReturnList() throws ValidationException, AuthenticationException {
+    void givenValidSearchParamsWhenSearchItemsThenReturnList() throws ValidationException, AuthorizationException {
         // given
         ItemSearchDto searchParams = new ItemSearchDto(false, null, null, null);
         ItemListDto itemListDto = ItemListDtoBuilder.builder()

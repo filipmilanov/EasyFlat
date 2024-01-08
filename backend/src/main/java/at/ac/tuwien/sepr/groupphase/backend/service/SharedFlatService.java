@@ -1,9 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -17,7 +16,7 @@ public interface SharedFlatService {
      * @param jwt the jwt of the user
      * @return the shared flat
      */
-    SharedFlat findById(Long id, String jwt) throws AuthenticationException;
+    SharedFlat findById(Long id, String jwt) throws AuthorizationException;
 
     /**
      * Create a shared flat.

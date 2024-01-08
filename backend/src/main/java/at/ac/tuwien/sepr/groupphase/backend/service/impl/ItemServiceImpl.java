@@ -9,7 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -20,7 +20,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authorization.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -68,7 +68,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public DigitalStorageItem findById(Long id) throws AuthenticationException {
+    public DigitalStorageItem findById(Long id) throws AuthorizationException {
         LOGGER.trace("findById({})", id);
         if (id == null) {
             throw new NotFoundException("No item ID given!");
@@ -80,7 +80,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("The given item ID could not be found in the database!");
         }
         List<Long> allowedUser = item.get().getDigitalStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
-        authorization.authenticateUser(
+        authorization.authorizeUser(
             allowedUser,
             "The given item does not belong to the user's shared flat!"
         );
@@ -112,12 +112,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public DigitalStorageItem create(ItemDto itemDto) throws ConflictException, ValidationException, AuthenticationException {
+    public DigitalStorageItem create(ItemDto itemDto) throws ConflictException, ValidationException, AuthorizationException {
         LOGGER.trace("create({})", itemDto);
 
         ApplicationUser applicationUser = authService.getUserFromToken();
         if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+            throw new AuthorizationException("Authentication failed", List.of("User does not exist"));
         }
 
         if (itemDto.alwaysInStock() == null) {
@@ -132,7 +132,7 @@ public class ItemServiceImpl implements ItemService {
             .map(ApplicationUser::getId)
             .toList();
 
-        authorization.authenticateUser(
+        authorization.authorizeUser(
             allowedUsers,
             "The given digital storage does not belong to the user's shared flat!"
         );
@@ -160,7 +160,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public DigitalStorageItem update(ItemDto itemDto) throws ConflictException, ValidationException, AuthenticationException {
+    public DigitalStorageItem update(ItemDto itemDto) throws ConflictException, ValidationException, AuthorizationException {
         LOGGER.trace("update({})", itemDto);
 
         if (itemDto.alwaysInStock() == null) {
@@ -174,7 +174,7 @@ public class ItemServiceImpl implements ItemService {
         List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
             .map(ApplicationUser::getId)
             .toList();
-        authorization.authenticateUser(
+        authorization.authorizeUser(
             allowedUsers,
             "The given digital storage does not belong to the user's shared flat!"
         );
@@ -204,14 +204,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public void delete(Long id) throws AuthenticationException {
+    public void delete(Long id) throws AuthorizationException {
         LOGGER.trace("delete({})", id);
 
         List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
             .map(ApplicationUser::getId)
             .toList();
 
-        authorization.authenticateUser(
+        authorization.authorizeUser(
             allowedUsers,
             "The given digital storage does not belong to the user's shared flat!"
         );

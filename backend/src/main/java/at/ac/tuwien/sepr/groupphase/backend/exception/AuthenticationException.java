@@ -5,7 +5,7 @@ import java.util.List;
 public class AuthenticationException extends ErrorListException {
 
     /**
-     * Creates an Object of typ {@link ErrorListException}.
+     * Creates an Object of type {@link ErrorListException}.
      *
      * @param messageSummary a summary of the problem
      * @param errors         a list of detail problem descriptions
