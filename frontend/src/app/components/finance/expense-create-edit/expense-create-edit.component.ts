@@ -25,6 +25,7 @@ export class ExpenseCreateEditComponent implements OnInit {
   users: UserListDto[] = [];
   expenseDate: NgbDateStruct;
   expenseTime: NgbTimeStruct = {hour: 13, minute: 30, second: 0};
+  selectedRepeatingOption: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -129,5 +130,9 @@ export class ExpenseCreateEditComponent implements OnInit {
     this.expense.debitUsers.forEach(user => {
       user.splitBy = this.selectedSplitBy;
     });
+  }
+
+  onRepeatingChange() {
+    this.expense.isRepeating = this.selectedRepeatingOption;
   }
 }
