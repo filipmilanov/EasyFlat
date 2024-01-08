@@ -702,6 +702,7 @@ public class CookingServiceImpl implements CookingService {
             minimizedDigitalStorageItem.setBoughtAt(digitalStorageItem.getBoughtAt());
             minimizedDigitalStorageItem.setDigitalStorage(digitalStorageItem.getDigitalStorage());
             minimizedDigitalStorageItem.setIngredientList(digitalStorageItem.getIngredientList());
+            minimizedDigitalStorageItem.getItemCache().setAlternativeNames(digitalStorageItem.getItemCache().getAlternativeNames());
 
             minimizedDigitalStorageItems.add(minimizedDigitalStorageItem);
         }
