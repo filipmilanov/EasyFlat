@@ -88,7 +88,11 @@ LOAD_WASM().subscribe();
     HttpClientModule,
     NgbModule,
     FormsModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      timeOut: 10000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+    }),
     BrowserAnimationsModule,
     ColorPickerModule,
     NgOptimizedImage,
