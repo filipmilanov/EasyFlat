@@ -31,7 +31,7 @@ public class AlternativeNameServiceImpl implements AlternativeNameService {
     }
 
     @Override
-    public AlternativeName creteIfNotExist(AlternativeNameDto alternativeNameDto) {
+    public AlternativeName createIfNotExist(AlternativeNameDto alternativeNameDto) {
         ApplicationUser user = authService.getUserFromToken();
         AlternativeName alternativeName = null;
         AlternativeNameDto toSave = new AlternativeNameDto(null, alternativeNameDto.name(), user.getSharedFlat().getId());

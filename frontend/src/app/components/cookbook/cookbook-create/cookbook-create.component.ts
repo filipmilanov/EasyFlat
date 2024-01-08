@@ -96,7 +96,9 @@ export class CookbookCreateComponent implements OnInit{
       unit: this.selectedUnit.name,
       unitEnum: this.selectedUnit,
       amount: parsedAmount,
-      matched:false
+      matched:false,
+      realName: ingredient,
+      matchedItem:null
     };
 
     if (!this.recipe.extendedIngredients) {

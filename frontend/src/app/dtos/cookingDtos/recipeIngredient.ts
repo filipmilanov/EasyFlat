@@ -1,4 +1,5 @@
 import {Unit} from "../unit";
+import {ItemDto} from "../item";
 
 export class RecipeIngredient {
 
@@ -8,4 +9,6 @@ export class RecipeIngredient {
   unitEnum?:Unit;
   amount?:number;
   matched:boolean;
+  realName:string;
+  matchedItem:ItemDto
 }

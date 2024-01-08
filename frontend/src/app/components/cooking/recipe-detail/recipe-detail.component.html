@@ -28,8 +28,16 @@
                 <strong>{{ ingredient.amount }} {{ ingredient.unit }}</strong> - {{ ingredient.name }}
 
               </div>
-              <span *ngIf="ingredient.matched" class="bi bi-check2-circle text-success" style="font-size: 1.2em; margin-left: 5px;"></span>
-              <button type="button" class="btn btn-outline-success" *ngIf="!ingredient.matched" (click)="openMatchModal(ingredient)"
+              <div>
+              <span *ngIf="ingredient.matched" class="bi bi-check2-circle text-success"
+                    style="font-size: 1.2em; margin: 10px;"></span>
+                <button type="button" class="btn btn-outline-danger small" *ngIf="ingredient.matched"
+                        [disabled]="!ingredient.matched" (click)="unMatchIngredient(ingredient)"><span
+                  class="bi bi-arrow-counterclockwise"></span>
+                </button>
+              </div>
+              <button type="button" class="btn btn-outline-success" *ngIf="!ingredient.matched"
+                      (click)="openMatchModal(ingredient)"
                       [disabled]="ingredient.matched">match
               </button>
             </div>

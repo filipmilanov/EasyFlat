@@ -349,7 +349,9 @@ public class CookingServiceImpl implements CookingService {
                         recipeIngredient.unit(),
                         recipeIngredient.unitEnum(),
                         recipeIngredient.amount(),
-                        true);
+                        true,
+                        recipeIngredient.name(),
+                        itemMapper.entityToDto(digitalStorageItem));
                     updatedIngredients.add(updatedIngredient);
                     matched = true;
                     continue;
@@ -361,7 +363,9 @@ public class CookingServiceImpl implements CookingService {
                             recipeIngredient.unit(),
                             recipeIngredient.unitEnum(),
                             recipeIngredient.amount(),
-                            true);
+                            true,
+                            recipeIngredient.name(),
+                            itemMapper.entityToDto(digitalStorageItem));
                         updatedIngredients.add(updatedIngredient);
                         matched = true;
                     }
@@ -534,7 +538,9 @@ public class CookingServiceImpl implements CookingService {
                                 getMinUnit(ingredientUnit).getName(),
                                 unitMapper.entityToUnitDto(getMinUnit(ingredientUnit)),
                                 ingAmountMin - itemQuantityTotal,
-                                false
+                                false,
+                                ingredient.realName(),
+                                ingredient.matchedItem()
                             );
                             missingIngredients.add(newIngredient);
                         } else {
@@ -546,7 +552,9 @@ public class CookingServiceImpl implements CookingService {
                                 unitMapper.unitDtoToEntity(ingredient.unitEnum()).getName(),
                                 unitMapper.entityToUnitDto(unitMapper.unitDtoToEntity(ingredient.unitEnum())),
                                 updatedQuantity,
-                                false
+                                false,
+                                ingredient.realName(),
+                                ingredient.matchedItem()
                             );
                             missingIngredients.add(newIngredient);
                         }
@@ -776,7 +784,9 @@ public class CookingServiceImpl implements CookingService {
             unitMapper.entityToUnitDto(minUnit).name(),
             unitMapper.entityToUnitDto(minUnit),
             convertedAmount,
-            ingredient.matched()
+            ingredient.matched(),
+            ingredient.realName(),
+            ingredient.matchedItem()
         );
     }
 
