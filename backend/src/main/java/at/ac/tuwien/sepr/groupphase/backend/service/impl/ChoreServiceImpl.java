@@ -7,17 +7,21 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Preference;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ChoreRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PreferenceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ChoreService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ChoreValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import javax.xml.validation.Validator;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,17 +43,21 @@ public class ChoreServiceImpl implements ChoreService {
 
     private final PreferenceRepository preferenceRepository;
 
-    public ChoreServiceImpl(ChoreRepository choreRepository, ChoreMapper choreMapper, AuthService authService, UserRepository userRepository, PreferenceRepository preferenceRepository) {
+    private final ChoreValidator choreValidator;
+
+    public ChoreServiceImpl(ChoreRepository choreRepository, ChoreMapper choreMapper, AuthService authService, UserRepository userRepository, PreferenceRepository preferenceRepository, ChoreValidator choreValidator) {
         this.choreRepository = choreRepository;
         this.choreMapper = choreMapper;
         this.authService = authService;
         this.userRepository = userRepository;
         this.preferenceRepository = preferenceRepository;
+        this.choreValidator = choreValidator;
     }
 
     @Secured("ROLE_USER")
-    public ChoreDto createChore(ChoreDto choreDto) throws AuthenticationException {
+    public ChoreDto createChore(ChoreDto choreDto) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.trace("createChore({})", choreDto);
+        this.choreValidator.validateForCreate(choreDto);
         ApplicationUser applicationUser = authService.getUserFromToken();
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));

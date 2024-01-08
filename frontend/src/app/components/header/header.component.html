@@ -36,8 +36,15 @@
       <li class="nav-item">
         <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/cookbook" routerLinkActive="active">Cookbook</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/chores" routerLinkActive="active">Chores</a>
+      <li class="nav-item" *ngIf="authService.isLoggedIn() && isInWg()" (click)="toggleDropdown($event)">
+        <a class="nav-link">Chores</a>
+        <div class="dropdown-menu" *ngIf="showDropdown">
+          <button class="dropdown-item big-box-button" (click)="navigateToAllChores()">All Chores</button>
+          <button class="dropdown-item big-box-button" (click)="navigateToMyChores()">My Chores</button>
+          <button class="dropdown-item big-box-button" (click)="navigateToPreference()">Chore Preference</button>
+          <button class="dropdown-item big-box-button" (click)="navigateToNewChore()">New Chores</button>
+          <button class="dropdown-item big-box-button" (click)="navigateToLeaderboard()">Leaderboard</button>
+        </div>
       </li>
     </ul>
 

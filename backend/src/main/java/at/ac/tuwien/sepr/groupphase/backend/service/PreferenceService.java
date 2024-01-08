@@ -7,4 +7,6 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 
 public interface PreferenceService {
     PreferenceDto update(PreferenceDto preferenceDto) throws AuthenticationException;
+
+    PreferenceDto getLastPreference() throws AuthenticationException;
 }

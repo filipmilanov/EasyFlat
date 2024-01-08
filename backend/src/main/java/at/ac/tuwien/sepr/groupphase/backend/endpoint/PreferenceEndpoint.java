@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.PreferenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,5 +41,12 @@ public class PreferenceEndpoint {
     public PreferenceDto updatePreference(@RequestBody PreferenceDto preferenceDto) throws AuthenticationException {
         LOGGER.info("updatePreference({})", preferenceDto);
         return preferenceService.update(preferenceDto);
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping
+    public PreferenceDto getLastPreference() throws AuthenticationException {
+        LOGGER.trace("getLastPreference()");
+        return preferenceService.getLastPreference();
     }
 }

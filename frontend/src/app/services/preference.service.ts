@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {Globals} from "../global/globals";
 import {Preference} from "../dtos/preference";
 import {ShoppingItemDto} from "../dtos/item";
+import {Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -17,4 +18,7 @@ export class PreferenceService {
     return this.httpClient.put<Preference>(`${this.choreBaseUri}`, preference)
   }
 
+  getLastPreference(): Observable<Preference> {
+    return this.httpClient.get<Preference>(this.choreBaseUri);
+  }
 }
