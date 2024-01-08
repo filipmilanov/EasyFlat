@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
@@ -57,6 +58,9 @@ class ExpenseServiceTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserMapper mapper;
 
     @MockBean
     private AuthService authService;
@@ -537,4 +541,94 @@ class ExpenseServiceTest {
             )
         );
     }
+
+    @Test
+    @DisplayName("Are repeating Expenses created correctly?")
+    void createRepeatingExpense() throws ValidationException, ConflictException, AuthenticationException {
+        // given
+        ExpenseDto expenseDto = generateRepeatingExpense();
+
+        // when
+        Expense expense = service.create(expenseDto);
+
+        // then
+        Expense actual = service.findById(expense.getId());
+
+        assertAll(
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).extracting(
+                Expense::getId,
+                Expense::getTitle,
+                Expense::getDescription,
+                Expense::getAmountInCents,
+                (expense1 -> expense1.getPaidBy().getId()),
+                Expense::getPeriodInDays
+            ).contains(
+                expense.getId(),
+                expenseDto.title(),
+                expenseDto.description(),
+                expenseDto.amountInCents(),
+                expenseDto.paidBy().id(),
+                expenseDto.periodInDays()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Is find all repeating Expenses Correct?")
+    void findAllRepeatingExpenses() throws ValidationException, ConflictException, AuthenticationException {
+        // given
+        ExpenseDto expenseDto1 = generateRepeatingExpense();
+        ExpenseDto expenseDto2 = generateRepeatingExpense();
+
+        Expense expense1 = service.create(expenseDto1);
+        Expense expense2 = service.create(expenseDto2);
+
+        // when
+        List<Expense> actual = service.findRepeatingExpenses();
+
+        // then
+        assertAll(
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).hasSize(2),
+            () -> assertThat(actual).extracting(
+                Expense::getId
+            ).containsExactlyInAnyOrder(
+                expense1.getId(),
+                expense2.getId()
+            )
+        );
+    }
+
+    private ExpenseDto generateRepeatingExpense() {
+
+        List<UserListDto> users = this.applicationUser.getSharedFlat().getUsers().stream()
+            .map(applicationUser1 -> mapper.entityToUserListDto(applicationUser1))
+            .toList();
+
+        return ExpenseDtoBuilder.builder()
+            .title("Test")
+            .description("Test")
+            .amountInCents(50.0)
+            .createdAt(LocalDateTime.now())
+            .paidBy(users.get(0))
+            .isRepeating(true)
+            .periodInDays(2)
+            .debitUsers(
+                List.of(
+                    DebitDtoBuilder.builder()
+                        .user(users.get(0))
+                        .splitBy(SplitBy.EQUAL)
+                        .value(25.0)
+                        .build(),
+                    DebitDtoBuilder.builder()
+                        .user(users.get(1))
+                        .splitBy(SplitBy.EQUAL)
+                        .value(25.0)
+                        .build()
+                )
+            )
+            .build();
+    }
+
 }
