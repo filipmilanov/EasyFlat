@@ -19,6 +19,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
@@ -80,13 +81,25 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public Optional<DigitalStorage> findById(Long id) {
+    public Optional<DigitalStorage> findById(Long id) throws AuthorizationException {
         LOGGER.trace("findById({})", id);
+
         if (id == null) {
-            return Optional.empty();
+            throw new NotFoundException("No storage ID given!");
         }
 
-        return digitalStorageRepository.findById(id);
+        Optional<DigitalStorage> digitalStorage = digitalStorageRepository.findById(id);
+
+        if (digitalStorage.isEmpty()) {
+            throw new NotFoundException("The given item ID could not be found in the database!");
+        }
+
+        List<Long> allowedUsers = digitalStorage.get().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
+        authorization.authorizeUser(
+            allowedUsers
+        );
+
+        return digitalStorage;
     }
 
     @Override
@@ -94,9 +107,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         LOGGER.trace("findAll({})", digitalStorageSearchDto);
 
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthorizationException("Authentication failed", List.of("User does not exists"));
-        }
 
         return digitalStorageRepository.findByTitleContainingAndSharedFlatIs(
             (digitalStorageSearchDto != null && digitalStorageSearchDto.title() != null)
@@ -107,13 +117,10 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<ItemListDto> searchItems(ItemSearchDto searchItem) throws ValidationException, AuthorizationException {
+    public List<ItemListDto> searchItems(ItemSearchDto searchItem) throws AuthorizationException, ValidationException {
         LOGGER.trace("searchItems({})", searchItem);
 
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthorizationException("Authorization failed", List.of("User does not exist"));
-        }
 
         digitalStorageValidator.validateForSearchItems(searchItem);
 
@@ -160,25 +167,15 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }).toList();
     }
 
+    /**
+     * The create method is only used for creating storages used in digital storage tests.
+     */
     @Transactional
     @Override
-    public DigitalStorage create(DigitalStorageDto storageDto) throws ConflictException, ValidationException, AuthorizationException {
+    public DigitalStorage create(DigitalStorageDto storageDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.trace("create({})", storageDto);
 
-        ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthorizationException("Authentication failed", List.of("User does not exist"));
-        }
-
         digitalStorageValidator.validateForCreate(storageDto);
-
-        List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
-            .map(ApplicationUser::getId)
-            .toList();
-        authorization.authorizeUser(
-            allowedUsers,
-            "The given cookbook does not belong to the user's shared flat!"
-        );
 
         DigitalStorage storage = digitalStorageMapper.dtoToEntity(storageDto);
 
@@ -191,9 +188,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         LOGGER.trace("addItemToShopping({})", itemDto);
 
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthorizationException("Authentication failed", List.of("User does not exist"));
-        }
+
         ShoppingList shoppingList = shoppingListRepository.findByNameAndSharedFlatIs("Default", applicationUser.getSharedFlat());
         ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto,
             ingredientMapper.dtoListToEntityList(itemDto.ingredients()),
@@ -231,6 +226,4 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
         return toRet;
     }
-
-
 }

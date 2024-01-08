@@ -24,8 +24,9 @@ public interface DigitalStorageService {
      *
      * @param id a valid ID
      * @return if the id exists in the DB, an Optional of a persisted DigitalStorage with given ID, an empty optional otherwise
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    Optional<DigitalStorage> findById(Long id);
+    Optional<DigitalStorage> findById(Long id) throws AuthorizationException;
 
     /**
      * Search for all Storages stored in the database which matches with the given search criteria.

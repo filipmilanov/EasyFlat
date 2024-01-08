@@ -82,7 +82,7 @@ public class ItemEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException, AuthorizationException {
+    public ItemDto create(@RequestBody ItemDto itemDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.info("create({})", itemDto);
         return itemMapper.entityToDto(
             itemService.create(itemDto)
@@ -91,7 +91,7 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping("{id}")
-    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto) throws ValidationException, ConflictException, AuthorizationException {
+    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.info("update({},{})", id, itemDto);
         return itemMapper.entityToDto(
             itemService.update(itemDto.withId(id))

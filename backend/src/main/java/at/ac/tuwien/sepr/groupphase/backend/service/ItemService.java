@@ -3,7 +3,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -20,7 +19,7 @@ public interface ItemService {
      *
      * @param id a valid ID
      * @return if the id exists in the DB, a persisted DigitalStorageItem with given ID, a not found exception otherwise
-     * @throws AuthenticationException if the user is not authenticated
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
     DigitalStorageItem findById(Long id) throws AuthorizationException;
 

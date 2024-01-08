@@ -57,7 +57,7 @@ public class StorageEndpoint {
     @Secured("ROLE_USER")
     @GetMapping("/items")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemListDto> getStorageItems(ItemSearchDto itemSearchDto) throws ValidationException, AuthorizationException, ConflictException {
+    public List<ItemListDto> getStorageItems(ItemSearchDto itemSearchDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.info("getStorageItems({})", itemSearchDto);
         return digitalStorageService.searchItems(itemSearchDto);
     }

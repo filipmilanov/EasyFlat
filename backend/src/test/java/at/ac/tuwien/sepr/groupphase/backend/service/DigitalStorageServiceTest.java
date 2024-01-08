@@ -13,6 +13,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
@@ -70,7 +71,7 @@ class DigitalStorageServiceTest {
 
 
     @Test
-    void givenDigitalStorageIdWhenFindByIdThenDigitalStorageIsReturned() {
+    void givenDigitalStorageIdWhenFindByIdThenDigitalStorageIsReturned() throws AuthorizationException {
         // given
         Long id = 1L;
 
@@ -90,11 +91,8 @@ class DigitalStorageServiceTest {
         // given
         Long id = -1L;
 
-        // when
-        Optional<DigitalStorage> actual = service.findById(id);
-
-        // then
-        assertTrue(actual.isEmpty());
+        // when + then
+        assertThrows(NotFoundException.class, () -> service.findById(id));
     }
 
     @Test
