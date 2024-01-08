@@ -16,13 +16,22 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ChoreService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ChoreValidator;
+import com.itextpdf.text.DocumentException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import javax.xml.validation.Validator;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -354,6 +363,35 @@ public class ChoreServiceImpl implements ChoreService {
 
         existingUser.setPoints(points);
         return userRepository.save(existingUser);
+    }
+
+    public byte[] generatePdf(String htmlContent) throws IOException {
+        // Create a temporary file for storing the HTML content
+        Path tempFilePath = Files.createTempFile("my-pdf", ".html");
+
+        // Write the HTML content to the temporary file
+        Files.write(tempFilePath, htmlContent.getBytes(StandardCharsets.UTF_8));
+
+        // Parse the XHTML content and create a Document object
+        Document document = Jsoup.parse(tempFilePath.toFile(), "UTF-8");
+        document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
+
+        // Convert the Document to a byte array representing the PDF content
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            ITextRenderer renderer = new ITextRenderer();
+            SharedContext sharedContext = renderer.getSharedContext();
+            sharedContext.setPrint(true);
+            sharedContext.setInteractive(false);
+
+            // Render the XHTML content directly to the OutputStream
+            renderer.setDocumentFromString(htmlContent, tempFilePath.toUri().toURL().toString());
+            renderer.layout();
+            renderer.createPDF(outputStream);
+
+            return outputStream.toByteArray();
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

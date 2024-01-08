@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ChoreService {
@@ -25,4 +26,6 @@ public interface ChoreService {
     List<ApplicationUser> getUsers() throws AuthenticationException;
 
     ApplicationUser updatePoints(Long userId, Integer points);
+
+    byte[] generatePdf(String htmlContent) throws IOException;
 }

@@ -59,6 +59,6 @@ export class ChoreService {
   }
 
   generateChoreListPDF() {
-    return this.httpClient.get(this.choreBaseUri + '/pdf');
+    return this.httpClient.get(this.choreBaseUri + '/pdf', { observe: 'response', responseType: 'blob' });
   }
 }
