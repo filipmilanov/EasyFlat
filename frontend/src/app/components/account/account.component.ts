@@ -7,6 +7,7 @@ import {Router} from "@angular/router";
 import {SharedFlat} from "../../dtos/sharedFlat";
 import {SharedFlatService} from "../../services/sharedFlat.service";
 import {ToastrService} from "ngx-toastr";
+import {ShoppingListService} from "../../services/shopping-list.service";
 
 @Component({
   selector: 'app-account',
@@ -20,7 +21,7 @@ export class AccountComponent implements OnInit {
   error = false;
   errorMessage = '';
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private sharedFlatService: SharedFlatService ,private router: Router, private notification: ToastrService) {
+  constructor(private formBuilder: FormBuilder, private authService: AuthService, private shoppingListService: ShoppingListService, private sharedFlatService: SharedFlatService ,private router: Router, private notification: ToastrService) {
     this.accountForm = this.formBuilder.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
@@ -111,6 +112,7 @@ export class AccountComponent implements OnInit {
     this.authService.signOut(this.accountForm.controls.flatName.value, this.authService.getToken()).subscribe({
       next: () => {
         console.log('User signed out from flat: ' + this.user.flatName);
+        this.sharedFlatService.changeEventToFalse();
         this.router.navigate(['']);
       },
       error: error => {

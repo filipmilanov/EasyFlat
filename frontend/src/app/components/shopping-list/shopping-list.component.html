@@ -61,7 +61,7 @@
     </thead>
     <tbody>
     <tr *ngFor="let item of items">
-        <td>{{ item.productName }}</td>
+        <td>{{ item.productName}}</td>
         <td>
             <span *ngFor="let label of item.labels" style="font-weight: bold"
                   [style.color]="label.labelColour">{{ label.labelValue }}</span>

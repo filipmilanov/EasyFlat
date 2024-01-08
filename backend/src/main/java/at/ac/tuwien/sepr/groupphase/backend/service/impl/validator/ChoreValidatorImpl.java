@@ -61,6 +61,9 @@ public class ChoreValidatorImpl implements ChoreValidator {
         if (chore.description().isBlank()) {
             errors.add("The description can not be blank");
         }
+        if (chore.description().length() > 150) {
+            errors.add("Description to long");
+        }
 
         if (!errors.isEmpty()) {
             throw new ConflictException("There is a conflict with persisted data", errors);
