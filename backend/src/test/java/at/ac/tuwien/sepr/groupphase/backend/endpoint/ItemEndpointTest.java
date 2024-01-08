@@ -223,7 +223,7 @@ class ItemEndpointTest {
             () -> {
                 String content = response.getContentAsString();
                 String[] errors = content.split(",");
-                assertEquals(6, errors.length);
+                assertEquals(7, errors.length);
             }
         );
     }
