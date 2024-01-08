@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AlternativeNameDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
@@ -190,11 +191,7 @@ public class ItemServiceImpl implements ItemService {
         List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
         DigitalStorageItem digitalStorageItem;
-        if (itemDto.alternativeNames() != null) {
-            if (!itemDto.alternativeNames().isEmpty()) {
-                alternativeNameService.creteIfNotExist(itemDto.alternativeNames().get(itemDto.alternativeNames().size() - 1));
-            }
-        }
+
         if (itemDto.alwaysInStock()) {
             digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null, itemMapper.alternativeNamesDtoToEntityList(itemDto.alternativeNames()));
         } else {
@@ -204,6 +201,10 @@ public class ItemServiceImpl implements ItemService {
         DigitalStorageItem presistedDigitalStorageItem = this.findById(itemDto.itemId());
 
         digitalStorageItem.getItemCache().setId(presistedDigitalStorageItem.getItemCache().getId());
+
+
+        digitalStorageItem.getItemCache().setAlternativeNames(getAlternativeNamesForUpdate(itemDto));
+
 
         // necessary because JPA cannot convert an Entity to another Entity
         if (digitalStorageItem.alwaysInStock() != presistedDigitalStorageItem.alwaysInStock()) {
@@ -240,5 +241,31 @@ public class ItemServiceImpl implements ItemService {
         return items;
     }
 
+    private List<AlternativeName> getAlternativeNamesForUpdate(ItemDto itemDto) {
+        List<AlternativeName> alternativeNames = new LinkedList<>();
+        if (itemDto.alternativeNames() != null) {
+            if (!itemDto.alternativeNames().isEmpty()) {
+                for (AlternativeNameDto alternativeNameDto : itemDto.alternativeNames()) {
+                    if (alternativeNameDto.id() != null) {
+                        try {
+                            AlternativeName toAdd = alternativeNameService.findById(alternativeNameDto.id());
+                            alternativeNames.add(toAdd);
+                        } catch (NotFoundException e) {
+                            AlternativeName toAdd = new AlternativeName();
+                            toAdd.setName(alternativeNameDto.name());
+                            toAdd.setShareFlatId(authService.getUserFromToken().getSharedFlat().getId());
+                            alternativeNames.add(toAdd);
+                        }
+                    } else {
+                        AlternativeName toAdd = new AlternativeName();
+                        toAdd.setName(alternativeNameDto.name());
+                        toAdd.setShareFlatId(authService.getUserFromToken().getSharedFlat().getId());
+                        alternativeNames.add(toAdd);
+                    }
+                }
 
+            }
+        }
+        return alternativeNames;
+    }
 }

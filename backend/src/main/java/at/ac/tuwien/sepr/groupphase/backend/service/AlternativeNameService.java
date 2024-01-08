@@ -10,4 +10,6 @@ public interface AlternativeNameService {
     public AlternativeName create(AlternativeNameDto alternativeNameDto);
 
     public AlternativeName creteIfNotExist(AlternativeNameDto alternativeNameDto);
+
+    public AlternativeName findById(Long id);
 }

@@ -40,4 +40,9 @@ public class AlternativeNameServiceImpl implements AlternativeNameService {
         }
         return alternativeName;
     }
+
+
+    public AlternativeName findById(Long id) {
+        return alternativeNameRepository.findById(id.toString()).orElse(null);
+    }
 }

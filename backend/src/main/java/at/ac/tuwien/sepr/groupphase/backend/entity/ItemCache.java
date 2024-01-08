@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class ItemCache {
     @ManyToOne
     private Unit unit;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST})
     private List<AlternativeName> alternativeNames = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
