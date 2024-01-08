@@ -60,7 +60,7 @@ class ExpenseServiceTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserMapper mapper;
+    private UserMapper userMapper;
 
     @MockBean
     private AuthService authService;
@@ -603,7 +603,7 @@ class ExpenseServiceTest {
     private ExpenseDto generateRepeatingExpense() {
 
         List<UserListDto> users = this.applicationUser.getSharedFlat().getUsers().stream()
-            .map(applicationUser1 -> mapper.entityToUserListDto(applicationUser1))
+            .map(applicationUser1 -> userMapper.entityToUserListDto(applicationUser1))
             .toList();
 
         return ExpenseDtoBuilder.builder()
