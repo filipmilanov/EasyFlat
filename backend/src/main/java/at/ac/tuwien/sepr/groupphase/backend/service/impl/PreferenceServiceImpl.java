@@ -92,6 +92,22 @@ public class PreferenceServiceImpl implements PreferenceService {
         }
     }
 
+    @Override
+    public PreferenceDto getLastPreference() throws AuthenticationException {
+        LOGGER.trace("getLastPreference()");
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        if (applicationUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+        }
+        Preference preferenceToRet = preferenceRepository.findByUserId(applicationUser);
+        if (preferenceToRet != null) {
+            return preferenceMapper.entityToPreferenceDto(preferenceToRet);
+        } else {
+            return null;
+        }
+    }
+
+
 
     private Chore getChoreFromName(String choreName) {
         return choreRepository.findByName(choreName);

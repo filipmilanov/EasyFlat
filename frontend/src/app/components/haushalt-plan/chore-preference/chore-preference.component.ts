@@ -18,40 +18,38 @@ import {PreferenceStorageService} from "../../../services/preference-storage-ser
   templateUrl: './chore-preference.component.html',
   styleUrls: ['./chore-preference.component.scss']
 })
-export class ChorePreferenceComponent implements OnInit{
+export class ChorePreferenceComponent implements OnInit {
   preference: Preference = {
     first: null,
     second: null,
     third: null,
-    fourth:null
-};
+    fourth: null
+  };
   chores: ChoresDto[] = [];
 
   oldPreference: Preference = {
-    first:null,
-    second:null,
-    third:null,
-    fourth:null
+    first: null,
+    second: null,
+    third: null,
+    fourth: null
   };
 
   private searchParams: ChoreSearchDto = {
     userName: '',
     endDate: null,
   };
+
   constructor(
     private preferenceService: PreferenceService,
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
     private choreService: ChoreService,
-    private preferenceStorage: PreferenceStorageService,
   ) {
   }
 
   public onSubmit(form: NgForm): void {
     console.log('is form valid?', form.valid, this.preference);
-    this.oldPreference = this.preference;
-
     if (form.valid) {
       let observable: Observable<Preference>;
       observable = this.preferenceService.editPreference(this.preference);
@@ -59,6 +57,20 @@ export class ChorePreferenceComponent implements OnInit{
       observable.subscribe({
         next: data => {
           this.notification.success(`Preferences successfully changed.`, "Success");
+
+          // Fetch the updated preference after editing
+          this.preferenceService.getLastPreference().subscribe({
+            next: (lastPref: Preference) => {
+              if (lastPref) {
+                this.oldPreference = lastPref;
+                console.log(lastPref.first)
+                console.log('Updated oldPreference:', this.oldPreference);
+              }
+            },
+            error: (error) => {
+              console.error('Error fetching last preference:', error);
+            }
+          });
         },
         error: error => {
           console.error(`Error preferences were not changed`);
@@ -66,23 +78,40 @@ export class ChorePreferenceComponent implements OnInit{
         }
       });
     }
-    if (form.valid) {
-      this.preferenceStorage.setLastPickedOptions(this.oldPreference);
-    }
   }
 
+
   ngOnInit(): void {
-    const lastPickedOptions = this.preferenceStorage.getLastPickedOptions();
-    if (lastPickedOptions) {
-      this.oldPreference = lastPickedOptions;
-    }
-    this.choreService.getChores(this.searchParams).subscribe({
-      next: (chores: any[]) => {
-        this.chores = chores;
+    this.preferenceService.getLastPreference().subscribe({
+      next: (lastPreference: Preference) => {
+        if (lastPreference) {
+          this.oldPreference = lastPreference;
+          console.log(lastPreference);
+        }
+
+        // Rest of your code...
+        this.choreService.getChores(this.searchParams).subscribe({
+          next: (chores: any[]) => {
+            this.chores = chores;
+          },
+          error: (error: any) => {
+            console.error('Error fetching chores:', error);
+          }
+        });
       },
       error: (error: any) => {
-        console.error('Error fetching chores:', error);
+        console.error('Error fetching last preference:', error);
+
+        this.choreService.getChores(this.searchParams).subscribe({
+          next: (chores: any[]) => {
+            this.chores = chores;
+          },
+          error: (choreError: any) => {
+            console.error('Error fetching chores:', choreError);
+          }
+        });
       }
     });
   }
+
 }
