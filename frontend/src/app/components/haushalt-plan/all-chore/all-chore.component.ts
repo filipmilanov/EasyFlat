@@ -46,6 +46,7 @@ export class AllChoreComponent {
     this.choreService.assginChores().subscribe({
       next: res => {
         this.chores = res;
+        this.notification.success("Successfully assigned chores")
       },
       error: err => {
         console.error("Error fetching chores with users")

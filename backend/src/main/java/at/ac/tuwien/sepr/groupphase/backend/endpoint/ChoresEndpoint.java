@@ -8,6 +8,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ChoreService;
 import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
@@ -47,7 +49,7 @@ public class ChoresEndpoint {
     }
 
     @PostMapping
-    public ChoreDto createChore(@RequestBody ChoreDto chore) throws AuthenticationException {
+    public ChoreDto createChore(@RequestBody ChoreDto chore) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.trace("createChore({})", chore);
         return choreService.createChore(chore);
     }
