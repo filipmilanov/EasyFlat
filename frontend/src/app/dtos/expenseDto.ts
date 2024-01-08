@@ -11,7 +11,7 @@ export class ExpenseDto {
   debitUsers?: DebitDto[];
   items?: ItemDto[];
   isRepeating?: boolean;
-  interval?: Date;
+  periodInDays?: number;
 }
 
 export class DebitDto {
