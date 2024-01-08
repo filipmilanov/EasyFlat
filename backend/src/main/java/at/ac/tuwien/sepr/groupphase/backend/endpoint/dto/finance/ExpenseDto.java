@@ -32,12 +32,12 @@ public record ExpenseDto(
     List<DebitDto> debitUsers,
     List<ItemDto> items,
     Boolean isRepeating,
-    LocalDateTime interval
+    Integer periodInDays
 ) {
 
     @AssertTrue(message = "Interval must be present if the finance entry is set to repeating")
     public boolean isPeriodPresentIfIsRepeating() {
-        return isRepeating == null || !isRepeating || interval != null;
+        return isRepeating == null || !isRepeating || periodInDays != null;
     }
 
     @AssertTrue(message = "The sum of the users amount must be equal to the total amount")
