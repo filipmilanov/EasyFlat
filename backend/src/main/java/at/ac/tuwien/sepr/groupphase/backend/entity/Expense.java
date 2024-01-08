@@ -38,7 +38,7 @@ public class Expense {
     private LocalDateTime createdAt;
 
     @Column
-    private int periodInDays;
+    private Integer periodInDays;
 
     @ManyToOne
     private ApplicationUser paidBy;
@@ -124,11 +124,11 @@ public class Expense {
         this.debitUsers = debitUsers;
     }
 
-    public int getPeriodInDays() {
+    public Integer getPeriodInDays() {
         return periodInDays;
     }
 
-    public void setPeriodInDays(int periodInDays) {
+    public void setPeriodInDays(Integer periodInDays) {
         this.periodInDays = periodInDays;
     }
 
