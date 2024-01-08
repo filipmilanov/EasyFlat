@@ -100,11 +100,22 @@ public class PreferenceServiceImpl implements PreferenceService {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
         Preference preferenceToRet = preferenceRepository.findByUserId(applicationUser);
-        if (preferenceToRet != null) {
-            return preferenceMapper.entityToPreferenceDto(preferenceToRet);
-        } else {
-            return null;
-        }
+
+        // Map Preference's Chore IDs to Chore names in a new PreferenceDto
+        PreferenceDto preferenceDto = new PreferenceDto(
+            preferenceToRet.getId(),
+            getChoreNameById(preferenceToRet.getFirstId()),
+            getChoreNameById(preferenceToRet.getSecondId()),
+            getChoreNameById(preferenceToRet.getThirdId()),
+            getChoreNameById(preferenceToRet.getFourthId())
+        );
+
+        return preferenceDto;
+    }
+
+    private String getChoreNameById(Long choreId) {
+        Chore chore = choreRepository.findById(choreId).orElse(null);
+        return chore != null ? chore.getName() : null;
     }
 
 
