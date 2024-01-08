@@ -7,8 +7,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
@@ -18,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Expense {
 
     @Id
@@ -39,6 +36,9 @@ public class Expense {
 
     @Column
     private LocalDateTime createdAt;
+
+    @Column
+    private int periodInDays;
 
     @ManyToOne
     private ApplicationUser paidBy;
@@ -122,6 +122,14 @@ public class Expense {
 
     public void setDebitUsers(List<Debit> debitUsers) {
         this.debitUsers = debitUsers;
+    }
+
+    public int getPeriodInDays() {
+        return periodInDays;
+    }
+
+    public void setPeriodInDays(int periodInDays) {
+        this.periodInDays = periodInDays;
     }
 
     @Override
