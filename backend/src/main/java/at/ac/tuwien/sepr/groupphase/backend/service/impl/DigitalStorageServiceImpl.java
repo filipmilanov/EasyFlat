@@ -81,7 +81,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public Optional<DigitalStorage> findById(Long id) throws AuthorizationException {
+    public DigitalStorage findById(Long id) throws AuthorizationException {
         LOGGER.trace("findById({})", id);
 
         if (id == null) {
@@ -99,7 +99,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             allowedUsers
         );
 
-        return digitalStorage;
+        return digitalStorage.get();
     }
 
     @Override

@@ -539,7 +539,7 @@ public class CookingServiceImpl implements CookingService {
         ShoppingList shoppingList = shoppingListService.getShoppingListByName("Shopping List (Default)", jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         ShoppingListDto shoppingListDto = shoppingListMapper.entityToDto(shoppingList);
         Long storageId = this.getStorageIdForUser();
-        DigitalStorage storage = digitalStorageService.findById(storageId).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        DigitalStorage storage = digitalStorageService.findById(storageId);
         DigitalStorageDto storageDto = digitalStorageMapper.entityToDto(storage);
         for (RecipeIngredientDto ingredient : recipeToCook.missedIngredients()) {
             ShoppingItemDto newShoppingItem = new ShoppingItemDto(null, null, ingredient.name(), ingredient.name(), ingredient.name(), ingredient.amount(), ingredient.amount(),

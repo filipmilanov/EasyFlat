@@ -27,12 +27,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -77,12 +75,11 @@ class DigitalStorageServiceTest {
 
 
         // when
-        Optional<DigitalStorage> actual = service.findById(id);
+        DigitalStorage actual = service.findById(id);
 
         // then
         assertAll(
-            () -> assertTrue(actual.isPresent()),
-            () -> assertThat(actual.get().getStorageId()).isEqualTo(id)
+            () -> assertThat(actual.getStorageId()).isEqualTo(id)
         );
     }
 
@@ -127,11 +124,10 @@ class DigitalStorageServiceTest {
         DigitalStorage actual = service.create(digitalStorageDto);
 
         // then
-        Optional<DigitalStorage> persisted = service.findById(actual.getStorageId());
+        DigitalStorage persisted = service.findById(actual.getStorageId());
 
         assertAll(
-            () -> assertTrue(persisted.isPresent()),
-            () -> assertThat(actual).isEqualTo(persisted.get()),
+            () -> assertThat(actual).isEqualTo(persisted),
             () -> assertThat(actual.getTitle()).isEqualTo(digitalStorageDto.title())
         );
     }

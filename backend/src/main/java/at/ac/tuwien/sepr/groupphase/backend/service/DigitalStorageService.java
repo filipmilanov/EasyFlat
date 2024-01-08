@@ -12,7 +12,6 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service for working with Storages.
@@ -26,7 +25,7 @@ public interface DigitalStorageService {
      * @return if the id exists in the DB, an Optional of a persisted DigitalStorage with given ID, an empty optional otherwise
      * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    Optional<DigitalStorage> findById(Long id) throws AuthorizationException;
+    DigitalStorage findById(Long id) throws AuthorizationException;
 
     /**
      * Search for all Storages stored in the database which matches with the given search criteria.
