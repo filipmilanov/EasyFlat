@@ -68,6 +68,9 @@ export class EventsCreateComponent implements OnInit {
             next: res => {
               console.log(res)
               this.event = res;
+              if(this.event.startTime == '00:00:00' && this.event.endTime == '23:59:00') {
+                this.allDay = true;
+              }
             },
             error: error => {
               console.error(`Event could not be retrieved from the backend: ${error}`);

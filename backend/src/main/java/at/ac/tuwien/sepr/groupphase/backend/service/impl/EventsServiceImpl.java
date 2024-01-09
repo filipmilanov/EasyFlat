@@ -197,8 +197,13 @@ public class EventsServiceImpl implements EventsService {
             LocalDateTime eventStartDateTime = LocalDateTime.of(event.getDate(), event.getStartTime());
             LocalDateTime eventEndDateTime = LocalDateTime.of(event.getDate(), event.getEndTime());
 
-            icsContent.append("DTSTART:").append(formatDate(eventStartDateTime)).append("\n");
-            icsContent.append("DTEND:").append(formatDate(eventEndDateTime)).append("\n");
+            if (event.getStartTime().toString().equals("00:00") && event.getEndTime().toString().equals("23:59")) {
+                icsContent.append("DTSTART:").append(allDayDate(eventStartDateTime)).append("\n");
+                icsContent.append("DTEND:").append(allDayDate(eventStartDateTime.plusDays(1))).append("\n");
+            } else {
+                icsContent.append("DTSTART:").append(formatDate(eventStartDateTime)).append("\n");
+                icsContent.append("DTEND:").append(formatDate(eventEndDateTime)).append("\n");
+            }
             icsContent.append("END:VEVENT\n");
         }
 
@@ -231,8 +236,14 @@ public class EventsServiceImpl implements EventsService {
                 LocalDateTime eventStartDateTime = LocalDateTime.of(event.getDate(), event.getStartTime());
                 LocalDateTime eventEndDateTime = LocalDateTime.of(event.getDate(), event.getEndTime());
 
-                icsContent.append("DTSTART:").append(formatDate(eventStartDateTime)).append("\n");
-                icsContent.append("DTEND:").append(formatDate(eventEndDateTime)).append("\n");
+                if (event.getStartTime().toString().equals("00:00") && event.getEndTime().toString().equals("23:59")) {
+                    icsContent.append("DTSTART:").append(allDayDate(eventStartDateTime)).append("\n");
+                    icsContent.append("DTEND:").append(allDayDate(eventStartDateTime.plusDays(1))).append("\n");
+                } else {
+                    icsContent.append("DTSTART:").append(formatDate(eventStartDateTime)).append("\n");
+                    icsContent.append("DTEND:").append(formatDate(eventEndDateTime)).append("\n");
+                }
+
                 icsContent.append("END:VEVENT\n");
                 icsContent.append("END:VCALENDAR");
 
@@ -247,6 +258,11 @@ public class EventsServiceImpl implements EventsService {
 
     private String formatDate(LocalDateTime dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss");
+        return dateTime.format(formatter);
+    }
+
+    private String allDayDate(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         return dateTime.format(formatter);
     }
 
