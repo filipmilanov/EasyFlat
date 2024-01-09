@@ -60,6 +60,13 @@ public abstract class ItemMapper {
     @Mapping(target = "alwaysIsStock", expression = "java( itemDto.alwaysInStock() )")
     @Mapping(target = "labels", expression = "java( labels )")
     @Mapping(target = "shoppingList", expression = "java( shoppingList )")
+    @Mapping(target = "itemCache.ean", source = "ean")
+    @Mapping(target = "itemCache.generalName", source = "generalName")
+    @Mapping(target = "itemCache.productName", source = "productName")
+    @Mapping(target = "itemCache.brand", source = "brand")
+    @Mapping(target = "itemCache.quantityTotal", source = "quantityTotal")
+    @Mapping(target = "itemCache.unit", source = "unit")
+    @Mapping(target = "itemCache.description", source = "description")
     public abstract ShoppingItem dtoToShopping(ShoppingItemDto itemDto,
                                                @Context List<ItemLabel> labels,
                                                 @Context ShoppingList shoppingList);
@@ -67,11 +74,16 @@ public abstract class ItemMapper {
     @Mapping(target = "labels", source = "labels")
     @Mapping(target = "alwaysInStock", expression = "java( item.alwaysInStock() )")
     @Mapping(target = "shoppingList", expression = "java( shoppingList )")
+    @Mapping(target = "ean", source = "itemCache.ean")
+    @Mapping(target = "generalName", source = "itemCache.generalName")
+    @Mapping(target = "productName", source = "itemCache.productName")
+    @Mapping(target = "brand", source = "itemCache.brand")
+    @Mapping(target = "quantityTotal", source = "itemCache.quantityTotal")
+    @Mapping(target = "unit", source = "itemCache.unit")
+    @Mapping(target = "description", source = "itemCache.description")
+    @Mapping(target = "ingredients", source = "itemCache.ingredientList")
     public abstract ShoppingItemDto entityToShopping(ShoppingItem item,
                                                      @Context ShoppingListDto shoppingList);
-
-    public abstract List<ShoppingItemDto> shoppingItemListToShoppingDto(List<ShoppingItem> items);
-
 
     @Mapping(target = "itemCache.ean", source = "ean")
     @Mapping(target = "itemCache.generalName", source = "generalName")

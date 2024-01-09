@@ -17,7 +17,7 @@ import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import {CreateFlatComponent} from "./components/create-flat/create-flat.component";
 import {ShoppingListComponent} from "./components/shopping-list/shopping-list.component";
 import {
-  ShoppingItemCreateEditComponent
+  ShoppingItemCreateEditComponent, ShoppingItemCreateEditMode
 } from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
 import {
   ShoppingListCreateComponent
@@ -63,8 +63,8 @@ const routes: Routes = [
           {path: '', component: ShoppingListComponent},
           {
             path: 'item', children: [
-              {path: 'create', component: ShoppingItemCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
-              {path: ':id/edit', component: ShoppingItemCreateEditComponent, data: {mode: ItemCreateEditMode.edit}},
+              {path: 'create', component: ShoppingItemCreateEditComponent, data: {mode: ShoppingItemCreateEditMode.create}},
+              {path: ':id/edit', component: ShoppingItemCreateEditComponent, data: {mode: ShoppingItemCreateEditMode.edit}},
             ]
           },
         ]
