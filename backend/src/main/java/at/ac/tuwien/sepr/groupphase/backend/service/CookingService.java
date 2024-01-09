@@ -2,11 +2,11 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookbookDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import com.deepl.api.DeepLException;
@@ -23,8 +23,8 @@ public interface CookingService {
      * @return A list of recipe suggestions.
      * @throws ValidationException If there is a validation error.
      */
-    List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt)
-        throws ValidationException, ConflictException, AuthenticationException, DeepLException, InterruptedException;
+    List<RecipeSuggestionDto> getRecipeSuggestion(String type)
+        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException;
 
     /**
      * Get the details of a specific recipe based on the provided recipe ID.
@@ -34,9 +34,20 @@ public interface CookingService {
      */
     RecipeDetailDto getRecipeDetails(Long recipeId);
 
-    Cookbook createCookbook(CookbookDto cookbook, String jwt) throws ValidationException, ConflictException, AuthenticationException;
+    /**
+     * Create a cookbook for a given shared flat.
+     *
+     * @param cookbook the cookbook that needs to be created
+     * @return the created cookbook
+     */
+    Cookbook createCookbook(CookbookDto cookbook) throws ValidationException, ConflictException, AuthorizationException, AuthenticationException;
 
-    List<Cookbook> findAllCookbooks(String jwt) throws AuthenticationException;
+    /**
+     *  * Get the list of all existing cookbooks.
+     *
+     * @return the cookbooks
+     */
+    List<Cookbook> findAllCookbooks() throws AuthorizationException, AuthenticationException;
 
     /**
      * Get a list of recipes from the cookbook.
@@ -44,7 +55,7 @@ public interface CookingService {
      * @return A list of recipes.
      * @throws ValidationException If there is a validation error.
      */
-    List<RecipeSuggestionDto> getCookbook(String jwt) throws ValidationException, AuthenticationException;
+    List<RecipeSuggestionDto> getCookbook() throws ValidationException, AuthorizationException, AuthenticationException;
 
     /**
      * Create a new recipe in the cookbook.
@@ -53,7 +64,8 @@ public interface CookingService {
      * @return The created recipe.
      * @throws ConflictException If there is a conflict with existing data.
      */
-    RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe, String jwt) throws ConflictException, ValidationException, AuthenticationException;
+    RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe)
+        throws ConflictException, ValidationException, AuthorizationException, AuthenticationException;
 
     /**
      * Get a specific recipe from the cookbook based on its ID.
@@ -61,7 +73,7 @@ public interface CookingService {
      * @param id The ID of the recipe to retrieve.
      * @return An Optional containing the recipe, if found.
      */
-    Optional<RecipeSuggestion> getCookbookRecipe(Long id, String jwt);
+    Optional<RecipeSuggestion> getCookbookRecipe(Long id);
 
     /**
      * Update an existing recipe in the cookbook.
@@ -70,7 +82,8 @@ public interface CookingService {
      * @return The updated recipe.
      * @throws ConflictException If there is a conflict with existing data.
      */
-    RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe, String jwt) throws ConflictException, ValidationException, AuthenticationException;
+    RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe)
+        throws ConflictException, ValidationException, AuthorizationException, AuthenticationException;
 
     /**
      * Delete a recipe from the cookbook based on its ID.
@@ -78,7 +91,7 @@ public interface CookingService {
      * @param id The ID of the recipe to be deleted.
      * @return The deleted recipe.
      */
-    RecipeSuggestion deleteCookbookRecipe(Long id, String jwt) throws AuthenticationException;
+    RecipeSuggestion deleteCookbookRecipe(Long id) throws AuthorizationException, AuthenticationException;
 
     /**
      * Get a list of missing ingredients for a specific recipe from the cookbook.
@@ -86,9 +99,22 @@ public interface CookingService {
      * @param id The ID of the recipe to check for missing ingredients.
      * @return The missing ingredients for the recipe.
      */
-    RecipeSuggestionDto getMissingIngredients(Long id, String jwt) throws AuthenticationException, ValidationException, ConflictException;
+    RecipeSuggestionDto getMissingIngredients(Long id) throws AuthorizationException, ValidationException, ConflictException;
 
-    RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook, String jwt) throws ValidationException, ConflictException, AuthenticationException;
+    /**
+     * Cook the given recipe by subtracting the used ingredients from the digital storage.
+     *
+     * @param recipeToCook the recipe that needs to be cooked
+     * @return the cooked recipe
+     */
+    RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook)
+        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException;
 
+    /**
+     * Add the missing ingredients from a recipe to the shopping list.
+     *
+     * @param recipeToCook the recipe with the missing ingredients
+     * @return the recipe with the missing ingredients
+     */
     RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt) throws AuthenticationException, ValidationException, ConflictException;
 }

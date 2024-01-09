@@ -37,17 +37,16 @@ public class UnitDataGenerator {
 
         UnitDto cups = new UnitDto("cups", 125L, Set.of(g));
         UnitDto cup = new UnitDto("cup", 125L, Set.of(g));
-        UnitDto tbsp = new UnitDto("tbsp", 15L, Set.of(ml));
 
 
         UnitDto pcs = new UnitDto("pcs", null, Set.of());
-        UnitDto servings = new UnitDto("servings", 1L, Set.of(pcs));
         UnitDto tablespoons = new UnitDto("tablespoons", 15L, Set.of(ml));
-        UnitDto teaspoon = new UnitDto("teaspoon", 15L, Set.of(ml));
+        UnitDto tbsp = new UnitDto("tbsp", 15L, Set.of(ml));
+        UnitDto tsp = new UnitDto("tsp", 5L, Set.of(ml));
+        UnitDto teaspoon = new UnitDto("teaspoon", 5L, Set.of(ml));
 
         UnitDto pound = new UnitDto("pound", 455L, Set.of(g));
         UnitDto gallon = new UnitDto("gallon", 3785L, Set.of(ml));
-        UnitDto sheets = new UnitDto("sheets", 1L, Set.of(pcs));
 
 
         unitService.create(g);
@@ -62,10 +61,9 @@ public class UnitDataGenerator {
         unitService.create(tablespoons);
         unitService.create(pound);
         unitService.create(gallon);
-        unitService.create(sheets);
         unitService.create(cups);
         unitService.create(teaspoon);
-        unitService.create(servings);
+        unitService.create(tsp);
     }
 
 

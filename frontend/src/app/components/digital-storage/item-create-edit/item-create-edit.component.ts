@@ -50,9 +50,9 @@ export class ItemCreateEditComponent implements OnInit {
   public get heading(): string {
     switch (this.mode) {
       case ItemCreateEditMode.create:
-        return 'Create New Item';
+        return 'Create a new item';
       case ItemCreateEditMode.edit:
-        return 'Edit Item';
+        return 'Editing item';
       default:
         return '?';
     }
@@ -91,7 +91,7 @@ export class ItemCreateEditComponent implements OnInit {
         console.log(this.availableUnits)
         this.item.unit = this.availableUnits[0];
       },
-      error: err => {
+      error: () => {
         this.notification.error('Failed to load Units', "Error");
       }
     });
@@ -110,14 +110,14 @@ export class ItemCreateEditComponent implements OnInit {
             },
             error: error => {
               console.error(`Item could not be retrieved from the backend: ${error}`);
-              this.router.navigate(['/digital-storage/1']);
+              this.router.navigate(['/digital-storage/']);
               this.notification.error('Item could not be retrieved', "Error");
             }
           })
         },
         error: error => {
           console.error(`Item could not be retrieved using the ID from the URL: ${error}`);
-          this.router.navigate(['/digital-storage/1']);
+          this.router.navigate(['/digital-storage/']);
           this.notification.error('No item provided for editing', "Error");
         }
       })
@@ -128,7 +128,7 @@ export class ItemCreateEditComponent implements OnInit {
         next: res => {
           this.item.digitalStorage = res[0];
         },
-        error: err => {
+        error: () => {
           this.notification.error('Failed to load Storages', "Error");
         }
       });
@@ -154,7 +154,7 @@ export class ItemCreateEditComponent implements OnInit {
           return;
       }
       observable.subscribe({
-        next: data => {
+        next: () => {
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
           this.router.navigate(['/digital-storage']);
         },
@@ -165,7 +165,7 @@ export class ItemCreateEditComponent implements OnInit {
           let lastBracket = error.error.indexOf(']');
           let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
           let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach(message => {
+          errorMessages.forEach((message: string) => {
             this.notification.error(message, errorDescription);
           });
         }
@@ -215,7 +215,7 @@ export class ItemCreateEditComponent implements OnInit {
     : this.itemService.findByGeneralName(input);
 
   formatBrand(item: ItemDto | null): string {
-    return item ? item as any as string : '';
+    return item ? item.brand as any as string : '';
   }
 
   brandSuggestions = (input: string) => (input === '')
@@ -247,7 +247,7 @@ export class ItemCreateEditComponent implements OnInit {
     this.scanner.pause();
     this.item.ean = this.scanner.data.value[0].value;
 
-    this.notification.success(`EAN number ${this.item.ean} successfully scanned.`, "Success");
+    this.notification.info("Fetching barcode data...", "Fetching data");
     this.searchForEan(this.item.ean);
   }
 
@@ -255,6 +255,7 @@ export class ItemCreateEditComponent implements OnInit {
     let o = this.openFoodFactService.findByEan(ean);
     o.subscribe({
       next: data => {
+        this.notification.success("EAN data successfully retrieved.", "Success");
         console.log("Loaded EAN number:", data)
         if (data != null) {
           this.item = {
@@ -268,10 +269,12 @@ export class ItemCreateEditComponent implements OnInit {
             ean: ean
           };
         } else {
+          this.notification.warning("No data found for EAN number.", "No Data");
           console.log("No data found for EAN number:", ean)
         }
       },
       error: error => {
+        this.notification.error("An error occurred while fetching EAN data.", "Error");
         console.log("Failed at loading EAN number:", error);
       }
     })
@@ -283,5 +286,22 @@ export class ItemCreateEditComponent implements OnInit {
     } else {
       this.scanner.pause();
     }
+  }
+
+  public delete() {
+    this.itemService.deleteItem(this.item.itemId).subscribe({
+      next: () => {
+        this.router.navigate(['/digital-storage/']);
+        this.notification.success(`Item ${this.item.generalName} was successfully deleted`, "Success");
+      },
+      error: error => {
+        console.error(`Item could not be deleted: ${error}`);
+        this.notification.error(`Item ${this.item.generalName} could not be deleted`, "Error");
+      }
+    });
+  }
+
+  public compareUnitObjects(itemUnit: Unit, availableUnit: Unit): boolean {
+    return itemUnit && availableUnit ? itemUnit.name === availableUnit.name : itemUnit === availableUnit;
   }
 }

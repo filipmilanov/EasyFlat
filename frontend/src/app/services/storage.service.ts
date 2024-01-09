@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {ItemSearchDto, StorageItem, StorageItemListDto} from "../dtos/storageItem";
+import {ItemSearchDto, StorageItemListDto} from "../dtos/storageItem";
 import {DigitalStorageDto} from "../dtos/digitalStorageDto";
 import {ItemDto, ShoppingItemDto} from "../dtos/item";
 import {AuthService} from "./auth.service";
@@ -48,15 +48,6 @@ export class StorageService {
       this.storageBaseUri,
       {params, headers}
     );
-  }
-
-  getItemsWithGenaralName(generalName:string): Observable<StorageItem[]> {
-    console.log('Get all items with general name ' + generalName);
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
-
-    return this.httpClient.get<StorageItem[]>(this.storageBaseUri +  '/info/' +  generalName,{headers});
   }
 
   /**

@@ -21,7 +21,6 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
@@ -29,13 +28,12 @@ import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,43 +49,34 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     private final DigitalStorageRepository digitalStorageRepository;
     private final DigitalStorageMapper digitalStorageMapper;
     private final DigitalStorageValidator digitalStorageValidator;
-    private final ShoppingItemRepository shoppingItemRepository;
     private final ItemMapper itemMapper;
+    private final ShoppingItemRepository shoppingItemRepository;
     private final IngredientMapper ingredientMapper;
     private final Authorization authorization;
     private final AuthService authService;
     private final UnitService unitService;
-    private final SharedFlatService sharedFlatService;
     private final ShoppingListRepository shoppingListRepository;
-    private final ItemValidator itemValidator;
-    private final ItemRepository itemRepository;
 
     public DigitalStorageServiceImpl(DigitalStorageRepository digitalStorageRepository,
                                      DigitalStorageMapper digitalStorageMapper,
                                      DigitalStorageValidator digitalStorageValidator,
-                                     SharedFlatService sharedFlatService,
-                                     ShoppingItemRepository shoppingItemRepository,
                                      ItemMapper itemMapper,
+                                     ShoppingItemRepository shoppingItemRepository,
                                      IngredientMapper ingredientMapper,
                                      AuthService authService,
                                      Authorization authorization,
                                      ShoppingListRepository shoppingListRepository,
-                                     UnitService unitService,
-                                     ItemValidator itemValidator,
-                                     ItemRepository itemRepository) {
+                                     UnitService unitService) {
         this.digitalStorageRepository = digitalStorageRepository;
         this.digitalStorageMapper = digitalStorageMapper;
         this.digitalStorageValidator = digitalStorageValidator;
+        this.itemMapper = itemMapper;
         this.shoppingItemRepository = shoppingItemRepository;
         this.ingredientMapper = ingredientMapper;
         this.authService = authService;
         this.authorization = authorization;
-        this.sharedFlatService = sharedFlatService;
         this.shoppingListRepository = shoppingListRepository;
         this.unitService = unitService;
-        this.itemValidator = itemValidator;
-        this.itemMapper = itemMapper;
-        this.itemRepository = itemRepository;
     }
 
     @Override
@@ -118,30 +107,19 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<DigitalStorageItem> findAllItemsOfStorage(Long id) {
-        Optional<DigitalStorage> optionalStorage = digitalStorageRepository.findById(id);
-        if (optionalStorage.isPresent()) {
-            return optionalStorage.get().getItemList();
-        } else {
-            return Collections.emptyList();
+    public List<ItemListDto> searchItems(ItemSearchDto searchItem) throws ValidationException, AuthenticationException {
+        LOGGER.trace("searchItems({})", searchItem);
+
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        if (applicationUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
 
-    }
-
-    @Override
-    public List<DigitalStorageItem> findAllItemsOfStorageOrdered(Long id, ItemOrderType orderType) {
-        return null;
-    }
-
-    @Override
-    public List<ItemListDto> searchItems(ItemSearchDto searchItem, String jwt) throws ValidationException, AuthenticationException, ConflictException {
-        LOGGER.trace("searchItems({})", searchItem);
         digitalStorageValidator.validateForSearchItems(searchItem);
 
-        Long storId = getStorIdForUser(jwt);
+        Long storageId = applicationUser.getSharedFlat().getDigitalStorage().getStorageId();
 
-
-        Class alwaysInStock = null;
+        Class alwaysInStock;
         if (searchItem.alwaysInStock() == null || !searchItem.alwaysInStock()) {
             alwaysInStock = DigitalStorageItem.class;
         } else {
@@ -149,7 +127,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
 
         List<DigitalStorageItem> allDigitalStorageItems = digitalStorageRepository.searchItems(
-            storId,
+            storageId,
             (searchItem.productName() != null) ? searchItem.productName() : null,
             (searchItem.fillLevel() != null) ? searchItem.fillLevel() : null,
             alwaysInStock
@@ -182,56 +160,34 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }).toList();
     }
 
+    @Transactional
     @Override
-    public DigitalStorage create(DigitalStorageDto storageDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
+    public DigitalStorage create(DigitalStorageDto storageDto) throws ConflictException, ValidationException, AuthenticationException {
         LOGGER.trace("create({})", storageDto);
 
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        if (applicationUser == null) {
+            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+        }
 
         digitalStorageValidator.validateForCreate(storageDto);
 
-        List<Long> allowedUser = sharedFlatService.findById(
-                storageDto.sharedFlat().getId(),
-                jwt
-            ).getUsers().stream()
+        List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
             .map(ApplicationUser::getId)
             .toList();
         authorization.authenticateUser(
-            allowedUser,
-            "The given digital storage does not belong to the user's shared flat!"
+            allowedUsers,
+            "The given cookbook does not belong to the user's shared flat!"
         );
-
 
         DigitalStorage storage = digitalStorageMapper.dtoToEntity(storageDto);
 
         return digitalStorageRepository.save(storage);
     }
 
+    @Transactional
     @Override
-    public DigitalStorage update(DigitalStorageDto storage) {
-        return null;
-    }
-
-    @Override
-    public void remove(Long id) {
-
-    }
-
-    @Override
-    public DigitalStorageItem updateItemQuantity(long storageId, long itemId, long quantity) {
-        LOGGER.trace("updateItemQuantity({}, {}, {})", storageId, itemId, quantity);
-
-        return digitalStorageRepository.updateItemQuantity(storageId, itemId, quantity);
-    }
-
-    @Override
-    public List<DigitalStorageItem> getItemWithGeneralName(String name, String jwt) throws AuthenticationException, ValidationException, ConflictException {
-        Long storId = getStorIdForUser(jwt);
-        return this.itemRepository.findAllByDigitalStorage_StorIdAndItemCache_GeneralName(storId, name);
-    }
-
-
-    @Override
-    public ShoppingItem addItemToShopping(ItemDto itemDto, String jwt) throws AuthenticationException, ValidationException {
+    public ShoppingItem addItemToShopping(ItemDto itemDto) throws AuthenticationException {
         LOGGER.trace("addItemToShopping({})", itemDto);
 
         ApplicationUser applicationUser = authService.getUserFromToken();
@@ -241,14 +197,14 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         ShoppingList shoppingList = shoppingListRepository.findByNameAndSharedFlatIs("Default", applicationUser.getSharedFlat());
         ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto,
             ingredientMapper.dtoListToEntityList(itemDto.ingredients()),
-            shoppingList);
+            shoppingList
+        );
         return shoppingItemRepository.save(shoppingItem);
     }
 
-    private List<ItemListDto> prepareListItemsForStorage(List<DigitalStorageItem> allDigitalStorageItems) throws ValidationException, ConflictException {
+    private List<ItemListDto> prepareListItemsForStorage(List<DigitalStorageItem> allDigitalStorageItems) {
         Map<String, Double[]> items = new HashMap<>();
         Map<String, Unit> itemUnits = new HashMap<>();
-        Unit unit = null;
         for (DigitalStorageItem digitalStorageItem : allDigitalStorageItems) {
             itemUnits.computeIfAbsent(digitalStorageItem.getItemCache().getGeneralName(), k -> digitalStorageItem.getItemCache().getUnit());
 
@@ -263,47 +219,17 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             Double updatedQuantityTotal = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), itemUnits.get(digitalStorageItem.getItemCache().getGeneralName()), digitalStorageItem.getItemCache().getQuantityTotal());
 
 
-            Double[] quantityStorId = new Double[3];
-            quantityStorId[0] = currentQ + updatedQuantityCurrent;
-            quantityStorId[1] = digitalStorageItem.getDigitalStorage().getStorId().doubleValue();
-            quantityStorId[2] = totalQ + updatedQuantityTotal;
-            items.put(digitalStorageItem.getItemCache().getGeneralName(), quantityStorId);
+            Double[] quantityStorageId = new Double[3];
+            quantityStorageId[0] = currentQ + updatedQuantityCurrent;
+            quantityStorageId[1] = digitalStorageItem.getDigitalStorage().getStorageId().doubleValue();
+            quantityStorageId[2] = totalQ + updatedQuantityTotal;
+            items.put(digitalStorageItem.getItemCache().getGeneralName(), quantityStorageId);
         }
         List<ItemListDto> toRet = new LinkedList<>();
         for (Map.Entry<String, Double[]> item : items.entrySet()) {
             toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1].longValue(), UnitDtoBuilder.builder().name(itemUnits.get(item.getKey()).getName()).build()));
         }
         return toRet;
-    }
-
-    /**
-     * The Method assume, that there is only one storage per sharedFlat.
-     */
-    private Long getStorIdForUser(String jwt) throws AuthenticationException, ValidationException, ConflictException {
-        List<DigitalStorage> digitalStorageList = findAll(null);
-        DigitalStorage matchingDigitalStorage = null;
-        if (!digitalStorageList.isEmpty()) {
-            matchingDigitalStorage = digitalStorageList.stream().toList().get(0);
-        }
-        if (matchingDigitalStorage != null) {
-            List<Long> allowedUser = sharedFlatService.findById(
-                    matchingDigitalStorage.getSharedFlat().getId(),
-                    jwt
-                ).getUsers().stream()
-                .map(ApplicationUser::getId)
-                .toList();
-
-
-            authorization.authenticateUser(
-                allowedUser,
-                "The given digital storage does not belong to the user's shared flat!"
-            );
-
-
-            return matchingDigitalStorage.getStorId();
-        } else {
-            return null;
-        }
     }
 
 

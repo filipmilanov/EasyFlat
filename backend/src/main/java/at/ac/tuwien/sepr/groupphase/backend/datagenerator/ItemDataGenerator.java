@@ -47,7 +47,7 @@ public class ItemDataGenerator {
         Unit kg = unitRepository.findByName("kg").orElseThrow();
         Unit g = unitRepository.findByName("kg").orElseThrow();
         DigitalStorage storage = new DigitalStorage();
-        storage.setStorId(1L);
+        storage.setStorageId(1L);
 
         DigitalStorageItem digitalStorageItem1 = generateDigitalStorageItem(
             "1234567890123",

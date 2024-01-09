@@ -3,7 +3,6 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,50 +42,13 @@ public class ItemEndpoint {
     }
 
     @Secured("ROLE_USER")
-    @GetMapping("search")
-    @ResponseStatus(HttpStatus.OK)
-    public List<ItemDto> findByFields(ItemFieldSearchDto itemFieldSearchDto) {
-        LOGGER.info("findByFields({})", itemFieldSearchDto);
-        return itemMapper.entityListToItemDtoList(
-            itemService.findByFields(itemFieldSearchDto)
-        );
-    }
-
-
-    @Secured("ROLE_USER")
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(@RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
-        LOGGER.info("create({})", itemDto);
-        return itemMapper.entityToDto(
-            itemService.create(itemDto, jwt)
-        );
-    }
-
-    @Secured("ROLE_USER")
     @GetMapping("{itemId}")
-    public ItemDto findById(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public ItemDto findById(@PathVariable Long itemId) throws AuthenticationException {
         LOGGER.info("findById({})", itemId);
-        DigitalStorageItem item = itemService.findById(itemId, jwt);
 
-        return itemMapper.entityToDto(item);
-    }
-
-    @Secured("ROLE_USER")
-    @PutMapping("{id}")
-    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
-        LOGGER.info("update({},{})", id, itemDto);
         return itemMapper.entityToDto(
-            itemService.update(itemDto.withId(id), jwt)
+            itemService.findById(itemId)
         );
-    }
-
-    @Secured("ROLE_USER")
-    @DeleteMapping("{itemId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long itemId, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
-        LOGGER.info("delete({})", itemId);
-        itemService.delete(itemId, jwt);
     }
 
     @Secured("ROLE_USER")
@@ -99,4 +60,57 @@ public class ItemEndpoint {
         );
     }
 
+    @Secured("ROLE_USER")
+    @GetMapping("search")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ItemDto> findByFields(ItemFieldSearchDto itemFieldSearchDto) {
+        LOGGER.info("findByFields({})", itemFieldSearchDto);
+        return itemMapper.entityListToItemDtoList(
+            itemService.findByFields(itemFieldSearchDto)
+        );
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/general-name/{generalName}")
+    public List<ItemDto> findByGeneralName(@PathVariable("generalName") String name) {
+        LOGGER.info("findByGeneralName({})", name);
+        return itemMapper.entityListToItemDtoList(
+            itemService.getItemWithGeneralName(name)
+        );
+    }
+
+    @Secured("ROLE_USER")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ItemDto create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException, AuthenticationException {
+        LOGGER.info("create({})", itemDto);
+        return itemMapper.entityToDto(
+            itemService.create(itemDto)
+        );
+    }
+
+    @Secured("ROLE_USER")
+    @PutMapping("{id}")
+    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto) throws ValidationException, ConflictException, AuthenticationException {
+        LOGGER.info("update({},{})", id, itemDto);
+        return itemMapper.entityToDto(
+            itemService.update(itemDto.withId(id))
+        );
+    }
+
+    @Secured("ROLE_USER")
+    @DeleteMapping("{itemId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long itemId) throws AuthenticationException {
+        LOGGER.info("delete({})", itemId);
+        itemService.delete(itemId);
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/name/{name}")
+    public List<ItemDto> findByName(@PathVariable String name) {
+        return itemMapper.entityListToItemDtoList(
+            itemService.findByName(name)
+        );
+    }
 }
