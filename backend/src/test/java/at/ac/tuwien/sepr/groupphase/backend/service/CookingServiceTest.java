@@ -92,7 +92,7 @@ public class CookingServiceTest {
 
     @Test
     @Disabled
-    void testGetRecipeSuggestion() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
+    void testGetRecipeSuggestion() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException, DeepLException, InterruptedException {
 
         when(jwtTokenizer.getEmailFromToken(any(String.class))).thenReturn(applicationUser.getEmail());
 
