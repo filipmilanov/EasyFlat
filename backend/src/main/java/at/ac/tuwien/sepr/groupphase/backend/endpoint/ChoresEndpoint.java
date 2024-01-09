@@ -134,7 +134,6 @@ public class ChoresEndpoint {
 
         // Style for A4 landscape
         htmlContent.append("<style>");
-        htmlContent.append("@page { size: A4 landscape; margin: 1cm; }");
         htmlContent.append("h1 { text-align: center; }");
         htmlContent.append(".row { display: flex; flex-wrap: wrap; justify-content: space-between; }");
         htmlContent.append(".chore-card { width: calc(25% - 1em); margin: 0.5em; border: 1px solid #ddd; padding: 1em; box-sizing: border-box; page-break-inside: avoid; }");
