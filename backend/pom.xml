@@ -88,6 +88,11 @@
             <artifactId>spring-boot-starter-cache</artifactId>
             <version>2.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.deepl.api</groupId>
+            <artifactId>deepl-java</artifactId>
+            <version>1.4.0</version>
+        </dependency>
         <!-- security -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
