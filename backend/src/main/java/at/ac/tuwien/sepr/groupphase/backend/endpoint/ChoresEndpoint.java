@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,13 +112,11 @@ public class ChoresEndpoint {
 
     @GetMapping("/pdf")
     public ResponseEntity<byte[]> generateChoreListPdf() throws AuthenticationException, IOException {
-        // Get the chore list data from the chores service
         List<Chore> chores = choreService.getChores(new ChoreSearchDto(null, null));
+        chores.sort(Comparator.comparing(Chore::getEndDate));
 
-        // Convert the chore list to HTML content
         String htmlContent = createChoreListHtml(chores);
 
-        // Generate the PDF file from HTML content
         byte[] pdfBytes = choreService.generatePdf(htmlContent);
 
         return new ResponseEntity<>(pdfBytes, HttpStatus.OK);
@@ -125,14 +125,12 @@ public class ChoresEndpoint {
     private String createChoreListHtml(List<Chore> chores) {
         StringBuilder htmlContent = new StringBuilder();
 
-        // HTML Document Start
         htmlContent.append("<html lang=\"en\">");
         htmlContent.append("<head>");
         htmlContent.append("<meta charset=\"UTF-8\"></meta>");
         htmlContent.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></meta>");
         htmlContent.append("<title>Chores</title>");
 
-        // Style for A4 landscape
         htmlContent.append("<style>");
         htmlContent.append("h1 { text-align: center; }");
         htmlContent.append(".row { display: flex; flex-wrap: wrap; justify-content: space-between; }");
@@ -142,23 +140,23 @@ public class ChoresEndpoint {
         htmlContent.append("</head>");
         htmlContent.append("<body>");
 
-        // Header
         htmlContent.append("<h1 class=\"display-4\">Chores</h1>");
         htmlContent.append("<hr></hr>");
 
-        // Chores list
         int cardsPerRow = 4;
         int totalChores = chores.size();
 
         for (int i = 0; i < totalChores; i += cardsPerRow) {
-            htmlContent.append("<div class=\"row\">"); // Start a new row
+            htmlContent.append("<div class=\"row\">");
 
             for (int j = i; j < Math.min(i + cardsPerRow, totalChores); j++) {
                 Chore chore = chores.get(j);
 
                 htmlContent.append("<div class=\"chore-card\">");
                 htmlContent.append("<h2>").append(chore.getName()).append("</h2>");
-                htmlContent.append("<p>").append(chore.getDescription()).append("</p>");
+                if (chore.getDescription() != null) {
+                    htmlContent.append("<p>Description: ").append(chore.getDescription()).append("</p>");
+                }
                 htmlContent.append("<p>Deadline: ").append(chore.getEndDate().toString()).append("</p>");
                 htmlContent.append("<p>Responsible Person: ").append(chore.getUser() != null ? chore.getUser().getFirstName() : "None").append(" ")
                     .append(chore.getUser() != null ? chore.getUser().getLastName() : "")
@@ -166,10 +164,9 @@ public class ChoresEndpoint {
                 htmlContent.append("</div>");
             }
 
-            htmlContent.append("</div>"); // End the row
+            htmlContent.append("</div>");
         }
 
-        // HTML Document End
         htmlContent.append("</body>");
         htmlContent.append("</html>");
 

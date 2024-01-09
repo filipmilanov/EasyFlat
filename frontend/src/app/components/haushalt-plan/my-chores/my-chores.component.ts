@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {Router} from "@angular/router";
 import {ChoreService} from "../../../services/chore.service";
 import {ToastrService} from "ngx-toastr";
@@ -18,7 +18,8 @@ export class MyChoresComponent {
   constructor(private router: Router,
               private choreService: ChoreService,
               private notification: ToastrService,
-              private authService: AuthService) { }
+              private authService: AuthService) {
+  }
 
   ngOnInit() {
     this.choreService.getChoresByUser(this.searchParams).subscribe({
@@ -57,10 +58,10 @@ export class MyChoresComponent {
         }
         this.awardPoints();
         this.completedChores = [];
-
+        this.notification.success("Chores completed and points awarded.", "Success");
       },
       error: err => {
-        console.error("Chores could not be deleted");
+        console.error("Chores could not be deleted", err);
       }
     });
   }
@@ -70,11 +71,10 @@ export class MyChoresComponent {
       let curr = this.completedChores[i];
       let points = curr.points;
       this.choreService.updatePoints(points, curr.user.id).subscribe({
-        next: res => {
-          this.notification.success("Chores completed and points awarded.", "Success");
+        next: () => {
         },
         error: err => {
-          console.error("Application users could not be update");
+          console.error("Application users could not be update", err);
         }
       });
     }

@@ -12,7 +12,7 @@
           <div style="font-weight: bold">{{ user.firstName }} {{ user.lastName }}</div>
         </mat-list-item>
       </ng-container>
-      <div class="points">{{ group.points }} points</div>
+      <div class="points">{{ group.points }} points{{group.users.length > 1 ? ' (each)' : ''}}</div>
     </mat-card-content>
   </mat-card>
 </div>

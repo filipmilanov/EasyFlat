@@ -41,7 +41,7 @@
       <label for="endDate"
              class="col-form-label text-muted col-md-2 col-lg-4"
       >
-        End Date
+        Deadline
       </label>
       <div class="col-md-10 col-lg-8">
         <input type="date"
@@ -59,12 +59,13 @@
         Points
       </label>
       <div class="col-md-10 col-lg-8">
-        <input type="text"
+        <input type="number"
                class="form-control"
                id="points"
                name="points"
                placeholder="Points"
-               [(ngModel)]="chore.points">
+               [(ngModel)]="chore.points"
+               min="0">
       </div>
     </div>
 

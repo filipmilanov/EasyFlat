@@ -21,7 +21,7 @@ export class NewChoreComponent {
     choreName: '',
     description: '',
     endDate: new Date(),
-    points: 0,
+    points: null,
     user: null,
     sharedFlat: null,
     completed: false
@@ -37,9 +37,10 @@ export class NewChoreComponent {
 
   onSubmit(form: NgForm) {
     console.log('is form valid?', form.valid, this.chore);
-
-    let observable: Observable<ChoresDto>;
-     this.choreService.createChore(this.chore).subscribe({
+    if (!this.chore.points) {
+      this.chore.points = 0;
+    }
+    this.choreService.createChore(this.chore).subscribe({
       next: data => {
         this.notification.success(`Chore ${this.chore.choreName} successfully created.`, "Success");
         this.router.navigate(['/chores', 'all']);
