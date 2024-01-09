@@ -20,6 +20,13 @@ export class FinanceService {
     return this.http.post<ExpenseDto>(this.baseUri, expense);
   }
 
+  updateExpense(expense: ExpenseDto): Observable<ExpenseDto> {
+    console.log("Update expense with ID: " + expense.id);
+    console.log("and expense:");
+    console.log(expense);
+    return this.http.put<ExpenseDto>(`${this.baseUri}/${expense.id}`, expense);
+  }
+
   findTotalExpensesPerUser(): Observable<UserValuePairDto[]> {
     return this.http.get<UserValuePairDto[]>(this.baseUri + '/statistics/expenses');
   }

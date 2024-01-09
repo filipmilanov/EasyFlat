@@ -184,7 +184,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         ApplicationUser user = authService.getUserFromToken();
         List<ApplicationUser> usersOfFlat = user.getSharedFlat().getUsers().stream().toList();
 
-        expenseValidator.validateExpense(expenseDto, usersOfFlat);
+        expenseValidator.validateExpenseForCreate(expenseDto, usersOfFlat);
 
         authorization.authenticateUser(
             usersOfFlat.stream().map(ApplicationUser::getId).toList(),
@@ -202,6 +202,37 @@ public class ExpenseServiceImpl implements ExpenseService {
         return expenseRepository.save(expense);
     }
 
+    @Override
+    @Transactional
+    public Expense update(ExpenseDto expenseDto) throws AuthenticationException, ConflictException, ValidationException {
+        LOGGER.info("update: {}", expenseDto);
+
+        ApplicationUser user = authService.getUserFromToken();
+        List<ApplicationUser> usersOfFlat = user.getSharedFlat().getUsers().stream().toList();
+
+        expenseValidator.validateExpenseForUpdate(expenseDto, usersOfFlat);
+
+        authorization.authenticateUser(
+            usersOfFlat.stream().map(ApplicationUser::getId).toList(),
+            "You cannot update an expense for this flat"
+        );
+
+        List<Debit> debitList = defineDebitPerUserBySplitBy(
+            expenseDto,
+            expenseDto.debitUsers().stream().findAny().orElseThrow().splitBy()
+        );
+
+        LOGGER.info("HERE debitList: {}", debitList.stream().toList());
+
+        Expense expense = expenseMapper.expenseDtoToExpense(expenseDto, debitList);
+
+        LOGGER.info("HERE expense: {}", expense);
+
+        expense.getDebitUsers().forEach(debit -> debit.getId().setExpense(expense));
+
+        return expenseRepository.save(expense);
+    }
+
     private List<Debit> defineDebitPerUserBySplitBy(ExpenseDto expense, SplitBy splitBy) throws ValidationException {
         LOGGER.trace("defineDebitPerUserBySplitBy({})", expense);
 
@@ -215,9 +246,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                     .build();
                 debitList.add(debitMapper.debitDtoToEntity(debit, expense));
             });
-            case PERCENTAGE -> expense.debitUsers().forEach(debitDto -> {
-                debitList.add(debitMapper.debitDtoToEntity(debitDto, expense));
-            });
+            case PERCENTAGE -> expense.debitUsers().forEach(debitDto -> debitList.add(debitMapper.debitDtoToEntity(debitDto, expense)));
             case PROPORTIONAL -> {
                 double proportions = expense.debitUsers().stream().mapToDouble(DebitDto::value).sum();
                 double baseAmount = expense.amountInCents() / proportions;

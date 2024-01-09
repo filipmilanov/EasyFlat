@@ -25,17 +25,25 @@ public class ExpenseValidator {
         this.validator = validator;
     }
 
-    public void validateExpense(ExpenseDto expenseDto,
+    public void validateExpenseForCreate(ExpenseDto expenseDto,
                                 List<ApplicationUser> applicationUsersOfFlat) throws ValidationException, ConflictException {
-        LOGGER.trace("validateExpense({}, {})", expenseDto, applicationUsersOfFlat);
+        LOGGER.trace("validateExpenseForCreate({}, {})", expenseDto, applicationUsersOfFlat);
 
-        validateExpenseDtoForCreate(expenseDto);
-        checkForConflict(expenseDto, applicationUsersOfFlat);
+        validateExpenseDto(expenseDto);
+        checkForConflictForCreate(expenseDto, applicationUsersOfFlat);
+    }
+
+    public void validateExpenseForUpdate(ExpenseDto expenseDto,
+                                         List<ApplicationUser> applicationUsersOfFlat) throws ValidationException, ConflictException {
+        LOGGER.trace("validateExpenseForUpdate({}, {})", expenseDto, applicationUsersOfFlat);
+
+        validateExpenseDto(expenseDto);
+        checkForConflictForUpdate(expenseDto, applicationUsersOfFlat);
 
     }
 
-    private void validateExpenseDtoForCreate(ExpenseDto expenseDto) throws ValidationException {
-        LOGGER.trace("validateExpenseDtoForCreate({})", expenseDto);
+    private void validateExpenseDto(ExpenseDto expenseDto) throws ValidationException {
+        LOGGER.trace("validateExpenseDto({})", expenseDto);
 
         Set<ConstraintViolation<ExpenseDto>> validationViolations = validator.validate(expenseDto);
         if (!validationViolations.isEmpty()) {
@@ -43,9 +51,9 @@ public class ExpenseValidator {
         }
     }
 
-    private void checkForConflict(ExpenseDto expenseDto,
+    private void checkForConflictForCreate(ExpenseDto expenseDto,
                                   List<ApplicationUser> applicationUsers) throws ConflictException {
-        LOGGER.trace("checkForConflict({}, {})", expenseDto, applicationUsers);
+        LOGGER.trace("checkForConflictForCreate({}, {})", expenseDto, applicationUsers);
 
         List<String> errors = new ArrayList<>();
 
@@ -62,6 +70,44 @@ public class ExpenseValidator {
             errors.add("The payer must be a member of the flat");
         }
 
+        if (expenseDto.debitUsers() == null) {
+            errors.add("The list of users responsible for the payment cannot be empty.");
+        } else if (expenseDto.debitUsers().isEmpty()) {
+            errors.add("The list of users responsible for the payment cannot be empty.");
+        } else if (expenseDto.debitUsers().stream()
+            .anyMatch(user ->
+                applicationUsers.stream()
+                    .noneMatch(applicationUser ->
+                        applicationUser.getId().equals(user.user().id())
+                    )
+            )) {
+            errors.add("The list of users responsible for the payment can only contain flat members.");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ConflictException("Conflict with persisted data", errors);
+        }
+
+    }
+
+    private void checkForConflictForUpdate(ExpenseDto expenseDto,
+                                           List<ApplicationUser> applicationUsers) throws ConflictException {
+        LOGGER.trace("checkForConflictForUpdate({}, {})", expenseDto, applicationUsers);
+
+        List<String> errors = new ArrayList<>();
+
+        if (expenseDto.id() == null) {
+            errors.add("The expense id cannot be empty");
+        }
+
+        if (expenseDto.paidBy() == null) {
+            errors.add("The payer cannot not be empty");
+        } else if (applicationUsers.stream()
+            .noneMatch(user ->
+                user.getId().equals(expenseDto.paidBy().id())
+            )) {
+            errors.add("The payer must be a member of the flat");
+        }
 
         if (expenseDto.debitUsers() == null) {
             errors.add("The list of users responsible for the payment cannot be empty.");
@@ -77,11 +123,9 @@ public class ExpenseValidator {
             errors.add("The list of users responsible for the payment can only contain flat members.");
         }
 
-
         if (!errors.isEmpty()) {
             throw new ConflictException("Conflict with persisted data", errors);
         }
-
 
     }
 }

@@ -15,13 +15,27 @@ export class ShowUserForExpenseComponent implements OnChanges {
 
   selectedUsers: boolean[] = [];
 
+  private isInitialDataLoaded: number = 0;
+
   onUsersChange() {
     this.usersChange.emit(this.users);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.updateSelectedUsersArray();
-    this.adaptedToChange();
+    if (changes.users && !this.isInitialDataLoaded) {
+      this.updateSelectedUsersArray();
+      this.users.forEach(user => {
+        if(this.splitBy == SplitBy.EQUAL || this.splitBy == SplitBy.UNEQUAL){
+          user.value = user.value/100;
+        }
+      })
+      this.isInitialDataLoaded++;
+      return;
+    }
+    if (changes.users && this.isInitialDataLoaded >= 1) {
+      this.updateSelectedUsersArray();
+      this.adaptedToChange();
+    }
   }
 
   determineValueRepresentation(value: DebitDto): string {

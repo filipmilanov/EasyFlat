@@ -1,6 +1,7 @@
 <select class="form-select"
         aria-label="Dropdown of users in the flat"
         [ngModel]="activatedUser"
+        [compareWith]="compareUsers"
         (change)="onActivatedUserChange($event)">
   <option *ngFor="let user of users"
           [ngValue]="user">
