@@ -46,12 +46,6 @@ export class BarchartVerticalComponent implements OnInit {
 
   initChart(data: UserValuePairDto[]): void {
     this.chartOption = {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        }
-      },
       xAxis: {
         type: 'value',
         position: 'top'
@@ -78,7 +72,18 @@ export class BarchartVerticalComponent implements OnInit {
             }
           }))
         }
-      ]
+      ],
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        },
+        formatter: (params) => {
+          const param = params[0];
+          return param.marker + param.name + ': ' + param.value + '€';
+        }
+      }
+
     };
   }
 
