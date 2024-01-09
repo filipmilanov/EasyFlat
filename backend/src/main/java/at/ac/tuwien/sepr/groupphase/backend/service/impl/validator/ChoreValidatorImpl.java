@@ -13,9 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @Component
@@ -55,14 +57,17 @@ public class ChoreValidatorImpl implements ChoreValidator {
         if (chore.points() < 0) {
             errors.add("You can't give negative points to a chore");
         }
-        if (chore.endDate().after(new Date())) {
+        if (chore.endDate().getDay() < (new Date().getDay())) {
             errors.add("You can not create a chore with expired date");
         }
-        if (chore.description().isBlank()) {
-            errors.add("The description can not be blank");
-        }
-        if (chore.description().length() > 150) {
-            errors.add("Description to long");
+        if (chore.description() != null) {
+            if (chore.description().isBlank()) {
+                errors.add("The description can not be blank");
+            }
+
+            if (chore.description().length() > 150) {
+                errors.add("Description to long");
+            }
         }
 
         if (!errors.isEmpty()) {

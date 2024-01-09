@@ -19,7 +19,7 @@ export class NewChoreComponent {
   chore: ChoresDto = {
     id: null,
     choreName: '',
-    description: '',
+    description: null,
     endDate: new Date(),
     points: null,
     user: null,
