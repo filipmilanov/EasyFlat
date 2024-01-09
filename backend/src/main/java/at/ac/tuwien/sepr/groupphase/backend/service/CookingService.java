@@ -24,7 +24,7 @@ public interface CookingService {
      * @throws ValidationException If there is a validation error.
      */
     List<RecipeSuggestionDto> getRecipeSuggestion(String type)
-        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException;
+        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException;
 
     /**
      * Get the details of a specific recipe based on the provided recipe ID.

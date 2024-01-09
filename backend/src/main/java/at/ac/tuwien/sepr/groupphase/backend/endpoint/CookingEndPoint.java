@@ -38,7 +38,7 @@ public class CookingEndPoint {
     @PermitAll
     @GetMapping
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
-        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
+        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
         return cookingService.getRecipeSuggestion(type);
     }
 

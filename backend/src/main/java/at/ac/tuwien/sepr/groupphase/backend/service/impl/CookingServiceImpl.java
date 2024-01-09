@@ -96,16 +96,14 @@ public class CookingServiceImpl implements CookingService {
     private final ShoppingListService shoppingListService;
     private final ShoppingListMapper shoppingListMapper;
     private final DigitalStorageMapper digitalStorageMapper;
-<<<<<<< backend/src/main/java/at/ac/tuwien/sepr/groupphase/backend/service/impl/CookingServiceImpl.java
-    private final ItemRepository itemRepository;
+
     private Translator translator;
     private final String translateKey = "99218f60-385f-59ea-55ce-513e8cec1469:fx";
-=======
+
     private final AuthService authService;
     private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
     private final String apiUrlNew = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients";
 
->>>>>>> backend/src/main/java/at/ac/tuwien/sepr/groupphase/backend/service/impl/CookingServiceImpl.java
 
     public CookingServiceImpl(RestTemplate restTemplate,
                               RecipeSuggestionRepository repository,
@@ -153,13 +151,11 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-<<<<<<< backend/src/main/java/at/ac/tuwien/sepr/groupphase/backend/service/impl/CookingServiceImpl.java
-    public List<RecipeSuggestionDto> getRecipeSuggestion(String type, String jwt)
-        throws ValidationException, ConflictException, AuthenticationException, DeepLException, InterruptedException {
-=======
+
+
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
-        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
->>>>>>> backend/src/main/java/at/ac/tuwien/sepr/groupphase/backend/service/impl/CookingServiceImpl.java
+        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
+
 
         ApplicationUser user = authService.getUserFromToken();
 
@@ -646,13 +642,8 @@ public class CookingServiceImpl implements CookingService {
     }
 
 
-<<<<<<< backend/src/main/java/at/ac/tuwien/sepr/groupphase/backend/service/impl/CookingServiceImpl.java
-    private String getRequestStringForRecipeSearch(List<ItemListDto> items) throws DeepLException, InterruptedException {
+    private String getRequestStringForRecipeSearch(List<ItemDto> items) throws DeepLException, InterruptedException {
         translator = new Translator(translateKey);
-
-=======
-    private String getRequestStringForRecipeSearch(List<ItemDto> items) {
->>>>>>> backend/src/main/java/at/ac/tuwien/sepr/groupphase/backend/service/impl/CookingServiceImpl.java
         List<String> ingredients = new LinkedList<>();
         for (ItemDto item : items) {
             ingredients.add(item.productName());
