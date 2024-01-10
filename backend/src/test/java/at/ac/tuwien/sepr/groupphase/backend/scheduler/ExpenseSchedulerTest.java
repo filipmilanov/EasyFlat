@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseTyp;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -118,7 +121,56 @@ public class ExpenseSchedulerTest {
 
     }
 
+    private static Stream<Arguments> createPredefinedRepeatingExpensesData() {
+
+        LocalDateTime now = LocalDateTime.now();
+        return Stream.of(
+            Arguments.of(
+                RepeatingExpenseTyp.FIRST_OF_MONTH,
+                LocalDateTime.of(now.getYear(), now.getMonth(), 1, 0, 0)
+            ),
+            Arguments.of(
+                RepeatingExpenseTyp.FIRST_OF_QUARTER,
+                LocalDateTime.of(now.getYear(), 9, 1, 0, 0)
+            ),
+            Arguments.of(
+                RepeatingExpenseTyp.FIST_OF_YEAR,
+                LocalDateTime.of(now.getYear(), 1, 1, 0, 0)
+            )
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("Auto create predefined repeating expenses")
+    @MethodSource("createPredefinedRepeatingExpensesData")
+    public void createPredefinedRepeatingExpenses(RepeatingExpenseTyp repeatingExpenseTyp, LocalDateTime time) throws ValidationException, ConflictException, AuthenticationException {
+        // given
+        ExpenseDto expenseDto = generateRepeatingExpense(
+            null,
+            LocalDateTime.now(),
+            repeatingExpenseTyp
+        );
+        expenseService.create(expenseDto);
+
+        try (MockedStatic<LocalDateTime> localDateTimeMockedStatic = mockStatic(LocalDateTime.class)) {
+            localDateTimeMockedStatic.when(LocalDateTime::now).thenReturn(time);
+
+            // when
+            expenseScheduler.createRepeatingExpense();
+
+            // then
+            verify(expenseService, times(2)).create(any());
+        }
+    }
+
+
     private static ExpenseDto generateRepeatingExpense(Integer periodInDays, LocalDateTime createdAt) {
+        return generateRepeatingExpense(periodInDays, createdAt, null);
+    }
+
+    private static ExpenseDto generateRepeatingExpense(Integer periodInDays,
+                                                       LocalDateTime createdAt,
+                                                       RepeatingExpenseTyp repeatingExpenseTyp) {
 
         return ExpenseDtoBuilder.builder()
             .title("Test")
@@ -128,6 +180,7 @@ public class ExpenseSchedulerTest {
             .paidBy(generateListUser(6))
             .isRepeating(periodInDays != null)
             .periodInDays(periodInDays)
+            .repeatingExpenseTyp(repeatingExpenseTyp)
             .debitUsers(
                 List.of(
                     DebitDtoBuilder.builder()
