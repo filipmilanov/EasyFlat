@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseTyp;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
@@ -152,6 +153,8 @@ public class ExpenseSchedulerTest {
         );
         expenseService.create(expenseDto);
 
+        List<Expense> repeatingExpensesList = expenseService.findRepeatingExpenses();
+        when(expenseService.findRepeatingExpenses()).thenReturn(repeatingExpensesList);
         try (MockedStatic<LocalDateTime> localDateTimeMockedStatic = mockStatic(LocalDateTime.class)) {
             localDateTimeMockedStatic.when(LocalDateTime::now).thenReturn(time);
 
