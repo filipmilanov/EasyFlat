@@ -135,7 +135,7 @@ public class ExpenseSchedulerTest {
                 LocalDateTime.of(now.getYear(), 9, 1, 0, 0)
             ),
             Arguments.of(
-                RepeatingExpenseTyp.FIST_OF_YEAR,
+                RepeatingExpenseTyp.FIRST_OF_YEAR,
                 LocalDateTime.of(now.getYear(), 1, 1, 0, 0)
             )
         );
