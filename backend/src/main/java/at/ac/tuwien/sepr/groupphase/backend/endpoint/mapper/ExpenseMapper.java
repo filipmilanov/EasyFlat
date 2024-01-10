@@ -19,6 +19,7 @@ public abstract class ExpenseMapper {
 
     @Mapping(target = "splitBy", source = "expenseDto.debitUsers")
     @Mapping(target = "debitUsers", expression = "java( debits )")
+    @Mapping(target = "periodInDays", expression = "java( setPeriodOfDaysToCorrectPredefinedRepeatingInterval(expenseDto) )")
     public abstract Expense expenseDtoToExpense(ExpenseDto expenseDto,
                                                 List<Debit> debits);
 
@@ -28,5 +29,12 @@ public abstract class ExpenseMapper {
             .orElse(DebitDtoBuilder.builder().splitBy(null).build())
             .splitBy();
     }
+
+    protected Integer setPeriodOfDaysToCorrectPredefinedRepeatingInterval(ExpenseDto expenseDto) {
+        return expenseDto.repeatingExpenseType() == null
+            ? expenseDto.periodInDays()
+            : expenseDto.repeatingExpenseType().value;
+    }
+
 
 }

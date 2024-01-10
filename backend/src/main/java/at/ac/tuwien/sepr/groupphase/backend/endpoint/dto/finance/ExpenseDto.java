@@ -64,21 +64,5 @@ public record ExpenseDto(
             || debitUsers.stream().map(DebitDto::splitBy).distinct().count() == 1;
     }
 
-    public ExpenseDto withPeriodInDays(Integer periodInDays) {
-        return new ExpenseDto(
-            this.id,
-            this.title,
-            this.description,
-            this.amountInCents,
-            this.createdAt,
-            this.paidBy,
-            this.debitUsers,
-            this.items,
-            this.isRepeating,
-            periodInDays,
-            this.repeatingExpenseType
-        );
-    }
-
 }
 

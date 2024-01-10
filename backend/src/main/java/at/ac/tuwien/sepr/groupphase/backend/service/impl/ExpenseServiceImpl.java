@@ -203,8 +203,6 @@ public class ExpenseServiceImpl implements ExpenseService {
             expenseDto.debitUsers().stream().findAny().orElseThrow().splitBy()
         );
 
-        expenseDto = setPeriodOfDaysToCorrectPredefinedRepeatingInterval(expenseDto);
-
         Expense expense = expenseMapper.expenseDtoToExpense(expenseDto, debitList);
 
         expense.getDebitUsers().forEach(debit -> debit.getId().setExpense(expense));
@@ -298,16 +296,6 @@ public class ExpenseServiceImpl implements ExpenseService {
             totalAmountPaidPerUser.put(user, totalAmountPaidPerUserFound.getOrDefault(user, 0.0));
         }
         return totalAmountPaidPerUser;
-    }
-
-    private ExpenseDto setPeriodOfDaysToCorrectPredefinedRepeatingInterval(ExpenseDto expenseDto) {
-        LOGGER.trace("setPeriodOfDaysToCorrectPredefinedRepeatingInterval({})", expenseDto);
-
-        if (expenseDto.repeatingExpenseType() == null) {
-            return expenseDto;
-        }
-
-        return expenseDto.withPeriodInDays(expenseDto.repeatingExpenseType().value);
     }
 
     private class Pair implements Comparable<Pair> {
