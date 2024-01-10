@@ -68,6 +68,8 @@ public interface ExpenseService {
      *
      * @param expenseDto an expense with existing ID
      * @return an object of type {@link Expense} which is updated
+     * @throws ValidationException if the expense is not valid
+     * @throws ConflictException   if the expense would produce an inconsistent state in the database
      */
     Expense update(ExpenseDto expenseDto) throws AuthenticationException, ConflictException, ValidationException;
 }

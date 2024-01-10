@@ -65,7 +65,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public Expense findById(Long id) throws NotFoundException, AuthenticationException {
-        LOGGER.info("findById: {}", id);
+        LOGGER.trace("findById: {}", id);
 
         Expense persistedExpense = expenseRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Expense not found"));
@@ -84,7 +84,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<UserValuePairDto> calculateTotalExpensesPerUser() {
-        LOGGER.info("calculateTotalExpensesPerUser()");
+        LOGGER.trace("calculateTotalExpensesPerUser()");
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
         Map<ApplicationUser, Double> totalAmountPaidPerUser = calculateTotalAmountPaidPerUserOfSharedFlat(usersOfSharedFlat);
@@ -99,7 +99,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<UserValuePairDto> calculateTotalDebitsPerUser() {
-        LOGGER.info("calculateTotalDebitsPerUser()");
+        LOGGER.trace("calculateTotalDebitsPerUser()");
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
         Map<ApplicationUser, Double> totalAmountOwedPerUser = calculateTotalAmountOwedPerUserOfSharedFlat(usersOfSharedFlat);
@@ -114,7 +114,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<UserValuePairDto> calculateBalancePerUser() {
-        LOGGER.info("calculateBalancePerUser()");
+        LOGGER.trace("calculateBalancePerUser()");
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
         Map<ApplicationUser, Double> balancesPerUser = this.calculateDifferenceBetweenPaidAndOwedAmountPerUser(
@@ -137,7 +137,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<BalanceDebitDto> calculateDebits() {
-        LOGGER.info("calculateDebits()");
+        LOGGER.trace("calculateDebits()");
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
 
@@ -179,7 +179,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     @Transactional
     public Expense create(ExpenseDto expenseDto) throws ValidationException, ConflictException, AuthenticationException {
-        LOGGER.info("create: {}", expenseDto);
+        LOGGER.trace("create: {}", expenseDto);
 
         ApplicationUser user = authService.getUserFromToken();
         List<ApplicationUser> usersOfFlat = user.getSharedFlat().getUsers().stream().toList();
@@ -205,7 +205,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     @Transactional
     public Expense update(ExpenseDto expenseDto) throws AuthenticationException, ConflictException, ValidationException {
-        LOGGER.info("update: {}", expenseDto);
+        LOGGER.trace("update: {}", expenseDto);
 
         ApplicationUser user = authService.getUserFromToken();
         List<ApplicationUser> usersOfFlat = user.getSharedFlat().getUsers().stream().toList();
@@ -214,7 +214,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         authorization.authenticateUser(
             usersOfFlat.stream().map(ApplicationUser::getId).toList(),
-            "You cannot update an expense for this flat"
+            "You are not allowed to update an expense for this flat"
         );
 
         List<Debit> debitList = defineDebitPerUserBySplitBy(
@@ -222,13 +222,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             expenseDto.debitUsers().stream().findAny().orElseThrow().splitBy()
         );
 
-        LOGGER.info("HERE debitList: {}", debitList.stream().toList());
-
         Expense expense = expenseMapper.expenseDtoToExpense(expenseDto, debitList);
-
-        LOGGER.info("HERE expense: {}", expense);
-
-        expense.getDebitUsers().forEach(debit -> debit.getId().setExpense(expense));
 
         return expenseRepository.save(expense);
     }
@@ -267,6 +261,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     private void addDebitToList(Pair debtor, Pair creditor, double toPay, List<BalanceDebitDto> balanceDebitDtos) {
+        LOGGER.trace("addDebitToList({},{},{},{})", debtor, creditor, toPay, balanceDebitDtos);
         BalanceDebitDto balanceDebitDto = BalanceDebitDtoBuilder.builder()
             .debtor(userMapper.entityToUserListDto(debtor.getUser()))
             .creditor(userMapper.entityToUserListDto(creditor.getUser()))
@@ -277,6 +272,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     private List<Pair> calculateDifferenceBetweenPaidAndOwedAmountPerUser(Map<ApplicationUser, Double> totalAmountPaidPerUser, Map<ApplicationUser, Double> totalAmountOwedPerUser) {
+        LOGGER.trace("calculateDifferenceBetweenPaidAndOwedAmountPerUser({},{})", totalAmountPaidPerUser, totalAmountOwedPerUser);
         return totalAmountPaidPerUser.entrySet().stream().map(
                 entry -> new Pair(
                     entry.getKey(),
@@ -287,6 +283,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     private Map<ApplicationUser, Double> calculateTotalAmountOwedPerUserOfSharedFlat(Set<ApplicationUser> usersOfSharedFlat) {
+        LOGGER.trace("calculateTotalAmountOwedPerUserOfSharedFlat({})", usersOfSharedFlat);
         return expenseRepository.findByPaidByIsIn(
             usersOfSharedFlat
         ).stream().flatMap(
@@ -304,6 +301,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     private Map<ApplicationUser, Double> calculateTotalAmountPaidPerUserOfSharedFlat(Set<ApplicationUser> usersOfSharedFlat) {
+        LOGGER.trace("calculateTotalAmountPaidPerUserOfSharedFlat({})", usersOfSharedFlat);
         Map<ApplicationUser, Double> totalAmountPaidPerUserFound = expenseRepository.findByPaidByIsIn(
             usersOfSharedFlat
         ).stream().collect(

@@ -16,14 +16,10 @@ export class FinanceService {
   }
 
   createExpense(expense: ExpenseDto): Observable<ExpenseDto> {
-    console.log("Create expense: " + expense.debitUsers);
     return this.http.post<ExpenseDto>(this.baseUri, expense);
   }
 
   updateExpense(expense: ExpenseDto): Observable<ExpenseDto> {
-    console.log("Update expense with ID: " + expense.id);
-    console.log("and expense:");
-    console.log(expense);
     return this.http.put<ExpenseDto>(`${this.baseUri}/${expense.id}`, expense);
   }
 

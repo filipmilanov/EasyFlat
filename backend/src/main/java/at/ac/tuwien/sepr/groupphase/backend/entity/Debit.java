@@ -46,8 +46,4 @@ public class Debit {
         return Objects.hash(id);
     }
 
-    @Override
-    public String toString() {
-        return super.toString();
-    }
 }
