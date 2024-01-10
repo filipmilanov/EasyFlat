@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseTyp;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.AssertTrue;
@@ -32,7 +33,8 @@ public record ExpenseDto(
     List<DebitDto> debitUsers,
     List<ItemDto> items,
     Boolean isRepeating,
-    Integer periodInDays
+    Integer periodInDays,
+    RepeatingExpenseTyp repeatingExpenseTyp
 ) {
 
     @AssertTrue(message = "Interval must be present if the finance entry is set to repeating")
