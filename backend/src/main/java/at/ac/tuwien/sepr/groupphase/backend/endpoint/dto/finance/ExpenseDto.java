@@ -33,13 +33,14 @@ public record ExpenseDto(
     List<DebitDto> debitUsers,
     List<ItemDto> items,
     Boolean isRepeating,
+    @Min(value = 1, message = "The days until repeat must be greater then 1")
     Integer periodInDays,
     RepeatingExpenseTyp repeatingExpenseTyp
 ) {
 
-    @AssertTrue(message = "Interval must be present if the finance entry is set to repeating")
+    @AssertTrue(message = "Period of days or Repeating Typ must be present if the finance entry is set to repeating")
     public boolean isPeriodPresentIfIsRepeating() {
-        return isRepeating == null || !isRepeating || periodInDays != null;
+        return isRepeating == null || !isRepeating || periodInDays != null || repeatingExpenseTyp != null;
     }
 
     @AssertTrue(message = "The sum of the users amount must be equal to the total amount")
