@@ -43,17 +43,32 @@ public class ExpenseSchedulerImpl implements ExpenseScheduler {
             try {
                 expenseService.create(convertToNewExpense(expense));
             } catch (ValidationException e) {
-                LOGGER.warn("Could not create repeating expense for {}, because of a ValidationException", expense, e);
+                LOGGER.error("Could not create repeating expense for {}, because of a ValidationException", expense, e);
             } catch (ConflictException e) {
-                LOGGER.warn("Could not create repeating expense for {}, because of a ConflictException", expense, e);
+                LOGGER.error("Could not create repeating expense for {}, because of a ConflictException", expense, e);
             } catch (AuthenticationException e) {
-                LOGGER.warn("Could not create repeating expense for {}, because of a AuthenticationException", expense, e);
+                LOGGER.error("Could not create repeating expense for {}, because of a AuthenticationException", expense, e);
             }
         });
     }
 
     private boolean shouldCreateExpenseToday(Expense expense) {
-        return expense.getCreatedAt().plusDays(expense.getPeriodInDays()).toLocalDate().isEqual(LocalDate.now());
+        return (expense.getPeriodInDays() < 0 && shouldCreatePredefinedExpensesToday(expense))
+            || expense.getCreatedAt().plusDays(expense.getPeriodInDays()).toLocalDate().isEqual(LocalDate.now());
+    }
+
+    private boolean shouldCreatePredefinedExpensesToday(Expense expense) {
+        LocalDateTime now = LocalDateTime.now();
+        return switch (expense.getPeriodInDays()) {
+            case -1 -> now.getDayOfMonth() == 1;
+            case -2 -> now.getDayOfMonth() == 1 && now.getMonthValue() % 3 == 0;
+            case -3 -> now.getDayOfYear() == 1;
+            default -> {
+                LOGGER.error("There is an inconsistency with repeating expenses. "
+                    + "The periodInDays was {}, but that should not be possible", expense.getPeriodInDays());
+                yield false;
+            }
+        };
     }
 
     private ExpenseDto convertToNewExpense(Expense expense) {
