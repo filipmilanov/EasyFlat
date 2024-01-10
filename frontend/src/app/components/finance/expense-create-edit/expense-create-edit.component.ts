@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ExpenseDto, SplitBy} from "../../../dtos/expenseDto";
+import {ExpenseDto, RepeatingExpenseOptions, RepeatingExpenseTyp, SplitBy} from "../../../dtos/expenseDto";
 import {NgForm} from "@angular/forms";
 import {FinanceService} from "../../../services/finance.service";
 import {Router} from "@angular/router";
@@ -25,7 +25,7 @@ export class ExpenseCreateEditComponent implements OnInit {
   users: UserListDto[] = [];
   expenseDate: NgbDateStruct;
   expenseTime: NgbTimeStruct = {hour: 13, minute: 30, second: 0};
-  selectedRepeatingOption: boolean = false;
+  selectedRepeatingOption: RepeatingExpenseOptions = RepeatingExpenseOptions.NO_REPEAT
 
   constructor(
     private userService: UserService,
@@ -55,6 +55,7 @@ export class ExpenseCreateEditComponent implements OnInit {
           next: (user) => {
             // TODO: this is a quickfix. The UserDetail should contain the ID of the user, but that's not the case
             this.expense.paidBy = this.users.find(u => u.firstName === user.firstName && u.lastName === user.lastName);
+            this.expense.repeatingExpenseTyp = RepeatingExpenseTyp.FIRST_OF_MONTH;
           },
           error: (error) => {
             console.log(error);
@@ -111,6 +112,9 @@ export class ExpenseCreateEditComponent implements OnInit {
       this.expenseTime.minute,
     );
     this.expense.amountInCents = this.amountInEuro * 100;
+    if (this.selectedRepeatingOption != RepeatingExpenseOptions.REPEAT_AT) {
+      this.expense.repeatingExpenseTyp = null;
+    }
     if (this.selectedSplitBy === SplitBy.EQUAL || this.selectedSplitBy === SplitBy.UNEQUAL) {
       this.expense.debitUsers.forEach(user => {
         user.value = user.value * 100;
@@ -133,6 +137,9 @@ export class ExpenseCreateEditComponent implements OnInit {
   }
 
   onRepeatingChange() {
-    this.expense.isRepeating = this.selectedRepeatingOption;
+    this.expense.isRepeating = this.selectedRepeatingOption != RepeatingExpenseOptions.NO_REPEAT;
   }
+
+  protected readonly RepeatingExpenseOptions = RepeatingExpenseOptions;
+  protected readonly RepeatingExpenseTyp = RepeatingExpenseTyp;
 }

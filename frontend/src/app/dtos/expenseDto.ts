@@ -45,4 +45,10 @@ export enum RepeatingExpenseTyp {
   FIRST_OF_YEAR = "FIRST_OF_YEAR"
 }
 
+export enum RepeatingExpenseOptions {
+  DAYS_UNTIL_REPEAT,
+  NO_REPEAT,
+  REPEAT_AT
+}
+
 
