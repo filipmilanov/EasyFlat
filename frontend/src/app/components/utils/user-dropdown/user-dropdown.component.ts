@@ -18,5 +18,10 @@ export class UserDropdownComponent {
     console.log(selectedUser);
     this.activatedUserChange.emit(selectedUser);
   }
+
+  compareUsers(user1: any, user2: any): boolean {
+    return user1 && user2 ? user1.id === user2.id : user1 === user2;
+  }
+
 }
 

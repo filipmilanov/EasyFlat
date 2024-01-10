@@ -28,7 +28,10 @@ import {CookbookCreateComponent, CookbookMode} from "./components/cookbook/cookb
 import {RecipeDetailComponent} from "./components/cooking/recipe-detail/recipe-detail.component";
 import {CookbookDetailComponent} from "./components/cookbook/cookbook-detail/cookbook-detail.component";
 import {ShoppingListsComponent} from "./components/shopping-list/shopping-lists/shopping-lists.component";
-import {ExpenseCreateEditComponent} from "./components/finance/expense-create-edit/expense-create-edit.component";
+import {
+  ExpenseCreateEditComponent,
+  ExpenseCreateEditMode
+} from "./components/finance/expense-create-edit/expense-create-edit.component";
 import {FinanceComponent} from "./components/finance/finance.component";
 import {ExpenseDetailComponent} from "./components/finance/expense-detail/expense-detail.component";
 
@@ -79,28 +82,18 @@ const routes: Routes = [
     {path: 'wgLogin', component: LoginFlatComponent},
     {path: 'wgCreate', component: CreateFlatComponent},
     {
-        path: 'expense', children: [
-            {path: '', component: DigitalStorageComponent},
-            {path: 'create', component: ExpenseCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
-        ]
-    },
-    {
         path: 'finance', children: [
-            {path: '', component: FinanceComponent}
+            {path: '', component: FinanceComponent},
         ]
     },
-    {path: 'register', component: RegisterComponent},
-    {path: 'account', component: AccountComponent},
-    {path: 'wgLogin', component: LoginFlatComponent},
-    {path: 'wgCreate', component: CreateFlatComponent},
     {
-        path: 'expense', children: [
-        {path: '', component: DigitalStorageComponent},
-        {path: 'create', component: ExpenseCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
-        {path: ':id', component: ExpenseDetailComponent},
-
-        ]
+      path: 'expense', children: [
+        {path: 'create', component: ExpenseCreateEditComponent, data: {mode: ExpenseCreateEditMode.create}},
+        {path: ':id/edit', component: ExpenseCreateEditComponent, data: {mode: ExpenseCreateEditMode.edit}},
+        {path: ':id/detail', component: ExpenseDetailComponent},
+      ]
     },
+
     {
         path: 'cooking', children: [
         {path: '', component: CookingComponent},

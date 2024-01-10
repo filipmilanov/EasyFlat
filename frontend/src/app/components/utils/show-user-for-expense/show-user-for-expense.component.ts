@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {DebitDto, SplitBy} from "../../../dtos/expenseDto";
+import {ExpenseCreateEditMode} from "../../finance/expense-create-edit/expense-create-edit.component";
 
 @Component({
   selector: 'app-show-user-for-expense',
@@ -10,18 +11,33 @@ export class ShowUserForExpenseComponent implements OnChanges {
   @Input() amountInEuro: number;
   @Input() splitBy: SplitBy;
   @Input() users: DebitDto[];
+  @Input() mode: ExpenseCreateEditMode;
 
   @Output() usersChange = new EventEmitter<DebitDto[]>();
 
   selectedUsers: boolean[] = [];
 
+  private isInitialDataLoaded: number = 0;
+
   onUsersChange() {
     this.usersChange.emit(this.users);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.updateSelectedUsersArray();
-    this.adaptedToChange();
+  ngOnChanges(): void {
+    if (!this.isInitialDataLoaded && this.mode === ExpenseCreateEditMode.edit) {
+      this.initializeSelectedUsersArray();
+      this.users.forEach(user => {
+        if (this.splitBy == SplitBy.EQUAL || this.splitBy == SplitBy.UNEQUAL) {
+          user.value = user.value / 100;
+        }
+      })
+      this.isInitialDataLoaded++;
+      return;
+    }
+    if (this.isInitialDataLoaded >= 1 || this.mode === ExpenseCreateEditMode.create) {
+      this.updateSelectedUsersArray();
+      this.adaptedToChange();
+    }
   }
 
   determineValueRepresentation(value: DebitDto): string {
@@ -60,9 +76,13 @@ export class ShowUserForExpenseComponent implements OnChanges {
     }
   }
 
-
   private sizeOfSelectedUsers(): number {
     return this.selectedUsers.filter(value => value).length;
+  }
+  private initializeSelectedUsersArray() {
+    this.users.forEach((value, index) => {
+      this.selectedUsers[index] = value.value !== 0;
+    });
   }
 
   private updateSelectedUsersArray() {
