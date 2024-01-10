@@ -38,7 +38,7 @@ public record ExpenseDto(
     RepeatingExpenseType repeatingExpenseType
 ) {
 
-    @AssertTrue(message = "Period of days or Repeating Typ must be present if the finance entry is set to repeating")
+    @AssertTrue(message = "Period of days or repeating type must be present if the finance entry is set to repeating")
     public boolean isPeriodPresentIfIsRepeating() {
         return isRepeating == null || !isRepeating || periodInDays != null || repeatingExpenseType != null;
     }
