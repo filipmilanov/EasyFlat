@@ -23,18 +23,18 @@ export class ShowUserForExpenseComponent implements OnChanges {
     this.usersChange.emit(this.users);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.users && !this.isInitialDataLoaded && this.mode === ExpenseCreateEditMode.edit) {
-      this.updateSelectedUsersArray();
+  ngOnChanges(): void {
+    if (!this.isInitialDataLoaded && this.mode === ExpenseCreateEditMode.edit) {
+      this.initializeSelectedUsersArray();
       this.users.forEach(user => {
-        if(this.splitBy == SplitBy.EQUAL || this.splitBy == SplitBy.UNEQUAL){
-          user.value = user.value/100;
+        if (this.splitBy == SplitBy.EQUAL || this.splitBy == SplitBy.UNEQUAL) {
+          user.value = user.value / 100;
         }
       })
       this.isInitialDataLoaded++;
       return;
     }
-    if ((changes.users && this.isInitialDataLoaded >= 1) || this.mode === ExpenseCreateEditMode.create) {
+    if (this.isInitialDataLoaded >= 1 || this.mode === ExpenseCreateEditMode.create) {
       this.updateSelectedUsersArray();
       this.adaptedToChange();
     }
@@ -76,9 +76,13 @@ export class ShowUserForExpenseComponent implements OnChanges {
     }
   }
 
-
   private sizeOfSelectedUsers(): number {
     return this.selectedUsers.filter(value => value).length;
+  }
+  private initializeSelectedUsersArray() {
+    this.users.forEach((value, index) => {
+      this.selectedUsers[index] = value.value !== 0;
+    });
   }
 
   private updateSelectedUsersArray() {
