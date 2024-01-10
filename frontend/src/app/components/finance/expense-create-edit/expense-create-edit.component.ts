@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ExpenseDto, RepeatingExpenseOptions, RepeatingExpenseTyp, SplitBy} from "../../../dtos/expenseDto";
+import {ExpenseDto, RepeatingExpenseOptions, RepeatingExpenseType, SplitBy} from "../../../dtos/expenseDto";
 import {NgForm} from "@angular/forms";
 import {FinanceService} from "../../../services/finance.service";
 import {Router} from "@angular/router";
@@ -55,7 +55,7 @@ export class ExpenseCreateEditComponent implements OnInit {
           next: (user) => {
             // TODO: this is a quickfix. The UserDetail should contain the ID of the user, but that's not the case
             this.expense.paidBy = this.users.find(u => u.firstName === user.firstName && u.lastName === user.lastName);
-            this.expense.repeatingExpenseTyp = RepeatingExpenseTyp.FIRST_OF_MONTH;
+            this.expense.repeatingExpenseTyp = RepeatingExpenseType.FIRST_OF_MONTH;
           },
           error: (error) => {
             console.log(error);
@@ -141,5 +141,5 @@ export class ExpenseCreateEditComponent implements OnInit {
   }
 
   protected readonly RepeatingExpenseOptions = RepeatingExpenseOptions;
-  protected readonly RepeatingExpenseTyp = RepeatingExpenseTyp;
+  protected readonly RepeatingExpenseTyp = RepeatingExpenseType;
 }

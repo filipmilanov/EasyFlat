@@ -303,11 +303,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     private ExpenseDto setPeriodOfDaysToCorrectPredefinedRepeatingInterval(ExpenseDto expenseDto) {
         LOGGER.trace("setPeriodOfDaysToCorrectPredefinedRepeatingInterval({})", expenseDto);
 
-        if (expenseDto.repeatingExpenseTyp() == null) {
+        if (expenseDto.repeatingExpenseType() == null) {
             return expenseDto;
         }
 
-        return expenseDto.withPeriodInDays(expenseDto.repeatingExpenseTyp().value);
+        return expenseDto.withPeriodInDays(expenseDto.repeatingExpenseType().value);
     }
 
     private class Pair implements Comparable<Pair> {

@@ -13,7 +13,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDt
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
-import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseTyp;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -619,7 +619,7 @@ class ExpenseServiceTest {
     @DisplayName("Is predefined repeating expense converted correctly")
     public void predefinedRepeatingExpenseWhenCreateThenPeriodInDaysIsCorrect() throws ValidationException, ConflictException, AuthenticationException {
         // given
-        ExpenseDto expenseDto = generateRepeatingExpense(null, RepeatingExpenseTyp.FIRST_OF_MONTH);
+        ExpenseDto expenseDto = generateRepeatingExpense(null, RepeatingExpenseType.FIRST_OF_MONTH);
 
         // when
         Expense expense = service.create(expenseDto);
@@ -632,7 +632,7 @@ class ExpenseServiceTest {
             () -> assertThat(actual).extracting(
                 Expense::getPeriodInDays
             ).isEqualTo(
-                RepeatingExpenseTyp.FIRST_OF_MONTH.value
+                RepeatingExpenseType.FIRST_OF_MONTH.value
             )
         );
     }
@@ -641,7 +641,7 @@ class ExpenseServiceTest {
         return this.generateRepeatingExpense(days, null);
     }
 
-    private ExpenseDto generateRepeatingExpense(Integer days, RepeatingExpenseTyp typ) {
+    private ExpenseDto generateRepeatingExpense(Integer days, RepeatingExpenseType typ) {
 
         List<UserListDto> users = this.applicationUser.getSharedFlat().getUsers().stream()
             .map(applicationUser1 -> userMapper.entityToUserListDto(applicationUser1))

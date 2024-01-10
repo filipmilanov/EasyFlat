@@ -8,7 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
-import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseTyp;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -127,15 +127,15 @@ public class ExpenseSchedulerTest {
         LocalDateTime now = LocalDateTime.now();
         return Stream.of(
             Arguments.of(
-                RepeatingExpenseTyp.FIRST_OF_MONTH,
+                RepeatingExpenseType.FIRST_OF_MONTH,
                 LocalDateTime.of(now.getYear(), now.getMonth(), 1, 0, 0)
             ),
             Arguments.of(
-                RepeatingExpenseTyp.FIRST_OF_QUARTER,
+                RepeatingExpenseType.FIRST_OF_QUARTER,
                 LocalDateTime.of(now.getYear(), 9, 1, 0, 0)
             ),
             Arguments.of(
-                RepeatingExpenseTyp.FIRST_OF_YEAR,
+                RepeatingExpenseType.FIRST_OF_YEAR,
                 LocalDateTime.of(now.getYear(), 1, 1, 0, 0)
             )
         );
@@ -144,12 +144,12 @@ public class ExpenseSchedulerTest {
     @ParameterizedTest
     @DisplayName("Auto create predefined repeating expenses")
     @MethodSource("createPredefinedRepeatingExpensesData")
-    public void createPredefinedRepeatingExpenses(RepeatingExpenseTyp repeatingExpenseTyp, LocalDateTime time) throws ValidationException, ConflictException, AuthenticationException {
+    public void createPredefinedRepeatingExpenses(RepeatingExpenseType repeatingExpenseType, LocalDateTime time) throws ValidationException, ConflictException, AuthenticationException {
         // given
         ExpenseDto expenseDto = generateRepeatingExpense(
             null,
             LocalDateTime.now(),
-            repeatingExpenseTyp
+            repeatingExpenseType
         );
         expenseService.create(expenseDto);
 
@@ -173,7 +173,7 @@ public class ExpenseSchedulerTest {
 
     private static ExpenseDto generateRepeatingExpense(Integer periodInDays,
                                                        LocalDateTime createdAt,
-                                                       RepeatingExpenseTyp repeatingExpenseTyp) {
+                                                       RepeatingExpenseType repeatingExpenseType) {
 
         return ExpenseDtoBuilder.builder()
             .title("Test")
@@ -183,7 +183,7 @@ public class ExpenseSchedulerTest {
             .paidBy(generateListUser(6))
             .isRepeating(periodInDays != null)
             .periodInDays(periodInDays)
-            .repeatingExpenseTyp(repeatingExpenseTyp)
+            .repeatingExpenseType(repeatingExpenseType)
             .debitUsers(
                 List.of(
                     DebitDtoBuilder.builder()

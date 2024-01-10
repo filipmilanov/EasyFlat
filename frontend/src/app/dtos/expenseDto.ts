@@ -12,7 +12,7 @@ export class ExpenseDto {
   items?: ItemDto[];
   isRepeating?: boolean;
   periodInDays?: number;
-  repeatingExpenseTyp?: RepeatingExpenseTyp;
+  repeatingExpenseTyp?: RepeatingExpenseType;
 }
 
 export class DebitDto {
@@ -39,7 +39,7 @@ export enum SplitBy {
   PROPORTIONAL = "PROPORTIONAL",
 }
 
-export enum RepeatingExpenseTyp {
+export enum RepeatingExpenseType {
   FIRST_OF_MONTH = "FIRST_OF_MONTH",
   FIRST_OF_QUARTER = "FIRST_OF_QUARTER",
   FIRST_OF_YEAR = "FIRST_OF_YEAR"
