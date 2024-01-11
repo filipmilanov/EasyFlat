@@ -83,6 +83,13 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    public List<Expense> findRepeatingExpenses() {
+        LOGGER.trace("findRepeatingExpenses()");
+
+        return expenseRepository.findAllByPeriodInDaysIsNotNull();
+    }
+
+    @Override
     public List<UserValuePairDto> calculateTotalExpensesPerUser() {
         LOGGER.trace("calculateTotalExpensesPerUser()");
 

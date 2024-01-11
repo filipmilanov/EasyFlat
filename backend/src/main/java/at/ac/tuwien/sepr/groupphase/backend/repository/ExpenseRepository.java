@@ -12,5 +12,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findAllByPaidByIs(ApplicationUser user);
 
     List<Expense> findByPaidByIsIn(Set<ApplicationUser> users);
+
+    List<Expense> findAllByPeriodInDaysIsNotNull();
 }
 

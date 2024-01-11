@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.AssertTrue;
@@ -32,12 +33,14 @@ public record ExpenseDto(
     List<DebitDto> debitUsers,
     List<ItemDto> items,
     Boolean isRepeating,
-    LocalDateTime interval
+    @Min(value = 1, message = "The days until repeat must be greater then 1")
+    Integer periodInDays,
+    RepeatingExpenseType repeatingExpenseType
 ) {
 
-    @AssertTrue(message = "Interval must be present if the finance entry is set to repeating")
+    @AssertTrue(message = "Period of days or repeating type must be present if the finance entry is set to repeating")
     public boolean isPeriodPresentIfIsRepeating() {
-        return isRepeating == null || !isRepeating || interval != null;
+        return isRepeating == null || !isRepeating || periodInDays != null || repeatingExpenseType != null;
     }
 
     @AssertTrue(message = "The sum of the users amount must be equal to the total amount")

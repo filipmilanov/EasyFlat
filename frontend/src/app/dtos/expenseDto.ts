@@ -11,7 +11,8 @@ export class ExpenseDto {
   debitUsers?: DebitDto[];
   items?: ItemDto[];
   isRepeating?: boolean;
-  interval?: Date;
+  periodInDays?: number;
+  repeatingExpenseTyp?: RepeatingExpenseType;
 }
 
 export class DebitDto {
@@ -36,6 +37,18 @@ export enum SplitBy {
   UNEQUAL = "UNEQUAL",
   PERCENTAGE = "PERCENTAGE",
   PROPORTIONAL = "PROPORTIONAL",
+}
+
+export enum RepeatingExpenseType {
+  FIRST_OF_MONTH = "FIRST_OF_MONTH",
+  FIRST_OF_QUARTER = "FIRST_OF_QUARTER",
+  FIRST_OF_YEAR = "FIRST_OF_YEAR"
+}
+
+export enum RepeatingExpenseOptions {
+  DAYS_UNTIL_REPEAT,
+  NO_REPEAT,
+  REPEAT_AT
 }
 
 

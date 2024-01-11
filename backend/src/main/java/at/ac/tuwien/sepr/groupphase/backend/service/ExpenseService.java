@@ -26,6 +26,13 @@ public interface ExpenseService {
     Expense findById(Long id) throws NotFoundException, AuthenticationException;
 
     /**
+     * Finds all repeating expenses in the database.
+     *
+     * @return a List of repeating expenses
+     */
+    List<Expense> findRepeatingExpenses();
+
+    /**
      * Calculates the debits for the current users shared flat.
      *
      * @return a List of BalanceDebitDtos which represent the debits

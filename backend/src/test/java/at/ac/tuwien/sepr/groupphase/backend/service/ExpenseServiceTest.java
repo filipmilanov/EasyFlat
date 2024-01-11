@@ -10,8 +10,10 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -57,6 +59,9 @@ class ExpenseServiceTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @MockBean
     private AuthService authService;
@@ -537,4 +542,135 @@ class ExpenseServiceTest {
             )
         );
     }
+
+    @Test
+    @DisplayName("Are repeating Expenses created correctly?")
+    void createRepeatingExpense() throws ValidationException, ConflictException, AuthenticationException {
+        // given
+        ExpenseDto expenseDto = generateRepeatingExpense(2);
+
+        // when
+        Expense expense = service.create(expenseDto);
+
+        // then
+        Expense actual = service.findById(expense.getId());
+
+        assertAll(
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).extracting(
+                Expense::getId,
+                Expense::getTitle,
+                Expense::getDescription,
+                Expense::getAmountInCents,
+                (expense1 -> expense1.getPaidBy().getId()),
+                Expense::getPeriodInDays
+            ).contains(
+                expense.getId(),
+                expenseDto.title(),
+                expenseDto.description(),
+                expenseDto.amountInCents(),
+                expenseDto.paidBy().id(),
+                expenseDto.periodInDays()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Are repeating Expenses with negative days throwing exceptions?")
+    void createInvalidRepeatingExpense() {
+        // given
+        ExpenseDto expenseDto = generateRepeatingExpense(-1);
+
+        // when + then
+        ValidationException e = assertThrows(ValidationException.class, () -> service.create(expenseDto));
+        assertAll(
+            () -> assertThat(e.errors().size()).isEqualTo(1),
+            () -> assertThat(e.errors().get(0)).contains("greater")
+        );
+    }
+
+    @Test
+    @DisplayName("Is find all repeating Expenses Correct?")
+    void findAllRepeatingExpenses() throws ValidationException, ConflictException, AuthenticationException {
+        // given
+        ExpenseDto expenseDto1 = generateRepeatingExpense(2);
+        ExpenseDto expenseDto2 = generateRepeatingExpense(2);
+
+        Expense expense1 = service.create(expenseDto1);
+        Expense expense2 = service.create(expenseDto2);
+
+        // when
+        List<Expense> actual = service.findRepeatingExpenses();
+
+        // then
+        assertAll(
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).hasSize(2),
+            () -> assertThat(actual).extracting(
+                Expense::getId
+            ).containsExactlyInAnyOrder(
+                expense1.getId(),
+                expense2.getId()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Is predefined repeating expense converted correctly")
+    public void predefinedRepeatingExpenseWhenCreateThenPeriodInDaysIsCorrect() throws ValidationException, ConflictException, AuthenticationException {
+        // given
+        ExpenseDto expenseDto = generateRepeatingExpense(null, RepeatingExpenseType.FIRST_OF_MONTH);
+
+        // when
+        Expense expense = service.create(expenseDto);
+
+        // then
+        Expense actual = service.findById(expense.getId());
+
+        assertAll(
+            () -> assertThat(actual).isEqualTo(expense),
+            () -> assertThat(actual).extracting(
+                Expense::getPeriodInDays
+            ).isEqualTo(
+                RepeatingExpenseType.FIRST_OF_MONTH.value
+            )
+        );
+    }
+
+    private ExpenseDto generateRepeatingExpense(Integer days) {
+        return this.generateRepeatingExpense(days, null);
+    }
+
+    private ExpenseDto generateRepeatingExpense(Integer days, RepeatingExpenseType typ) {
+
+        List<UserListDto> users = this.applicationUser.getSharedFlat().getUsers().stream()
+            .map(applicationUser1 -> userMapper.entityToUserListDto(applicationUser1))
+            .toList();
+
+        return ExpenseDtoBuilder.builder()
+            .title("Test")
+            .description("Test")
+            .amountInCents(50.0)
+            .createdAt(LocalDateTime.now())
+            .paidBy(users.get(0))
+            .isRepeating(true)
+            .periodInDays(days)
+            .repeatingExpenseType(typ)
+            .debitUsers(
+                List.of(
+                    DebitDtoBuilder.builder()
+                        .user(users.get(0))
+                        .splitBy(SplitBy.EQUAL)
+                        .value(25.0)
+                        .build(),
+                    DebitDtoBuilder.builder()
+                        .user(users.get(1))
+                        .splitBy(SplitBy.EQUAL)
+                        .value(25.0)
+                        .build()
+                )
+            )
+            .build();
+    }
+
 }
