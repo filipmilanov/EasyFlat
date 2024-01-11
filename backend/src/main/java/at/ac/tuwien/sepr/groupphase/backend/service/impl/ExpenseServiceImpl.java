@@ -227,6 +227,15 @@ public class ExpenseServiceImpl implements ExpenseService {
         return expenseRepository.save(expense);
     }
 
+    @Override
+    public void delete(Long id) throws AuthenticationException {
+        LOGGER.trace("delete({})", id);
+
+        findById(id);
+
+        expenseRepository.deleteById(id);
+    }
+
     private List<Debit> defineDebitPerUserBySplitBy(ExpenseDto expense, SplitBy splitBy) throws ValidationException {
         LOGGER.trace("defineDebitPerUserBySplitBy({})", expense);
 
