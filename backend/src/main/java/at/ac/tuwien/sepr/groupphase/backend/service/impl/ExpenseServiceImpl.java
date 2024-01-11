@@ -65,7 +65,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public Expense findById(Long id) throws NotFoundException, AuthenticationException {
-        LOGGER.info("findById: {}", id);
+        LOGGER.trace("findById: {}", id);
 
         Expense persistedExpense = expenseRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Expense not found"));
@@ -84,14 +84,14 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<Expense> findRepeatingExpenses() {
-        LOGGER.info("findRepeatingExpenses()");
+        LOGGER.trace("findRepeatingExpenses()");
 
         return expenseRepository.findAllByPeriodInDaysIsNotNull();
     }
 
     @Override
     public List<UserValuePairDto> calculateTotalExpensesPerUser() {
-        LOGGER.info("calculateTotalExpensesPerUser()");
+        LOGGER.trace("calculateTotalExpensesPerUser()");
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
         Map<ApplicationUser, Double> totalAmountPaidPerUser = calculateTotalAmountPaidPerUserOfSharedFlat(usersOfSharedFlat);
@@ -106,7 +106,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<UserValuePairDto> calculateTotalDebitsPerUser() {
-        LOGGER.info("calculateTotalDebitsPerUser()");
+        LOGGER.trace("calculateTotalDebitsPerUser()");
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
         Map<ApplicationUser, Double> totalAmountOwedPerUser = calculateTotalAmountOwedPerUserOfSharedFlat(usersOfSharedFlat);
@@ -121,7 +121,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<UserValuePairDto> calculateBalancePerUser() {
-        LOGGER.info("calculateBalancePerUser()");
+        LOGGER.trace("calculateBalancePerUser()");
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
         Map<ApplicationUser, Double> balancesPerUser = this.calculateDifferenceBetweenPaidAndOwedAmountPerUser(
@@ -144,7 +144,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<BalanceDebitDto> calculateDebits() {
-        LOGGER.info("calculateDebits()");
+        LOGGER.trace("calculateDebits()");
 
         Set<ApplicationUser> usersOfSharedFlat = authService.getUserFromToken().getSharedFlat().getUsers();
 
@@ -186,7 +186,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     @Transactional
     public Expense create(ExpenseDto expenseDto) throws ValidationException, ConflictException, AuthenticationException {
-        LOGGER.info("create: {}", expenseDto);
+        LOGGER.trace("create: {}", expenseDto);
 
         ApplicationUser user = authService.getUserFromToken();
         List<ApplicationUser> usersOfFlat = user.getSharedFlat().getUsers().stream().toList();

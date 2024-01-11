@@ -30,11 +30,10 @@ public abstract class ExpenseMapper {
             .splitBy();
     }
 
-    protected Integer setPeriodOfDaysToCorrectPredefinedRepeatingInterval(ExpenseDto expenseDto) {
-        return expenseDto.repeatingExpenseType() == null
-            ? expenseDto.periodInDays()
-            : expenseDto.repeatingExpenseType().value;
+    public Integer setPeriodOfDaysToCorrectPredefinedRepeatingInterval(ExpenseDto expenseDto) {
+        if (expenseDto.repeatingExpenseType() == null) {
+            return expenseDto.periodInDays();
+        }
+        return expenseDto.repeatingExpenseType().value;
     }
-
-
 }

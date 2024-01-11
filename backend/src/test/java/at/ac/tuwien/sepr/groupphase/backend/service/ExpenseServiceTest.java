@@ -655,7 +655,7 @@ class ExpenseServiceTest {
             .paidBy(users.get(0))
             .isRepeating(true)
             .periodInDays(days)
-            .repeatingExpenseTyp(typ)
+            .repeatingExpenseType(typ)
             .debitUsers(
                 List.of(
                     DebitDtoBuilder.builder()
