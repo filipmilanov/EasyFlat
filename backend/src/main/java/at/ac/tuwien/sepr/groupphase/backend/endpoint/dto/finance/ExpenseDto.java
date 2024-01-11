@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import io.soabase.recordbuilder.core.RecordBuilder;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -30,6 +31,7 @@ public record ExpenseDto(
     LocalDateTime createdAt,
     @NotNull(message = "A finance entry must have a payer")
     UserListDto paidBy,
+    @Valid
     List<DebitDto> debitUsers,
     List<ItemDto> items,
     Boolean isRepeating,

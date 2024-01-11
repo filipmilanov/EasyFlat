@@ -26,7 +26,7 @@ public class ExpenseValidator {
     }
 
     public void validateExpenseForCreate(ExpenseDto expenseDto,
-                                List<ApplicationUser> applicationUsersOfFlat) throws ValidationException, ConflictException {
+                                         List<ApplicationUser> applicationUsersOfFlat) throws ValidationException, ConflictException {
         LOGGER.trace("validateExpenseForCreate({}, {})", expenseDto, applicationUsersOfFlat);
 
         validateExpenseDto(expenseDto);
@@ -52,7 +52,7 @@ public class ExpenseValidator {
     }
 
     private void checkForConflictForCreate(ExpenseDto expenseDto,
-                                  List<ApplicationUser> applicationUsers) throws ConflictException {
+                                           List<ApplicationUser> applicationUsers) throws ConflictException {
         LOGGER.trace("checkForConflictForCreate({}, {})", expenseDto, applicationUsers);
 
         List<String> errors = new ArrayList<>();
