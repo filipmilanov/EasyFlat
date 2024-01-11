@@ -75,7 +75,8 @@ public record ExpenseDto(
             debitUsers,
             items,
             isRepeating,
-            interval
+            periodInDays,
+            repeatingExpenseType
         );
     }
 }
