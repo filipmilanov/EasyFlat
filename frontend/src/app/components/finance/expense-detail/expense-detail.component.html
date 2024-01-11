@@ -47,7 +47,7 @@
 
     <div class="row border-bottom p-2 align-items-center">
       <label class="col-form-label col-md-2 col-lg-2">Amount</label>
-      <div class="col-md-10 col-lg-8">{{ formatAmount(expense.amountInCents) }}</div>
+      <div class="col-md-10 col-lg-8">{{ formatAmount(SplitBy.EQUAL, expense.amountInCents) }}</div>
     </div>
 
     <div class="row border-bottom p-2 align-items-center odd-detail">
@@ -85,7 +85,8 @@
         <ul class="list-group">
           <li class="list-group-item" *ngFor="let debitUser of expense.debitUsers">
             {{ debitUser.user.firstName + " " + debitUser.user.lastName }}
-            pays {{ formatAmount(debitUser.value) + " " + determineValueRepresentation(debitUser)}} for this expense
+            pays {{ formatAmount(debitUser.splitBy, debitUser.value) + " " + determineValueRepresentation(debitUser)}}
+            for this expense
           </li>
         </ul>
       </div>

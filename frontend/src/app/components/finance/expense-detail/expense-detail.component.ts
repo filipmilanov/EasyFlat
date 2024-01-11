@@ -73,7 +73,12 @@ export class ExpenseDetailComponent implements OnInit {
     }
   }
 
-  formatAmount(amount: number): string {
-    return (amount / 100).toFixed(2);
+  formatAmount(strategy: SplitBy, amount: number): string {
+    if ([SplitBy.UNEQUAL, SplitBy.EQUAL].some(x => x === strategy)) {
+      return (amount / 100).toFixed(2);
+    }
+    return amount.toFixed(2);
   }
+
+  protected readonly SplitBy = SplitBy;
 }
