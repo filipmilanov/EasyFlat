@@ -544,6 +544,61 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can an existing expense be deleted correctly?")
+    void givenValidExpenseWhenDeleteThenExpenseIsDeleted() throws ValidationException, ConflictException, AuthenticationException {
+
+        // given
+        double totalAmount = 100;
+        WgDetailDto sharedFlat = new WgDetailDto();
+        sharedFlat.setId(1L);
+
+        List<DebitDto> debitUsers = new ArrayList<>();
+        Set<ApplicationUser> usersOfFlat = sharedFlatRepository.findById(sharedFlat.getId()).orElseThrow().getUsers();
+        usersOfFlat.forEach(user -> {
+            UserListDto userDetailDto = UserListDtoBuilder.builder()
+                .id(user.getId())
+                .build();
+            DebitDto debitDto = DebitDtoBuilder.builder()
+                .user(userDetailDto)
+                .splitBy(SplitBy.EQUAL)
+                .value(totalAmount / usersOfFlat.size())
+                .build();
+            debitUsers.add(debitDto);
+        });
+
+        UserListDto paidBy = UserListDtoBuilder.builder()
+            .id(usersOfFlat.stream().findAny().orElseThrow().getId())
+            .build();
+
+        ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
+            .title("Test")
+            .description("Test")
+            .amountInCents(100.0)
+            .createdAt(LocalDateTime.now())
+            .paidBy(paidBy)
+            .debitUsers(debitUsers)
+            .build();
+
+        Expense actual = service.create(expenseDto);
+
+        // when
+        service.delete(actual.getId());
+
+        // then
+        assertThrows(NotFoundException.class, () -> service.findById(actual.getId()));
+    }
+
+    @Test
+    @DisplayName("It should not be possible to delete a non-existent expense.")
+    void givenInvalidExpenseWhenDeleteThenNotFoundExceptionIsThrown() {
+        // given
+        Long invalidExpenseId = -20L;
+
+        // when + then
+        assertThrows(NotFoundException.class, () -> service.delete(invalidExpenseId));
+    }
+
+    @Test
     @DisplayName("Are repeating Expenses created correctly?")
     void createRepeatingExpense() throws ValidationException, ConflictException, AuthenticationException {
         // given

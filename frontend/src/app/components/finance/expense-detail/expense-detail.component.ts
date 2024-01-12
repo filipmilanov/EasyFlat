@@ -56,9 +56,24 @@ export class ExpenseDetailComponent implements OnInit {
     });
   }
 
-
-  delete() {
-
+  delete(): void {
+    this.financeService.deleteExpense(this.expense.id).subscribe({
+          next: (): void => {
+            this.router.navigate(['/finance/']);
+            this.notification.success(`Expense ${this.expense.title} was successfully deleted`, "Success");
+          },
+          error: error => {
+            console.error(`Expense could not be deleted: ${error}`);
+            this.notification.error(`Expense ${this.expense.title} could not be deleted`, "Error");
+            let firstBracket = error.error.indexOf('[');
+            let lastBracket = error.error.indexOf(']');
+            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+            let errorDescription = error.error.substring(0, firstBracket);
+            errorMessages.forEach(message => {
+              this.notification.error(message, errorDescription);
+            });
+          }
+    });
   }
 
   determineValueRepresentation(value: DebitDto): string {

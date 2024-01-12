@@ -23,6 +23,10 @@ export class FinanceService {
     return this.http.put<ExpenseDto>(`${this.baseUri}/${expense.id}`, expense);
   }
 
+  deleteExpense(expenseId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUri}/${expenseId}`);
+  }
+
   findTotalExpensesPerUser(): Observable<UserValuePairDto[]> {
     return this.http.get<UserValuePairDto[]>(this.baseUri + '/statistics/expenses');
   }

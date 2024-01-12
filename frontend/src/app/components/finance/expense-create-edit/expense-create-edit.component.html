@@ -13,6 +13,16 @@
           {{ submitButtonText }}
         </button>
         <button type="button"
+                class="btn btn-danger me-2"
+                data-bs-toggle="modal"
+                data-bs-target="#confirm-delete-modal"
+                aria-label="Delete expense"
+                *ngIf="!modeIsCreate"
+        >
+          <i class="bi bi-trash"></i>
+          Delete
+        </button>
+        <button type="button"
                 class="btn btn-secondary"
                 [routerLink]="['/finance']">
           <i class="bi" [class.bi-arrow-left]="true"></i>
@@ -22,6 +32,11 @@
     </div>
     <div style="width: 100%; height: 100%; border: 1px black solid"></div>
 
+    <app-confirm-delete-dialog
+      deleteInfo="expense"
+      [deleteName]="expense.title"
+      (confirm)="delete()">
+    </app-confirm-delete-dialog>
 
     <div class="row row-cols-1">
       <div class="row p-2">
