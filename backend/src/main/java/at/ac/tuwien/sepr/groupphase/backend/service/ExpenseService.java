@@ -77,6 +77,7 @@ public interface ExpenseService {
      * Removes an {@link Expense} stored in the db.
      *
      * @param id an ID of a stored {@link Expense}
+     * @throws AuthenticationException if the user is not authenticated
      */
     void delete(Long id) throws AuthenticationException;
 }

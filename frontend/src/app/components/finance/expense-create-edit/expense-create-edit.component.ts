@@ -213,6 +213,13 @@ export class ExpenseCreateEditComponent implements OnInit {
       error: error => {
         console.error(`Expense could not be deleted: ${error}`);
         this.notification.error(`Expense ${this.expense.title} could not be deleted`, "Error");
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
       }
     });
   }
