@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/api/v1/authentication")
 public class LoginEndpoint {
@@ -58,8 +60,20 @@ public class LoginEndpoint {
 
     @PermitAll
     @PutMapping("/signOut")
-    public UserDetailDto signOut(@RequestHeader("Authorization") String authToken, @RequestBody String flatName) {
+    public UserDetailDto signOut(@RequestBody String flatName, @RequestHeader("Authorization") String authToken) {
         return userService.signOut(flatName, authToken);
+    }
+
+    @PermitAll
+    @GetMapping("/users")
+    public List<UserDetailDto> getUsers(@RequestHeader("Authorization") String authToken) {
+        return userService.getAllOtherUsers(authToken);
+    }
+
+    @PermitAll
+    @PutMapping("/admin")
+    public UserDetailDto setAdmin(@RequestBody Long selectedUserId) {
+        return userService.setAdminToTheFlat(selectedUserId);
     }
 
 }

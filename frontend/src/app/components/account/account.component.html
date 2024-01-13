@@ -87,7 +87,7 @@
                 <small class="form-text text-warning">Your flat name is required!</small>
               </div>
             </div>
-            <button style="margin-right: 10px;" type="button" (click)="signOut()" class="btn btn-danger float-right">Sign Out</button>
+            <button style="margin-right: 10px;" type="button" (click)="openAdminSelectionModal()" class="btn btn-danger float-right">Sign Out</button>
             <button *ngIf="user.admin" style="margin-right: 10px;" type="button" (click)="deleteFlat()" class="btn btn-danger float-right">Delete Flat</button>
           </form>
         </div>

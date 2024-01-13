@@ -6,6 +6,7 @@ import {tap} from 'rxjs/operators';
 import {jwtDecode} from 'jwt-decode';
 import {Globals} from '../global/globals';
 import {SharedFlat} from "../dtos/sharedFlat";
+import {ItemDto} from "../dtos/item";
 
 @Injectable({
   providedIn: 'root'
@@ -111,8 +112,20 @@ export class AuthService {
     return this.httpClient.put<string>(this.authBaseUri + "/signOut", flatName, {headers});
   }
 
-  isInWg(event: boolean) {
-    return !!this.getToken() && event;
+
+  getUsers(authToken: string): Observable<UserDetail[]> {
+    const headers = new HttpHeaders({
+    'Authorization': `Bearer ${authToken}`
+  });
+    return this.httpClient.get<UserDetail[]>(this.authBaseUri + "/users", {headers});
   }
 
+  setAdmin(selectedUserId): Observable<UserDetail> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+    };
+    return this.httpClient.put<UserDetail>(this.authBaseUri + "/admin", selectedUserId, httpOptions);
+  }
 }
