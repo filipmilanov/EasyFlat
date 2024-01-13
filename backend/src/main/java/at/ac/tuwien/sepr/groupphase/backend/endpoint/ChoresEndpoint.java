@@ -112,70 +112,9 @@ public class ChoresEndpoint {
 
     @GetMapping("/pdf")
     public ResponseEntity<byte[]> generateChoreListPdf() throws AuthenticationException, IOException {
-        List<Chore> chores = choreService.getChores(new ChoreSearchDto(null, null));
-        chores.sort(Comparator.comparing(Chore::getEndDate));
-
-        String htmlContent = createChoreListHtml(chores);
-
-        byte[] pdfBytes = choreService.generatePdf(htmlContent);
+        byte[] pdfBytes = choreService.generatePdf();
 
         return new ResponseEntity<>(pdfBytes, HttpStatus.OK);
     }
-
-    private String createChoreListHtml(List<Chore> chores) {
-        StringBuilder htmlContent = new StringBuilder();
-
-        htmlContent.append("<html lang=\"en\">");
-        htmlContent.append("<head>");
-        htmlContent.append("<meta charset=\"UTF-8\"></meta>");
-        htmlContent.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></meta>");
-        htmlContent.append("<title>Chores</title>");
-
-        htmlContent.append("<style>");
-        htmlContent.append("h1 { text-align: center; }");
-        htmlContent.append(".row { display: flex; flex-wrap: wrap; justify-content: space-between; }");
-        htmlContent.append(".chore-card { width: calc(25% - 1em); margin: 0.5em; border: 1px solid #ddd; padding: 1em; box-sizing: border-box; page-break-inside: avoid; }");
-        htmlContent.append("</style>");
-
-        htmlContent.append("</head>");
-        htmlContent.append("<body>");
-
-        htmlContent.append("<h1 class=\"display-4\">Chores</h1>");
-        htmlContent.append("<hr></hr>");
-
-        int cardsPerRow = 4;
-        int totalChores = chores.size();
-
-        for (int i = 0; i < totalChores; i += cardsPerRow) {
-            htmlContent.append("<div class=\"row\">");
-
-            for (int j = i; j < Math.min(i + cardsPerRow, totalChores); j++) {
-                Chore chore = chores.get(j);
-
-                htmlContent.append("<div class=\"chore-card\">");
-                htmlContent.append("<h2>").append(chore.getName()).append("</h2>");
-                if (chore.getDescription() != null) {
-                    htmlContent.append("<p>Description: ").append(chore.getDescription()).append("</p>");
-                }
-                htmlContent.append("<p>Deadline: ").append(chore.getEndDate().toString()).append("</p>");
-                htmlContent.append("<p>Responsible Person: ").append(chore.getUser() != null ? chore.getUser().getFirstName() : "None").append(" ")
-                    .append(chore.getUser() != null ? chore.getUser().getLastName() : "")
-                    .append("</p>");
-                htmlContent.append("</div>");
-            }
-
-            htmlContent.append("</div>");
-        }
-
-        htmlContent.append("</body>");
-        htmlContent.append("</html>");
-
-        return htmlContent.toString();
-    }
-
-
-
-
-
 
 }

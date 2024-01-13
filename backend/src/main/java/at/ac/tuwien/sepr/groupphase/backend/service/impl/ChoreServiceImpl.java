@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -54,13 +55,16 @@ public class ChoreServiceImpl implements ChoreService {
 
     private final ChoreValidator choreValidator;
 
-    public ChoreServiceImpl(ChoreRepository choreRepository, ChoreMapper choreMapper, AuthService authService, UserRepository userRepository, PreferenceRepository preferenceRepository, ChoreValidator choreValidator) {
+    private final ChoreService choreService;
+
+    public ChoreServiceImpl(ChoreRepository choreRepository, ChoreMapper choreMapper, AuthService authService, UserRepository userRepository, PreferenceRepository preferenceRepository, ChoreValidator choreValidator, ChoreService choreService) {
         this.choreRepository = choreRepository;
         this.choreMapper = choreMapper;
         this.authService = authService;
         this.userRepository = userRepository;
         this.preferenceRepository = preferenceRepository;
         this.choreValidator = choreValidator;
+        this.choreService = choreService;
     }
 
     @Secured("ROLE_USER")
@@ -329,7 +333,6 @@ public class ChoreServiceImpl implements ChoreService {
         return toReturn;
     }
 
-
     private void sortUsersByPoints(List<ApplicationUser> users) {
         int n = users.size();
         for (int i = 0; i < n - 1; i++) {
@@ -344,7 +347,6 @@ public class ChoreServiceImpl implements ChoreService {
             }
         }
     }
-
 
     @Override
     public List<ApplicationUser> getUsers() throws AuthenticationException {
@@ -365,25 +367,22 @@ public class ChoreServiceImpl implements ChoreService {
         return userRepository.save(existingUser);
     }
 
-    public byte[] generatePdf(String htmlContent) throws IOException {
-        // Create a temporary file for storing the HTML content
+    public byte[] generatePdf() throws IOException, AuthenticationException {
+        String htmlContent = this.createChoreListHtml();
+
         Path tempFilePath = Files.createTempFile("my-pdf", ".html");
 
-        // Write the HTML content to the temporary file
         Files.write(tempFilePath, htmlContent.getBytes(StandardCharsets.UTF_8));
 
-        // Parse the XHTML content and create a Document object
         Document document = Jsoup.parse(tempFilePath.toFile(), "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
 
-        // Convert the Document to a byte array representing the PDF content
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             ITextRenderer renderer = new ITextRenderer();
             SharedContext sharedContext = renderer.getSharedContext();
             sharedContext.setPrint(true);
             sharedContext.setInteractive(false);
 
-            // Render the XHTML content directly to the OutputStream
             renderer.setDocumentFromString(htmlContent, tempFilePath.toUri().toURL().toString());
             renderer.layout();
             renderer.createPDF(outputStream);
@@ -392,6 +391,60 @@ public class ChoreServiceImpl implements ChoreService {
         } catch (DocumentException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String createChoreListHtml() throws AuthenticationException {
+        List<Chore> chores = choreService.getChores(new ChoreSearchDto(null, null));
+        chores.sort(Comparator.comparing(Chore::getEndDate));
+
+        StringBuilder htmlContent = new StringBuilder();
+
+        htmlContent.append("<html lang=\"en\">");
+        htmlContent.append("<head>");
+        htmlContent.append("<meta charset=\"UTF-8\"></meta>");
+        htmlContent.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></meta>");
+        htmlContent.append("<title>Chores</title>");
+
+        htmlContent.append("<style>");
+        htmlContent.append("h1 { text-align: center; }");
+        htmlContent.append(".row { display: flex; flex-wrap: wrap; justify-content: space-between; }");
+        htmlContent.append(".chore-card { width: calc(25% - 1em); margin: 0.5em; border: 1px solid #ddd; padding: 1em; box-sizing: border-box; page-break-inside: avoid; }");
+        htmlContent.append("</style>");
+
+        htmlContent.append("</head>");
+        htmlContent.append("<body>");
+
+        htmlContent.append("<h1 class=\"display-4\">Chores</h1>");
+        htmlContent.append("<hr></hr>");
+
+        int cardsPerRow = 4;
+        int totalChores = chores.size();
+
+        for (int i = 0; i < totalChores; i += cardsPerRow) {
+            htmlContent.append("<div class=\"row\">");
+
+            for (int j = i; j < Math.min(i + cardsPerRow, totalChores); j++) {
+                Chore chore = chores.get(j);
+
+                htmlContent.append("<div class=\"chore-card\">");
+                htmlContent.append("<h2>").append(chore.getName()).append("</h2>");
+                if (chore.getDescription() != null) {
+                    htmlContent.append("<p>Description: ").append(chore.getDescription()).append("</p>");
+                }
+                htmlContent.append("<p>Deadline: ").append(chore.getEndDate().toString()).append("</p>");
+                htmlContent.append("<p>Responsible Person: ").append(chore.getUser() != null ? chore.getUser().getFirstName() : "None").append(" ")
+                    .append(chore.getUser() != null ? chore.getUser().getLastName() : "")
+                    .append("</p>");
+                htmlContent.append("</div>");
+            }
+
+            htmlContent.append("</div>");
+        }
+
+        htmlContent.append("</body>");
+        htmlContent.append("</html>");
+
+        return htmlContent.toString();
     }
 }
 

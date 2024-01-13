@@ -27,5 +27,5 @@ public interface ChoreService {
 
     ApplicationUser updatePoints(Long userId, Integer points);
 
-    byte[] generatePdf(String htmlContent) throws IOException;
+    byte[] generatePdf() throws IOException, AuthenticationException;
 }
