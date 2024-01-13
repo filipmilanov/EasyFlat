@@ -35,4 +35,8 @@ public record RecipeSuggestionDto(
     public RecipeSuggestionDto withExtendedIngredients(List<RecipeIngredientDto> newRecipeIngredientDtos) {
         return new RecipeSuggestionDto(id, title, servings, readyInMinutes, newRecipeIngredientDtos, summary, missedIngredients, dishTypes);
     }
+
+    public RecipeSuggestionDto withSummary(String newSummary) {
+        return new RecipeSuggestionDto(id, title, servings, readyInMinutes, extendedIngredients, newSummary, missedIngredients, dishTypes);
+    }
 }

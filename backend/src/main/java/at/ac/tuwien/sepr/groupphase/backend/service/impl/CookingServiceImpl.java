@@ -12,6 +12,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.Step;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.CookbookMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
@@ -451,6 +452,16 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException, ValidationException,
         AuthenticationException {
+        if (recipe.id() != null) {
+            RecipeDetailDto recipeWithSteps = getRecipeDetails(recipe.id());
+            String summary = recipe.summary();
+            for (Step step : recipeWithSteps.steps().steps()) {
+                summary += "<br>" + "<strong>Step " + step.number() + "</strong> : " + step.step();
+            }
+
+            recipe = recipe.withId(null).withSummary(summary);
+
+        }
         recipeValidator.validateForCreate(recipe);
         List<RecipeIngredient> ingredientList = ingredientService.createAll(recipe.extendedIngredients());
         RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipe, ingredientList);

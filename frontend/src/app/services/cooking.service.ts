@@ -37,9 +37,7 @@ export class CookingService {
   }
 
   createCookbookRecipe(recipe: RecipeSuggestion): Observable<RecipeSuggestion> {
-    if(recipe.id != null){
-      recipe.id = null;
-    }
+
     if (recipe.missedIngredients) {
       recipe.missedIngredients.forEach(ingredient => {
         if (ingredient.id != null) {
