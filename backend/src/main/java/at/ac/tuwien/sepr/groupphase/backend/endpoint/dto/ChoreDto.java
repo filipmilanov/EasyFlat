@@ -9,7 +9,7 @@ import java.util.Date;
 public record ChoreDto(
     Long id,
 
-    String choreName,
+    String name,
 
     String description,
 

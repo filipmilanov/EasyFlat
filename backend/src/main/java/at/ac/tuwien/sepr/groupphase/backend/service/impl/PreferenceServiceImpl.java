@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.PreferenceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.PreferenceService;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,51 +35,34 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     private final UserRepository userRepository;
 
+    private final Authorization authorization;
 
-    public PreferenceServiceImpl(AuthService authService, PreferenceRepository preferenceRepository, PreferenceMapper preferenceMapper, ChoreRepository choreRepository, UserRepository userRepository) {
+
+    public PreferenceServiceImpl(AuthService authService, PreferenceRepository preferenceRepository, PreferenceMapper preferenceMapper, ChoreRepository choreRepository, UserRepository userRepository, Authorization authorization) {
         this.authService = authService;
         this.preferenceRepository = preferenceRepository;
         this.preferenceMapper = preferenceMapper;
         this.choreRepository = choreRepository;
         this.userRepository = userRepository;
+        this.authorization = authorization;
     }
 
     @Override
     public PreferenceDto update(PreferenceDto preferenceDto) throws AuthenticationException {
         LOGGER.trace("update({})", preferenceDto);
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-
 
         Preference preference = preferenceMapper.preferenceDtoToEntity(preferenceDto);
-        Chore firstChore = getChoreFromName(preferenceDto.first());
-        if (firstChore != null) {
-            preference.setFirstId(firstChore.getId());
-        }
-        Chore secondChore = getChoreFromName(preferenceDto.second());
-        if (secondChore != null) {
-            preference.setSecondId(secondChore.getId());
-        }
-        Chore thirdChore = getChoreFromName(preferenceDto.third());
-        if (thirdChore != null) {
-            preference.setThirdId(thirdChore.getId());
-        }
-        Chore fourthChore = getChoreFromName(preferenceDto.fourth());
-        if (fourthChore != null) {
-            preference.setFourthId(fourthChore.getId());
-        }
         preference.setUserId(applicationUser);
 
         Optional<Preference> existingPreference = Optional.ofNullable(preferenceRepository.findByUserId(applicationUser));
 
         if (existingPreference.isPresent()) {
             Preference existing = existingPreference.get();
-            existing.setFirstId(preference.getFirstId());
-            existing.setSecondId(preference.getSecondId());
-            existing.setThirdId(preference.getThirdId());
-            existing.setFourthId(preference.getFourthId());
+            existing.setFirst(preference.getFirst());
+            existing.setSecond(preference.getSecond());
+            existing.setThird(preference.getThird());
+            existing.setFourth(preference.getFourth());
 
             Preference toSave = preferenceRepository.save(existing);
             applicationUser.setPreference(existing);
@@ -100,27 +84,7 @@ public class PreferenceServiceImpl implements PreferenceService {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
         Preference preferenceToRet = preferenceRepository.findByUserId(applicationUser);
-
-        // Map Preference's Chore IDs to Chore names in a new PreferenceDto
-        PreferenceDto preferenceDto = new PreferenceDto(
-            preferenceToRet.getId(),
-            getChoreNameById(preferenceToRet.getFirstId()),
-            getChoreNameById(preferenceToRet.getSecondId()),
-            getChoreNameById(preferenceToRet.getThirdId()),
-            getChoreNameById(preferenceToRet.getFourthId())
-        );
-
-        return preferenceDto;
+        return preferenceMapper.entityToPreferenceDto(preferenceToRet);
     }
 
-    private String getChoreNameById(Long choreId) {
-        Chore chore = choreRepository.findById(choreId).orElse(null);
-        return chore != null ? chore.getName() : null;
-    }
-
-
-
-    private Chore getChoreFromName(String choreName) {
-        return choreRepository.findByName(choreName);
-    }
 }

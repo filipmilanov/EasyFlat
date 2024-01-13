@@ -9,8 +9,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,14 +25,18 @@ public class Preference {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private Long firstId;
-    @Column
-    private Long secondId;
-    @Column
-    private Long thirdId;
-    @Column
-    private Long fourthId;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Chore firstId;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Chore secondId;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Chore thirdId;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Chore fourthId;
     @OneToOne
     private ApplicationUser user;
 
@@ -38,19 +45,19 @@ public class Preference {
     }
 
 
-    public Long getFirstId() {
+    public Chore getFirst() {
         return firstId;
     }
 
-    public Long getSecondId() {
+    public Chore getSecond() {
         return secondId;
     }
 
-    public Long getThirdId() {
+    public Chore getThird() {
         return thirdId;
     }
 
-    public Long getFourthId() {
+    public Chore getFourth() {
         return fourthId;
     }
 
@@ -66,19 +73,19 @@ public class Preference {
         this.id = id;
     }
 
-    public void setFirstId(Long firstId) {
+    public void setFirst(Chore firstId) {
         this.firstId = firstId;
     }
 
-    public void setSecondId(Long secondId) {
+    public void setSecond(Chore secondId) {
         this.secondId = secondId;
     }
 
-    public void setThirdId(Long thirdId) {
+    public void setThird(Chore thirdId) {
         this.thirdId = thirdId;
     }
 
-    public void setFourthId(Long fourthId) {
+    public void setFourth(Chore fourthId) {
         this.fourthId = fourthId;
     }
 

@@ -15,6 +15,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
@@ -195,10 +196,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
+        // Input validation
+        if (itemId == null || itemId <= 0) {
+            throw new IllegalArgumentException("Invalid itemId");
+        }
         Optional<ShoppingItem> toDeleteOptional = shoppingItemRepository.findById(itemId);
-
         if (toDeleteOptional.isPresent()) {
             ShoppingItem toDelete = toDeleteOptional.get();
+            // Enhanced authorization
             if (!toDelete.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
                 throw new AuthenticationException("Authentication wrong", List.of("User can not delete this item"));
             }
@@ -211,15 +216,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     @Transactional
-    @Secured("ROLE_USER")
-    public ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException {
+    @Secured("ROLE_ADMIN")
+    public ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException, AuthorizationException {
         LOGGER.trace("deleteList({})", shopId);
+        //Authentication(check the correct user)
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
         List<ShoppingItem> items = shoppingItemRepository.findByShoppingListId(shopId);
         shoppingItemRepository.deleteAll(items);
+        //Authorization(check if the user can work with this object)
+        ShoppingList check = shoppingListRepository.findByIdAndSharedFlatIs(shopId, applicationUser.getSharedFlat());
+        if (check == null) {
+            throw new AuthorizationException("Authorization failed", List.of("User has no access to this shopping list!"));
+        }
+
         Optional<ShoppingList> toDeleteOptional = shoppingListRepository.findById(shopId);
         if (toDeleteOptional.isPresent()) {
             ShoppingList toDelete = toDeleteOptional.get();
@@ -227,6 +236,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             if (toDelete.getName().equals("Shopping List (Default)")) {
                 throw new ValidationException("Default list can not be deleted!", null);
             }
+
             shoppingListRepository.deleteByListId(shopId);
             return toDelete;
         } else {

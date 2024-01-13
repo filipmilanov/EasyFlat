@@ -44,13 +44,13 @@ public class ChoreValidatorImpl implements ChoreValidator {
 
         List<String> errors = new ArrayList<>();
 
-        if (chore.choreName() == null) {
+        if (chore.name() == null) {
             errors.add("No name given");
         } else {
-            if (chore.choreName().isBlank()) {
+            if (chore.name().isBlank()) {
                 errors.add("The given name can not be blank");
             }
-            if (chore.choreName().length() > 120) {
+            if (chore.name().length() > 120) {
                 errors.add("The name is too long");
             }
         }

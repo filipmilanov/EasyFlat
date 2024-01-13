@@ -302,29 +302,29 @@ public class ChoreServiceImpl implements ChoreService {
             return toReturn;
         }
         Preference preference = preferenceRepository.findByUserId(user);
-        if (preference.getFirstId() != null) {
-            Optional<Chore> firstChore = choreRepository.findById(preference.getFirstId());
+        if (preference.getFirst() != null) {
+            Optional<Chore> firstChore = choreRepository.findById(preference.getFirst().getId());
             if (firstChore.isPresent()) {
                 Chore choreToAdd = firstChore.get();
                 toReturn.add(choreToAdd);
             }
         }
-        if (preference.getSecondId() != null) {
-            Optional<Chore> secondChore = choreRepository.findById(preference.getSecondId());
+        if (preference.getSecond() != null) {
+            Optional<Chore> secondChore = choreRepository.findById(preference.getSecond().getId());
             if (secondChore.isPresent()) {
                 Chore choreToAdd = secondChore.get();
                 toReturn.add(choreToAdd);
             }
         }
-        if (preference.getThirdId() != null) {
-            Optional<Chore> thirdChore = choreRepository.findById(preference.getThirdId());
+        if (preference.getThird() != null) {
+            Optional<Chore> thirdChore = choreRepository.findById(preference.getThird().getId());
             if (thirdChore.isPresent()) {
                 Chore choreToAdd = thirdChore.get();
                 toReturn.add(choreToAdd);
             }
         }
-        if (preference.getFourthId() != null) {
-            Optional<Chore> fourthChore = choreRepository.findById(preference.getFourthId());
+        if (preference.getFourth() != null) {
+            Optional<Chore> fourthChore = choreRepository.findById(preference.getFourth().getId());
             if (fourthChore.isPresent()) {
                 Chore choreToAdd = fourthChore.get();
                 toReturn.add(choreToAdd);

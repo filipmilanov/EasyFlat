@@ -18,7 +18,7 @@ export class ChoreService {
   }
 
   createChore(chore: ChoresDto) {
-    return this.httpClient.post<ShoppingListDto>(this.choreBaseUri, chore);
+    return this.httpClient.post<ChoresDto>(this.choreBaseUri, chore);
   }
 
   getChores(searchParams: ChoreSearchDto): Observable<ChoresDto[]> {

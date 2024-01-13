@@ -7,13 +7,13 @@ import java.util.List;
 public record PreferenceDto(
     Long id,
 
-    String first,
+    ChoreDto first,
 
-    String second,
+    ChoreDto second,
 
-    String third,
+    ChoreDto third,
 
-    String fourth
+    ChoreDto fourth
 ) {
 
 }

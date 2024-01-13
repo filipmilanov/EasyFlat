@@ -4,7 +4,7 @@ import {SharedFlat} from "./sharedFlat";
 export class ChoresDto {
 
   id: number;
-  choreName: string;
+  name: string;
   description: string;
   endDate: Date;
   points: number;

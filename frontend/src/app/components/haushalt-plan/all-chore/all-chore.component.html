@@ -52,7 +52,7 @@
 <div class="row row-cols-4">
     <div style="margin-bottom: 20px;" class="col" *ngFor="let chore of chores">
         <a style="text-decoration: none">
-            <app-chore-card [choreName]="chore.choreName"
+            <app-chore-card [name]="chore.name"
                             [description]="chore.description"
                             [endDate]="chore.endDate"
                             [points]="chore.points"

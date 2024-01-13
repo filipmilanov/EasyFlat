@@ -86,6 +86,7 @@ public class ChoresEndpoint {
         List<Long> choreIds = Arrays.stream(choreIdsString.split(","))
             .map(Long::valueOf)
             .collect(Collectors.toList());
+
         List<Chore> deletedChores = choreService.deleteChores(choreIds);
         return choreMapper.entityListToDtoList(deletedChores);
     }

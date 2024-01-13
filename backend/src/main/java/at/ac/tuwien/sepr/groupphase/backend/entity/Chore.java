@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,8 +9,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Entity(name = "chore") // name of the table
@@ -37,6 +40,18 @@ public class Chore {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private ApplicationUser user;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Preference> firstPrefList;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Preference> secondPrefList;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Preference> thirdPrefList;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Preference> fourthPrefList;
+
 
 
     public Chore() {
@@ -84,8 +99,40 @@ public class Chore {
         return sharedFlat;
     }
 
+    public List<Preference> getFirstPrefList() {
+        return firstPrefList;
+    }
+
+    public List<Preference> getSecondPrefList() {
+        return secondPrefList;
+    }
+
+    public List<Preference> getThirdPrefList() {
+        return thirdPrefList;
+    }
+
+    public List<Preference> getFourthPrefList() {
+        return fourthPrefList;
+    }
+
     public void setSharedFlat(SharedFlat sharedFlat) {
         this.sharedFlat = sharedFlat;
+    }
+
+    public void setFirstPrefList(List<Preference> firstPrefList) {
+        this.firstPrefList = firstPrefList;
+    }
+
+    public void setSecondPrefList(List<Preference> secondPrefList) {
+        this.secondPrefList = secondPrefList;
+    }
+
+    public void setThirdPrefList(List<Preference> thirdPrefList) {
+        this.thirdPrefList = thirdPrefList;
+    }
+
+    public void setFourthPrefList(List<Preference> fourthPrefList) {
+        this.fourthPrefList = fourthPrefList;
     }
 
     public Chore setPoints(int points) {

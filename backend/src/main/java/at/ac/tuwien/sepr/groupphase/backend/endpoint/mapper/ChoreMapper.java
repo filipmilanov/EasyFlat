@@ -10,12 +10,12 @@ import java.util.List;
 @Mapper
 public abstract class ChoreMapper {
 
-    @Mapping(target = "name", source = "choreName")
+
     public abstract Chore choreDtoToEntity(ChoreDto choreDto);
 
-    @Mapping(target = "choreName", source = "name")
+
     public abstract ChoreDto entityToChoreDto(Chore chore);
 
-    @Mapping(target = "choreName", source = "name")
+
     public abstract List<ChoreDto> entityListToDtoList(List<Chore> lists);
 }

@@ -7,8 +7,8 @@ import {UserDetail} from "../../../dtos/auth-request";
   styleUrls: ['./chore-preference-card.component.scss']
 })
 export class ChorePreferenceCardComponent {
-  @Input() first: string;
-  @Input() second: string;
-  @Input() third: string;
-  @Input() fourth: string;
+  @Input() firstName: string;
+  @Input() secondName: string;
+  @Input() thirdName: string;
+  @Input() fourthName: string;
 }

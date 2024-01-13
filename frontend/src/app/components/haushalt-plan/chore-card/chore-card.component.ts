@@ -7,7 +7,7 @@ import {UserDetail} from "../../../dtos/auth-request";
   styleUrls: ['./chore-card.component.scss']
 })
 export class ChoreCardComponent {
-  @Input() choreName: string;
+  @Input() name: string;
   @Input() description: string;
   @Input() endDate: Date;
   @Input() points: number;

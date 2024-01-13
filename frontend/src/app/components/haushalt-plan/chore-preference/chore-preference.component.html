@@ -10,7 +10,8 @@
           <div class="form-elements">
             <div class="col-md-2 col-lg-2 mt-2">
               <select style="width: 250px" class="form-select form-select-md" name="selectedChore" [(ngModel)]="preference.first">
-                <option *ngFor="let chore of chores" [value]="chore.choreName">{{ chore.choreName }}</option>
+                <option></option>
+                <option *ngFor="let chore of chores" [ngValue]="chore">{{ chore.name }}</option>
               </select>
             </div>
           </div>
@@ -22,7 +23,8 @@
           <div class="form-elements">
             <div class="col-md-2 col-lg-2 mt-2">
               <select style="width: 250px" class="form-select form-select-md" name="selectedShoppingList" [(ngModel)]="preference.second">
-                <option *ngFor="let chore of chores" [value]="chore.choreName">{{ chore.choreName }}</option>
+                <option></option>
+                <option *ngFor="let chore of chores" [ngValue]="chore">{{ chore.name }}</option>
               </select>
             </div>
           </div>
@@ -34,7 +36,8 @@
           <div class="form-elements">
             <div class="col-md-2 col-lg-2 mt-2">
               <select style="width: 250px" class="form-select form-select-md" name="selectedShoppingList" [(ngModel)]="preference.third">
-                <option *ngFor="let chore of chores" [value]="chore.choreName">{{ chore.choreName }}</option>
+                <option></option>
+                <option *ngFor="let chore of chores" [ngValue]="chore">{{ chore.name }}</option>
               </select>
             </div>
           </div>
@@ -46,7 +49,8 @@
           <div class="form-elements">
             <div class="col-md-2 col-lg-2 mt-2">
               <select style="width: 250px" class="form-select form-select-md" name="selectedShoppingList" [(ngModel)]="preference.fourth">
-                <option *ngFor="let chore of chores" [value]="chore.choreName">{{ chore.choreName }}</option>
+                <option></option>
+                <option *ngFor="let chore of chores" [ngValue]="chore">{{ chore.name }}</option>
               </select>
             </div>
           </div>
@@ -60,10 +64,10 @@
     <!-- Div placed next to the chore menus -->
     <div class="col-md-6" style="margin-top: 50px">
       <div class="col-md-4 col-lg-6 mt-2" >
-        <app-chore-preference-card [first]="oldPreference.first"
-                        [second]="oldPreference.second"
-                        [third]="oldPreference.third"
-                        [fourth]="oldPreference.fourth" >
+        <app-chore-preference-card [firstName]="oldPreference?.first?.name"
+                        [secondName]="oldPreference?.second?.name"
+                        [thirdName]="oldPreference?.third?.name"
+                        [fourthName]="oldPreference?.fourth?.name" >
         </app-chore-preference-card>
       </div>
     </div>

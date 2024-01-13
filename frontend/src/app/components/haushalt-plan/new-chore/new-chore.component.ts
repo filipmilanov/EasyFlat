@@ -18,7 +18,7 @@ import {UnitService} from "../../../services/unit.service";
 export class NewChoreComponent {
   chore: ChoresDto = {
     id: null,
-    choreName: '',
+    name: '',
     description: null,
     endDate: new Date(),
     points: null,
@@ -42,7 +42,8 @@ export class NewChoreComponent {
     }
     this.choreService.createChore(this.chore).subscribe({
       next: data => {
-        this.notification.success(`Chore ${this.chore.choreName} successfully created.`, "Success");
+        this.chore = data;
+        this.notification.success(`Chore ${this.chore.name} successfully created.`, "Success");
         this.router.navigate(['/chores', 'all']);
       },
       error: error => {

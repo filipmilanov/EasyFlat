@@ -11,15 +11,17 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
-import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.UserValidator;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -50,6 +52,7 @@ public class CustomUserDetailService implements UserService {
         this.jwtTokenizer = jwtTokenizer;
         this.userMapper = userMapper;
         this.userValidator = userValidator;
+
     }
 
     @Override
@@ -166,21 +169,23 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDetailDto signOut(String flatName, String authToken) {
         LOGGER.trace("signOut({}, {})", flatName, authToken);
-        String email = jwtTokenizer.getEmailFromToken(authToken);
-        ApplicationUser user = userRepository.findUserByEmail(email);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ApplicationUser user = findApplicationUserByEmail((String) authentication.getPrincipal());
         SharedFlat userFlat = user.getSharedFlat();
         if (userFlat == null) {
             throw new BadCredentialsException("");
         }
+
 
         if (userFlat.getName().equals(flatName)) {
             user.setSharedFlat(null);
             user.setAdmin(false);
             ApplicationUser updatedUser = userRepository.save(user);
             boolean exist = userRepository.existsBySharedFlat(userFlat);
-            if (exist) {
+            if (!exist) {
                 sharedFlatRepository.deleteById(userFlat.getId());
             }
             return userMapper.entityToUserDetailDto(updatedUser);

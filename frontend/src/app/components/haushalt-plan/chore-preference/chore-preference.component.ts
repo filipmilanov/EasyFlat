@@ -50,6 +50,7 @@ export class ChorePreferenceComponent implements OnInit {
 
   public onSubmit(form: NgForm): void {
     console.log('is form valid?', form.valid, this.preference);
+    console.log(this.chores);
     if (form.valid) {
       let observable: Observable<Preference>;
       observable = this.preferenceService.editPreference(this.preference);
@@ -57,6 +58,7 @@ export class ChorePreferenceComponent implements OnInit {
       observable.subscribe({
         next: data => {
           this.notification.success(`Preferences successfully changed.`, "Success");
+          console.log('Preferences updated successfully:', data);
 
           // Fetch the updated preference after editing
           this.preferenceService.getLastPreference().subscribe({
@@ -82,17 +84,20 @@ export class ChorePreferenceComponent implements OnInit {
 
 
   ngOnInit(): void {
+    console.log(this.oldPreference);
+
     this.preferenceService.getLastPreference().subscribe({
       next: (lastPreference: Preference) => {
         if (lastPreference) {
           this.oldPreference = lastPreference;
-          console.log(lastPreference);
+          console.log('lastPref', lastPreference);
         }
 
         // Rest of your code...
         this.choreService.getChores(this.searchParams).subscribe({
           next: (chores: any[]) => {
             this.chores = chores;
+            console.log('chores', this.chores)
           },
           error: (error: any) => {
             console.error('Error fetching chores:', error);

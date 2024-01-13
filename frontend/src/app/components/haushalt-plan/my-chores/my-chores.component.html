@@ -6,7 +6,7 @@
   <div class="col" *ngFor="let chore of chores">
     <a style="text-decoration: none"
        aria-label="Show chore details">
-      <app-my-chore-card [choreName]="chore.choreName"
+      <app-my-chore-card [choreName]="chore.name"
                       [description]="chore.description"
                       [endDate]="chore.endDate"
                       [points]="chore.points"
