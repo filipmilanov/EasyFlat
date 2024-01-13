@@ -300,7 +300,7 @@ public class CookingServiceTest {
             .extendedIngredients(new ArrayList<>())
             .build();
 
-        RecipeSuggestion oldRecipe = cookingService.getCookbookRecipe(1L).orElseThrow();
+
 
 
         RecipeSuggestion updatedRecipe = cookingService.updateCookbookRecipe(updatedRecipeDto);
@@ -335,14 +335,14 @@ public class CookingServiceTest {
     @DisplayName("Test for deleting a cookbook recipe")
     void deleteCookbookRecipeShouldSucceed() throws AuthenticationException, NotFoundException, AuthorizationException {
 
-        RecipeSuggestion existing = cookingService.getCookbookRecipe(1L).orElseThrow();
+        RecipeSuggestionDto existing = cookingService.getCookbookRecipe(1L);
 
         RecipeSuggestion deleted = cookingService.deleteCookbookRecipe(1L);
 
         assertNotNull(deleted);
-        assertEquals(existing.getId(), deleted.getId());
-        assertEquals(existing.getTitle(), deleted.getTitle());
-        assertEquals(existing.getSummary(), deleted.getSummary());
+        assertEquals(existing.id(), deleted.getId());
+        assertEquals(existing.title(), deleted.getTitle());
+        assertEquals(existing.summary(), deleted.getSummary());
     }
 
     @Test

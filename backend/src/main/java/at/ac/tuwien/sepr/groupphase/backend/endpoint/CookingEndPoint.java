@@ -58,9 +58,8 @@ public class CookingEndPoint {
 
     @PermitAll
     @GetMapping("/cookbook/{id}")
-    public Optional<RecipeSuggestionDto> getCookbookRecipe(@PathVariable Long id) {
-        Optional<RecipeSuggestion> recipe = cookingService.getCookbookRecipe(id);
-        return recipe.flatMap(currentRecipe -> Optional.ofNullable(recipeMapper.entityToRecipeSuggestionDto(currentRecipe)));
+    public RecipeSuggestionDto getCookbookRecipe(@PathVariable Long id) {
+        return cookingService.getCookbookRecipe(id);
     }
 
     @PermitAll

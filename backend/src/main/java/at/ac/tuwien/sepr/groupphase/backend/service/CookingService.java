@@ -73,7 +73,7 @@ public interface CookingService {
      * @param id The ID of the recipe to retrieve.
      * @return An Optional containing the recipe, if found.
      */
-    Optional<RecipeSuggestion> getCookbookRecipe(Long id);
+    RecipeSuggestionDto getCookbookRecipe(Long id);
 
     /**
      * Update an existing recipe in the cookbook.

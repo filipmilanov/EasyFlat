@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.Min;
@@ -29,5 +30,9 @@ public record RecipeSuggestionDto(
 
     public RecipeSuggestionDto withId(Long newId) {
         return new RecipeSuggestionDto(newId, title, servings, readyInMinutes, extendedIngredients, summary, missedIngredients, dishTypes);
+    }
+
+    public RecipeSuggestionDto withExtendedIngredients(List<RecipeIngredientDto> newRecipeIngredientDtos) {
+        return new RecipeSuggestionDto(id, title, servings, readyInMinutes, newRecipeIngredientDtos, summary, missedIngredients, dishTypes);
     }
 }

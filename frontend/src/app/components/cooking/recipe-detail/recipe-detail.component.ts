@@ -27,6 +27,7 @@ export class RecipeDetailComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private modalService: NgbModal,
     private itemService: ItemService
+
   ) {
   }
 

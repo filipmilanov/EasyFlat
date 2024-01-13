@@ -440,7 +440,10 @@ public class CookingServiceImpl implements CookingService {
         Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
         List<RecipeSuggestion> recipes = cookbook.getRecipes();
         for (RecipeSuggestion recipe : recipes) {
-            recipesDto.add(recipeMapper.entityToRecipeSuggestionDto(recipe));
+            RecipeSuggestionDto toAdd = recipeMapper.entityToRecipeSuggestionDto(recipe);
+            List<RecipeIngredientDto> matchedIngr = getMatchedIngredients(toAdd.extendedIngredients());
+            toAdd = toAdd.withExtendedIngredients(matchedIngr);
+            recipesDto.add(toAdd);
         }
         return recipesDto;
     }
@@ -460,19 +463,25 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public Optional<RecipeSuggestion> getCookbookRecipe(Long id) {
+    public RecipeSuggestionDto getCookbookRecipe(Long id) {
         if (id == null) {
-            return Optional.empty();
+            return null;
         }
-        Optional<RecipeSuggestion> recipe = repository.findById(id);
-        return recipe;
+        RecipeSuggestion recipe = repository.findById(id).orElseThrow();
+        RecipeSuggestionDto recipeToReturn = recipeMapper.entityToRecipeSuggestionDto(recipe);
+        List<RecipeIngredientDto> matchedIngr = getMatchedIngredients(recipeToReturn.extendedIngredients());
+
+        return recipeToReturn.withExtendedIngredients(matchedIngr);
     }
 
     @Override
     public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException, AuthenticationException {
+
+
         recipeValidator.validateForUpdate(recipe);
-        RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id())
-            .orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
+        RecipeSuggestionDto oldRec = this.getCookbookRecipe(recipe.id());
+        RecipeSuggestion oldRecipe = recipeMapper.dtoToEntity(oldRec, recipeIngredientMapper.dtoListToEntityList(oldRec.extendedIngredients()));
+
         Long cookbookId = this.getCookbookIdForUser();
         Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
 
@@ -494,10 +503,10 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestion deleteCookbookRecipe(Long id) throws AuthenticationException {
-        RecipeSuggestion deletedRecipe = this.getCookbookRecipe(id).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        RecipeSuggestionDto deletedRecipe = this.getCookbookRecipe(id);
         this.getCookbookIdForUser();
-        repository.delete(deletedRecipe);
-        return deletedRecipe;
+        repository.delete(recipeMapper.dtoToEntity(deletedRecipe, recipeIngredientMapper.dtoListToEntityList(deletedRecipe.extendedIngredients())));
+        return recipeMapper.dtoToEntity(deletedRecipe, recipeIngredientMapper.dtoListToEntityList(deletedRecipe.extendedIngredients()));
     }
 
     @Override

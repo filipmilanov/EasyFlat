@@ -43,6 +43,7 @@ import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-di
 import { ShoppingListsComponent } from './components/shopping-list/shopping-lists/shopping-lists.component';
 import { ShoppingListCardComponent } from './components/shopping-list/shopping-list-card/shopping-list-card.component';
 import { MatchingModalComponent } from './components/cooking/matching-modal/matching-modal.component';
+import { MatchingModalCookbookComponent } from './components/cookbook/matching-modal-cookbook/matching-modal-cookbook.component';
 
 
 LOAD_WASM().subscribe();
@@ -81,7 +82,8 @@ LOAD_WASM().subscribe();
     ConfirmDeleteDialogComponent,
     ShoppingListsComponent,
     ShoppingListCardComponent,
-    MatchingModalComponent
+    MatchingModalComponent,
+    MatchingModalCookbookComponent
   ],
   imports: [
     BrowserModule,
