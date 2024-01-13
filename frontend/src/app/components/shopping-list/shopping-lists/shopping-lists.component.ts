@@ -25,6 +25,7 @@ export class ShoppingListsComponent implements OnInit{
     this.shoppingService.getShoppingLists(this.searchParams).subscribe({
       next: res => {
         this.lists = res;
+        console.log(this.lists)
       },
       error: err => {
         console.error("Error fetching shopping lists", err);

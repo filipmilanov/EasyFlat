@@ -21,7 +21,9 @@
     <a style="text-decoration: none"
        [routerLink]="['list', list.id]"
        aria-label="Show list details">
-      <app-shopping-list-card [listName]="list.name"
+      <app-shopping-list-card
+        [listName]="list.name"
+        [itemsCount]="list.items.length"
       ></app-shopping-list-card>
     </a>
   </div>

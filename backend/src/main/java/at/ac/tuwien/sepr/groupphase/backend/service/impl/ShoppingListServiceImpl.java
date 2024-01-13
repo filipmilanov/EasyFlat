@@ -251,7 +251,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        return shoppingListRepository.findAllByNameContainingIgnoreCaseAndSharedFlatIs(name != null ? name : "", applicationUser.getSharedFlat());
+        List<ShoppingList> ret = shoppingListRepository.findAllByNameContainingIgnoreCaseAndSharedFlatIs(name != null ? name : "", applicationUser.getSharedFlat());
+        for (ShoppingList shoppingList : ret) {
+            shoppingList.setItems(this.getItemsById(shoppingList.getShopListId(), new ShoppingItemSearchDto(null, null, null), jwt));
+        }
+        return ret;
     }
 
     @Override

@@ -89,7 +89,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
     private ShoppingListMapper shoppingListMapper;
 
     private final String baseUri = "/api/v1/shopping";
-    private final ShoppingListDto shoppingListDto = new ShoppingListDto(1L, "Default");
+    private final ShoppingListDto shoppingListDto = new ShoppingListDto(1L, "Default", new ArrayList<>());
     private final ApplicationUser testUser = new ApplicationUser(null, "", "", "user@email.com", "password", Boolean.FALSE, null);
 
     private ShoppingListService shoppingListServiceMock;
@@ -121,7 +121,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
             null,
             null,
             new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
-            new ShoppingListDto(1L, "Default"));
+            new ShoppingListDto(1L, "Default", new ArrayList<>()));
 
     }
 
@@ -211,7 +211,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
             null,
             null,
             new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
-            new ShoppingListDto(1L, "Default"));
+            new ShoppingListDto(1L, "Default", new ArrayList<>()));
         MvcResult mvcResult = mockMvc.perform(put(this.baseUri + "/" + updated.itemId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updated))
@@ -250,7 +250,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
             null,
             null,
             new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
-            new ShoppingListDto(1L, "Default"));
+            new ShoppingListDto(1L, "Default", new ArrayList<>()));
         MvcResult mvcResult = mockMvc.perform(put(this.baseUri + "/" + updated.itemId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updated))

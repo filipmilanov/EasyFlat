@@ -6,7 +6,6 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./shopping-list-card.component.scss']
 })
 export class ShoppingListCardComponent {
-  @Input() id: string;
-  @Input() listName: string
-
+  @Input() listName: string;
+  @Input() itemsCount: number;
 }

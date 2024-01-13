@@ -64,7 +64,7 @@ public interface TestData {
         null,
         null,
         new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
-        new ShoppingListDto(1L, "Default"));
+        new ShoppingListDto(1L, "Default", new ArrayList<>()));
 
     ShoppingItemDto invalidShoppingItemDto = new ShoppingItemDto(
         null,

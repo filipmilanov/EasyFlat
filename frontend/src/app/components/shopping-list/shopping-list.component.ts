@@ -17,7 +17,8 @@ export class ShoppingListComponent implements OnInit {
 
   shoppingList: ShoppingListDto = {
     id: 0,
-    name: ''
+    name: '',
+    items: []
   };
   items: ShoppingItemDto[] = [];
   shopId: string;

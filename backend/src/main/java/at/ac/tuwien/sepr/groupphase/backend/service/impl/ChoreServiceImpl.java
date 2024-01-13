@@ -55,16 +55,13 @@ public class ChoreServiceImpl implements ChoreService {
 
     private final ChoreValidator choreValidator;
 
-    private final ChoreService choreService;
-
-    public ChoreServiceImpl(ChoreRepository choreRepository, ChoreMapper choreMapper, AuthService authService, UserRepository userRepository, PreferenceRepository preferenceRepository, ChoreValidator choreValidator, ChoreService choreService) {
+    public ChoreServiceImpl(ChoreRepository choreRepository, ChoreMapper choreMapper, AuthService authService, UserRepository userRepository, PreferenceRepository preferenceRepository, ChoreValidator choreValidator) {
         this.choreRepository = choreRepository;
         this.choreMapper = choreMapper;
         this.authService = authService;
         this.userRepository = userRepository;
         this.preferenceRepository = preferenceRepository;
         this.choreValidator = choreValidator;
-        this.choreService = choreService;
     }
 
     @Secured("ROLE_USER")
@@ -394,7 +391,7 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     private String createChoreListHtml() throws AuthenticationException {
-        List<Chore> chores = choreService.getChores(new ChoreSearchDto(null, null));
+        List<Chore> chores = this.getChores(new ChoreSearchDto(null, null));
         chores.sort(Comparator.comparing(Chore::getEndDate));
 
         StringBuilder htmlContent = new StringBuilder();

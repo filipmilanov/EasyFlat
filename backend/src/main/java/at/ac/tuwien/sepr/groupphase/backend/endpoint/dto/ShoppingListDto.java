@@ -1,11 +1,11 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
-import jakarta.validation.constraints.NotEmpty;
+import java.util.List;
 
 public record ShoppingListDto(
     Long id,
-    String name
+    String name,
+    List<ShoppingItemDto> items
 
 ) {
 
