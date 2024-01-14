@@ -26,6 +26,8 @@ public class TestDataGenerator {
     private final RecipeDataGenerator recipeDataGenerator;
     private final CookbookDataGenerator cookbookDataGenerator;
 
+    private final EventDataGenerator eventDataGenerator;
+
     public TestDataGenerator(StorageDataGenerator digitalStorageDataGenerator,
                              IngredientsDataGenerator ingredientsDataGenerator,
                              ItemDataGenerator itemDataGenerator,

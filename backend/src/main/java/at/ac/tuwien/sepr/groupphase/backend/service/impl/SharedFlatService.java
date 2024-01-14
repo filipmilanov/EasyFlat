@@ -97,7 +97,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     public WgDetailDto create(SharedFlat sharedFlat) throws ConflictException, ValidationException {
         LOGGER.trace("create({})", sharedFlat);
         LOGGER.debug("Create a new shared flat");
-        validator.validateForCreate(sharedFlat);
+        //validator.validateForCreate(sharedFlat);
         SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(sharedFlat.getName());
         if (existingSharedFlat != null) {
             throw new ConflictException("A flat with this name already exists.");
