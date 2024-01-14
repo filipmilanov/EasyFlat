@@ -51,6 +51,10 @@ import {SignOutModalComponent} from './components/utils/sign-out-modal/sign-out-
 import {EventsComponent} from "./components/events/events.component";
 import {EventsCreateComponent} from "./components/events/events-create/events-create.component";
 import {EventCardComponent} from "./components/events/event-card/event-card.component";
+import {MatchingModalComponent} from "./components/cooking/matching-modal/matching-modal.component";
+import {
+    MatchingModalCookbookComponent
+} from "./components/cookbook/matching-modal-cookbook/matching-modal-cookbook.component";
 
 
 LOAD_WASM().subscribe();
@@ -93,7 +97,9 @@ LOAD_WASM().subscribe();
         SignOutModalComponent,
         EventsComponent,
         EventsCreateComponent,
-        EventCardComponent
+        EventCardComponent,
+        MatchingModalComponent,
+        MatchingModalCookbookComponent
     ],
     imports: [
         BrowserModule,

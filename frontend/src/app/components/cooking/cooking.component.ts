@@ -7,7 +7,7 @@ import {CookbookModalComponent} from "../cookbook/cookbook-modal/cookbook-modal.
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CookingModalComponent} from "./cooking-modal/cooking-modal.component";
 import {RecipeDetailComponent} from "./recipe-detail/recipe-detail.component";
-import { NgxSpinnerService } from 'ngx-spinner';
+
 
 @Component({
   selector: 'app-cooking',
@@ -23,8 +23,7 @@ export class CookingComponent implements OnInit {
 
   constructor(private cookingService: CookingService,
               private notification: ToastrService,
-              private modalService: NgbModal,
-              private spinner: NgxSpinnerService) {
+              private modalService: NgbModal) {
 
 
   }
@@ -38,7 +37,7 @@ export class CookingComponent implements OnInit {
   }
 
   reloadRecipes() {
-   this.spinner.show();
+
    this.isLoading = true
 
     this.cookingService.loadRecipes(this.type).subscribe({
@@ -47,11 +46,11 @@ export class CookingComponent implements OnInit {
         console.log(this.type)
         this.recipes = res;
         this.empty = false;
-        this.spinner.hide();
+
         this.isLoading = false;
       },
       error: err => {
-        this.spinner.hide();
+
         this.isLoading = false;
         let firstBracket = err.error.indexOf('[');
         let lastBracket = err.error.indexOf(']');

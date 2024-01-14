@@ -324,7 +324,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion deleteCookbookRecipe(Long id) throws AuthenticationException {
+    public RecipeSuggestion deleteCookbookRecipe(Long id) throws  AuthorizationException {
         RecipeSuggestionDto deletedRecipe = this.getCookbookRecipe(id);
         this.getCookbookIdForUser();
         repository.delete(recipeMapper.dtoToEntity(deletedRecipe, recipeIngredientMapper.dtoListToEntityList(deletedRecipe.extendedIngredients())));

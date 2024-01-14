@@ -67,7 +67,7 @@ public interface ItemService {
      * @param id an ID of a stored {@link DigitalStorageItem}
      * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    void delete(Long id) throws AuthenticationException;
+    void delete(Long id) throws AuthorizationException;
 
     /**
      * Searches for items in the database with names matching the specified name.
