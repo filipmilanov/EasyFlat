@@ -1,0 +1,9 @@
+{
+  "user": {
+    "firstName": "Marin",
+    "secondName": "Stanev",
+    "validEmail": "user@email.com",
+    "invalidEmail": "useremail.com",
+    "password": "password"
+  }
+}

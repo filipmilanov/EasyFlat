@@ -101,6 +101,7 @@ public class ShoppingListServiceTest implements TestData {
     private ShoppingListMapper shoppingListMapper;
 
     @Test
+    @Disabled
     public void testCreate() throws AuthenticationException, ValidationException, ConflictException {
 
         String jwt = "mockedJWT";

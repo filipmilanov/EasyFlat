@@ -19,7 +19,6 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -93,12 +92,6 @@ public class ShoppingItemIntegrationTest implements TestData  {
     private final ApplicationUser testUser = new ApplicationUser(null, "", "", "user@email.com", "password", Boolean.FALSE, null);
 
     private ShoppingListService shoppingListServiceMock;
-
-    @Before
-    public void setup() {
-        this.shoppingListServiceMock = mock(ShoppingListService.class);
-        userRepository.save(testUser);
-    }
 
     @Test
     @BeforeEach
