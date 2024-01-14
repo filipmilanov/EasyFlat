@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
@@ -26,11 +27,11 @@ public interface ExpenseService {
     Expense findById(Long id) throws NotFoundException, AuthenticationException;
 
     /**
-     * Finds all expenses in the database.
+     * Finds all expenses in the database for the given search parameters or all expenses if search is null.
      *
-     * @return any expense that was found, empty if there are none
+     * @return any expense that was found for the given search parameters, empty if there are none
      */
-    List<Expense> findAll();
+    List<Expense> findAll(ExpenseSearchDto expenseSearchDto);
 
     /**
      * Finds all repeating expenses in the database.

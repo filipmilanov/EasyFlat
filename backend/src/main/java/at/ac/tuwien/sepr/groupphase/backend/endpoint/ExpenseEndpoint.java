@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
@@ -51,10 +52,10 @@ public class ExpenseEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping()
-    public List<ExpenseDto> findAll() {
+    public List<ExpenseDto> findAll(ExpenseSearchDto expenseSearchDto) {
         LOGGER.info("findAll()");
         return expenseMapper.entityListToExpenseDtoList(
-            expenseService.findAll()
+            expenseService.findAll(expenseSearchDto)
         );
     }
 

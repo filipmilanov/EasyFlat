@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DebitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
@@ -83,10 +84,21 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public List<Expense> findAll() {
-        LOGGER.trace("findAll()");
+    public List<Expense> findAll(ExpenseSearchDto expenseSearchDto) {
+        LOGGER.trace("findAll({})", expenseSearchDto);
+        LOGGER.debug("findAll({})", expenseSearchDto);
 
-        return expenseRepository.findAll();
+        return expenseRepository.findByCriteria(
+            expenseSearchDto.title(),
+            expenseSearchDto.paidById(),
+            expenseSearchDto.amountInCents(),
+            expenseSearchDto.createdAt() != null
+                ? expenseSearchDto.createdAt().atStartOfDay()
+                : null,
+            expenseSearchDto.createdAt() != null
+                ? expenseSearchDto.createdAt().atTime(23, 59, 59)
+                : null
+        );
     }
 
     @Override
@@ -276,8 +288,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                     debitList.add(debitMapper.debitDtoToEntity(debit, expense));
                 });
             }
-            default ->
-                throw new ValidationException("Unexpected value: " + splitBy, List.of("Unexpected value: " + splitBy));
+            default -> throw new ValidationException("Unexpected value: " + splitBy, List.of("Unexpected value: " + splitBy));
         }
         return debitList;
     }
@@ -293,7 +304,8 @@ public class ExpenseServiceImpl implements ExpenseService {
         balanceDebitDtos.add(balanceDebitDto);
     }
 
-    private List<Pair> calculateDifferenceBetweenPaidAndOwedAmountPerUser(Map<ApplicationUser, Double> totalAmountPaidPerUser, Map<ApplicationUser, Double> totalAmountOwedPerUser) {
+    private List<Pair> calculateDifferenceBetweenPaidAndOwedAmountPerUser(Map<ApplicationUser, Double> totalAmountPaidPerUser,
+                                                                          Map<ApplicationUser, Double> totalAmountOwedPerUser) {
         LOGGER.trace("calculateDifferenceBetweenPaidAndOwedAmountPerUser({},{})", totalAmountPaidPerUser, totalAmountOwedPerUser);
         return totalAmountPaidPerUser.entrySet().stream().map(
                 entry -> new Pair(
