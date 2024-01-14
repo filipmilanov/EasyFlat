@@ -144,7 +144,7 @@ class ExpenseEndpointTest {
     }
 
     @Test
-    @DisplayName("Endpoint test for findById of not allwed ID")
+    @DisplayName("Endpoint test for findById of not allowed ID")
     void findByIdNotAuthorized() throws Exception {
         // given
         long expenseId = 1L;
@@ -323,7 +323,7 @@ class ExpenseEndpointTest {
 
 
     @Test
-    @DisplayName("Creates Expense with Debits")
+    @DisplayName("Creates expense with debits")
     void create() throws Exception {
         // given
         ExpenseDto expenseDto = this.generateExpenseDto();
@@ -384,7 +384,7 @@ class ExpenseEndpointTest {
         List<DebitDto> debitDtos = this.generateDebitUsers(totalAmount + 10);
 
         return ExpenseDtoBuilder.builder()
-            .description("Randomd desc")
+            .description("Random desc")
             .amountInCents(totalAmount)
             .createdAt(LocalDateTime.now())
             .paidBy(flatUsers.get(0))
@@ -399,7 +399,7 @@ class ExpenseEndpointTest {
 
         return ExpenseDtoBuilder.builder()
             .title("Next Expense")
-            .description("Randomd desc")
+            .description("Random desc")
             .amountInCents(totalAmount)
             .createdAt(LocalDateTime.now())
             .paidBy(flatUsers.get(0))
