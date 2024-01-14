@@ -34,6 +34,7 @@ import {
 } from "./components/finance/expense-create-edit/expense-create-edit.component";
 import {FinanceComponent} from "./components/finance/finance.component";
 import {ExpenseDetailComponent} from "./components/finance/expense-detail/expense-detail.component";
+import {ExpenseOverviewComponent} from "./components/finance/expense-overview/expense-overview.component";
 
 const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -88,6 +89,7 @@ const routes: Routes = [
     },
     {
       path: 'expense', children: [
+        {path: '', component: ExpenseOverviewComponent},
         {path: 'create', component: ExpenseCreateEditComponent, data: {mode: ExpenseCreateEditMode.create}},
         {path: ':id/edit', component: ExpenseCreateEditComponent, data: {mode: ExpenseCreateEditMode.edit}},
         {path: ':id/detail', component: ExpenseDetailComponent},

@@ -67,6 +67,7 @@ import {NgxEchartsModule} from "ngx-echarts";
 import {RadarComponent} from './components/finance/graphs/radar/radar.component';
 import {ExpenseDetailComponent} from './components/finance/expense-detail/expense-detail.component';
 import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
+import { ExpenseOverviewComponent } from './components/finance/expense-overview/expense-overview.component';
 
 LOAD_WASM().subscribe();
 
@@ -112,7 +113,8 @@ LOAD_WASM().subscribe();
     BarchartVerticalComponent,
     RadarComponent,
     ExpenseDetailComponent,
-    ConfirmDeleteDialogComponent
+    ConfirmDeleteDialogComponent,
+    ExpenseOverviewComponent
   ],
   imports: [
     BrowserModule,
