@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class UserDetailDto {
 
-    private long id;
+    private Long id;
 
     @NotNull(message = "First name must not be null")
     private String firstName;
@@ -26,11 +26,11 @@ public class UserDetailDto {
 
     private boolean admin;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

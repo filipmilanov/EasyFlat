@@ -10,7 +10,13 @@ import {FooterComponent} from './components/footer/footer.component';
 import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
 import {MessageComponent} from './components/message/message.component';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbAlertModule,
+  NgbDatepickerModule,
+  NgbModule,
+  NgbTimepickerConfig,
+  NgbTimepickerModule
+} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
 import {DigitalStorageComponent} from './components/digital-storage/digital-storage.component';
 import {ItemCardComponent} from './components/digital-storage/item-card/item-card.component';
@@ -23,7 +29,7 @@ import {ItemDetailListComponent} from './components/digital-storage/item-detail-
 import {RegisterComponent} from './components/register/register.component';
 import {AccountComponent} from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
-import {CreateFlatComponent} from './components/create-flat/create-flat.component';
+
 import {ShoppingListComponent} from './components/shopping-list/shopping-list.component';
 import {
     ShoppingItemCreateEditComponent
@@ -34,7 +40,7 @@ import {
 } from './components/shopping-list/shopping-list-create/shopping-list-create.component';
 import {CookingComponent} from './components/cooking/cooking.component';
 import {RecipeCardComponent} from './components/cooking/recipe-card/recipe-card.component';
-import {NgOptimizedImage} from "@angular/common";
+import {JsonPipe, NgOptimizedImage} from "@angular/common";
 import {CookbookComponent} from './components/cookbook/cookbook.component';
 import {CookbookCardComponent} from './components/cookbook/cookbook-card/cookbook-card.component';
 import {RecipeDetailComponent} from './components/cooking/recipe-detail/recipe-detail.component';
@@ -56,9 +62,28 @@ import {
     MatchingModalCookbookComponent
 } from "./components/cookbook/matching-modal-cookbook/matching-modal-cookbook.component";
 
+import {ShoppingListsComponent} from './components/shopping-list/shopping-lists/shopping-lists.component';
+import {CreateFlatComponent} from './components/create-flat/create-flat.component';
+import {FinanceComponent} from './components/finance/finance.component';
+import {ExpenseCreateEditComponent} from './components/finance/expense-create-edit/expense-create-edit.component';
+import {
+  RadioButtonsComponentComponent
+} from './components/utils/radio-buttons-component/radio-buttons-component.component';
+import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expense/show-user-for-expense.component';
+import {UserDropdownComponent} from './components/utils/user-dropdown/user-dropdown.component';
+
+
+import {ShoppingListCardComponent} from './components/shopping-list/shopping-list-card/shopping-list-card.component';
+import {DebitsComponent} from './components/finance/debits/debits.component';
+import {ConfirmPayedPackComponent} from './components/utils/confirm-payed-pack/confirm-payed-pack.component';
+import {BarchartVerticalComponent} from './components/finance/graphs/barchart-nagative/barchart-vertical.component';
+import {NgxEchartsModule} from "ngx-echarts";
+import {RadarComponent} from './components/finance/graphs/radar/radar.component';
+import {ExpenseDetailComponent} from './components/finance/expense-detail/expense-detail.component';
+import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
+import { ExpenseOverviewComponent } from './components/finance/expense-overview/expense-overview.component';
 
 LOAD_WASM().subscribe();
-
 
 @NgModule({
     declarations: [
@@ -99,7 +124,19 @@ LOAD_WASM().subscribe();
         EventsCreateComponent,
         EventCardComponent,
         MatchingModalComponent,
-        MatchingModalCookbookComponent
+        MatchingModalCookbookComponent,
+        FinanceComponent,
+        ExpenseCreateEditComponent,
+        RadioButtonsComponentComponent,
+        ShowUserForExpenseComponent,
+        UserDropdownComponent,
+        DebitsComponent,
+        ConfirmPayedPackComponent,
+        BarchartVerticalComponent,
+        RadarComponent,
+        ExpenseDetailComponent,
+        ConfirmDeleteDialogComponent,
+        ExpenseOverviewComponent
     ],
     imports: [
         BrowserModule,
@@ -116,9 +153,23 @@ LOAD_WASM().subscribe();
         BrowserAnimationsModule,
         ColorPickerModule,
         NgOptimizedImage,
-        NgxScannerQrcodeModule
+        NgxScannerQrcodeModule,
+        NgxEchartsModule.forRoot({
+          /**
+           * This will import all modules from echarts.
+           * but only when they are called
+           */
+          echarts: () => import('echarts'), // or import('./path-to-my-custom-echarts')
+        }),
+        NgbDatepickerModule,
+        NgbTimepickerModule,
+        NgbAlertModule,
+        JsonPipe
+      ],
+    providers: [
+      httpInterceptorProviders,
+      NgbTimepickerConfig
     ],
-    providers: [httpInterceptorProviders],
     bootstrap: [AppComponent]
 })
 

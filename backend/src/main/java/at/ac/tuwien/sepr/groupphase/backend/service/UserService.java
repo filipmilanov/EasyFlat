@@ -56,4 +56,12 @@ public interface UserService extends UserDetailsService {
     List<UserDetailDto> getAllOtherUsers(String authToken);
 
     UserDetailDto setAdminToTheFlat(Long selectedUserId);
+
+    /**
+     * Find all flatmates of the current user.
+     *
+     * @param jwt the JWT of the current user
+     * @return a list of users, which are part of the same flat as the current user
+     */
+    List<ApplicationUser> findFlatmates(String jwt);
 }

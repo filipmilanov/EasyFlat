@@ -17,10 +17,10 @@ import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import {CreateFlatComponent} from "./components/create-flat/create-flat.component";
 import {ShoppingListComponent} from "./components/shopping-list/shopping-list.component";
 import {
-  ShoppingItemCreateEditComponent
+    ShoppingItemCreateEditComponent
 } from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
 import {
-  ShoppingListCreateComponent
+    ShoppingListCreateComponent
 } from "./components/shopping-list/shopping-list-create/shopping-list-create.component";
 import {CookingComponent} from "./components/cooking/cooking.component";
 import {CookbookComponent} from "./components/cookbook/cookbook.component";
@@ -30,14 +30,21 @@ import {CookbookDetailComponent} from "./components/cookbook/cookbook-detail/coo
 import {ShoppingListsComponent} from "./components/shopping-list/shopping-lists/shopping-lists.component";
 import {EventsComponent} from "./components/events/events.component";
 import {EventsCreateComponent, EventsMode} from "./components/events/events-create/events-create.component";
+import {
+  ExpenseCreateEditComponent,
+  ExpenseCreateEditMode
+} from "./components/finance/expense-create-edit/expense-create-edit.component";
+import {FinanceComponent} from "./components/finance/finance.component";
+import {ExpenseDetailComponent} from "./components/finance/expense-detail/expense-detail.component";
+import {ExpenseOverviewComponent} from "./components/finance/expense-overview/expense-overview.component";
 
 const routes: Routes = [
-  {path: '', component: HomeComponent},
-  {path: 'login', component: LoginComponent},
-  {
-    path: 'digital-storage', children: [
-      {path: '', component: DigitalStorageComponent},
-      {path: ':name', component: ItemDetailListComponent }
+    {path: '', component: HomeComponent},
+    {path: 'login', component: LoginComponent},
+    {
+        path: 'digital-storage', children: [
+            {path: '', component: DigitalStorageComponent},
+            {path: ':name', component: ItemDetailListComponent }
   ]},
   { path: 'item', children: [
       { path: 'create', component: ItemCreateEditComponent, data: { mode: ItemCreateEditMode.create } },
@@ -72,19 +79,33 @@ const routes: Routes = [
   {path: 'wgLogin', component: LoginFlatComponent},
   {path: 'wgCreate', component: CreateFlatComponent},
   {
-    path: 'cooking', children: [
-      {path: '', component: CookingComponent},
-      {path: ':id/detail', component: RecipeDetailComponent}
-    ]
-  },
-  {
-    path: 'cookbook', children: [
-      {path: '', component: CookbookComponent},
-      {path: 'create', component: CookbookCreateComponent, data: {mode: CookbookMode.create}},
-      {path: ':id/edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}},
-      {path: ':id/detail', component: CookbookDetailComponent}
-    ]
-  },
+    path: 'finance', children: [
+            {path: '', component: FinanceComponent},
+        ]
+    },
+    {
+      path: 'expense', children: [
+        {path: '', component: ExpenseOverviewComponent},
+        {path: 'create', component: ExpenseCreateEditComponent, data: {mode: ExpenseCreateEditMode.create}},
+        {path: ':id/edit', component: ExpenseCreateEditComponent, data: {mode: ExpenseCreateEditMode.edit}},
+        {path: ':id/detail', component: ExpenseDetailComponent},
+      ]
+    },
+
+    {
+        path: 'cooking', children: [
+        {path: '', component: CookingComponent},
+        {path: ':id/detail', component: RecipeDetailComponent}
+        ]
+    },
+    {
+        path: 'cookbook', children: [
+        {path: '', component: CookbookComponent},
+        {path: 'create', component: CookbookCreateComponent, data: {mode: CookbookMode.create}},
+        {path: ':id/edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}},
+        {path: ':id/detail', component: CookbookDetailComponent}
+        ]
+    },
   {
     path: 'events', children: [
       {path: '', component: EventsComponent},
@@ -95,8 +116,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {useHash: true})],
-  exports: [RouterModule]
+    imports: [RouterModule.forRoot(routes, {useHash: true})],
+    exports: [RouterModule]
 })
 
 export class AppRoutingModule {

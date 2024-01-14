@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 public class ApplicationUserDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 5;
+    private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 25;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -29,7 +29,7 @@ public class ApplicationUserDataGenerator {
     }
 
     @PostConstruct
-    public void generateDigitalStorages() {
+    public void generateApplicationUsers() {
         LOGGER.debug("generating {} User Entities", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             ApplicationUser user = new ApplicationUser();
@@ -40,7 +40,7 @@ public class ApplicationUserDataGenerator {
             user.setAdmin(false);
 
             SharedFlat sharedFlat = new SharedFlat();
-            sharedFlat.setId((long) (i + 1));
+            sharedFlat.setId((long) (i % 5 + 1));
 
             user.setSharedFlat(sharedFlat);
 

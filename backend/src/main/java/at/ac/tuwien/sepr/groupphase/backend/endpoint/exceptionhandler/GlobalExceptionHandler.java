@@ -75,7 +75,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {AuthorizationException.class})
     protected ResponseEntity<Object> handleAuthentication(AuthorizationException ex, WebRequest request) {
         LOGGER.warn(ex.getMessage());
-        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.METHOD_NOT_ALLOWED, request);
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
 

@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import org.mapstruct.Mapper;
@@ -18,5 +19,9 @@ public abstract class UserMapper {
 
 
     public abstract List<UserDetailDto> entityListToUserDetailDtoList(List<ApplicationUser> users);
+
+    public abstract UserListDto entityToUserListDto(ApplicationUser applicationUser);
+
+    public abstract List<UserListDto> entityListToUserListDto(List<ApplicationUser> applicationUsers);
 
 }

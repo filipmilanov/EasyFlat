@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +38,7 @@ public class LoginEndpoint {
         return userService.login(userLoginDto);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping
     public UserDetailDto getUser(@RequestHeader("Authorization") String authToken) {
         return userMapper.entityToUserDetailDto(

@@ -217,4 +217,12 @@ public class CustomUserDetailService implements UserService {
         return userMapper.entityToUserDetailDto(user);
     }
 
+    @Override
+    public List<ApplicationUser> findFlatmates(String jwt) {
+        LOGGER.debug("findFlatmates()");
+
+        ApplicationUser user = this.getUser(jwt);
+        SharedFlat flat = user.getSharedFlat();
+        return flat.getUsers().stream().toList();
+    }
 }

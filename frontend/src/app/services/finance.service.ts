@@ -1,0 +1,80 @@
+import {Injectable} from '@angular/core';
+import {environment} from "../../environments/environment";
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {BalanceDebitDto, ExpenseDto, ExpenseSearchDto, UserValuePairDto} from "../dtos/expenseDto";
+import {Observable} from "rxjs";
+import {formatDate} from "@angular/common";
+import {tap} from "rxjs/operators";
+
+@Injectable({
+  providedIn: 'root'
+})
+export class FinanceService {
+  baseUri = environment.backendUrl + '/expense';
+
+  constructor(
+    private http: HttpClient,
+  ) {
+  }
+
+  createExpense(expense: ExpenseDto): Observable<ExpenseDto> {
+    return this.http.post<ExpenseDto>(this.baseUri, expense);
+  }
+
+  updateExpense(expense: ExpenseDto): Observable<ExpenseDto> {
+    return this.http.put<ExpenseDto>(`${this.baseUri}/${expense.id}`, expense);
+  }
+
+  deleteExpense(expenseId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUri}/${expenseId}`);
+  }
+
+  findTotalExpensesPerUser(): Observable<UserValuePairDto[]> {
+    return this.http.get<UserValuePairDto[]>(this.baseUri + '/statistics/expenses');
+  }
+
+  findTotalDebitsPerUser(): Observable<UserValuePairDto[]> {
+    return this.http.get<UserValuePairDto[]>(this.baseUri + '/statistics/debits');
+  }
+
+  findBalanceExpenses(): Observable<UserValuePairDto[]> {
+    return this.http.get<UserValuePairDto[]>(this.baseUri + '/statistics/balance');
+  }
+
+  findBalanceDebits(): Observable<BalanceDebitDto[]> {
+    return this.http.get<BalanceDebitDto[]>(this.baseUri + '/debits');
+  }
+
+  /**
+   * Find expense with given id.
+   *
+   * @param id of the expense
+   */
+  findById(id: number): Observable<ExpenseDto> {
+    return this.http.get<ExpenseDto>(this.baseUri + '/' + id);
+  }
+
+  findAll(searchParams: ExpenseSearchDto): Observable<ExpenseDto[]> {
+    if (searchParams.title === '') {
+      delete searchParams.title;
+    }
+    let params = new HttpParams();
+    if (searchParams.title) {
+      params = params.append('title', searchParams.title);
+    }
+    if (searchParams.paidBy) {
+      params = params.append('paidById', searchParams.paidBy.id);
+    }
+    if (searchParams.amountInEuro) {
+      params = params.append('amountInCents', searchParams.amountInEuro * 100);
+    }
+    if (searchParams.createdAt) {
+      params = params.append('createdAt', formatDate(searchParams.createdAt, 'dd-MM-yyyy', 'en-US'));
+    }
+
+    return this.http.get<ExpenseDto[]>(this.baseUri, {params})
+      .pipe(tap(expenses => expenses.map(e => {
+        e.createdAt = new Date(e.createdAt); // Parse date string
+      })));
+  }
+}
