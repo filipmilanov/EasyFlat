@@ -62,7 +62,6 @@ import {
     MatchingModalCookbookComponent
 } from "./components/cookbook/matching-modal-cookbook/matching-modal-cookbook.component";
 
-import {ShoppingListsComponent} from './components/shopping-list/shopping-lists/shopping-lists.component';
 import {CreateFlatComponent} from './components/create-flat/create-flat.component';
 import {FinanceComponent} from './components/finance/finance.component';
 import {ExpenseCreateEditComponent} from './components/finance/expense-create-edit/expense-create-edit.component';
@@ -73,14 +72,12 @@ import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expe
 import {UserDropdownComponent} from './components/utils/user-dropdown/user-dropdown.component';
 
 
-import {ShoppingListCardComponent} from './components/shopping-list/shopping-list-card/shopping-list-card.component';
 import {DebitsComponent} from './components/finance/debits/debits.component';
 import {ConfirmPayedPackComponent} from './components/utils/confirm-payed-pack/confirm-payed-pack.component';
 import {BarchartVerticalComponent} from './components/finance/graphs/barchart-nagative/barchart-vertical.component';
 import {NgxEchartsModule} from "ngx-echarts";
 import {RadarComponent} from './components/finance/graphs/radar/radar.component';
 import {ExpenseDetailComponent} from './components/finance/expense-detail/expense-detail.component';
-import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
 import { ExpenseOverviewComponent } from './components/finance/expense-overview/expense-overview.component';
 
 LOAD_WASM().subscribe();
