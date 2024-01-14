@@ -25,7 +25,7 @@ public class SharedFlat {
     private String name;
     @Column
     private String password;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sharedFlat")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "sharedFlat")
     private Set<ApplicationUser> users = new HashSet<>();
 
     @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
