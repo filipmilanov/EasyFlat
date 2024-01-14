@@ -20,26 +20,25 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
+
 import com.deepl.api.DeepLException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.RestTemplate;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +47,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -70,16 +69,10 @@ public class CookingServiceTest {
     private JwtTokenizer jwtTokenizer;
 
     @MockBean
-    private RestTemplate restTemplate;
-
-    @MockBean
     private AuthService authService;
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private UnitService unitService;
 
     private ApplicationUser applicationUser;
 
@@ -92,28 +85,19 @@ public class CookingServiceTest {
     }
 
     @Test
-    @Disabled
+
     void testGetRecipeSuggestion() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException, DeepLException, InterruptedException {
 
-        when(jwtTokenizer.getEmailFromToken(any(String.class))).thenReturn(applicationUser.getEmail());
-
         // when
-        List<RecipeSuggestionDto> result = cookingService.getRecipeSuggestion("");
+        List<RecipeSuggestionDto> result = cookingService.getRecipeSuggestion(null);
 
         // then
-        assertThat(result)
-            .isNotEmpty()
-            .extracting("title", "servings", "readyInMinutes")
-            .contains(
-                tuple("Napoleon - A Creamy Puff Pastry Cake", 9, 45),
-                tuple("Baked Custard", 6, 45)
-            );
+        assertThat(result).isNotEmpty();
+
 
     }
 
-
     @Test
-    @Disabled
     void testCookRecipeReturnTheCookedRecipe() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
         // given
         Set<UnitDto> subUnit = new HashSet<>();
@@ -177,7 +161,6 @@ public class CookingServiceTest {
     }
 
     @Test
-    @Disabled
     void testCookRecipeRemoveItemsQuantityFromStorage() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
         // given
         Set<UnitDto> subUnit = new HashSet<>();
@@ -224,8 +207,8 @@ public class CookingServiceTest {
             .summary("How to cook")
             .build();
 
-        ItemSearchDto searchParamsIS = new ItemSearchDto(null, null, null, null);
-        ItemSearchDto searchParamsAIS = new ItemSearchDto(null, null, null, null);
+        ItemSearchDto searchParamsIS = new ItemSearchDto(false, null, null, null);
+        ItemSearchDto searchParamsAIS = new ItemSearchDto(true, null, null, null);
         List<ItemListDto> itemsFromDigitalStorageIS = digitalStorageService.searchItems(searchParamsIS);
         List<ItemListDto> itemsFromDigitalStorageAIS = digitalStorageService.searchItems(searchParamsAIS);
         List<ItemListDto> items = new LinkedList<>();
@@ -243,7 +226,7 @@ public class CookingServiceTest {
 
         for (ItemListDto item : itemsT) {
             for (ItemListDto initialItem : items) {
-                if(item.generalName().equals(initialItem.generalName())) {
+                if (item.generalName().equals(initialItem.generalName())) {
                     for (RecipeIngredientDto ingredientDto : testRecipe.extendedIngredients()) {
                         if (item.generalName().equals(ingredientDto.name())) {
                             assertThat(item.quantityCurrent()).isEqualTo(initialItem.quantityCurrent() - ingredientDto.amount());
