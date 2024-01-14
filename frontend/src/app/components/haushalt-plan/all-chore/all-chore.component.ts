@@ -74,4 +74,12 @@ export class AllChoreComponent {
                 console.error("Error exporting PDF");
             });
     }
+
+  navigateToMyChores() {
+    this.router.navigate(['/chores/my']);
+  }
+
+  navigateToPreference() {
+    this.router.navigate(['/chores/preference']);
+  }
 }
