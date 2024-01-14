@@ -103,6 +103,15 @@ class ExpenseServiceTest {
     }
 
     @Test
+    void givenNothingWhenFindAllThenAllExpensesAreReturned() {
+        // when
+        List<Expense> actual = service.findAll();
+
+        // then
+        assertThat(actual).hasSize(20);
+    }
+
+    @Test
     void givenValidExpenseWhenCreateThenExpenseIsPersistedWithId() throws ValidationException, ConflictException, AuthenticationException {
         // given
         double totalAmount = 100;
