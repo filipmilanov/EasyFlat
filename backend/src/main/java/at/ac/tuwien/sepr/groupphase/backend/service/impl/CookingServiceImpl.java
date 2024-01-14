@@ -458,8 +458,10 @@ public class CookingServiceImpl implements CookingService {
         if (recipe.id() != null) {
             RecipeDetailDto recipeWithSteps = getRecipeDetails(recipe.id());
             String summary = recipe.summary();
-            for (Step step : recipeWithSteps.steps().steps()) {
-                summary += "<br>" + "<strong>Step " + step.number() + "</strong> : " + step.step();
+            if(recipeWithSteps.steps() != null) {
+                for (Step step : recipeWithSteps.steps().steps()) {
+                    summary += "<br>" + "<strong>Step " + step.number() + "</strong> : " + step.step();
+                }
             }
 
             recipe = recipe.withId(null).withSummary(summary);
