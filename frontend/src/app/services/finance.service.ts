@@ -51,4 +51,8 @@ export class FinanceService {
   findById(id: number): Observable<ExpenseDto> {
     return this.http.get<ExpenseDto>(this.baseUri + '/' + id);
   }
+
+  findAll(): Observable<ExpenseDto[]> {
+    return this.http.get<ExpenseDto[]>(this.baseUri);
+  }
 }
