@@ -48,22 +48,22 @@ public interface TestData {
 
     ShoppingItemDto validShoppingItemDto = new ShoppingItemDto(
         null,
-        "1234567890123",
+        null,
         "pear",
         "pear1",
-        "lidl",
+        null,
         10.0,
         20.0,
         g,
-        "Description",
-        500L,
-        true,
-        5.0,
-        "Store",
+        null,
+        null,
+        false,
+        null,
+        null,
         new DigitalStorageDto(1L, "Storage", null),
         null,
         null,
-        new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
+        null, // Labels
         new ShoppingListDto(1L, "Default", new ArrayList<>()));
 
     ShoppingItemDto invalidShoppingItemDto = new ShoppingItemDto(

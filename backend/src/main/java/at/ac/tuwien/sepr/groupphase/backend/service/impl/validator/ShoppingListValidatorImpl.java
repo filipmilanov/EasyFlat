@@ -54,7 +54,7 @@ public class ShoppingListValidatorImpl implements ShoppingListValidator {
                 errors.add("Shopping List name is too long");
             }
         }
-        if (shoppingList.getShopListId() != null) {
+        if (shoppingList.getId() != null) {
             errors.add("The Id must be null");
         }
         if (shoppingList.getItems() != null) {

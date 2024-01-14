@@ -192,7 +192,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
     @BeforeEach
     public void testUpdateValidShoppingItem_then200() throws Exception {
         createValidUserAndValidShoppingList();
-        ShoppingItem saved = shoppingItemRepository.save(itemMapper.dtoToShopping(validShoppingItemDto, null, null));
+        ShoppingItem saved = shoppingItemRepository.save(itemMapper.dtoToShopping(validShoppingItemDto, null));
         ShoppingItemDto updated = new ShoppingItemDto(
             saved.getItemId(),
             "1234567890123",
@@ -231,7 +231,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
     @BeforeEach
     public void updateInvalidShoppingItem_then409() throws Exception {
         createValidUserAndValidShoppingList();
-        ShoppingItem saved = shoppingItemRepository.save(itemMapper.dtoToShopping(validShoppingItemDto, null, null));
+        ShoppingItem saved = shoppingItemRepository.save(itemMapper.dtoToShopping(validShoppingItemDto, null));
         ShoppingItemDto updated = new ShoppingItemDto(
             saved.getItemId(),
             "1234567890123",

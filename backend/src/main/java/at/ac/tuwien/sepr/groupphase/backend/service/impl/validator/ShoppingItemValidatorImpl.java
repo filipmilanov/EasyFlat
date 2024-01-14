@@ -73,7 +73,7 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
             errors.add("The item is not linked to a Shopping List");
         } else {
             if (shoppingLists.stream()
-                .map(ShoppingList::getShopListId)
+                .map(ShoppingList::getId)
                 .noneMatch(id ->
                     Objects.equals(id, itemDto.shoppingList().id())
                 )
@@ -137,7 +137,7 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
             errors.add("The item is not linked to a Shopping List");
         } else {
             if (shoppingLists.stream()
-                .map(ShoppingList::getShopListId)
+                .map(ShoppingList::getId)
                 .noneMatch(id ->
                     Objects.equals(id, itemDto.shoppingList().id())
                 )

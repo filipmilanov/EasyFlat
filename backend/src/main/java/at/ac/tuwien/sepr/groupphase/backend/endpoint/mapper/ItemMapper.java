@@ -57,9 +57,7 @@ public abstract class ItemMapper {
     @Mapping(target = "minimumQuantity", expression = "java( digitalStorageItem.getMinimumQuantity() )")
     public abstract ItemDto entityToDto(DigitalStorageItem digitalStorageItem);
 
-    @Mapping(target = "alwaysIsStock", expression = "java( itemDto.alwaysInStock() )")
     @Mapping(target = "labels", expression = "java( labels )")
-    @Mapping(target = "shoppingList", expression = "java( shoppingList )")
     @Mapping(target = "itemCache.ean", source = "ean")
     @Mapping(target = "itemCache.generalName", source = "generalName")
     @Mapping(target = "itemCache.productName", source = "productName")
@@ -68,12 +66,8 @@ public abstract class ItemMapper {
     @Mapping(target = "itemCache.unit", source = "unit")
     @Mapping(target = "itemCache.description", source = "description")
     public abstract ShoppingItem dtoToShopping(ShoppingItemDto itemDto,
-                                               @Context List<ItemLabel> labels,
-                                                @Context ShoppingList shoppingList);
+                                               @Context List<ItemLabel> labels);
 
-    @Mapping(target = "labels", source = "labels")
-    @Mapping(target = "alwaysInStock", expression = "java( item.alwaysInStock() )")
-    @Mapping(target = "shoppingList", expression = "java( shoppingList )")
     @Mapping(target = "ean", source = "itemCache.ean")
     @Mapping(target = "generalName", source = "itemCache.generalName")
     @Mapping(target = "productName", source = "itemCache.productName")
@@ -92,7 +86,6 @@ public abstract class ItemMapper {
     @Mapping(target = "itemCache.quantityTotal", source = "quantityTotal")
     @Mapping(target = "itemCache.unit", source = "unit")
     @Mapping(target = "itemCache.description", source = "description")
-    @Mapping(target = "alwaysIsStock", expression = "java( itemDto.alwaysInStock() )")
     @Mapping(target = "itemCache.ingredientList", expression = "java( ingredients )")
     @Mapping(target = "shoppingList", expression = "java( shoppingList )")
     public abstract ShoppingItem itemDtoToShoppingItem(ItemDto itemDto,

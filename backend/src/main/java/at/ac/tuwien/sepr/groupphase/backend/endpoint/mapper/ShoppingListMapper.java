@@ -16,10 +16,8 @@ import java.util.List;
 @Mapper(uses = {UnitMapper.class, IngredientMapper.class, DigitalStorageMapper.class})
 public abstract class ShoppingListMapper {
 
-    @Mapping(target = "id", source = "shopListId")
     public abstract ShoppingListDto entityToDto(ShoppingList shoppingList);
 
-    @Mapping(target = "shopListId", source = "id")
     public abstract ShoppingList dtoToEntity(ShoppingListDto shoppingListDto);
 
     @Mapping(target = "itemCache.ean", source = "ean")

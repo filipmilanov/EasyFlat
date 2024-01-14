@@ -53,20 +53,13 @@ public class ShoppingItem {
     @ManyToOne
     private ShoppingList shoppingList;
 
-    public void setAlwaysIsStock(Boolean alwaysIsStock) {
-        this.alwaysInStock = alwaysIsStock;
-    }
-
-    public Boolean getAlwaysIsStock() {
-        return alwaysInStock;
-    }
-
     public ShoppingList getShoppingList() {
         return shoppingList;
     }
 
-    public void setShoppingList(ShoppingList shoppingList) {
+    public ShoppingItem setShoppingList(ShoppingList shoppingList) {
         this.shoppingList = shoppingList;
+        return this;
     }
 
     public Long getItemId() {

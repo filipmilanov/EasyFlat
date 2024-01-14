@@ -33,6 +33,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListV
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -97,7 +98,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         List<ItemLabel> labels = findLabelsAndCreateMissing(itemDto.labels());
 
-        return shoppingItemRepository.save(itemMapper.dtoToShopping(itemDto, labels, shoppingListMapper.dtoToEntity(itemDto.shoppingList())));
+        ShoppingItem si = itemMapper.dtoToShopping(itemDto, labels);
+
+        return shoppingItemRepository.save(itemMapper.dtoToShopping(itemDto, labels));
     }
 
     @Override
@@ -145,7 +148,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (id == null) {
             return Optional.empty();
         }
-        return shoppingListRepository.getByShopListIdAndSharedFlatIs(id, applicationUser.getSharedFlat());
+        return shoppingListRepository.getByIdAndSharedFlatIs(id, applicationUser.getSharedFlat());
     }
 
     @Override
@@ -253,7 +256,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         List<ShoppingList> ret = shoppingListRepository.findAllByNameContainingIgnoreCaseAndSharedFlatIs(name != null ? name : "", applicationUser.getSharedFlat());
         for (ShoppingList shoppingList : ret) {
-            shoppingList.setItems(this.getItemsById(shoppingList.getShopListId(), new ShoppingItemSearchDto(null, null, null), jwt));
+            shoppingList.setItems(this.getItemsById(shoppingList.getId(), new ShoppingItemSearchDto(null, null, null), jwt));
         }
         return ret;
     }
@@ -297,8 +300,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
-        ShoppingItem item = itemMapper.dtoToShopping(itemDto, labels,
-            shoppingListMapper.dtoToEntity(itemDto.shoppingList()));
+        ShoppingItem item = itemMapper.dtoToShopping(itemDto, labels);
         item.getItemCache().setIngredientList(ingredientList);
         item.setLabels(labels);
         return shoppingItemRepository.save(item);

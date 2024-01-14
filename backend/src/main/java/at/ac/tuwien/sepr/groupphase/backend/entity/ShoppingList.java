@@ -19,7 +19,7 @@ public class ShoppingList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long shopListId;
+    private Long id;
 
     @Column
     private String name;
@@ -31,20 +31,22 @@ public class ShoppingList {
     private SharedFlat sharedFlat;
 
 
-    public Long getShopListId() {
-        return shopListId;
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setShopListId(Long shopListId) {
-        this.shopListId = shopListId;
+    public ShoppingList setId(Long shopListId) {
+        this.id = shopListId;
+        return this;
     }
 
-    public void setName(String name) {
+    public ShoppingList setName(String name) {
         this.name = name;
+        return this;
     }
 
     public List<ShoppingItem> getItems() {
