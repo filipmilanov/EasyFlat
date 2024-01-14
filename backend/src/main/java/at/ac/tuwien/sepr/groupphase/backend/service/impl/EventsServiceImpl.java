@@ -161,6 +161,10 @@ public class EventsServiceImpl implements EventsService {
 
         Long sharedFlatId = user.getSharedFlat().getId();
 
+        if (labelName != null && labelName.isBlank()) {
+            labelName = null;
+        }
+
         List<Event> events = eventsRepository.findEventsByLabelNameAndSharedFlatId(labelName, sharedFlatId);
 
         return events.stream()
