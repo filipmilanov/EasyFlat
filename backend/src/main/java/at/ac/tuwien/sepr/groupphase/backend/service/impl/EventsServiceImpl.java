@@ -1,14 +1,20 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventLabelDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.EventMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
+import at.ac.tuwien.sepr.groupphase.backend.entity.EventLabel;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventsRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
+import at.ac.tuwien.sepr.groupphase.backend.service.EventLabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventsService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.EventValidator;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,9 +24,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class EventsServiceImpl implements EventsService {
@@ -33,13 +43,16 @@ public class EventsServiceImpl implements EventsService {
     private final EventValidator eventValidator;
 
     private final SharedFlatMapper sharedFlatMapper;
+    private final EventLabelService labelService;
 
-    public EventsServiceImpl(EventsRepository eventsRepository, EventMapper eventMapper, AuthService authService, EventValidator eventValidator, SharedFlatMapper sharedFlatMapper) {
+    public EventsServiceImpl(EventsRepository eventsRepository, EventMapper eventMapper, AuthService authService, EventValidator eventValidator,
+                             SharedFlatMapper sharedFlatMapper, EventLabelService labelService) {
         this.eventsRepository = eventsRepository;
         this.eventMapper = eventMapper;
         this.authService = authService;
         this.eventValidator = eventValidator;
         this.sharedFlatMapper = sharedFlatMapper;
+        this.labelService = labelService;
     }
 
     @Override
@@ -47,7 +60,8 @@ public class EventsServiceImpl implements EventsService {
     public EventDto create(EventDto event) throws ValidationException {
         eventValidator.validate(event);
         ApplicationUser user = authService.getUserFromToken();
-        Event toCreate = eventMapper.dtoToEntity(event);
+        List<EventLabel> labels = this.findLabelsAndCreateMissing(event.labels());
+        Event toCreate = eventMapper.dtoToEntity(event, labels);
         toCreate.setSharedFlat(user.getSharedFlat());
         Event createdEvent = eventsRepository.save(toCreate);
         return eventMapper.entityToDto(createdEvent, sharedFlatMapper.entityToWgDetailDto(createdEvent.getSharedFlat()));
@@ -68,6 +82,13 @@ public class EventsServiceImpl implements EventsService {
                 existingEvent.setTitle(event.title());
                 existingEvent.setDescription(event.description());
                 existingEvent.setDate(event.date());
+                existingEvent.setStartTime(event.startTime());
+                existingEvent.setEndTime(event.endTime());
+
+                if (event.labels() != null) {
+                    List<EventLabel> labels = this.findLabelsAndCreateMissing(event.labels());
+                    existingEvent.setLabels(labels);
+                }
 
                 Event updatedEvent = eventsRepository.save(existingEvent);
 
@@ -128,5 +149,162 @@ public class EventsServiceImpl implements EventsService {
         } else {
             throw new EntityNotFoundException("Event not found with id: " + id);
         }
+    }
+
+    @Override
+    public List<EventDto> findEventsByLabel(String labelName) throws AuthorizationException {
+        ApplicationUser user = authService.getUserFromToken();
+
+        if (user == null) {
+            throw new AuthorizationException("Authorization failed", List.of("User does not exist"));
+        }
+
+        Long sharedFlatId = user.getSharedFlat().getId();
+
+        if (labelName != null && labelName.isBlank()) {
+            labelName = null;
+        }
+
+        List<Event> events = eventsRepository.findEventsByLabelNameAndSharedFlatId(labelName, sharedFlatId);
+
+        return events.stream()
+            .filter(event -> user.getSharedFlat().equals(event.getSharedFlat()))
+            .map(event -> eventMapper.entityToDto(event, sharedFlatMapper.entityToWgDetailDto(event.getSharedFlat())))
+            .toList();
+    }
+
+    @Override
+    public String exportAll() {
+        ApplicationUser user = authService.getUserFromToken();
+
+        StringBuilder icsContent = new StringBuilder();
+
+        icsContent.append("BEGIN:VCALENDAR\n");
+        icsContent.append("VERSION:2.0\n");
+        icsContent.append("PRODID:-//EasyFlat//\n");
+
+        List<Event> events = eventsRepository.getBySharedFlatIs(user.getSharedFlat());
+
+        if (events.isEmpty()) {
+            throw new EntityNotFoundException("Events not found for shared flat " + user.getSharedFlat().getName());
+        }
+
+        for (Event event : events) {
+            icsContent.append("BEGIN:VEVENT\n");
+
+            String uuid = UUID.randomUUID().toString();
+
+            icsContent.append("UID:").append(uuid).append("\n");
+            icsContent.append("SUMMARY:").append(event.getTitle()).append("\n");
+            icsContent.append("DESCRIPTION:").append(event.getDescription()).append("\n");
+
+            LocalDateTime eventStartDateTime = LocalDateTime.of(event.getDate(), event.getStartTime());
+            LocalDateTime eventEndDateTime = LocalDateTime.of(event.getDate(), event.getEndTime());
+
+            if (event.getStartTime().toString().equals("00:00") && event.getEndTime().toString().equals("23:59")) {
+                icsContent.append("DTSTART:").append(allDayDate(eventStartDateTime)).append("\n");
+                icsContent.append("DTEND:").append(allDayDate(eventStartDateTime.plusDays(1))).append("\n");
+            } else {
+                icsContent.append("DTSTART:").append(formatDate(eventStartDateTime)).append("\n");
+                icsContent.append("DTEND:").append(formatDate(eventEndDateTime)).append("\n");
+            }
+            icsContent.append("END:VEVENT\n");
+        }
+
+        icsContent.append("END:VCALENDAR");
+
+        return icsContent.toString();
+    }
+
+    @Override
+    public String exportEvent(Long id) throws AuthorizationException {
+        Optional<Event> eventOptional = eventsRepository.findById(id);
+
+        if (eventOptional.isPresent()) {
+            Event event = eventOptional.get();
+            ApplicationUser user = authService.getUserFromToken();
+            if (user.getSharedFlat().equals(event.getSharedFlat())) {
+                StringBuilder icsContent = new StringBuilder();
+
+                icsContent.append("BEGIN:VCALENDAR\n");
+                icsContent.append("VERSION:2.0\n");
+                icsContent.append("PRODID:-//EasyFlat//\n");
+                icsContent.append("BEGIN:VEVENT\n");
+
+                String uuid = UUID.randomUUID().toString();
+
+                icsContent.append("UID:").append(uuid).append("\n");
+                icsContent.append("SUMMARY:").append(event.getTitle()).append("\n");
+                icsContent.append("DESCRIPTION:").append(event.getDescription()).append("\n");
+
+                LocalDateTime eventStartDateTime = LocalDateTime.of(event.getDate(), event.getStartTime());
+                LocalDateTime eventEndDateTime = LocalDateTime.of(event.getDate(), event.getEndTime());
+
+                if (event.getStartTime().toString().equals("00:00") && event.getEndTime().toString().equals("23:59")) {
+                    icsContent.append("DTSTART:").append(allDayDate(eventStartDateTime)).append("\n");
+                    icsContent.append("DTEND:").append(allDayDate(eventStartDateTime.plusDays(1))).append("\n");
+                } else {
+                    icsContent.append("DTSTART:").append(formatDate(eventStartDateTime)).append("\n");
+                    icsContent.append("DTEND:").append(formatDate(eventEndDateTime)).append("\n");
+                }
+
+                icsContent.append("END:VEVENT\n");
+                icsContent.append("END:VCALENDAR");
+
+                return icsContent.toString();
+            } else {
+                throw new AuthorizationException("User does not have access to this event", new ArrayList<String>());
+            }
+        } else {
+            throw new EntityNotFoundException("Event not found with id: " + id);
+        }
+    }
+
+    private String formatDate(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss");
+        return dateTime.format(formatter);
+    }
+
+    private String allDayDate(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        return dateTime.format(formatter);
+    }
+
+    private List<EventLabel> findLabelsAndCreateMissing(List<EventLabelDto> labels) {
+        LOGGER.trace("findLabelsAndCreateMissing({})", labels);
+        if (labels == null) {
+            return List.of();
+        }
+        List<String> values = labels.stream()
+            .map(EventLabelDto::labelName)
+            .toList();
+        List<String> colours = labels.stream()
+            .map(EventLabelDto::labelColour)
+            .toList();
+
+        List<EventLabel> ret = new ArrayList<>();
+        if (!values.isEmpty()) {
+            for (int i = 0; i < values.size(); i++) {
+                EventLabel found = labelService.findByValueAndColour(values.get(i), colours.get(i));
+                if (found != null) {
+                    ret.add(found);
+                }
+            }
+        }
+
+        List<EventLabelDto> missingLabels = labels.stream()
+            .filter(labelDto ->
+                ret.stream()
+                    .noneMatch(label ->
+                        (label.getLabelName().equals(labelDto.labelName())
+                            && label.getLabelColour().equals(labelDto.labelColour()))
+                    )
+            ).toList();
+
+        if (!missingLabels.isEmpty()) {
+            List<EventLabel> createdLabels = labelService.createAll(missingLabels);
+            ret.addAll(createdLabels);
+        }
+        return ret;
     }
 }

@@ -3,38 +3,35 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventLabelDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventLabelDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
-import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -76,6 +73,9 @@ public class EventServiceTest {
             .title("Test Title")
             .description("Test Description")
             .date(LocalDate.now().plusDays(1))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
+            .labels(new ArrayList<>())
             .sharedFlat(sharedFlatMapper.entityToWgDetailDto(sharedFlat))
             .build();
 
@@ -103,6 +103,9 @@ public class EventServiceTest {
             .title("Updated Title")
             .description("Updated Description")
             .date(LocalDate.now().plusDays(2))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
+            .labels(new ArrayList<>())
             .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
             .build();
 
@@ -119,13 +122,17 @@ public class EventServiceTest {
     }
 
     @Test
-    void givenInvalidEventDtoWhenCreateThenThrowValidationException() {
-        // Negative test for create method with an invalid event
-        EventDto invalidEventDto = EventDtoBuilder.builder()
-            // Set invalid fields or missing required fields
-            .title("")
-            .build();
+    void givenInvalidEventDtoWithEmptyTitleWhenCreateThenThrowValidationException() {
 
+        EventDto invalidEventDto = EventDtoBuilder.builder()
+            .title("")
+            .description("")
+            .date(LocalDate.now().plusDays(2))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
+            .labels(new ArrayList<>())
+            .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
+            .build();
 
 
         assertThrows(ValidationException.class, () -> eventsService.create(invalidEventDto));
@@ -138,6 +145,9 @@ public class EventServiceTest {
             .title("Updated Title")
             .description("Updated Description")
             .date(LocalDate.now().plusDays(2))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
+            .labels(new ArrayList<>())
             .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
             .build();
 
@@ -154,6 +164,9 @@ public class EventServiceTest {
             .title("Updated Title")
             .description("Updated Description")
             .date(LocalDate.now().plusDays(2))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
+            .labels(new ArrayList<>())
             .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
             .build();
 
@@ -229,4 +242,128 @@ public class EventServiceTest {
         assertThrows(EntityNotFoundException.class, () -> eventsService.getEventWithId(nonExistingEventId));
     }
 
+    @Test
+    void givenInvalidEventDtoWithEndTimeBeforeStartTimeWhenCreateThenThrowValidationException() {
+
+        EventDto invalidEventDto = EventDtoBuilder.builder()
+            .title("Title")
+            .startTime(LocalTime.of(12, 0))
+            .endTime(LocalTime.of(11, 0))
+            .date(LocalDate.now().plusDays(1))
+            .labels(new ArrayList<>())
+            .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
+            .build();
+
+        assertThrows(ValidationException.class, () -> eventsService.create(invalidEventDto));
+    }
+
+    @Test
+    @DisplayName("Positive test for exporting a valid event")
+    void givenValidEventIdExportShouldSucceed() throws AuthorizationException {
+
+       String exported = this.eventsService.exportEvent(1L);
+
+       assertNotNull(exported);
+       assertTrue(exported.startsWith("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//EasyFlat//\n"));
+       assertTrue(exported.contains("House Meeting"));
+       assertTrue(exported.contains("Discussing important matters regarding the shared living space."));
+       assertTrue(exported.endsWith("END:VCALENDAR"));
+    }
+
+    @Test
+    @DisplayName("Negative test for exporting a non-existing event")
+    void givenInvalidEventIdExportShouldThrowEntityNotFoundException() {
+        assertThrows(EntityNotFoundException.class, () -> this.eventsService.exportEvent(1000L));
+    }
+
+    @Test
+    @DisplayName("Positive test for exporting all events for the shared flat form the test data")
+    void testExportAllWithGivenTestDataShouldSucceed() {
+
+        String exported = this.eventsService.exportAll();
+
+        assertNotNull(exported);
+        assertTrue(exported.startsWith("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//EasyFlat//\n"));
+        assertTrue(exported.contains("House Meeting"));
+        assertTrue(exported.contains("Discussing important matters regarding the shared living space."));
+        assertTrue(exported.contains("Cleaning Day"));
+        assertTrue(exported.contains("A day dedicated to cleaning and maintaining the shared areas."));
+        assertTrue(exported.contains("Movie Night"));
+        assertTrue(exported.contains("Gathering for a cozy movie night in the common area."));
+        assertTrue(exported.endsWith("END:VCALENDAR"));
+    }
+
+    @Test
+    @DisplayName("Positive test for updating an existing event with valid labels")
+    void givenUpdatedEventWithLabelsShouldSucceed() throws AuthorizationException, ValidationException {
+
+        EventLabelDto label1 = EventLabelDtoBuilder.builder()
+            .labelName("label1")
+            .build();
+        EventLabelDto label2 = EventLabelDtoBuilder.builder()
+            .labelName("label2")
+            .build();
+        List<EventLabelDto> labels = new ArrayList<>();
+        labels.addAll(List.of(label1, label2));
+
+        //given
+        EventDto updatedEventDto = EventDtoBuilder.builder()
+            .id(1L)
+            .title("Updated Title")
+            .description("Updated Description")
+            .date(LocalDate.now().plusDays(2))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
+            .labels(labels)
+            .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
+            .build();
+
+        //when
+        EventDto result = eventsService.update(updatedEventDto);
+
+        //then
+        assertAll(
+            () -> assertThat(result.title()).isEqualTo(updatedEventDto.title()),
+            () -> assertThat(result.description()).isEqualTo(updatedEventDto.description()),
+            () -> assertThat(result.date()).isEqualTo(updatedEventDto.date()),
+            () -> assertThat(result.labels().equals(updatedEventDto.labels())),
+            () -> assertThat(result.sharedFlat().getId()).isEqualTo(updatedEventDto.sharedFlat().getId())
+        );
+    }
+
+    @Test
+    @DisplayName("Negative test for updating an existing event with more thant 3 labels")
+    void givenUpdatedEventWithMoreLabelsShouldThrowValidationException() throws AuthorizationException, ValidationException {
+
+        EventLabelDto label1 = EventLabelDtoBuilder.builder()
+            .labelName("label1")
+            .build();
+        EventLabelDto label2 = EventLabelDtoBuilder.builder()
+            .labelName("label2")
+            .build();
+        EventLabelDto label3 = EventLabelDtoBuilder.builder()
+            .labelName("label3")
+            .build();
+        EventLabelDto label4 = EventLabelDtoBuilder.builder()
+            .labelName("label4")
+            .build();
+        List<EventLabelDto> labels = new ArrayList<>();
+        labels.addAll(List.of(label1, label2, label3, label4));
+
+        //given
+        EventDto updatedEventDto = EventDtoBuilder.builder()
+            .id(1L)
+            .title("Updated Title")
+            .description("Updated Description")
+            .date(LocalDate.now().plusDays(2))
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now().plusMinutes(10))
+            .labels(labels)
+            .sharedFlat(sharedFlatMapper.entityToWgDetailDto(new SharedFlat().setId(1L)))
+            .build();
+
+        assertThrows(ValidationException.class, () -> eventsService.update(updatedEventDto));
+
+
+    }
 }

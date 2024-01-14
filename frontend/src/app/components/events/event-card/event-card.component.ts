@@ -27,7 +27,6 @@ export class EventCardComponent {
       return input;
     }
 
-    // Truncate the string and append ellipsis
     const truncated = input.substring(0, maxLength - 3);
     return truncated + '...';
   }
@@ -42,5 +41,48 @@ export class EventCardComponent {
         console.log(error);
       }
     });
+  }
+
+  export(id: number) {
+    console.log(id)
+    this.eventService.exportEvent(id.toString()).subscribe(
+      (icsContent: string) => {
+        this.downloadICSFile(icsContent);
+      },
+      (error) => {
+        console.error('Error exporting event:', error);
+        this.notification.error('Error exporting event ' + this.event.title);
+      }
+    );
+  }
+
+  private downloadICSFile(icsContent: string) {
+    const blob = new Blob([icsContent], {type: 'text/calendar'});
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    const fileName = this.event.title + '.ics';
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  formatTime(time: string | null | undefined): string {
+    if (time == null) {
+      return '';
+    }
+    if (time.trim() === '') {
+      return '';
+    }
+
+    const [hours, minutes] = time.split(':');
+    return `${hours}:${minutes}`;
+  }
+
+  getIdForm(): string {
+    return `${this.event.title}${this.event.id.toString()}`.replace(/\s/g, '');
   }
 }

@@ -12,6 +12,7 @@ import {ToastrService} from "ngx-toastr";
 })
 export class EventsComponent implements OnInit {
  events: EventDto[];
+ label: string = '';
 
   constructor(
     private eventService: EventsService,
@@ -38,6 +39,44 @@ loadEvents(){
     }
   })
 }
+
+findEventsByLabel(){
+    this.eventService.findEventsByLabel(this.label).subscribe({
+      next: res => {
+        this.events = res;
+      },
+      error: err => {
+        console.error("Error finding events:", err);
+        this.notification.error("Error finding events");
+      }
+    });
+}
+
+  exportAll() {
+    this.eventService.exportAll().subscribe(
+      (icsContent: string) => {
+        this.downloadICSFile(icsContent);
+      },
+      (error) => {
+        console.error('Error exporting events:', error);
+        this.notification.error('Error exporting events');
+      }
+    );
+  }
+
+  private downloadICSFile(icsContent: string) {
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'events.ics');
+    document.body.appendChild(link);
+
+    link.click();
+    document.body.removeChild(link);
+  }
+
 
 
 }

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {EventDto} from "../../../dtos/event";
+import {EventDto, EventLabel} from "../../../dtos/event";
 import {CookbookMode} from "../../cookbook/cookbook-create/cookbook-create.component";
 import {NgForm} from "@angular/forms";
 import {Observable} from "rxjs";
@@ -23,12 +23,16 @@ export enum EventsMode {
 })
 export class EventsCreateComponent implements OnInit {
   event: EventDto = {
-    id: 0,
     title: '',
     description: '',
     date: '',
+    startTime: '',
+    endTime: ''
   };
+  allDay: boolean = false;
+
   mode: EventsMode = EventsMode.create;
+  selectedLabelColor = '#ffffff';
 
   constructor(
     private eventService: EventsService,
@@ -64,6 +68,9 @@ export class EventsCreateComponent implements OnInit {
             next: res => {
               console.log(res)
               this.event = res;
+              if(this.event.startTime == '00:00:00' && this.event.endTime == '23:59:00') {
+                this.allDay = true;
+              }
             },
             error: error => {
               console.error(`Event could not be retrieved from the backend: ${error}`);
@@ -95,9 +102,9 @@ export class EventsCreateComponent implements OnInit {
   public get heading(): string {
     switch (this.mode) {
       case EventsMode.create:
-        return 'Create Recipe';
+        return 'Create Event';
       case EventsMode.edit:
-        return 'Edit Recipe';
+        return 'Edit Event';
       default:
         return '?';
     }
@@ -105,6 +112,10 @@ export class EventsCreateComponent implements OnInit {
 
   public onSubmit(form: NgForm): void {
     console.log('is form valid?', form.valid, this.event);
+    if(this.allDay) {
+      this.event.startTime =  '00:00:00';
+      this.event.endTime =  '23:59:00';
+    }
 
     if (form.valid) {
       let observable: Observable<EventDto>;
@@ -138,4 +149,28 @@ export class EventsCreateComponent implements OnInit {
     }
 
   }
+
+  addLabel(label: string, selectedLabelColor: string): void {
+    if (!label || label.length === 0) {
+      return;
+    }
+
+    const newLabel: EventLabel = {
+      labelName: label,
+      labelColour: (selectedLabelColor !== '#ffffff' ? selectedLabelColor : '#000000')
+    };
+
+    if (!this.event.labels) {
+      this.event.labels = [newLabel];
+    } else {
+      this.event.labels.push(newLabel);
+    }
+  }
+
+  removeLabel(i: number) {
+    if (this.event.labels && this.event.labels.length > i) {
+      this.event.labels.splice(i, 1);
+    }
+  }
+
 }
