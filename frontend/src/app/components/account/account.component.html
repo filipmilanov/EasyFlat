@@ -1,10 +1,3 @@
-<div *ngIf="error" class="alert alert-warning alert-dismissible fade show" role="alert">
-  <strong>Authentication problems!</strong> {{ errorMessage }}
-  <button type="button" (click)="vanishError()" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-
 <div class="pt-5">
   <div class="row">
     <div class="col-md-6 mx-auto">
@@ -48,9 +41,16 @@
               </div>
             </div>
             <button style="margin-right: 10px; margin-top: 20px" type="submit" class="btn btn-success float-right">Save Changes</button>
-            <button style="margin-right: 10px; margin-top: 20px" type="button" (click)="delete()" class="btn btn-danger float-right">Delete Account</button>
+            <button style="margin-right: 10px; margin-top: 20px" type="button" data-bs-toggle="modal" [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModal(user)" class="btn btn-danger float-right">Delete Account</button>
           </form>
         </div>
+        <app-confirm-delete-dialog
+          [deleteInfo]="'account'"
+          [deleteName]="user.firstName"
+          [deleteId]="user.id.toString()"
+          (confirm)="delete()">
+        </app-confirm-delete-dialog>
+
       </div>
     </div>
   </div>
@@ -73,13 +73,16 @@
                 <label for="name">Flat name</label>
                 <input type="text"  name="name" formControlName="flatName" class="form-control" id="name" readonly>
               </div>
-              <div *ngIf="submitted && accountForm.get('name').errors?.required" class="error">
-                <small class="form-text text-warning">Your flat name is required!</small>
-              </div>
             </div>
-            <button style="margin-right: 10px; margin-top: 20px" type="button" (click)="openAdminSelectionModal()" class="btn btn-danger float-right">Sign Out</button>
+            <button style="margin-right: 10px; margin-top: 20px" type="button" data-bs-toggle="modal"  data-bs-toggle="modal" [attr.data-bs-target]="'#sign-out-modal' + getIdFormatForDeleteModal(user)" class="btn btn-danger float-right">Sign Out</button>
             <button *ngIf="user.admin" style="margin-right: 10px; margin-top: 20px" type="button" (click)="deleteFlat()" class="btn btn-danger float-right">Delete Flat</button>
           </form>
+          <app-sign-out-modal
+            [signOutInfo]="'from flat'"
+            [signOutName]="user.firstName"
+            [signOutId]="user.id.toString()"
+            (confirm)="openAdminSelectionModal()">
+          </app-sign-out-modal>
         </div>
       </div>
     </div>
@@ -121,4 +124,5 @@
     </div>
   </div>
 </div>
+
 

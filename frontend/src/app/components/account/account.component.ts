@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
 import {UserDetail} from '../../dtos/auth-request';
@@ -10,6 +10,8 @@ import {ToastrService} from "ngx-toastr";
 import {NgbModal, NgbModalOptions} from '@ng-bootstrap/ng-bootstrap';
 import {AdminSelectionModalComponent} from '../admin-selection-modal/admin-selection-modal.component';
 import {LocalNgModuleData} from "@angular/compiler-cli/src/ngtsc/scope";
+import {RecipeSuggestion} from "../../dtos/cookingDtos/recipeSuggestion";
+import {ItemDto} from "../../dtos/item";
 
 @Component({
   selector: 'app-account',
@@ -17,7 +19,16 @@ import {LocalNgModuleData} from "@angular/compiler-cli/src/ngtsc/scope";
   styleUrls: ['./account.component.scss']
 })
 export class AccountComponent implements OnInit {
-  user: UserDetail;
+  @Output() account: EventEmitter<UserDetail> = new EventEmitter<UserDetail>();
+  user: UserDetail = {
+    id: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    flatName: '',
+    password: '',
+    admin: false
+  };
   accountForm: FormGroup;
   passwordForm: FormGroup;
   submitted = false;
@@ -47,9 +58,7 @@ export class AccountComponent implements OnInit {
     // Check if the user is an admin before opening the modal
     console.log(this.users);
     if (this.users.length == 0) {
-      if (confirm('Are you sure you want to sign out?')) {
         this.signOut();
-      }
     } else {
       if (this.user.admin) {
         const options: NgbModalOptions = {
@@ -77,15 +86,15 @@ export class AccountComponent implements OnInit {
           console.log('Admin is set')
 
           // Show a confirmation dialog if you want
-          if (confirm('Are you sure you want to sign out?')) {
+
             this.signOut();
-          }
+
         });
       } else {
         // If the user is not an admin, directly proceed to sign out
-        if (confirm('Are you sure you want to sign out?')) {
+
           this.signOut();
-        }
+
       }
     }
   }
@@ -164,7 +173,6 @@ export class AccountComponent implements OnInit {
   }
 
   delete() {
-    if (confirm("Are you sure you want to delete your account?")) {
       this.authService.delete(this.user).subscribe({
         next: (deletedUser: UserDetail) => {
           console.log('User deleted:', deletedUser);
@@ -175,7 +183,6 @@ export class AccountComponent implements OnInit {
           console.error(error.message, error);
         }
       });
-    }
   }
 
   signOut() {
@@ -236,9 +243,13 @@ export class AccountComponent implements OnInit {
       });
     } else {
         this.error = true;
-        this.errorMessage = "Password don't match";
+        this.notification.error("Passwords don't match");
         console.error(this.errorMessage);
     }
+  }
+
+  getIdFormatForDeleteModal(user:UserDetail): string {
+    return `${user.firstName}${user.id.toString()}`.replace(/\s/g, '');
   }
 }
 
