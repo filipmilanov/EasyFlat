@@ -4,6 +4,8 @@ import {Globals} from "../global/globals";
 import {Preference} from "../dtos/preference";
 import {ShoppingItemDto} from "../dtos/item";
 import {Observable} from "rxjs";
+import {ChoresDto} from "../dtos/chores";
+import {SharedFlat} from "../dtos/sharedFlat";
 
 @Injectable({
   providedIn: 'root'
@@ -21,4 +23,5 @@ export class PreferenceService {
   getLastPreference(): Observable<Preference> {
     return this.httpClient.get<Preference>(this.choreBaseUri);
   }
+
 }

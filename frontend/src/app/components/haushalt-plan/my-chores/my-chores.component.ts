@@ -79,5 +79,11 @@ export class MyChoresComponent {
       });
     }
   }
+  navigateToAllChores() {
+    this.router.navigate(['/chores/all']);
+  }
 
+  navigateToPreference() {
+    this.router.navigate(['/chores/preference']);
+  }
 }

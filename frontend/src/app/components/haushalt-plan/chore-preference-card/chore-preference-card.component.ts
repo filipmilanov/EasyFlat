@@ -1,5 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {UserDetail} from "../../../dtos/auth-request";
+import {Preference} from "../../../dtos/preference";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-chore-preference-card',
@@ -11,4 +13,5 @@ export class ChorePreferenceCardComponent {
   @Input() secondName: string;
   @Input() thirdName: string;
   @Input() fourthName: string;
+
 }

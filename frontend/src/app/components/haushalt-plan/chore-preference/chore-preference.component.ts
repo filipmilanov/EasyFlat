@@ -12,6 +12,7 @@ import {UnitService} from "../../../services/unit.service";
 import {Preference} from "../../../dtos/preference";
 import {PreferenceService} from "../../../services/preference.service";
 import {PreferenceStorageService} from "../../../services/preference-storage-service";
+import {SharedFlat} from "../../../dtos/sharedFlat";
 
 @Component({
   selector: 'app-chore-preference',
@@ -20,6 +21,7 @@ import {PreferenceStorageService} from "../../../services/preference-storage-ser
 })
 export class ChorePreferenceComponent implements OnInit {
   preference: Preference = {
+    id: null,
     first: null,
     second: null,
     third: null,
@@ -28,6 +30,7 @@ export class ChorePreferenceComponent implements OnInit {
   chores: ChoresDto[] = [];
 
   oldPreference: Preference = {
+    id: null,
     first: null,
     second: null,
     third: null,
@@ -73,6 +76,7 @@ export class ChorePreferenceComponent implements OnInit {
               console.error('Error fetching last preference:', error);
             }
           });
+          this.router.navigate(['/chores/all']);
         },
         error: error => {
           console.error(`Error preferences were not changed`);
@@ -118,5 +122,4 @@ export class ChorePreferenceComponent implements OnInit {
       }
     });
   }
-
 }
