@@ -50,6 +50,15 @@ public class ExpenseEndpoint {
     }
 
     @Secured("ROLE_USER")
+    @GetMapping()
+    public List<ExpenseDto> findAll() {
+        LOGGER.info("findAll()");
+        return expenseMapper.entityListToExpenseDtoList(
+            expenseService.findAll()
+        );
+    }
+
+    @Secured("ROLE_USER")
     @GetMapping("debits")
     public List<BalanceDebitDto> calculateDebits() throws AuthenticationException {
         LOGGER.info("calculateDebits");

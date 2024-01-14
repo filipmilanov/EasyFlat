@@ -26,6 +26,13 @@ public interface ExpenseService {
     Expense findById(Long id) throws NotFoundException, AuthenticationException;
 
     /**
+     * Finds all expenses in the database.
+     *
+     * @return any expense that was found, empty if there are none
+     */
+    List<Expense> findAll();
+
+    /**
      * Finds all repeating expenses in the database.
      *
      * @return a List of repeating expenses

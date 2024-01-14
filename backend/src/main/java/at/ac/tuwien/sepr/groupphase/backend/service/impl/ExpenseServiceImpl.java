@@ -83,6 +83,13 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    public List<Expense> findAll() {
+        LOGGER.trace("findAll()");
+
+        return expenseRepository.findAll();
+    }
+
+    @Override
     public List<Expense> findRepeatingExpenses() {
         LOGGER.trace("findRepeatingExpenses()");
 
@@ -181,7 +188,6 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         return balanceDebitDtos;
     }
-
 
     @Override
     @Transactional
