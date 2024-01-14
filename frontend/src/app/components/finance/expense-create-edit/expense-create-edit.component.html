@@ -24,7 +24,7 @@
         </button>
         <button type="button"
                 class="btn btn-secondary"
-                [routerLink]="['/finance']">
+                [routerLink]="modeIsCreate ? ['/finance'] : ['/expense']">
           <i class="bi" [class.bi-arrow-left]="true"></i>
           Back
         </button>
