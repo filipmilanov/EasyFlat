@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import com.deepl.api.DeepLException;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,7 @@ public interface CookingService {
      * @throws ValidationException If there is a validation error.
      */
     List<RecipeSuggestionDto> getRecipeSuggestion(String type)
-        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException;
+        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException;
 
     /**
      * Get the details of a specific recipe based on the provided recipe ID.
@@ -72,7 +73,7 @@ public interface CookingService {
      * @param id The ID of the recipe to retrieve.
      * @return An Optional containing the recipe, if found.
      */
-    Optional<RecipeSuggestion> getCookbookRecipe(Long id);
+    RecipeSuggestionDto getCookbookRecipe(Long id);
 
     /**
      * Update an existing recipe in the cookbook.

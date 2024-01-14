@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
@@ -13,13 +14,17 @@ public record RecipeIngredientDto(
     String name,
     String unit,
     UnitDto unitEnum,
-    double amount) {
+
+    double amount,
+    boolean matched,
+    String realName,
+    ItemDto matchedItem) {
 
 
-    public static RecipeIngredientDto createWithCustomLogic(Long id, String name, String unit, UnitDto unitEnum, double amount) {
+    public static RecipeIngredientDto createWithCustomLogic(Long id, String name, String unit, UnitDto unitEnum, double amount, boolean matched, String realName, ItemDto matchedItem) {
 
         // Return the new instance of RecipeIngredientDto
-        return new RecipeIngredientDto(id, name, unit, unitEnum, amount);
+        return new RecipeIngredientDto(id, name, unit, unitEnum, amount, matched, realName, matchedItem);
     }
 
 

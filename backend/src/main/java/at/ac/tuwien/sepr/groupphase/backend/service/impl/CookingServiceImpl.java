@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.Step;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.CookbookMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
@@ -17,6 +18,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeIngredientMapp
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.AlternativeName;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -43,6 +45,10 @@ import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authorization.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.CookbookValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.RecipeValidator;
+import com.deepl.api.DeepLException;
+import com.deepl.api.TextResult;
+import com.deepl.api.Translator;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +62,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.invoke.MethodHandles;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -86,13 +93,15 @@ public class CookingServiceImpl implements CookingService {
     private final Authorization authorization;
     private final CookbookMapper cookbookMapper;
     private final CookbookRepository cookbookRepository;
-    private final UserService userService;
-    private final CustomUserDetailService customUserDetailService;
     private final ShoppingListService shoppingListService;
     private final ShoppingListMapper shoppingListMapper;
     private final DigitalStorageMapper digitalStorageMapper;
+
+    private Translator translator;
+    private final String translateKey = "99218f60-385f-59ea-55ce-513e8cec1469:fx";
+
     private final AuthService authService;
-    private final String apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
+
     private final String apiUrlNew = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients";
 
 
@@ -132,18 +141,17 @@ public class CookingServiceImpl implements CookingService {
         this.authorization = authorization;
         this.cookbookMapper = cookbookMapper;
         this.cookbookRepository = cookbookRepository;
-        this.userService = userService;
         this.shoppingListService = shoppingListService;
         this.shoppingListMapper = shoppingListMapper;
         this.digitalStorageMapper = digitalStorageMapper;
         this.itemRepository = itemRepository;
-        this.customUserDetailService = customUserDetailService;
         this.authService = authService;
     }
 
     @Override
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
-        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
+        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
+
 
         ApplicationUser user = authService.getUserFromToken();
 
@@ -180,111 +188,7 @@ public class CookingServiceImpl implements CookingService {
         return toReturn;
     }
 
-    private static String getNewReqStringForInformation(Long id) {
-        String newReqString = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/" + id + "/information";
-        newReqString += "?includeNutrition=false";
-        return newReqString;
-    }
-
-    private List<RecipeSuggestionDto> filterSuggestions(List<RecipeSuggestionDto> recipeSuggestions, String type) {
-        List<String> filterTypes = new ArrayList<>();
-        if (type.equals("breakfast")) {
-            filterTypes.add("breakfast");
-            filterTypes.add("snack");
-            filterTypes.add("dessert");
-            filterTypes.add("brunch");
-            filterTypes.add("morning meal");
-        }
-        if (type.equals("main dish")) {
-            filterTypes.add("main course");
-            filterTypes.add("lunch");
-            filterTypes.add("dinner");
-            filterTypes.add("soup");
-
-        }
-        if (type.equals("side dish")) {
-            filterTypes.add("salad");
-            filterTypes.add("side dish");
-            filterTypes.add("appetizer");
-            filterTypes.add("snack");
-            filterTypes.add("fingerfood");
-            filterTypes.add("marinade");
-            filterTypes.add("starter");
-            filterTypes.add("antipasti");
-        }
-
-        Map<String, RecipeSuggestionDto> results = new HashMap<>();
-
-
-        for (String filter : filterTypes) {
-            loop2:
-            for (RecipeSuggestionDto suggestionDto : recipeSuggestions) {
-                for (String typeOfDish : suggestionDto.dishTypes()) {
-                    if (filter.equals(typeOfDish)) {
-                        results.put(suggestionDto.title(), suggestionDto);
-                        break;
-                    }
-                }
-            }
-        }
-        List<RecipeSuggestionDto> recipesToRet = new ArrayList<>();
-        for (Map.Entry<String, RecipeSuggestionDto> recipe : results.entrySet()) {
-            recipesToRet.add(recipe.getValue());
-        }
-
-        return recipesToRet;
-    }
-
-    private static List<RecipeSuggestionDto> getRecipeSuggestionDtos(List<RecipeSuggestionDto> response, ResponseEntity<List<RecipeDto>> exchange) {
-        List<RecipeSuggestionDto> toReturn = new LinkedList<>();
-        if (response != null) {
-            for (int i = 0; i < response.size(); i++) {
-                RecipeDto hereWeHaveMissIng = exchange.getBody().get(i);
-                RecipeSuggestionDto details = response.get(i);
-                RecipeSuggestionDto toAdd = new RecipeSuggestionDto(
-                    details.id(),
-                    details.title(),
-                    details.servings(),
-                    details.readyInMinutes(),
-                    details.extendedIngredients(),
-                    details.summary(),
-                    hereWeHaveMissIng.missedIngredients(),
-                    details.dishTypes()
-                );
-                toReturn.add(toAdd);
-            }
-        }
-        return toReturn;
-    }
-
-    private List<RecipeSuggestionDto> saveUnitsAlsUnits(List<RecipeSuggestionDto> recipes) {
-
-        List<RecipeSuggestionDto> updatedRecipeList = new LinkedList<>();
-        for (RecipeSuggestionDto recipeSuggestion : recipes) {
-            List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
-            List<RecipeIngredientDto> updatedMissedIngredients = new LinkedList<>();
-            for (RecipeIngredientDto recipeIngredient : recipeSuggestion.extendedIngredients()) {
-                updatedIngredients.add(this.normalizeIngredient(recipeIngredient));
-            }
-            if (recipeSuggestion.missedIngredients() != null) {
-                for (RecipeIngredientDto recipeIngredient : recipeSuggestion.missedIngredients()) {
-                    updatedMissedIngredients.add(this.normalizeIngredient(recipeIngredient));
-                }
-            }
-            updatedRecipeList.add(new RecipeSuggestionDto(recipeSuggestion.id(),
-                recipeSuggestion.title(),
-                recipeSuggestion.servings(),
-                recipeSuggestion.readyInMinutes(),
-                updatedIngredients,
-                recipeSuggestion.summary(),
-                updatedMissedIngredients,
-                recipeSuggestion.dishTypes()));
-        }
-        return updatedRecipeList;
-    }
-
     @Override
-    @Cacheable("addresses")
     public RecipeDetailDto getRecipeDetails(Long recipeId) {
         String reqString = getNewReqStringForInformation(recipeId);
         ResponseEntity<RecipeDetailDto> response = restTemplate.exchange(reqString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<RecipeDetailDto>() {
@@ -296,29 +200,23 @@ public class CookingServiceImpl implements CookingService {
 
         RecipeDetailDto recipeDetailDto = response.getBody();
         CookingSteps steps = null;
+
         if (responseSteps.getBody() != null && !responseSteps.getBody().isEmpty()) {
             steps = responseSteps.getBody().get(0);
         }
+        List<RecipeIngredientDto> matchedIngredients = getMatchedIngredients(response.getBody().extendedIngredients());
         if (recipeDetailDto != null) {
-            return new RecipeDetailDto(
+            return saveUnitAlsUnitsForDetail(new RecipeDetailDto(
                 recipeId,
                 recipeDetailDto.title(),
                 recipeDetailDto.servings(),
                 recipeDetailDto.readyInMinutes(),
-                recipeDetailDto.extendedIngredients(),
+                matchedIngredients,
                 recipeDetailDto.summary(),
                 steps
-            );
+            ));
         }
         return null;
-    }
-
-    public RecipeSuggestion getRecipeFromApi(Long recipeId) {
-        String reqString = "https://api.spoonacular.com/recipes/" + recipeId + "/information" + "?apiKey=" + apiKey + "&includeNutrition=false";
-        ResponseEntity<RecipeSuggestion> response = restTemplate.exchange(reqString, HttpMethod.GET, null, new ParameterizedTypeReference<RecipeSuggestion>() {
-        });
-
-        return response.getBody();
     }
 
     @Override
@@ -355,7 +253,10 @@ public class CookingServiceImpl implements CookingService {
         Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
         List<RecipeSuggestion> recipes = cookbook.getRecipes();
         for (RecipeSuggestion recipe : recipes) {
-            recipesDto.add(recipeMapper.entityToRecipeSuggestionDto(recipe));
+            RecipeSuggestionDto toAdd = recipeMapper.entityToRecipeSuggestionDto(recipe);
+            List<RecipeIngredientDto> matchedIngr = getMatchedIngredients(toAdd.extendedIngredients());
+            toAdd = toAdd.withExtendedIngredients(matchedIngr);
+            recipesDto.add(toAdd);
         }
         return recipesDto;
     }
@@ -363,6 +264,18 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws AuthorizationException, ConflictException, ValidationException,
         AuthenticationException {
+        if (recipe.id() != null) {
+            RecipeDetailDto recipeWithSteps = getRecipeDetails(recipe.id());
+            String summary = recipe.summary();
+            if (recipeWithSteps.steps() != null) {
+                for (Step step : recipeWithSteps.steps().steps()) {
+                    summary += "<br>" + "<strong>Step " + step.number() + "</strong> : " + step.step();
+                }
+            }
+
+            recipe = recipe.withId(null).withSummary(summary);
+
+        }
         recipeValidator.validateForCreate(recipe);
         List<RecipeIngredient> ingredientList = ingredientService.createAll(recipe.extendedIngredients());
         RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipe, ingredientList);
@@ -375,19 +288,22 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public Optional<RecipeSuggestion> getCookbookRecipe(Long id) {
+    public RecipeSuggestionDto getCookbookRecipe(Long id) {
         if (id == null) {
-            return Optional.empty();
+            return null;
         }
-        Optional<RecipeSuggestion> recipe = repository.findById(id);
-        return recipe;
+        RecipeSuggestion recipe = repository.findById(id).orElseThrow(() -> new NotFoundException("Id does not exist in database!"));
+        RecipeSuggestionDto recipeToReturn = recipeMapper.entityToRecipeSuggestionDto(recipe);
+        List<RecipeIngredientDto> matchedIngr = getMatchedIngredients(recipeToReturn.extendedIngredients());
+
+        return recipeToReturn.withExtendedIngredients(matchedIngr);
     }
 
     @Override
     public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException, AuthorizationException {
         recipeValidator.validateForUpdate(recipe);
-        RecipeSuggestion oldRecipe = this.getCookbookRecipe(recipe.id())
-            .orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
+        RecipeSuggestion oldRecipe = repository.findById(recipe.id()).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
+
         Long cookbookId = this.getCookbookIdForUser();
         Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
 
@@ -408,11 +324,11 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion deleteCookbookRecipe(Long id) throws AuthorizationException {
-        RecipeSuggestion deletedRecipe = this.getCookbookRecipe(id).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+    public RecipeSuggestion deleteCookbookRecipe(Long id) throws AuthenticationException {
+        RecipeSuggestionDto deletedRecipe = this.getCookbookRecipe(id);
         this.getCookbookIdForUser();
-        repository.delete(deletedRecipe);
-        return deletedRecipe;
+        repository.delete(recipeMapper.dtoToEntity(deletedRecipe, recipeIngredientMapper.dtoListToEntityList(deletedRecipe.extendedIngredients())));
+        return recipeMapper.dtoToEntity(deletedRecipe, recipeIngredientMapper.dtoListToEntityList(deletedRecipe.extendedIngredients()));
     }
 
     @Override
@@ -438,6 +354,8 @@ public class CookingServiceImpl implements CookingService {
         }
         if (recipeSuggestionDto != null) {
             List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
+            List<RecipeIngredientDto> matched = this.getMatchedIngredients(recipeSuggestionDto.extendedIngredients());
+            recipeSuggestionDto = recipeSuggestionDto.withExtendedIngredients(matched);
             for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
                 List<DigitalStorageItem> items = itemRepository.findAllByDigitalStorage_StorageId(digitalStorageOfUser.getStorageId());
                 if (items.isEmpty()) {
@@ -462,7 +380,10 @@ public class CookingServiceImpl implements CookingService {
                                 ingredient.name(),
                                 getMinUnit(ingredientUnit).getName(),
                                 unitMapper.entityToUnitDto(getMinUnit(ingredientUnit)),
-                                ingAmountMin - itemQuantityTotal
+                                ingAmountMin - itemQuantityTotal,
+                                false,
+                                ingredient.realName(),
+                                ingredient.matchedItem()
                             );
                             missingIngredients.add(newIngredient);
                         } else {
@@ -473,7 +394,10 @@ public class CookingServiceImpl implements CookingService {
                                 ingredient.name(),
                                 unitMapper.unitDtoToEntity(ingredient.unitEnum()).getName(),
                                 unitMapper.entityToUnitDto(unitMapper.unitDtoToEntity(ingredient.unitEnum())),
-                                updatedQuantity
+                                updatedQuantity,
+                                false,
+                                ingredient.realName(),
+                                ingredient.matchedItem()
                             );
                             missingIngredients.add(newIngredient);
                         }
@@ -550,8 +474,186 @@ public class CookingServiceImpl implements CookingService {
         return recipeToCook;
     }
 
+    private List<RecipeSuggestionDto> filterSuggestions(List<RecipeSuggestionDto> recipeSuggestions, String type) {
+        List<String> filterTypes = new ArrayList<>();
+        if (type.equals("breakfast")) {
+            filterTypes.add("breakfast");
+            filterTypes.add("snack");
+            filterTypes.add("dessert");
+            filterTypes.add("brunch");
+            filterTypes.add("morning meal");
+        }
+        if (type.equals("main dish")) {
+            filterTypes.add("main course");
+            filterTypes.add("lunch");
+            filterTypes.add("dinner");
+            filterTypes.add("soup");
 
-    private String getRequestStringForRecipeSearch(List<ItemDto> items) {
+        }
+        if (type.equals("side dish")) {
+            filterTypes.add("salad");
+            filterTypes.add("side dish");
+            filterTypes.add("appetizer");
+            filterTypes.add("snack");
+            filterTypes.add("fingerfood");
+            filterTypes.add("marinade");
+            filterTypes.add("starter");
+            filterTypes.add("antipasti");
+        }
+
+        Map<String, RecipeSuggestionDto> results = new HashMap<>();
+
+
+        for (String filter : filterTypes) {
+            loop2:
+            for (RecipeSuggestionDto suggestionDto : recipeSuggestions) {
+                for (String typeOfDish : suggestionDto.dishTypes()) {
+                    if (filter.equals(typeOfDish)) {
+                        results.put(suggestionDto.title(), suggestionDto);
+                        break;
+                    }
+                }
+            }
+        }
+        List<RecipeSuggestionDto> recipesToRet = new ArrayList<>();
+        for (Map.Entry<String, RecipeSuggestionDto> recipe : results.entrySet()) {
+            recipesToRet.add(recipe.getValue());
+        }
+
+        return recipesToRet;
+    }
+
+    private List<RecipeSuggestionDto> getRecipeSuggestionDtos(List<RecipeSuggestionDto> response, ResponseEntity<List<RecipeDto>> exchange) {
+        List<RecipeSuggestionDto> toReturn = new LinkedList<>();
+
+        if (response != null) {
+            for (int i = 0; i < response.size(); i++) {
+                RecipeDto hereWeHaveMissIng = exchange.getBody().get(i);
+                RecipeSuggestionDto details = response.get(i);
+                List<RecipeIngredientDto> matchedIngredients = getMatchedIngredients(details.extendedIngredients());
+                RecipeSuggestionDto toAdd = new RecipeSuggestionDto(
+                    details.id(),
+                    details.title(),
+                    details.servings(),
+                    details.readyInMinutes(),
+                    matchedIngredients,
+                    details.summary(),
+                    hereWeHaveMissIng.missedIngredients(),
+                    details.dishTypes()
+                );
+                toReturn.add(toAdd);
+            }
+        }
+        return toReturn;
+    }
+
+    private List<RecipeSuggestionDto> saveUnitsAlsUnits(List<RecipeSuggestionDto> recipes) {
+
+        List<RecipeSuggestionDto> updatedRecipeList = new LinkedList<>();
+        for (RecipeSuggestionDto recipeSuggestion : recipes) {
+            List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
+            List<RecipeIngredientDto> updatedMissedIngredients = new LinkedList<>();
+            for (RecipeIngredientDto recipeIngredient : recipeSuggestion.extendedIngredients()) {
+                updatedIngredients.add(this.normalizeIngredient(recipeIngredient));
+            }
+            if (recipeSuggestion.missedIngredients() != null) {
+                for (RecipeIngredientDto recipeIngredient : recipeSuggestion.missedIngredients()) {
+                    updatedMissedIngredients.add(this.normalizeIngredient(recipeIngredient));
+                }
+            }
+            updatedRecipeList.add(new RecipeSuggestionDto(recipeSuggestion.id(),
+                recipeSuggestion.title(),
+                recipeSuggestion.servings(),
+                recipeSuggestion.readyInMinutes(),
+                updatedIngredients,
+                recipeSuggestion.summary(),
+                updatedMissedIngredients,
+                recipeSuggestion.dishTypes()));
+        }
+        return updatedRecipeList;
+    }
+
+    private RecipeDetailDto saveUnitAlsUnitsForDetail(RecipeDetailDto recipeSuggestion) {
+        List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
+        for (RecipeIngredientDto recipeIngredient : recipeSuggestion.extendedIngredients()) {
+            updatedIngredients.add(this.normalizeIngredient(recipeIngredient));
+        }
+
+        return new RecipeDetailDto(recipeSuggestion.id(),
+            recipeSuggestion.title(),
+            recipeSuggestion.servings(),
+            recipeSuggestion.readyInMinutes(),
+            updatedIngredients,
+            recipeSuggestion.summary(),
+            recipeSuggestion.steps()
+        );
+    }
+
+    private RecipeSuggestion getRecipeFromApi(Long recipeId) {
+        String reqString = "https://api.spoonacular.com/recipes/" + recipeId + "/information" + "?apiKey=" + apiKey + "&includeNutrition=false";
+        ResponseEntity<RecipeSuggestion> response = restTemplate.exchange(reqString, HttpMethod.GET, null, new ParameterizedTypeReference<RecipeSuggestion>() {
+        });
+        RecipeSuggestion recipe = response.getBody();
+        List<RecipeIngredientDto> matchedIngredients = getMatchedIngredients(ingredientMapper.entityListToDtoList(response.getBody().getExtendedIngredients()));
+
+        RecipeSuggestionDto toReturn = new RecipeSuggestionDto(recipeId, recipe.getTitle(), recipe.getServings(), recipe.getReadyInMinutes(), matchedIngredients, recipe.getSummary(), null, null);
+
+
+        return recipeMapper.dtoToEntity(toReturn, ingredientMapper.dtoListToEntityList(matchedIngredients));
+    }
+
+    private  String getNewReqStringForInformation(Long id) {
+        String newReqString = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/" + id + "/information";
+        newReqString += "?includeNutrition=false";
+        return newReqString;
+    }
+
+    private List<RecipeIngredientDto> getMatchedIngredients(List<RecipeIngredientDto> ingredientDtos) {
+        ApplicationUser user = authService.getUserFromToken();
+        List<DigitalStorageItem> itemsInStorage = itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId());
+
+        List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
+
+        for (RecipeIngredientDto recipeIngredient : ingredientDtos) {
+            boolean matched = false;
+            for (DigitalStorageItem digitalStorageItem : itemsInStorage) {
+                if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name())) {
+                    RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
+                        digitalStorageItem.getItemCache().getProductName(),
+                        recipeIngredient.unit(),
+                        recipeIngredient.unitEnum(),
+                        recipeIngredient.amount(),
+                        true,
+                        recipeIngredient.name(),
+                        itemMapper.entityToDto(digitalStorageItem));
+                    updatedIngredients.add(updatedIngredient);
+                    matched = true;
+                    continue;
+                }
+                for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
+                    if (alternativeName.getName().equals(recipeIngredient.name())) {
+                        RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
+                            digitalStorageItem.getItemCache().getProductName(),
+                            recipeIngredient.unit(),
+                            recipeIngredient.unitEnum(),
+                            recipeIngredient.amount(),
+                            true,
+                            recipeIngredient.name(),
+                            itemMapper.entityToDto(digitalStorageItem));
+                        updatedIngredients.add(updatedIngredient);
+                        matched = true;
+                    }
+                }
+            }
+            if (!matched) {
+                updatedIngredients.add(recipeIngredient);
+            }
+        }
+        return updatedIngredients;
+    }
+
+    private String getRequestStringForRecipeSearch(List<ItemDto> items) throws DeepLException, InterruptedException {
+        translator = new Translator(translateKey);
         List<String> ingredients = new LinkedList<>();
         for (ItemDto item : items) {
             ingredients.add(item.productName());
@@ -561,6 +663,8 @@ public class CookingServiceImpl implements CookingService {
 
         boolean isFirst = true;
         for (String ingredient : ingredients) {
+            TextResult textResult = translator.translateText(ingredient, null, "en-GB");
+            ingredient = textResult.getText();
             if (isFirst) {
                 requestString += "ingredients=" + ingredient;
                 isFirst = false;
@@ -568,12 +672,8 @@ public class CookingServiceImpl implements CookingService {
                 requestString += "%2C" + ingredient;
             }
         }
-        requestString += "&number=2";
+        requestString += "&number=5";
         return requestString + "&ranking=2";
-    }
-
-    private String getRequestStringForDetails(String recipeId) {
-        return "https://api.spoonacular.com/recipes/" + recipeId + "/analyzedInstructions" + "?apiKey=" + apiKey;
     }
 
     private Unit getMinUnit(Unit unit) {
@@ -633,6 +733,7 @@ public class CookingServiceImpl implements CookingService {
             minimizedDigitalStorageItem.setBoughtAt(digitalStorageItem.getBoughtAt());
             minimizedDigitalStorageItem.setDigitalStorage(digitalStorageItem.getDigitalStorage());
             minimizedDigitalStorageItem.setIngredientList(digitalStorageItem.getIngredientList());
+            minimizedDigitalStorageItem.getItemCache().setAlternativeNames(digitalStorageItem.getItemCache().getAlternativeNames());
 
             minimizedDigitalStorageItems.add(minimizedDigitalStorageItem);
         }
@@ -684,15 +785,6 @@ public class CookingServiceImpl implements CookingService {
         }
     }
 
-    private void saveRecipes(List<RecipeSuggestionDto> recipes) {
-        for (RecipeSuggestionDto recipeSuggestionDto : recipes) {
-            List<RecipeIngredient> ingredientList = ingredientService.createAll(recipeSuggestionDto.extendedIngredients());
-            RecipeSuggestion recipeEntity = recipeMapper.dtoToEntity(recipeSuggestionDto, ingredientList);
-            recipeEntity.setVersion(2);
-            repository.save(recipeEntity);
-        }
-    }
-
     private RecipeIngredientDto normalizeIngredient(RecipeIngredientDto ingredient) {
         String unitName = ingredient.unit();
         double amount = ingredient.amount();
@@ -708,15 +800,27 @@ public class CookingServiceImpl implements CookingService {
             }
 
         }
-        Unit minUnit = getMinUnit(unit);
-        double convertedAmount = unitService.convertUnits(unit, minUnit, amount);
+        Unit minUnit = null;
+        double convertedAmount = 0;
+        if (!unit.getName().equals("tbsp") && !unit.getName().equals("tsp")) {
+            minUnit = getMinUnit(unit);
+            convertedAmount = unitService.convertUnits(unit, minUnit, amount);
+        } else {
+            minUnit = unit;
+            convertedAmount = ingredient.amount();
+        }
+
+        convertedAmount = truncateToDecimalPlaces(convertedAmount, 2);
 
         return new RecipeIngredientDto(
             ingredient.id(),
             ingredient.name(),
             unitMapper.entityToUnitDto(minUnit).name(),
             unitMapper.entityToUnitDto(minUnit),
-            convertedAmount
+            convertedAmount,
+            ingredient.matched(),
+            ingredient.realName(),
+            ingredient.matchedItem()
         );
     }
 
@@ -727,4 +831,12 @@ public class CookingServiceImpl implements CookingService {
         HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
         return httpEntity;
     }
+
+    private double truncateToDecimalPlaces(double value, int decimalPlaces) {
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(decimalPlaces, BigDecimal.ROUND_DOWN);
+        return bd.doubleValue();
+
+    }
 }
+

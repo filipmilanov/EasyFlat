@@ -26,6 +26,7 @@ public class RecipeIngredient {
     @ManyToOne
     private Unit unitEnum;
 
+
     public void setId(Long id) {
         this.id = id;
     }

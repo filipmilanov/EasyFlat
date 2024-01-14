@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
+import com.deepl.api.DeepLException;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +38,7 @@ public class CookingEndPoint {
     @PermitAll
     @GetMapping
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
-        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
+        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
         return cookingService.getRecipeSuggestion(type);
     }
 
@@ -57,9 +58,8 @@ public class CookingEndPoint {
 
     @PermitAll
     @GetMapping("/cookbook/{id}")
-    public Optional<RecipeSuggestionDto> getCookbookRecipe(@PathVariable Long id) {
-        Optional<RecipeSuggestion> recipe = cookingService.getCookbookRecipe(id);
-        return recipe.flatMap(currentRecipe -> Optional.ofNullable(recipeMapper.entityToRecipeSuggestionDto(currentRecipe)));
+    public RecipeSuggestionDto getCookbookRecipe(@PathVariable Long id) {
+        return cookingService.getCookbookRecipe(id);
     }
 
     @PermitAll

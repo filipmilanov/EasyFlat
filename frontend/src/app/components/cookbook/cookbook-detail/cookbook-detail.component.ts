@@ -3,20 +3,26 @@ import {RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 import {CookingService} from "../../../services/cooking.service";
 import {ToastrService} from "ngx-toastr";
 import {ActivatedRoute, Router} from "@angular/router";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {RecipeIngredient} from "../../../dtos/cookingDtos/recipeIngredient";
+import {MatchingModalComponent} from "../../cooking/matching-modal/matching-modal.component";
+import {ItemService} from "../../../services/item.service";
+import {MatchingModalCookbookComponent} from "../matching-modal-cookbook/matching-modal-cookbook.component";
 
 @Component({
   selector: 'app-cookbook-detail',
   templateUrl: './cookbook-detail.component.html',
   styleUrls: ['./cookbook-detail.component.scss']
 })
-export class CookbookDetailComponent implements OnInit{
+export class CookbookDetailComponent implements OnInit {
 
 
   @Input() recipe: RecipeSuggestion;
 
   constructor(public activeModal: NgbActiveModal, private cookingService: CookingService, private notification: ToastrService, private router: Router,
-              private route: ActivatedRoute,) {
+              private route: ActivatedRoute,
+              private itemService: ItemService,
+              private modalService: NgbModal,) {
   }
 
   ngOnInit(): void {
@@ -29,5 +35,56 @@ export class CookbookDetailComponent implements OnInit{
 
       }
     })
+  }
+
+
+  openMatchModal(ingredient: RecipeIngredient) {
+    const modalRef = this.modalService.open(MatchingModalCookbookComponent, {size: 'lg'});
+    modalRef.componentInstance.ingredient = ingredient;
+
+
+    modalRef.componentInstance.matchingDone.subscribe(() => {
+      this.ngOnInit();
+    });
+  }
+
+  unMatchIngredient(ingredient: RecipeIngredient) {
+    console.log(ingredient);
+    if (ingredient.matchedItem && ingredient.realName) {
+      const realNameIndex = ingredient.matchedItem.alternativeNames.findIndex(
+        (alternativeName) => alternativeName.name === ingredient.realName
+      );
+
+      if (realNameIndex !== -1) {
+        console.log(ingredient.matchedItem.alternativeNames)
+        console.log("Before Delete")
+        ingredient.matchedItem.alternativeNames.splice(realNameIndex, 1);
+      }
+
+
+      ingredient.matched = false;
+      console.log(ingredient.matchedItem.alternativeNames)
+      console.log("After Delete")
+      // Save the updated matchedItem (assuming you have a method for updating items)
+
+      this.itemService.updateItem(ingredient.matchedItem).subscribe({
+        next: () => {
+          this.notification.success(`Ingredient ${ingredient.name} successfully unmatched`, "Success");
+          this.ngOnInit();
+        },
+        error: error => {
+          console.error(`Error item was not matched: ${error}`);
+          console.error(error);
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach((message: string) => {
+            this.notification.error(message, errorDescription);
+          });
+        }
+      });
+
+    }
   }
 }

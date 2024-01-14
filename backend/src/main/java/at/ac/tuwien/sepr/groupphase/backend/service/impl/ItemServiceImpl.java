@@ -1,8 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AlternativeNameDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.AlternativeName;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
@@ -16,6 +18,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemStatsRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
+import at.ac.tuwien.sepr.groupphase.backend.service.AlternativeNameService;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
@@ -30,6 +33,7 @@ import org.springframework.stereotype.Service;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -48,6 +52,8 @@ public class ItemServiceImpl implements ItemService {
     private final Authorization authorization;
     private final UnitService unitService;
 
+    private final AlternativeNameService alternativeNameService;
+
     public ItemServiceImpl(ItemRepository itemRepository,
                            DigitalStorageService digitalStorageService,
                            IngredientService ingredientService,
@@ -56,7 +62,8 @@ public class ItemServiceImpl implements ItemService {
                            ItemStatsRepository itemStatsRepository,
                            AuthService authService,
                            Authorization authorization,
-                           UnitService unitService) {
+                           UnitService unitService,
+                           AlternativeNameService alternativeNameService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
@@ -66,6 +73,7 @@ public class ItemServiceImpl implements ItemService {
         this.authService = authService;
         this.authorization = authorization;
         this.unitService = unitService;
+        this.alternativeNameService = alternativeNameService;
     }
 
     @Override
@@ -141,12 +149,12 @@ public class ItemServiceImpl implements ItemService {
         List<ItemStats> itemStats = new ArrayList<>();
         itemStats.add(curr);
         itemStatsRepository.save(curr);
-
+        List<AlternativeName> alternativeNames = new LinkedList<>();
         DigitalStorageItem digitalStorageItem;
         if (itemDto.alwaysInStock()) {
-            digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null);
+            digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null, alternativeNames);
         } else {
-            digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null);
+            digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null, alternativeNames);
         }
         DigitalStorageItem createdDigitalStorageItem = itemRepository.save(digitalStorageItem);
         createdDigitalStorageItem.setIngredientList(ingredientList);
@@ -175,15 +183,20 @@ public class ItemServiceImpl implements ItemService {
         List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
         DigitalStorageItem digitalStorageItem;
+
         if (itemDto.alwaysInStock()) {
-            digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null);
+            digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null, itemMapper.alternativeNamesDtoToEntityList(itemDto.alternativeNames()));
         } else {
-            digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null);
+            digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null, itemMapper.alternativeNamesDtoToEntityList(itemDto.alternativeNames()));
         }
 
         DigitalStorageItem presistedDigitalStorageItem = this.findById(itemDto.itemId());
 
-        presistedDigitalStorageItem.getItemCache().setId(itemDto.itemId());
+        digitalStorageItem.getItemCache().setId(presistedDigitalStorageItem.getItemCache().getId());
+
+
+        digitalStorageItem.getItemCache().setAlternativeNames(getAlternativeNamesForUpdate(itemDto));
+
 
         // necessary because JPA cannot convert an Entity to another Entity
         if (digitalStorageItem.alwaysInStock() != presistedDigitalStorageItem.alwaysInStock()) {
@@ -192,6 +205,7 @@ public class ItemServiceImpl implements ItemService {
 
         DigitalStorageItem updatedDigitalStorageItem = itemRepository.save(digitalStorageItem);
         updatedDigitalStorageItem.setIngredientList(ingredientList);
+
         return updatedDigitalStorageItem;
     }
 
@@ -203,5 +217,40 @@ public class ItemServiceImpl implements ItemService {
         findById(id);
 
         itemRepository.deleteById(id);
+    }
+
+    @Override
+    public List<DigitalStorageItem> findByName(String name) {
+        ApplicationUser user = authService.getUserFromToken();
+        List<DigitalStorageItem> items = itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_ProductNameStartingWith(user.getSharedFlat().getDigitalStorage().getStorageId(), name);
+        return items;
+    }
+
+    private List<AlternativeName> getAlternativeNamesForUpdate(ItemDto itemDto) {
+        List<AlternativeName> alternativeNames = new LinkedList<>();
+        if (itemDto.alternativeNames() != null) {
+            if (!itemDto.alternativeNames().isEmpty()) {
+                for (AlternativeNameDto alternativeNameDto : itemDto.alternativeNames()) {
+                    if (alternativeNameDto.id() != null) {
+                        try {
+                            AlternativeName toAdd = alternativeNameService.findById(alternativeNameDto.id());
+                            alternativeNames.add(toAdd);
+                        } catch (NotFoundException e) {
+                            AlternativeName toAdd = new AlternativeName();
+                            toAdd.setName(alternativeNameDto.name());
+                            toAdd.setShareFlatId(authService.getUserFromToken().getSharedFlat().getId());
+                            alternativeNames.add(toAdd);
+                        }
+                    } else {
+                        AlternativeName toAdd = new AlternativeName();
+                        toAdd.setName(alternativeNameDto.name());
+                        toAdd.setShareFlatId(authService.getUserFromToken().getSharedFlat().getId());
+                        alternativeNames.add(toAdd);
+                    }
+                }
+
+            }
+        }
+        return alternativeNames;
     }
 }

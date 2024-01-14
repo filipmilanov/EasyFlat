@@ -22,7 +22,26 @@
         <h3>Ingredients</h3>
         <ul class="list-group">
           <li *ngFor="let ingredient of recipeDetail.extendedIngredients" class="list-group-item">
-            <strong>{{ ingredient.amount }} {{ ingredient.unit }}</strong> - {{ ingredient.name }}
+
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ ingredient.amount }} {{ ingredient.unit }}</strong> - {{ ingredient.name }}
+
+              </div>
+              <div>
+              <span *ngIf="ingredient.matched" class="bi bi-check2-circle text-success"
+                    style="font-size: 1.2em; margin: 10px;"></span>
+                <button type="button" class="btn btn-outline-danger small" *ngIf="ingredient.matched"
+                        [disabled]="!ingredient.matched" (click)="unMatchIngredient(ingredient)"><span
+                  class="bi bi-arrow-counterclockwise"></span>
+                </button>
+              </div>
+              <button type="button" class="btn btn-outline-success" *ngIf="!ingredient.matched"
+                      (click)="openMatchModal(ingredient)"
+                      [disabled]="ingredient.matched">match
+              </button>
+            </div>
+
           </li>
         </ul>
       </div>
