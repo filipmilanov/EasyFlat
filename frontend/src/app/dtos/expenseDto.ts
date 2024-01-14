@@ -15,6 +15,13 @@ export class ExpenseDto {
   repeatingExpenseTyp?: RepeatingExpenseType;
 }
 
+export class ExpenseSearchDto {
+  title?: string;
+  paidBy?: UserListDto;
+  amountInEuro?: number;
+  createdAt?: Date;
+}
+
 export class DebitDto {
   user?: UserListDto;
   splitBy?: SplitBy;
