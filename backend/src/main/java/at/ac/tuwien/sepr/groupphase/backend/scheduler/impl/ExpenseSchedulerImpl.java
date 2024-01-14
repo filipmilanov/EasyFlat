@@ -3,7 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.scheduler.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.scheduler.ExpenseScheduler;
@@ -46,8 +46,8 @@ public class ExpenseSchedulerImpl implements ExpenseScheduler {
                 LOGGER.error("Could not create repeating expense for {}, because of a ValidationException", expense, e);
             } catch (ConflictException e) {
                 LOGGER.error("Could not create repeating expense for {}, because of a ConflictException", expense, e);
-            } catch (AuthenticationException e) {
-                LOGGER.error("Could not create repeating expense for {}, because of a AuthenticationException", expense, e);
+            } catch (AuthorizationException e) {
+                LOGGER.error("Could not create repeating expense for {}, because of a AuthorizationException", expense, e);
             }
         });
     }

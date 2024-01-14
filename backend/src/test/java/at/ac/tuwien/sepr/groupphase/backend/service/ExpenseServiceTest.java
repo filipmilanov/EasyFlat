@@ -16,7 +16,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -79,7 +79,7 @@ class ExpenseServiceTest {
     }
 
     @Test
-    void givenValidIdWhenFindByIdThenExpenseWithCorrectIdIsReturned() throws AuthenticationException {
+    void givenValidIdWhenFindByIdThenExpenseWithCorrectIdIsReturned() throws AuthorizationException {
         // given
         long id = 5L;
 
@@ -177,7 +177,7 @@ class ExpenseServiceTest {
     }
 
     @Test
-    void givenValidExpenseWhenCreateThenExpenseIsPersistedWithId() throws ValidationException, ConflictException, AuthenticationException {
+    void givenValidExpenseWhenCreateThenExpenseIsPersistedWithId() throws ValidationException, ConflictException, AuthorizationException {
         // given
         double totalAmount = 100;
         WgDetailDto sharedFlat = new WgDetailDto();
@@ -347,7 +347,7 @@ class ExpenseServiceTest {
     @ParameterizedTest
     @MethodSource("data")
     void givenExpenseWithCertainSplitByWhenCreateThenAmountIsSplitCorrectly(List<DebitDto> debitDtos,
-                                                                            List<Double> expected) throws ValidationException, ConflictException, AuthenticationException {
+                                                                            List<Double> expected) throws ValidationException, ConflictException, AuthorizationException {
         // given
         double totalAmount = 100L;
         WgDetailDto sharedFlat = new WgDetailDto();
@@ -619,7 +619,7 @@ class ExpenseServiceTest {
 
     @Test
     @DisplayName("Can an existing expense be deleted correctly?")
-    void givenValidExpenseWhenDeleteThenExpenseIsDeleted() throws ValidationException, ConflictException, AuthenticationException {
+    void givenValidExpenseWhenDeleteThenExpenseIsDeleted() throws ValidationException, ConflictException, AuthorizationException {
 
         // given
         double totalAmount = 100;
@@ -674,7 +674,7 @@ class ExpenseServiceTest {
 
     @Test
     @DisplayName("Are repeating Expenses created correctly?")
-    void createRepeatingExpense() throws ValidationException, ConflictException, AuthenticationException {
+    void createRepeatingExpense() throws ValidationException, ConflictException, AuthorizationException {
         // given
         ExpenseDto expenseDto = generateRepeatingExpense(2);
 
@@ -720,7 +720,7 @@ class ExpenseServiceTest {
 
     @Test
     @DisplayName("Is find all repeating Expenses Correct?")
-    void findAllRepeatingExpenses() throws ValidationException, ConflictException, AuthenticationException {
+    void findAllRepeatingExpenses() throws ValidationException, ConflictException, AuthorizationException {
         // given
         ExpenseDto expenseDto1 = generateRepeatingExpense(2);
         ExpenseDto expenseDto2 = generateRepeatingExpense(2);
@@ -746,7 +746,7 @@ class ExpenseServiceTest {
 
     @Test
     @DisplayName("Is predefined repeating expense converted correctly")
-    public void predefinedRepeatingExpenseWhenCreateThenPeriodInDaysIsCorrect() throws ValidationException, ConflictException, AuthenticationException {
+    public void predefinedRepeatingExpenseWhenCreateThenPeriodInDaysIsCorrect() throws ValidationException, ConflictException, AuthorizationException {
         // given
         ExpenseDto expenseDto = generateRepeatingExpense(null, RepeatingExpenseType.FIRST_OF_MONTH);
 

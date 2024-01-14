@@ -58,7 +58,7 @@ public class TestDataGenerator {
         unitDataGenerator.generate();
         sharedFlatDataGenerator.generateSharedFlats();
         applicationUserDataGenerator.generateApplicationUsers();
-        digitalStorageDataGenerator.generateItems();
+        digitalStorageDataGenerator.generateDigitalStorages();
         cookbookDataGenerator.generateCookbooks();
         recipeDataGenerator.generateItems();
         eventDataGenerator.generateEvents();

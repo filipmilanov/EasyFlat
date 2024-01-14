@@ -5,7 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -23,8 +23,9 @@ public interface ExpenseService {
      * @param id the id of the expense
      * @return the expense if found
      * @throws NotFoundException if the expense is not persisted
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    Expense findById(Long id) throws NotFoundException, AuthenticationException;
+    Expense findById(Long id) throws NotFoundException, AuthorizationException;
 
     /**
      * Finds all expenses in the database for the given search parameters or all expenses if search is null.
@@ -75,8 +76,9 @@ public interface ExpenseService {
      * @return the created expense with id
      * @throws ValidationException if the expense is not valid
      * @throws ConflictException   if the expense would produce an inconsistent state in the database
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    Expense create(ExpenseDto expenseDto) throws ValidationException, ConflictException, AuthenticationException;
+    Expense create(ExpenseDto expenseDto) throws ValidationException, ConflictException, AuthorizationException;
 
     /**
      * Validates and Updates an {@link Expense} in the db.
@@ -85,14 +87,15 @@ public interface ExpenseService {
      * @return an object of type {@link Expense} which is updated
      * @throws ValidationException if the expense is not valid
      * @throws ConflictException   if the expense would produce an inconsistent state in the database
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    Expense update(ExpenseDto expenseDto) throws AuthenticationException, ConflictException, ValidationException;
+    Expense update(ExpenseDto expenseDto) throws ConflictException, ValidationException, AuthorizationException;
 
     /**
      * Removes an {@link Expense} stored in the db.
      *
      * @param id an ID of a stored {@link Expense}
-     * @throws AuthenticationException if the user is not authenticated
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    void delete(Long id) throws AuthenticationException;
+    void delete(Long id) throws AuthorizationException;
 }

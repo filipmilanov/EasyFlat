@@ -5,7 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ExpenseService;
@@ -42,7 +42,7 @@ public class ExpenseEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("{id}")
-    public ExpenseDto findById(@PathVariable("id") Long id) throws AuthenticationException {
+    public ExpenseDto findById(@PathVariable("id") Long id) throws AuthorizationException {
         LOGGER.info("findById: {}", id);
 
         return expenseMapper.entityToExpenseDto(
@@ -61,7 +61,7 @@ public class ExpenseEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("debits")
-    public List<BalanceDebitDto> calculateDebits() throws AuthenticationException {
+    public List<BalanceDebitDto> calculateDebits() throws AuthorizationException {
         LOGGER.info("calculateDebits");
 
         return expenseService.calculateDebits();
@@ -69,7 +69,7 @@ public class ExpenseEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("statistics/expenses")
-    public List<UserValuePairDto> calculateTotalExpensesPerUser() throws AuthenticationException {
+    public List<UserValuePairDto> calculateTotalExpensesPerUser() throws AuthorizationException {
         LOGGER.info("calculateExpenses()");
 
         return expenseService.calculateTotalExpensesPerUser();
@@ -77,7 +77,7 @@ public class ExpenseEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("statistics/debits")
-    public List<UserValuePairDto> calculateTotalDebitsPerUser() throws AuthenticationException {
+    public List<UserValuePairDto> calculateTotalDebitsPerUser() throws AuthorizationException {
         LOGGER.info("calculateDebits()");
 
         return expenseService.calculateTotalDebitsPerUser();
@@ -85,7 +85,7 @@ public class ExpenseEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("statistics/balance")
-    public List<UserValuePairDto> calculateBalancePerUser() throws AuthenticationException {
+    public List<UserValuePairDto> calculateBalancePerUser() throws AuthorizationException {
         LOGGER.info("calculateBalance()");
 
         return expenseService.calculateBalancePerUser();
@@ -94,7 +94,7 @@ public class ExpenseEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ExpenseDto create(@RequestBody ExpenseDto expenseDto) throws ValidationException, ConflictException, AuthenticationException {
+    public ExpenseDto create(@RequestBody ExpenseDto expenseDto) throws ValidationException, ConflictException, AuthorizationException {
         LOGGER.info("create: {}", expenseDto);
 
         return expenseMapper.entityToExpenseDto(
@@ -104,7 +104,7 @@ public class ExpenseEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping("{id}")
-    public ExpenseDto update(@PathVariable long id, @RequestBody ExpenseDto expenseDto) throws AuthenticationException, ValidationException, ConflictException {
+    public ExpenseDto update(@PathVariable long id, @RequestBody ExpenseDto expenseDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.info("update({},{})", id, expenseDto);
         return expenseMapper.entityToExpenseDto(
             expenseService.update(expenseDto.withId(id))
@@ -114,7 +114,7 @@ public class ExpenseEndpoint {
     @Secured("ROLE_USER")
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) throws AuthenticationException {
+    public void delete(@PathVariable Long id) throws AuthorizationException {
         LOGGER.info("delete({})", id);
         expenseService.delete(id);
     }

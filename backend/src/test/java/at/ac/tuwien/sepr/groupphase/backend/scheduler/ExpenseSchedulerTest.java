@@ -10,7 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RepeatingExpenseType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
@@ -102,13 +102,14 @@ public class ExpenseSchedulerTest {
     @ParameterizedTest
     @DisplayName("Create repeating expenses")
     @MethodSource("createRepeatingExpensesData")
-    void createRepeatingExpenses(List<ExpenseDto> repeatingExpenseList, int toCreateCount) throws ValidationException, ConflictException, AuthenticationException {
+    void createRepeatingExpenses(List<ExpenseDto> repeatingExpenseList, int toCreateCount) throws ValidationException, ConflictException,
+        AuthorizationException {
         // given
         repeatingExpenseList.forEach(expenseDto ->
             {
                 try {
                     expenseService.create(expenseDto);
-                } catch (ValidationException | ConflictException | AuthenticationException e) {
+                } catch (ValidationException | ConflictException | AuthorizationException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -144,7 +145,7 @@ public class ExpenseSchedulerTest {
     @ParameterizedTest
     @DisplayName("Auto create predefined repeating expenses")
     @MethodSource("createPredefinedRepeatingExpensesData")
-    public void createPredefinedRepeatingExpenses(RepeatingExpenseType repeatingExpenseType, LocalDateTime time) throws ValidationException, ConflictException, AuthenticationException {
+    public void createPredefinedRepeatingExpenses(RepeatingExpenseType repeatingExpenseType, LocalDateTime time) throws ValidationException, ConflictException, AuthorizationException {
         // given
         ExpenseDto expenseDto = generateRepeatingExpense(
             null,

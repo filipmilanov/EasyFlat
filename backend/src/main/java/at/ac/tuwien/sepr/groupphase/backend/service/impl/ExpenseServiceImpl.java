@@ -14,14 +14,14 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Debit;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ExpenseRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ExpenseService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authorization.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ExpenseValidator;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -65,7 +65,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public Expense findById(Long id) throws NotFoundException, AuthenticationException {
+    public Expense findById(Long id) throws NotFoundException, AuthorizationException {
         LOGGER.trace("findById: {}", id);
 
         Expense persistedExpense = expenseRepository.findById(id)
@@ -75,7 +75,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             debit -> debit.getId().getUser()
         ).collect(Collectors.toList());
         allowedUsers.add(persistedExpense.getPaidBy());
-        authorization.authenticateUser(
+        authorization.authorizeUser(
             allowedUsers.stream().map(ApplicationUser::getId).toList(),
             "User does not have access to this expense"
         );
@@ -202,7 +202,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     @Transactional
-    public Expense create(ExpenseDto expenseDto) throws ValidationException, ConflictException, AuthenticationException {
+    public Expense create(ExpenseDto expenseDto) throws ValidationException, ConflictException, AuthorizationException {
         LOGGER.trace("create: {}", expenseDto);
 
         ApplicationUser user = authService.getUserFromToken();
@@ -210,7 +210,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         expenseValidator.validateExpenseForCreate(expenseDto, usersOfFlat);
 
-        authorization.authenticateUser(
+        authorization.authorizeUser(
             usersOfFlat.stream().map(ApplicationUser::getId).toList(),
             "You cannot create an expense for this flat"
         );
@@ -228,7 +228,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     @Transactional
-    public Expense update(ExpenseDto expenseDto) throws AuthenticationException, ConflictException, ValidationException {
+    public Expense update(ExpenseDto expenseDto) throws ConflictException, ValidationException, AuthorizationException {
         LOGGER.trace("update: {}", expenseDto);
 
         ApplicationUser user = authService.getUserFromToken();
@@ -236,7 +236,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         expenseValidator.validateExpenseForUpdate(expenseDto, usersOfFlat);
 
-        authorization.authenticateUser(
+        authorization.authorizeUser(
             usersOfFlat.stream().map(ApplicationUser::getId).toList(),
             "You are not allowed to update an expense for this flat"
         );
@@ -252,7 +252,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public void delete(Long id) throws AuthenticationException {
+    public void delete(Long id) throws AuthorizationException {
         LOGGER.trace("delete({})", id);
 
         findById(id);
