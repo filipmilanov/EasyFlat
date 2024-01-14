@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import jakarta.annotation.security.PermitAll;
@@ -32,7 +33,7 @@ public class LoginEndpoint {
 
     @PermitAll
     @PostMapping
-    public String login(@RequestBody UserLoginDto userLoginDto) throws ValidationException {
+    public String login(@RequestBody UserLoginDto userLoginDto) throws ValidationException, ConflictException {
         return userService.login(userLoginDto);
     }
 
@@ -46,7 +47,7 @@ public class LoginEndpoint {
 
     @PermitAll
     @PutMapping("/{id}")
-    public UserDetailDto update(@PathVariable long id, @RequestBody UserDetailDto userDetailDto) throws ValidationException {
+    public UserDetailDto update(@PathVariable long id, @RequestBody UserDetailDto userDetailDto) throws ValidationException, ConflictException {
         return userService.update(userDetailDto);
     }
 

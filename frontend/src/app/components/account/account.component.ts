@@ -19,11 +19,11 @@ import {LocalNgModuleData} from "@angular/compiler-cli/src/ngtsc/scope";
 export class AccountComponent implements OnInit {
   user: UserDetail;
   accountForm: FormGroup;
+  passwordForm: FormGroup;
   submitted = false;
   error = false;
   errorMessage = '';
-
-
+  submittedPassword = false;
 
   users: UserDetail[];
 
@@ -32,9 +32,13 @@ export class AccountComponent implements OnInit {
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required]],
-      flatName: [''],
       password: ['', [Validators.minLength(8)]],
+      flatName: [''],
       admin: ['']
+    });
+    this.passwordForm = this.formBuilder.group({
+      repeatPassword: ['', [Validators.minLength(8)]],
+      newPassword: ['', [Validators.minLength(8)]],
     });
 
   }
@@ -139,11 +143,13 @@ export class AccountComponent implements OnInit {
           console.log('Could not update due to:');
           console.log(error);
           this.error = true;
-          if (typeof error.error === 'object') {
-            this.errorMessage = error.error.error;
-          } else {
-            this.errorMessage = error.error;
-          }
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
         }
       });
     } else {
@@ -181,13 +187,13 @@ export class AccountComponent implements OnInit {
       },
       error: error => {
         console.log('Could not sign out due to:');
-        console.log(error);
-        this.error = true;
-        if (typeof error.error === 'object') {
-          this.errorMessage = error.error.error;
-        } else {
-          this.errorMessage = error.error;
-        }
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
       }
     });
   }
@@ -204,6 +210,34 @@ export class AccountComponent implements OnInit {
           console.error(error.message, error);
         }
       });
+    }
+  }
+
+  changePassword() {
+    this.submittedPassword = true;
+    if(this.passwordForm.controls.repeatPassword.value == this.passwordForm.controls.newPassword.value) {
+      this.user.password = this.passwordForm.controls.newPassword.value;
+      console.log(this.user);
+      this.authService.update(this.user).subscribe({
+        next: () => {
+          console.log('Successfully updated password for user: ' + this.user.email);
+          this.notification.success('Successfully updated password for user: ' + this.user.email)
+        },
+        error: error => {
+          console.log('Could not update due to:');
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
+        }
+      });
+    } else {
+        this.error = true;
+        this.errorMessage = "Password don't match";
+        console.error(this.errorMessage);
     }
   }
 }

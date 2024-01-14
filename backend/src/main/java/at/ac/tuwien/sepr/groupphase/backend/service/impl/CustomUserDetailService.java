@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
@@ -84,7 +85,7 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public String login(UserLoginDto userLoginDto) throws ValidationException {
+    public String login(UserLoginDto userLoginDto) throws ValidationException, ConflictException {
         userValidator.validateForLogIn(userLoginDto);
         UserDetails userDetails = loadUserByUsername(userLoginDto.getEmail());
         if (userDetails != null
@@ -99,16 +100,16 @@ public class CustomUserDetailService implements UserService {
                 .toList();
             return jwtTokenizer.getAuthToken(userDetails.getUsername(), roles);
         }
-        throw new BadCredentialsException("Username or password is incorrect or account is locked");
+        throw new ConflictException("Username or password is incorrect or account is locked");
     }
 
     @Override
-    public String register(UserDetailDto userDetailDto) throws ValidationException {
+    public String register(UserDetailDto userDetailDto) throws ValidationException, ConflictException {
         userValidator.validateForRegister(userDetailDto);
         LOGGER.debug("Registering a new user");
 
         if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
-            throw new BadCredentialsException("User with this email already exists");
+            throw new ConflictException("User with this email already exists");
         }
 
         ApplicationUser newUser = new ApplicationUser();
@@ -128,7 +129,7 @@ public class CustomUserDetailService implements UserService {
             return jwtTokenizer.getAuthToken(userDetails.getUsername(), roles);
         }
 
-        throw new BadCredentialsException("Failed to register the user");
+        throw new ConflictException("Failed to register the user");
     }
 
     @Override
@@ -138,7 +139,7 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public UserDetailDto update(UserDetailDto userDetailDto) throws ValidationException {
+    public UserDetailDto update(UserDetailDto userDetailDto) throws ValidationException, ConflictException {
         userValidator.validateForUpdate(userDetailDto);
         if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
             ApplicationUser user = userRepository.findUserByEmail(userDetailDto.getEmail());
@@ -152,7 +153,7 @@ public class CustomUserDetailService implements UserService {
             ApplicationUser returnUser = userRepository.save(user);
             return userMapper.entityToUserDetailDto(returnUser);
         }
-        throw new BadCredentialsException("User with this email doesn't exists");
+        throw new ConflictException("User with this email doesn't exists");
     }
 
     @Override
