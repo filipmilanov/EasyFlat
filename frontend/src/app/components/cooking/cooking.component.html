@@ -1,4 +1,4 @@
-<ng-container *ngIf="empty; else recipesSection">
+<ng-container *ngIf="empty && !isLoading">
   <div class="container-fluid d-flex align-items-center justify-content-center" style="height: 100vh;">
     <div class="text-center">
       <h1>Cooking</h1>
@@ -21,15 +21,25 @@
 
         </select>
       </div>
-      <button (click)="reloadRecipes();" *ngIf="empty" class="btn btn-primary btn-lg mt-3 py-2 px-4 rounded-pill">
+      <button (click)="reloadRecipes();" *ngIf="empty " class="btn btn-primary btn-lg mt-3 py-2 px-4 rounded-pill"
+              [disabled]="isLoading">
         Suggest New Recipe
       </button>
 
     </div>
   </div>
+
 </ng-container>
 
-<ng-template #recipesSection>
+<ng-container *ngIf="isLoading">
+  <div class="d-flex align-items-center justify-content-center" style="height: 100vh;">
+    <div class=" spinner-border text-primary" role="status">
+      <span class="sr-only"></span>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="!empty">
   <!-- Displayed when empty is false -->
   <h1 class="text-center">Cooking</h1>
   <div class="container text-center mt-5">
@@ -48,7 +58,7 @@
 
   </div>
 
-</ng-template>
+</ng-container>
 
 
 

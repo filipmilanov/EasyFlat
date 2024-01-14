@@ -683,7 +683,7 @@ public class CookingServiceImpl implements CookingService {
                 requestString += "%2C" + ingredient;
             }
         }
-        requestString += "&number=2";
+        requestString += "&number=5";
         return requestString + "&ranking=2";
     }
 

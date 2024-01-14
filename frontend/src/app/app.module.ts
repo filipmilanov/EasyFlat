@@ -44,6 +44,7 @@ import { ShoppingListsComponent } from './components/shopping-list/shopping-list
 import { ShoppingListCardComponent } from './components/shopping-list/shopping-list-card/shopping-list-card.component';
 import { MatchingModalComponent } from './components/cooking/matching-modal/matching-modal.component';
 import { MatchingModalCookbookComponent } from './components/cookbook/matching-modal-cookbook/matching-modal-cookbook.component';
+import {NgxSpinnerModule} from "ngx-spinner";
 
 
 LOAD_WASM().subscribe();
@@ -85,19 +86,20 @@ LOAD_WASM().subscribe();
     MatchingModalComponent,
     MatchingModalCookbookComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    NgbModule,
-    FormsModule,
-    ToastrModule.forRoot(),
-    BrowserAnimationsModule,
-    ColorPickerModule,
-    NgOptimizedImage,
-    NgxScannerQrcodeModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        NgbModule,
+        FormsModule,
+        ToastrModule.forRoot(),
+        BrowserAnimationsModule,
+        ColorPickerModule,
+        NgOptimizedImage,
+        NgxScannerQrcodeModule,
+        NgxSpinnerModule
+    ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
 })

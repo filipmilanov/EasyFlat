@@ -7,6 +7,7 @@ import {CookbookModalComponent} from "../cookbook/cookbook-modal/cookbook-modal.
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CookingModalComponent} from "./cooking-modal/cooking-modal.component";
 import {RecipeDetailComponent} from "./recipe-detail/recipe-detail.component";
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-cooking',
@@ -17,11 +18,13 @@ export class CookingComponent implements OnInit {
   recipes: RecipeSuggestion[];
   empty: boolean = true;
   type: string;
+  isLoading: boolean = false;
   @Output() cookClicked: EventEmitter<RecipeSuggestion> = new EventEmitter<RecipeSuggestion>();
 
   constructor(private cookingService: CookingService,
               private notification: ToastrService,
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private spinner: NgxSpinnerService) {
 
 
   }
@@ -35,14 +38,21 @@ export class CookingComponent implements OnInit {
   }
 
   reloadRecipes() {
+   this.spinner.show();
+   this.isLoading = true
+
     this.cookingService.loadRecipes(this.type).subscribe({
 
       next: res => {
         console.log(this.type)
         this.recipes = res;
         this.empty = false;
+        this.spinner.hide();
+        this.isLoading = false;
       },
       error: err => {
+        this.spinner.hide();
+        this.isLoading = false;
         let firstBracket = err.error.indexOf('[');
         let lastBracket = err.error.indexOf(']');
         let errorMessages = err.error.substring(firstBracket + 1, lastBracket).split(',');
@@ -50,10 +60,11 @@ export class CookingComponent implements OnInit {
         errorMessages.forEach(message => {
           this.notification.error(message, errorDescription);
         });
-      }
-    })
+      },
 
+    })
   }
+
 
   openRecipeModal(recipe: RecipeSuggestion) {
     const modalRef = this.modalService.open(CookingModalComponent, {size: 'lg'});
