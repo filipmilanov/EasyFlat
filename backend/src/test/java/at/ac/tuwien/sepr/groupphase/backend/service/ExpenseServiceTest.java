@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
@@ -34,6 +35,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,10 +107,72 @@ class ExpenseServiceTest {
     @Test
     void givenNothingWhenFindAllThenAllExpensesAreReturned() {
         // when
-        List<Expense> actual = service.findAll();
+        List<Expense> actual = service.findAll(new ExpenseSearchDto(null, null, null, null));
 
         // then
         assertThat(actual).hasSize(20);
+    }
+
+    @Test
+    @DisplayName("Searching with specific parameters returns exactly one correct item")
+    void givenValidSearchParametersWhenSearchExpensesThenReturnList() {
+        // given
+        ExpenseSearchDto searchParams = new ExpenseSearchDto("Dinner at Restaurant", 1L, 19.0, LocalDate.of(2022, 8, 18));
+
+        double totalAmount = 100;
+        WgDetailDto sharedFlat = new WgDetailDto();
+        sharedFlat.setId(1L);
+
+        List<DebitDto> debitUsers = new ArrayList<>();
+        Set<ApplicationUser> usersOfFlat = sharedFlatRepository.findById(sharedFlat.getId()).orElseThrow().getUsers();
+        usersOfFlat.forEach(user -> {
+            UserListDto userDetailDto = UserListDtoBuilder.builder()
+                .id(user.getId())
+                .build();
+            DebitDto debitDto = DebitDtoBuilder.builder()
+                .user(userDetailDto)
+                .splitBy(SplitBy.EQUAL)
+                .value(totalAmount / usersOfFlat.size())
+                .build();
+            debitUsers.add(debitDto);
+        });
+
+        UserListDto paidBy = UserListDtoBuilder.builder()
+            .id(usersOfFlat.stream().findAny().orElseThrow().getId())
+            .build();
+
+        ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
+            .title("Dinner at Restaurant")
+            .description("Entertainment expenses")
+            .amountInCents(1948.5)
+            .createdAt(LocalDateTime.of(2022, 8, 18, 23, 35, 21))
+            .paidBy(paidBy)
+            .debitUsers(debitUsers)
+            .build();
+
+        // when
+        List<Expense> actual = service.findAll(searchParams);
+
+        assertAll(
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).isNotEmpty(),
+            () -> assertThat(actual.get(0).getId()).isNotNull(),
+            () -> assertThat(actual.get(0)).extracting(
+                Expense::getTitle,
+                Expense::getDescription,
+                (Expense expense) -> Math.round(expense.getAmountInCents() * 10) / 10.0,
+                Expense::getCreatedAt,
+                expense -> expense.getPaidBy().getId(),
+                expense -> expense.getDebitUsers().size()
+            ).containsExactly(
+                expenseDto.title(),
+                expenseDto.description(),
+                expenseDto.amountInCents(),
+                expenseDto.createdAt(),
+                expenseDto.paidBy().id(),
+                expenseDto.debitUsers().size()
+            )
+        );
     }
 
     @Test
