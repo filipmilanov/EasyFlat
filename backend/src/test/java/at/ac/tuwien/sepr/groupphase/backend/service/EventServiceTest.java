@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -263,6 +264,10 @@ public class EventServiceTest {
        String exported = this.eventsService.exportEvent(1L);
 
        assertNotNull(exported);
+       assertTrue(exported.startsWith("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//EasyFlat//\n"));
+       assertTrue(exported.contains("House Meeting"));
+       assertTrue(exported.contains("Discussing important matters regarding the shared living space."));
+       assertTrue(exported.endsWith("END:VCALENDAR"));
     }
 
     @Test
@@ -273,11 +278,19 @@ public class EventServiceTest {
 
     @Test
     @DisplayName("Positive test for exporting all events for the shared flat form the test data")
-    void testExportAllWithGivenTestDataShouldSucceed() throws AuthorizationException {
+    void testExportAllWithGivenTestDataShouldSucceed() {
 
         String exported = this.eventsService.exportAll();
 
         assertNotNull(exported);
+        assertTrue(exported.startsWith("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//EasyFlat//\n"));
+        assertTrue(exported.contains("House Meeting"));
+        assertTrue(exported.contains("Discussing important matters regarding the shared living space."));
+        assertTrue(exported.contains("Cleaning Day"));
+        assertTrue(exported.contains("A day dedicated to cleaning and maintaining the shared areas."));
+        assertTrue(exported.contains("Movie Night"));
+        assertTrue(exported.contains("Gathering for a cozy movie night in the common area."));
+        assertTrue(exported.endsWith("END:VCALENDAR"));
     }
 
     @Test
