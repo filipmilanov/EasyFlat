@@ -63,6 +63,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.invoke.MethodHandles;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -811,8 +812,17 @@ public class CookingServiceImpl implements CookingService {
             }
 
         }
-        Unit minUnit = getMinUnit(unit);
-        double convertedAmount = unitService.convertUnits(unit, minUnit, amount);
+        Unit minUnit = null;
+        double convertedAmount = 0;
+        if (!unit.getName().equals("tbsp") && !unit.getName().equals("tsp")) {
+            minUnit = getMinUnit(unit);
+            convertedAmount = unitService.convertUnits(unit, minUnit, amount);
+        } else {
+            minUnit = unit;
+            convertedAmount = ingredient.amount();
+        }
+
+        convertedAmount = truncateToDecimalPlaces(convertedAmount, 2);
 
         return new RecipeIngredientDto(
             ingredient.id(),
@@ -834,5 +844,10 @@ public class CookingServiceImpl implements CookingService {
         return httpEntity;
     }
 
+    private double truncateToDecimalPlaces(double value, int decimalPlaces) {
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(decimalPlaces, BigDecimal.ROUND_DOWN);
+        return bd.doubleValue();
 
+    }
 }
