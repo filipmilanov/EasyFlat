@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ExpenseDto, RepeatingExpenseOptions, RepeatingExpenseType, SplitBy} from "../../../dtos/expenseDto";
 import {NgForm} from "@angular/forms";
 import {FinanceService} from "../../../services/finance.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Router, UrlTree} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {UserService} from "../../../services/user.service";
 import {UserListDto} from "../../../dtos/user";
@@ -31,6 +31,7 @@ export class ExpenseCreateEditComponent implements OnInit {
   expenseDate: NgbDateStruct;
   expenseTime: NgbTimeStruct = {hour: 13, minute: 30, second: 0};
   selectedRepeatingOption: RepeatingExpenseOptions = RepeatingExpenseOptions.NO_REPEAT
+  previousUrl: UrlTree;
 
   constructor(
     private userService: UserService,
@@ -42,6 +43,7 @@ export class ExpenseCreateEditComponent implements OnInit {
     config: NgbTimepickerConfig
   ) {
     config.spinners = false;
+    this.previousUrl = this.router.getCurrentNavigation().previousNavigation.finalUrl;
   }
 
   public get heading(): string {
