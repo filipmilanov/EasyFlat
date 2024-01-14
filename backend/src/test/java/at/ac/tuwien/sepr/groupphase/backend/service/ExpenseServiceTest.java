@@ -153,6 +153,7 @@ class ExpenseServiceTest {
         // when
         List<Expense> actual = service.findAll(searchParams);
 
+        // then
         assertAll(
             () -> assertThat(actual).isNotNull(),
             () -> assertThat(actual).isNotEmpty(),

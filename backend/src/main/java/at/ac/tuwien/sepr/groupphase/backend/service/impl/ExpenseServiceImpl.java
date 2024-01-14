@@ -86,7 +86,6 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public List<Expense> findAll(ExpenseSearchDto expenseSearchDto) {
         LOGGER.trace("findAll({})", expenseSearchDto);
-        LOGGER.debug("findAll({})", expenseSearchDto);
 
         return expenseRepository.findByCriteria(
             expenseSearchDto.title(),
