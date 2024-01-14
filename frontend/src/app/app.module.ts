@@ -42,6 +42,8 @@ import {LOAD_WASM, NgxScannerQrcodeModule} from "ngx-scanner-qrcode";
 import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
 import { ShoppingListsComponent } from './components/shopping-list/shopping-lists/shopping-lists.component';
 import { ShoppingListCardComponent } from './components/shopping-list/shopping-list-card/shopping-list-card.component';
+import { AdminSelectionModalComponent } from './components/admin-selection-modal/admin-selection-modal.component';
+import { SignOutModalComponent } from './components/utils/sign-out-modal/sign-out-modal.component';
 
 
 LOAD_WASM().subscribe();
@@ -79,7 +81,9 @@ LOAD_WASM().subscribe();
     CookingModalComponent,
     ConfirmDeleteDialogComponent,
     ShoppingListsComponent,
-    ShoppingListCardComponent
+    ShoppingListCardComponent,
+    AdminSelectionModalComponent,
+    SignOutModalComponent
   ],
   imports: [
     BrowserModule,

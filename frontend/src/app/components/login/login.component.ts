@@ -4,6 +4,7 @@ import {Router} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import {AuthRequest} from '../../dtos/auth-request';
 import {SharedFlatService} from "../../services/sharedFlat.service";
+import {ToastrService} from "ngx-toastr";
 
 
 @Component({
@@ -21,7 +22,7 @@ export class LoginComponent implements OnInit {
   errorMessage = '';
 
 
-  constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private sharedFlatService: SharedFlatService, private router: Router) {
+  constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private sharedFlatService: SharedFlatService, private router: Router, private notification:ToastrService) {
     this.loginForm = this.formBuilder.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8)]]
@@ -58,14 +59,13 @@ export class LoginComponent implements OnInit {
            this.router.navigate(['']);
       },
       error: error => {
-        console.log('Could not log in due to:');
-        console.log(error);
-        this.error = true;
-        if (typeof error.error === 'object') {
-          this.errorMessage = error.error.error;
-        } else {
-          this.errorMessage = error.error;
-        }
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
       }
     });
   }

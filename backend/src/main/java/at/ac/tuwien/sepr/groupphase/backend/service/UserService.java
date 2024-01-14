@@ -3,10 +3,13 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import java.util.List;
 
 public interface UserService extends UserDetailsService {
 
@@ -38,16 +41,19 @@ public interface UserService extends UserDetailsService {
      * @return the JWT, if successful
      * @throws org.springframework.security.authentication.BadCredentialsException if credentials are bad
      */
-    String login(UserLoginDto userLoginDto) throws ValidationException;
+    String login(UserLoginDto userLoginDto) throws ValidationException, ConflictException;
 
-    String register(UserDetailDto userDetailDto) throws ValidationException;
+    String register(UserDetailDto userDetailDto) throws ValidationException, ConflictException;
 
     ApplicationUser getUser(String authToken);
 
-    UserDetailDto update(UserDetailDto userDetailDto) throws ValidationException;
+    UserDetailDto update(UserDetailDto userDetailDto) throws ValidationException, ConflictException;
 
     UserDetailDto delete(Long id);
 
     UserDetailDto signOut(String flatName, String authToken);
 
+    List<UserDetailDto> getAllOtherUsers(String authToken);
+
+    UserDetailDto setAdminToTheFlat(Long selectedUserId);
 }
