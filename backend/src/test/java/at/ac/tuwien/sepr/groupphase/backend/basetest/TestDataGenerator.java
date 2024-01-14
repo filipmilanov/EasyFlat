@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.basetest;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ApplicationUserDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.CleanDatabase;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.CookbookDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.datagenerator.EventDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.IngredientsDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ItemDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.RecipeDataGenerator;
@@ -36,7 +37,7 @@ public class TestDataGenerator {
                              ApplicationUserDataGenerator applicationUserDataGenerator,
                              SharedFlatDataGenerator sharedFlatDataGenerator,
                              RecipeDataGenerator recipeDataGenerator,
-                             CookbookDataGenerator cookbookDataGenerator) {
+                             CookbookDataGenerator cookbookDataGenerator, EventDataGenerator eventDataGenerator) {
         this.digitalStorageDataGenerator = digitalStorageDataGenerator;
         this.ingredientsDataGenerator = ingredientsDataGenerator;
         this.itemDataGenerator = itemDataGenerator;
@@ -46,6 +47,7 @@ public class TestDataGenerator {
         this.unitDataGenerator = unitDataGenerator;
         this.recipeDataGenerator = recipeDataGenerator;
         this.cookbookDataGenerator = cookbookDataGenerator;
+        this.eventDataGenerator = eventDataGenerator;
     }
 
     public void cleanUp() throws ValidationException, ConflictException {
@@ -58,6 +60,7 @@ public class TestDataGenerator {
         itemDataGenerator.generateItems();
         cookbookDataGenerator.generateCookbooks();
         recipeDataGenerator.generateItems();
+        eventDataGenerator.generateEvents();
     }
 
 

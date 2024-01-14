@@ -111,7 +111,7 @@
           </div>
           <label for="repeatPassword">Repeat new password</label>
           <input type="password" name="repeatPassword" formControlName="repeatPassword" class="form-control" id="repeatPassword"
-                 placeholder="Old password">
+                 placeholder="Repeat new password">
           <div *ngIf="submittedPassword && passwordForm.controls.repeatPassword.errors" class="error">
             <small class="form-text text-warning" *ngIf="passwordForm.controls.repeatPassword.errors?.minlength">Your password
               must be at least 8 characters long!
