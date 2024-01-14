@@ -12,6 +12,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
@@ -55,7 +56,8 @@ public class ShoppingListEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ShoppingItemDto createShoppingItem(@RequestBody ShoppingItemDto itemDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
+    public ShoppingItemDto createShoppingItem(@RequestBody ShoppingItemDto itemDto, @RequestHeader("Authorization") String jwt)
+        throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
         LOGGER.info("create({})", itemDto);
         ShoppingItem item = shoppingService.create(itemDto, jwt);
         return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
@@ -64,7 +66,8 @@ public class ShoppingListEndpoint {
     @Secured("ROLE_USER")
     @PutMapping("{id}")
     public ShoppingItemDto updateShoppingItem(@PathVariable long id, @RequestBody ShoppingItemDto itemDto,
-                                  @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
+                                  @RequestHeader("Authorization") String jwt)
+        throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
         LOGGER.info("update({},{},{})", id, itemDto, jwt);
         ShoppingItem item = shoppingService.update(itemDto.withId(id), jwt);
         return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));

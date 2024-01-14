@@ -9,17 +9,18 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemStatsRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authorization.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -43,8 +44,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final ItemValidator itemValidator;
     private final ItemStatsRepository itemStatsRepository;
+    private final AuthService authService;
     private final Authorization authorization;
-    private final SharedFlatService sharedFlatService;
     private final UnitService unitService;
 
     public ItemServiceImpl(ItemRepository itemRepository,
@@ -53,35 +54,38 @@ public class ItemServiceImpl implements ItemService {
                            ItemMapper itemMapper,
                            ItemValidator itemValidator,
                            ItemStatsRepository itemStatsRepository,
+                           AuthService authService,
                            Authorization authorization,
-                           SharedFlatService sharedFlatService, UnitService unitService) {
+                           UnitService unitService) {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
         this.itemMapper = itemMapper;
         this.itemValidator = itemValidator;
         this.itemStatsRepository = itemStatsRepository;
+        this.authService = authService;
         this.authorization = authorization;
-        this.sharedFlatService = sharedFlatService;
         this.unitService = unitService;
     }
 
     @Override
-    public DigitalStorageItem findById(Long id, String jwt) throws AuthenticationException {
+    public DigitalStorageItem findById(Long id) throws AuthorizationException {
         LOGGER.trace("findById({})", id);
+
         if (id == null) {
-            throw new NotFoundException("Item ID can't be null");
+            throw new NotFoundException("No item ID given!");
         }
 
         Optional<DigitalStorageItem> item = itemRepository.findById(id);
 
         if (item.isEmpty()) {
-            throw new NotFoundException("Item could not be found");
+            throw new NotFoundException("The given item ID could not be found in the database!");
         }
-        List<Long> allowedUser = item.get().getDigitalStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
-        authorization.authenticateUser(
-            allowedUser,
-            "The given item does not belong to the user's shared flat!"
+
+        List<Long> allowedUsers = item.get().getDigitalStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
+
+        authorization.authorizeUser(
+            allowedUsers
         );
 
         return item.get();
@@ -99,9 +103,22 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public List<DigitalStorageItem> getItemWithGeneralName(String generalName) {
+        LOGGER.trace("getItemWithGeneralName({})", generalName);
+
+        ApplicationUser applicationUser = authService.getUserFromToken();
+
+        Long digitalStorageId = applicationUser.getSharedFlat().getDigitalStorage().getStorageId();
+
+        return itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_GeneralName(digitalStorageId, generalName);
+    }
+
+    @Override
     @Transactional
-    public DigitalStorageItem create(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
+    public DigitalStorageItem create(ItemDto itemDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.trace("create({})", itemDto);
+
+        ApplicationUser applicationUser = authService.getUserFromToken();
 
         if (itemDto.alwaysInStock() == null) {
             itemDto = itemDto.withAlwaysInStock(false);
@@ -111,23 +128,9 @@ public class ItemServiceImpl implements ItemService {
         List<Unit> unitList = unitService.findAll();
         itemValidator.validateForCreate(itemDto, digitalStorageList, unitList);
 
-        ItemDto finalItemDto = itemDto;
-        DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
-            .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
-            .findFirst()
-            .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
-
-        List<Long> allowedUser = sharedFlatService.findById(
-                matchingDigitalStorage.getSharedFlat().getId(),
-                jwt
-            ).getUsers().stream()
-            .map(ApplicationUser::getId)
-            .toList();
-        authorization.authenticateUser(
-            allowedUser,
-            "The given digital storage does not belong to the user's shared flat!"
-        );
-
+        if (!(Objects.equals(applicationUser.getSharedFlat().getDigitalStorage().getStorageId(), itemDto.digitalStorage().storageId()))) {
+            throw new AuthorizationException("The given digital storage does not belong to the user", List.of());
+        }
 
         List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
@@ -152,8 +155,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public DigitalStorageItem update(ItemDto itemDto, String jwt) throws ConflictException, ValidationException, AuthenticationException {
+    public DigitalStorageItem update(ItemDto itemDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.trace("update({})", itemDto);
+
+        ApplicationUser applicationUser = authService.getUserFromToken();
 
         if (itemDto.alwaysInStock() == null) {
             itemDto = itemDto.withAlwaysInStock(false);
@@ -163,22 +168,9 @@ public class ItemServiceImpl implements ItemService {
         List<Unit> unitList = unitService.findAll();
         itemValidator.validateForUpdate(itemDto, digitalStorageList, unitList);
 
-        ItemDto finalItemDto = itemDto;
-        DigitalStorage matchingDigitalStorage = digitalStorageList.stream()
-            .filter(digitalStorage -> Objects.equals(finalItemDto.digitalStorage().storId(), digitalStorage.getStorId()))
-            .findFirst()
-            .orElseThrow(() -> new NotFoundException("Given digital storage does not exists in the Database!"));
-
-        List<Long> allowedUser = sharedFlatService.findById(
-                matchingDigitalStorage.getSharedFlat().getId(),
-                jwt
-            ).getUsers().stream()
-            .map(ApplicationUser::getId)
-            .toList();
-        authorization.authenticateUser(
-            allowedUser,
-            "The given digital storage does not belong to the user's shared flat!"
-        );
+        if (!(Objects.equals(applicationUser.getSharedFlat().getDigitalStorage().getStorageId(), itemDto.digitalStorage().storageId()))) {
+            throw new AuthorizationException("The given digital storage does not belong to the user", List.of());
+        }
 
         List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
@@ -189,11 +181,13 @@ public class ItemServiceImpl implements ItemService {
             digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null);
         }
 
-        DigitalStorageItem presistedDigitalStorageItem = this.findById(itemDto.itemId(), jwt);
+        DigitalStorageItem presistedDigitalStorageItem = this.findById(itemDto.itemId());
+
+        presistedDigitalStorageItem.getItemCache().setId(itemDto.itemId());
 
         // necessary because JPA cannot convert an Entity to another Entity
         if (digitalStorageItem.alwaysInStock() != presistedDigitalStorageItem.alwaysInStock()) {
-            this.delete(itemDto.itemId(), jwt);
+            this.delete(itemDto.itemId());
         }
 
         DigitalStorageItem updatedDigitalStorageItem = itemRepository.save(digitalStorageItem);
@@ -202,22 +196,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void delete(Long id, String jwt) throws AuthenticationException {
+    @Transactional
+    public void delete(Long id) throws AuthorizationException {
         LOGGER.trace("delete({})", id);
 
-        DigitalStorageItem itemToDelete = this.findById(id, jwt);
-
-        Long sharedFlatId = itemToDelete.getDigitalStorage().getSharedFlat().getId();
-
-        List<Long> allowedUsers = sharedFlatService.findById(sharedFlatId, jwt)
-            .getUsers().stream()
-            .map(ApplicationUser::getId)
-            .toList();
-
-        authorization.authenticateUser(
-            allowedUsers,
-            "The given digital storage does not belong to the user's shared flat!"
-        );
+        findById(id);
 
         itemRepository.deleteById(id);
     }

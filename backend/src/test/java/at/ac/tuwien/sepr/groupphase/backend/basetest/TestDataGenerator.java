@@ -2,9 +2,10 @@ package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ApplicationUserDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.CleanDatabase;
-import at.ac.tuwien.sepr.groupphase.backend.datagenerator.EventDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.datagenerator.CookbookDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.IngredientsDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ItemDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.datagenerator.RecipeDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.SharedFlatDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.StorageDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.UnitDataGenerator;
@@ -22,6 +23,8 @@ public class TestDataGenerator {
     private final UnitDataGenerator unitDataGenerator;
     private final ApplicationUserDataGenerator applicationUserDataGenerator;
     private final SharedFlatDataGenerator sharedFlatDataGenerator;
+    private final RecipeDataGenerator recipeDataGenerator;
+    private final CookbookDataGenerator cookbookDataGenerator;
 
     private final EventDataGenerator eventDataGenerator;
 
@@ -31,7 +34,9 @@ public class TestDataGenerator {
                              CleanDatabase cleanDatabase,
                              UnitDataGenerator unitDataGenerator,
                              ApplicationUserDataGenerator applicationUserDataGenerator,
-                             SharedFlatDataGenerator sharedFlatDataGenerator, EventDataGenerator eventDataGenerator) {
+                             SharedFlatDataGenerator sharedFlatDataGenerator,
+                             RecipeDataGenerator recipeDataGenerator,
+                             CookbookDataGenerator cookbookDataGenerator) {
         this.digitalStorageDataGenerator = digitalStorageDataGenerator;
         this.ingredientsDataGenerator = ingredientsDataGenerator;
         this.itemDataGenerator = itemDataGenerator;
@@ -39,7 +44,8 @@ public class TestDataGenerator {
         this.applicationUserDataGenerator = applicationUserDataGenerator;
         this.sharedFlatDataGenerator = sharedFlatDataGenerator;
         this.unitDataGenerator = unitDataGenerator;
-        this.eventDataGenerator = eventDataGenerator;
+        this.recipeDataGenerator = recipeDataGenerator;
+        this.cookbookDataGenerator = cookbookDataGenerator;
     }
 
     public void cleanUp() throws ValidationException, ConflictException {
@@ -49,8 +55,9 @@ public class TestDataGenerator {
         digitalStorageDataGenerator.generateDigitalStorages();
         ingredientsDataGenerator.generateDigitalStorages();
         unitDataGenerator.generate();
-        itemDataGenerator.generateDigitalStorages();
-        eventDataGenerator.generateEvents();
+        itemDataGenerator.generateItems();
+        cookbookDataGenerator.generateCookbooks();
+        recipeDataGenerator.generateItems();
     }
 
 

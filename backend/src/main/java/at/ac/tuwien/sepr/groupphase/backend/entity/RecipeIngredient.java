@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
+import java.util.Objects;
+
 @Entity
 public class RecipeIngredient {
     @Id
@@ -70,5 +72,22 @@ public class RecipeIngredient {
 
     public void setUnitEnum(Unit unitEnum) {
         this.unitEnum = unitEnum;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RecipeIngredient that = (RecipeIngredient) o;
+        return Double.compare(amount, that.amount) == 0 && Objects.equals(name, that.name) && Objects.equals(unit, that.unit);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, unit, amount);
     }
 }

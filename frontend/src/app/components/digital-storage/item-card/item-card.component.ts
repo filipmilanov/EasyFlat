@@ -1,9 +1,4 @@
-import {Component, ElementRef, HostListener, Input} from '@angular/core';
-import {DigitalStorageComponent} from "../digital-storage.component";
-import {StorageService} from "../../../services/storage.service";
-import {ItemService} from "../../../services/item.service";
-import {ItemDto} from "../../../dtos/item";
-import {ItemSearchDto} from "../../../dtos/storageItem";
+import {Component, Input} from '@angular/core';
 
 @Component({
   selector: 'app-item-card',
@@ -18,11 +13,18 @@ export class ItemCardComponent {
   @Input() quantityTotal: number;
   @Input() unit: string;
 
-  getCardColor(): string {
+  constructor() {
+  }
+
+  getColorBasedOnQuantity(): string {
     const ratio = this.quantity / this.quantityTotal;
     if (ratio < 0.2) return 'bg-danger'; // Low quantity
     if (ratio < 0.4) return 'bg-warning'; // Medium quantity
-    return 'bg-primary'; // High quantity
+    return 'bg-success'; // High quantity
   }
 
+  getQuantityPercentage(): string {
+    const percentage = (this.quantity / this.quantityTotal) * 100;
+    return `${Math.max(0, Math.min(100, percentage))}%`; // Ensure percentage is between 0 and 100
+  }
 }

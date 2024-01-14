@@ -27,7 +27,7 @@
         </ul>
       </div>
 
-      <div class="mt-4">
+      <div class="mt-4" *ngIf="recipeDetail.steps !== null">
         <h3>Steps</h3>
         <ol class="list-group">
           <li *ngFor="let step of recipeDetail.steps.steps; let i = index" class="list-group-item">

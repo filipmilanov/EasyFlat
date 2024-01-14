@@ -42,9 +42,8 @@ import {LOAD_WASM, NgxScannerQrcodeModule} from "ngx-scanner-qrcode";
 import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
 import { ShoppingListsComponent } from './components/shopping-list/shopping-lists/shopping-lists.component';
 import { ShoppingListCardComponent } from './components/shopping-list/shopping-list-card/shopping-list-card.component';
-import { EventsComponent } from './components/events/events.component';
-import { EventCardComponent } from './components/events/event-card/event-card.component';
-import { EventsCreateComponent } from './components/events/events-create/events-create.component';
+import { AdminSelectionModalComponent } from './components/admin-selection-modal/admin-selection-modal.component';
+import { SignOutModalComponent } from './components/utils/sign-out-modal/sign-out-modal.component';
 
 
 LOAD_WASM().subscribe();
@@ -80,12 +79,11 @@ LOAD_WASM().subscribe();
     CookbookDetailComponent,
     CookbookModalComponent,
     CookingModalComponent,
+    ConfirmDeleteDialogComponent,
     ShoppingListsComponent,
     ShoppingListCardComponent,
-    EventsComponent,
-    EventCardComponent,
-    EventsCreateComponent,
-    ConfirmDeleteDialogComponent
+    AdminSelectionModalComponent,
+    SignOutModalComponent
   ],
   imports: [
     BrowserModule,
@@ -94,7 +92,11 @@ LOAD_WASM().subscribe();
     HttpClientModule,
     NgbModule,
     FormsModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      timeOut: 10000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+    }),
     BrowserAnimationsModule,
     ColorPickerModule,
     NgOptimizedImage,

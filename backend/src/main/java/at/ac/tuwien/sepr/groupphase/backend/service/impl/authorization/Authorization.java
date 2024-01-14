@@ -1,7 +1,7 @@
-package at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator;
+package at.ac.tuwien.sepr.groupphase.backend.service.impl.authorization;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,22 +23,22 @@ public class Authorization {
         this.authService = authService;
     }
 
-    public void authenticateUser(List<Long> allowedUser, String errorMessage) throws AuthenticationException {
-        LOGGER.trace("authenticateUser({}, {})", id, errorMessage);
+    public void authorizeUser(List<Long> allowedUser, String errorMessage) throws AuthorizationException {
+        LOGGER.trace("authorizeUser({}, {})", id, errorMessage);
 
         ApplicationUser user = authService.getUserFromToken();
         if (user == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exists"));
+            throw new AuthorizationException("Authorization failed", List.of("User does not exists"));
         }
 
         if (!allowedUser.contains(user.getId())) {
-            throw new AuthenticationException("Authentication failed", List.of(errorMessage));
+            throw new AuthorizationException("Authorization failed", List.of(errorMessage));
         }
     }
 
-    public void authenticateUser(List<Long> id) throws AuthenticationException {
-        LOGGER.trace("authenticateUser({})", id);
+    public void authorizeUser(List<Long> id) throws AuthorizationException {
+        LOGGER.trace("authorizeUser({})", id);
 
-        authenticateUser(id, "User does not have access to this resource");
+        authorizeUser(id, "User does not have access to this resource");
     }
 }

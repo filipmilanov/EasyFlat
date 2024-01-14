@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 
 @RecordBuilder
 public record ItemSearchDto(
-    Long itemId,
     @NotNull
     Boolean alwaysInStock,
     String productName,

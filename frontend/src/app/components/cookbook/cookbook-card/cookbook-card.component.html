@@ -1,7 +1,12 @@
+<app-confirm-delete-dialog
+  deleteInfo="recipe"
+  [deleteName]="getTruncated(recipe.title, 23)"
+  (confirm)="delete()">
+</app-confirm-delete-dialog>
 <div class="card mt-3" style="width: 20rem; height: 16rem">
   <div class="card-header text-black">
     <div class="row">
-      <h5 class="card-title">{{recipe.title}}</h5>
+      <h5 class="card-title">{{getTruncated(recipe.title, 23)}}</h5>
     </div>
   </div>
   <!--  </div>-->
@@ -22,7 +27,8 @@
 
     <div class="row justify-content-center ">
       <div class="col-3 mb-2 ">
-        <button class="btn btn-outline-danger " (click)="delete()">Delete</button>
+        <button class="btn btn-outline-danger " data-bs-toggle="modal"
+                data-bs-target="#confirm-delete-modal" aria-label="Delete recipe">Delete</button>
       </div>
       <div class="col-3 mb-2 ">
         <button class="btn btn-outline-info" (click)="detail()">Details</button>
@@ -36,3 +42,4 @@
     </div>
   </div>
 </div>
+

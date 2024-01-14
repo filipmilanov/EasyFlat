@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 @RecordBuilder
 public record DigitalStorageDto(
-    Long storId,
+    Long storageId,
     @NotEmpty(message = "The title cannot be empty") String title,
     @NotNull(message = "The sharedFlat cannot be null") WgDetailDto sharedFlat
 ) {

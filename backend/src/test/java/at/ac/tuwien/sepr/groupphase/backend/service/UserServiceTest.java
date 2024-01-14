@@ -3,6 +3,8 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +33,7 @@ public class UserServiceTest implements TestData {
 
     @Test
     @DisplayName("Positive test for registering a valid user")
-    public void registerValidUserAndCheckIfSuccessfullyRegistered() {
+    public void registerValidUserAndCheckIfSuccessfullyRegistered() throws ValidationException, ConflictException {
         UserDetailDto userDetailDto = new UserDetailDto();
         userDetailDto.setFirstName("John");
         userDetailDto.setLastName("Doe");
@@ -51,7 +53,7 @@ public class UserServiceTest implements TestData {
 
     @Test
     @DisplayName("Negative test for registering a user with an existing email")
-    public void registerUserWithExistingEmailShouldThrowException() {
+    public void registerUserWithExistingEmailShouldThrowException() throws ValidationException, ConflictException {
         UserDetailDto existingUser = new UserDetailDto();
         existingUser.setFirstName("Alice");
         existingUser.setLastName("Smith");
@@ -70,7 +72,7 @@ public class UserServiceTest implements TestData {
 
     @Test
     @DisplayName("Positive test for updating an existing user with valid data")
-    public void updateExistingUserWithValidData() {
+    public void updateExistingUserWithValidData() throws ValidationException, ConflictException {
         UserDetailDto userDetailDto = new UserDetailDto();
         userDetailDto.setFirstName("John");
         userDetailDto.setLastName("Doe");
@@ -92,7 +94,7 @@ public class UserServiceTest implements TestData {
 
     @Test
     @DisplayName("Positive test for deleting an existing user")
-    public void deleteExistingUserAndEnsureDeletion() {
+    public void deleteExistingUserAndEnsureDeletion() throws ValidationException, ConflictException {
         UserDetailDto userDetailDto = new UserDetailDto();
         userDetailDto.setFirstName("ToDelete");
         userDetailDto.setLastName("User");

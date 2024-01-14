@@ -1,12 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
-import { UserDetail } from '../../dtos/auth-request';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AuthService} from '../../services/auth.service';
+import {UserDetail} from '../../dtos/auth-request';
 import {Observable} from "rxjs";
 import {Router} from "@angular/router";
 import {SharedFlat} from "../../dtos/sharedFlat";
 import {SharedFlatService} from "../../services/sharedFlat.service";
 import {ToastrService} from "ngx-toastr";
+import {NgbModal, NgbModalOptions} from '@ng-bootstrap/ng-bootstrap';
+import {AdminSelectionModalComponent} from '../admin-selection-modal/admin-selection-modal.component';
+import {LocalNgModuleData} from "@angular/compiler-cli/src/ngtsc/scope";
+import {RecipeSuggestion} from "../../dtos/cookingDtos/recipeSuggestion";
+import {ItemDto} from "../../dtos/item";
 
 @Component({
   selector: 'app-account',
@@ -14,22 +19,86 @@ import {ToastrService} from "ngx-toastr";
   styleUrls: ['./account.component.scss']
 })
 export class AccountComponent implements OnInit {
-  user: UserDetail;
+  @Output() account: EventEmitter<UserDetail> = new EventEmitter<UserDetail>();
+  user: UserDetail = {
+    id: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    flatName: '',
+    password: '',
+    admin: false
+  };
   accountForm: FormGroup;
+  passwordForm: FormGroup;
   submitted = false;
   error = false;
   errorMessage = '';
+  submittedPassword = false;
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private sharedFlatService: SharedFlatService ,private router: Router, private notification: ToastrService) {
+  users: UserDetail[];
+
+  constructor(private modalService: NgbModal, private formBuilder: FormBuilder, private authService: AuthService, private sharedFlatService: SharedFlatService, private router: Router, private notification: ToastrService) {
     this.accountForm = this.formBuilder.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      flatName: [''],
+      email: ['', [Validators.required]],
       password: ['', [Validators.minLength(8)]],
+      flatName: [''],
       admin: ['']
     });
+    this.passwordForm = this.formBuilder.group({
+      repeatPassword: ['', [Validators.minLength(8)]],
+      newPassword: ['', [Validators.minLength(8)]],
+    });
+
   }
+
+  openAdminSelectionModal(): void {
+    // Check if the user is an admin before opening the modal
+    console.log(this.users);
+    if (this.users.length == 0) {
+        this.signOut();
+    } else {
+      if (this.user.admin) {
+        const options: NgbModalOptions = {
+          centered: true,
+        };
+
+        const modalRef = this.modalService.open(AdminSelectionModalComponent, options);
+        modalRef.componentInstance.users = this.users;
+
+        modalRef.result.then((selectedUserId) => {
+          // Handle the selected user ID and update admin
+          console.log('Selected User ID:', selectedUserId);
+          this.authService.setAdmin(selectedUserId).subscribe({
+            next: (result) => {
+              console.log('Admin set successfully:', result);
+            },
+            error: (error) => {
+              console.error('Error setting admin:', error);
+            },
+            complete: () => {
+              console.log('Admin setting complete');
+            }
+          });
+
+          console.log('Admin is set')
+
+          // Show a confirmation dialog if you want
+
+            this.signOut();
+
+        });
+      } else {
+        // If the user is not an admin, directly proceed to sign out
+
+          this.signOut();
+
+      }
+    }
+  }
+
 
   ngOnInit(): void {
     // Fetch user data and update form values
@@ -43,13 +112,22 @@ export class AccountComponent implements OnInit {
           lastName: this.user.lastName,
           email: this.user.email,
           flatName: this.user.flatName,
-          admin:this.user.admin
+          admin: this.user.admin
         });
       },
       (error) => {
         console.error('Error fetching user:', error);
       }
     );
+    // Fetch all users
+    this.authService.getUsers(this.authService.getToken()).subscribe({
+      next: (users) => {
+        this.users = users;
+      },
+      error: (error) => {
+        console.error('Error fetching users:', error);
+      }
+    });
   }
 
   update(): void {
@@ -63,7 +141,7 @@ export class AccountComponent implements OnInit {
     console.log(this.accountForm.valid)
 
     if (this.accountForm.valid) {
-      const userDetail: UserDetail = new UserDetail(this.user.id,this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,  this.accountForm.controls.email.value, null , this.accountForm.controls.password.value,this.accountForm.controls.admin.value);
+      const userDetail: UserDetail = new UserDetail(this.user.id, this.accountForm.controls.firstName.value, this.accountForm.controls.lastName.value, this.accountForm.controls.email.value, null, this.accountForm.controls.password.value, this.accountForm.controls.admin.value);
       console.log(userDetail)
       this.authService.update(userDetail).subscribe({
         next: () => {
@@ -74,11 +152,13 @@ export class AccountComponent implements OnInit {
           console.log('Could not update due to:');
           console.log(error);
           this.error = true;
-          if (typeof error.error === 'object') {
-            this.errorMessage = error.error.error;
-          } else {
-            this.errorMessage = error.error;
-          }
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
         }
       });
     } else {
@@ -93,7 +173,6 @@ export class AccountComponent implements OnInit {
   }
 
   delete() {
-    if(confirm("Are you sure you want to delete your account?")) {
       this.authService.delete(this.user).subscribe({
         next: (deletedUser: UserDetail) => {
           console.log('User deleted:', deletedUser);
@@ -104,7 +183,6 @@ export class AccountComponent implements OnInit {
           console.error(error.message, error);
         }
       });
-    }
   }
 
   signOut() {
@@ -112,19 +190,21 @@ export class AccountComponent implements OnInit {
       next: () => {
         console.log('User signed out from flat: ' + this.user.flatName);
         this.router.navigate(['']);
+        this.sharedFlatService.changeEventToFalse();
       },
       error: error => {
-        console.log('Could not register due to:');
-        console.log(error);
-        this.error = true;
-        if (typeof error.error === 'object') {
-          this.errorMessage = error.error.error;
-        } else {
-          this.errorMessage = error.error;
-        }
+        console.log('Could not sign out due to:');
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
       }
     });
   }
+
 
   deleteFlat() {
     if (confirm("Are you sure you want to delete the shared flat?")) {
@@ -138,6 +218,38 @@ export class AccountComponent implements OnInit {
         }
       });
     }
+  }
+
+  changePassword() {
+    this.submittedPassword = true;
+    if(this.passwordForm.controls.repeatPassword.value == this.passwordForm.controls.newPassword.value) {
+      this.user.password = this.passwordForm.controls.newPassword.value;
+      console.log(this.user);
+      this.authService.update(this.user).subscribe({
+        next: () => {
+          console.log('Successfully updated password for user: ' + this.user.email);
+          this.notification.success('Successfully updated password for user: ' + this.user.email)
+        },
+        error: error => {
+          console.log('Could not update due to:');
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
+        }
+      });
+    } else {
+        this.error = true;
+        this.notification.error("Passwords don't match");
+        console.error(this.errorMessage);
+    }
+  }
+
+  getIdFormatForDeleteModal(user:UserDetail): string {
+    return `${user.firstName}${user.id.toString()}`.replace(/\s/g, '');
   }
 }
 

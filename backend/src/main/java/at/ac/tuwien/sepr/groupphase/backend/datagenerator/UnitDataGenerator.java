@@ -49,6 +49,11 @@ public class UnitDataGenerator {
         UnitDto gallon = new UnitDto("gallon", 3785L, Set.of(ml));
         UnitDto sheets = new UnitDto("sheets", 1L, Set.of(pcs));
 
+        UnitDto inches = new UnitDto("inches", 1L, Set.of());
+        UnitDto slices = new UnitDto("slices", 1L, Set.of(pcs));
+        UnitDto large = new UnitDto("large", 1L, Set.of(pcs));
+        UnitDto bag = new UnitDto("bag", 1L, Set.of(pcs));
+
 
         unitService.create(g);
         unitService.create(kg);
@@ -66,6 +71,10 @@ public class UnitDataGenerator {
         unitService.create(cups);
         unitService.create(teaspoon);
         unitService.create(servings);
+        unitService.create(inches);
+        unitService.create(slices);
+        unitService.create(large);
+        unitService.create(bag);
     }
 
 

@@ -15,13 +15,7 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
 
     List<DigitalStorage> findByTitleContainingAndSharedFlatIs(String title, SharedFlat sharedFlat);
 
-    @Query("UPDATE DigitalStorageItem i "
-        + "SET i.quantityCurrent = :quantity "
-        + "WHERE i.itemId = :itemId "
-        + "AND i.digitalStorage.storId = :storageId")
-    DigitalStorageItem updateItemQuantity(@Param("storageId") long storageId, @Param("itemId") long itemId, @Param("quantity") long quantity);
-
-    @Query("SELECT i FROM DigitalStorageItem i WHERE i.digitalStorage.storId = :storageId AND "
+    @Query("SELECT i FROM DigitalStorageItem i WHERE i.digitalStorage.storageId = :storageId AND "
         + "(:title IS NULL OR LOWER(i.itemCache.generalName) LIKE LOWER(CONCAT('%', :title, '%'))) AND "
         + "(:fillLevel IS NULL OR "
         + "(:fillLevel = 'full' AND ((cast(i.quantityCurrent as float ))/(cast(i.itemCache.quantityTotal as float ))) > 0.4) OR "
@@ -32,8 +26,6 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
                                          @Param("title") String title,
                                          @Param("fillLevel") String fillLevel,
                                          @Param("alwaysInStock") Class alwaysInStock);
-
-    List<DigitalStorageItem> findAllByStorIdAndDigitalStorageItemList_ItemCache_GeneralNameIs(Long storId, String generalName);
 }
 
 

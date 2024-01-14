@@ -3,6 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import {AuthRequest, UserDetail} from '../../dtos/auth-request';
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-register',
@@ -15,36 +16,42 @@ export class RegisterComponent implements OnInit{
   error = false;
   errorMessage = '';
 
-  constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private router: Router) {
+  constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private router: Router, private notification: ToastrService) {
     this.registerForm = this.formBuilder.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
+      email: ['', [Validators.required]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      password2 : ['', [Validators.required, Validators.minLength(8)]]
     });
   }
 
   registerUser() {
     this.submitted = true;
     if (this.registerForm.valid) {
-      const userDetail: UserDetail = new UserDetail(null,this.registerForm.controls.firstName.value,this.registerForm.controls.lastName.value,  this.registerForm.controls.email.value,null, this.registerForm.controls.password.value,null);
-      console.log(userDetail)
-      this.authService.registerUser(userDetail).subscribe({
-        next: () => {
-          console.log('Successfully registered user: ' + userDetail.email);
-          this.router.navigate(['']);
-        },
-        error: error => {
-          console.log('Could not register due to:');
-          console.log(error);
-          this.error = true;
-          if (typeof error.error === 'object') {
-            this.errorMessage = error.error.error;
-          } else {
-            this.errorMessage = error.error;
+      if(this.registerForm.controls.password.value == this.registerForm.controls.password2.value) {
+        const userDetail: UserDetail = new UserDetail(null,this.registerForm.controls.firstName.value,this.registerForm.controls.lastName.value,  this.registerForm.controls.email.value,null, this.registerForm.controls.password.value,null);
+        console.log(userDetail)
+        this.authService.registerUser(userDetail).subscribe({
+          next: () => {
+            console.log('Successfully registered user: ' + userDetail.email);
+            this.router.navigate(['']);
+          },
+          error: error => {
+            console.log('Could not register due to:');
+            let firstBracket = error.error.indexOf('[');
+            let lastBracket = error.error.indexOf(']');
+            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+            let errorDescription = error.error.substring(0, firstBracket);
+            errorMessages.forEach(message => {
+              this.notification.error(message, errorDescription);
+            });
           }
-        }
-      });
+        });
+      } else {
+        this.notification.error("Passwords don't match!")
+      }
+
     } else {
       console.log('Invalid input');
     }

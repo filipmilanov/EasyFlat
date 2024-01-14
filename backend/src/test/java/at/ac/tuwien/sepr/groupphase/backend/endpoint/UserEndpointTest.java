@@ -83,7 +83,7 @@ public class UserEndpointTest implements TestData {
         mockMvc.perform(post(REGISTER_BASE_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(existingUser)))
-            .andExpect(status().isForbidden());
+            .andExpect(status().isConflict());
     }
 
 

@@ -28,10 +28,15 @@ export class CookbookCardComponent {
       this.recipe.summary;
   }
 
+  getTruncated(text:string,maxLength:number): string {
+    return this.recipe.summary.length > maxLength ?
+      text.slice(0, maxLength) + '...' :
+      text;
+  }
+
 
 
   delete() {
-    if(confirm("Are you sure you want to delete this recipe?")) {
       this.cookingService.deleteCookbookRecipe(this.recipe.id).subscribe({
         next: (deletedRecipe: RecipeSuggestion) => {
           console.log('Recipe deleted:', deletedRecipe);
@@ -41,7 +46,6 @@ export class CookbookCardComponent {
           console.error(error.message, error);
         }
       });
-    }
   }
 
   cook() {

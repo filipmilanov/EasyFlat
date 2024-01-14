@@ -16,38 +16,62 @@ export class ItemService {
   ) {
   }
 
+  /**
+   * Find an item via its ID
+   *
+   * @param id the of the item that should be retrieved
+   * @return an Observable for the item with the given ID
+   */
   getById(id: number): Observable<ItemDto> {
+    console.log('getById: ' + id);
     return this.http.get<ItemDto>(`${this.baseUri}/${id}`);
   }
 
+  /**
+   * Find an item via their {@link generalName}
+   *
+   * @param generalName the group which an item belongs to
+   * @return an Observable for a list of items which have the given {@link generalName}
+   */
   findByGeneralName(generalName: string): Observable<ItemDto[]> {
+    console.log('findByGeneralName: ' + generalName);
+    return this.http.get<ItemDto[]>(`${this.baseUri}/general-name/${generalName}`);
+  }
+
+  /**
+   * Find an item via its brand
+   *
+   * @param brand the brand of the item
+   * @return an Observable for a list of items made by this brand
+   */
+  findByBrand(brand: string): Observable<ItemDto[]> {
+    console.log('findByBrand: ' + brand);
     let params = new HttpParams();
-    params = params.append('generalName', generalName);
+    params = params.append('brand', brand);
     return this.http.get<ItemDto[]>(`${this.baseUri}/search`, {params});
   }
 
-  findByBrand(barnd: string): Observable<ItemDto[]> {
-    let params = new HttpParams();
-    params = params.append('brand', barnd);
-    return this.http.get<ItemDto[]>(`${this.baseUri}/search`, {params});
-  }
-
+  /**
+   * Find an item via the store it was bought at
+   *
+   * @param boughtAt the name of the store
+   * @return an Observable for a list of items purchased from this store
+   */
   findByBoughtAt(boughtAt: string): Observable<ItemDto[]> {
+    console.log('findByBoughtAt: ' + boughtAt);
     let params = new HttpParams();
     params = params.append('boughtAt', boughtAt);
     return this.http.get<ItemDto[]>(`${this.baseUri}/search`, {params});
   }
 
-
-
-
   /**
-   * Persists Items to the backend
+   * Create an item in the system
    *
-   * @param item to persist
+   * @param item the item that should be added to the system
+   * @return an Observable for the created item
    */
   createItem(item: ItemDto): Observable<ItemDto> {
-    console.log('Create item with content ' + item);
+    console.log('Create item with content: ' + item);
     return this.http.post<ItemDto>(this.baseUri, item);
   }
 
@@ -58,7 +82,7 @@ export class ItemService {
    * @return an Observable for the updated item
    */
   updateItem(item: ItemDto): Observable<ItemDto> {
-    console.log('Update item with ID ' + item.itemId);
+    console.log('Update item with ID: ' + item.itemId);
     return this.http.put<ItemDto>(`${this.baseUri}/${item.itemId}`, item);
   }
 
@@ -69,7 +93,7 @@ export class ItemService {
    * @return an Observable for the deleted item
    */
   deleteItem(itemId: number): Observable<ItemDto> {
-    console.log('Delete item with ID ' + itemId);
+    console.log('Delete item with ID: ' + itemId);
     return this.http.delete<ItemDto>(this.baseUri + '/' + itemId);
   }
 

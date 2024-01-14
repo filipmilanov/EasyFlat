@@ -9,23 +9,18 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DigitalStorageMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
-import jakarta.annotation.security.PermitAll;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,10 +44,9 @@ public class StorageEndpoint {
         this.shoppingListMapper = shoppingListMapper;
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<DigitalStorageDto> findAll(DigitalStorageSearchDto digitalStorageDto, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
+    public List<DigitalStorageDto> findAll(DigitalStorageSearchDto digitalStorageDto) throws AuthorizationException {
         LOGGER.info("findAll({})", digitalStorageDto);
 
         return digitalStorageMapper.entityListToDtoList(
@@ -60,40 +54,20 @@ public class StorageEndpoint {
         );
     }
 
-
     @Secured("ROLE_USER")
-    @Transactional
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public DigitalStorageDto create(@RequestBody DigitalStorageDto digitalStorageDto, @RequestHeader("Authorization") String jwt) throws ValidationException, ConflictException, AuthenticationException {
-        LOGGER.info("create({})", digitalStorageDto);
-        return digitalStorageMapper.entityToDto(
-            digitalStorageService.create(digitalStorageDto, jwt)
-        );
-    }
-
-    @PermitAll
     @GetMapping("/items")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemListDto> getStorageItems(ItemSearchDto itemSearchDto, @RequestHeader("Authorization") String jwt) throws ValidationException, AuthenticationException, ConflictException {
+    public List<ItemListDto> getStorageItems(ItemSearchDto itemSearchDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.info("getStorageItems({})", itemSearchDto);
-        return digitalStorageService.searchItems(itemSearchDto, jwt);
+        return digitalStorageService.searchItems(itemSearchDto);
     }
 
-    @PermitAll
-    @GetMapping("/info/{name}")
-    public List<DigitalStorageItem> getItemWithGeneralName(@PathVariable String name, @RequestHeader("Authorization") String jwt) throws AuthenticationException, ValidationException, ConflictException {
-        LOGGER.info("getItemWithGeneralName({})", name);
-        List<DigitalStorageItem> items = digitalStorageService.getItemWithGeneralName(name, jwt);
-        return digitalStorageService.getItemWithGeneralName(name, jwt);
-    }
-
-    @PermitAll
+    @Secured("ROLE_USER")
     @PostMapping("/shop")
     @ResponseStatus(HttpStatus.CREATED)
-    public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto, @RequestHeader("Authorization") String jwt) throws AuthenticationException, ValidationException, ConflictException {
+    public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.info("addItemToShopping({})", itemDto);
-        ShoppingItem item = digitalStorageService.addItemToShopping(itemDto, jwt);
+        ShoppingItem item = digitalStorageService.addItemToShopping(itemDto);
         return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
     }
 }
