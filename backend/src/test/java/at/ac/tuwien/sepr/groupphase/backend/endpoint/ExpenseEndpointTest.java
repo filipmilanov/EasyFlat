@@ -1,0 +1,429 @@
+package at.ac.tuwien.sepr.groupphase.backend.endpoint;
+
+import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.BalanceDebitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.DebitDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DebitMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
+import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ExpenseRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
+import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
+@AutoConfigureMockMvc
+class ExpenseEndpointTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private ExpenseRepository expenseRepository;
+
+    @Autowired
+    private DebitMapper debitMapper;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private TestDataGenerator testDataGenerator;
+
+    @Autowired
+    private JwtTokenizer jwtTokenizer;
+
+    @Autowired
+    private SecurityProperties securityProperties;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @MockBean
+    private AuthService authService;
+
+    private final String BASE_URI = "/api/v1/expense";
+    private ApplicationUser applicationUser;
+
+    @BeforeEach
+    public void cleanUp() throws ValidationException, ConflictException {
+        testDataGenerator.cleanUp();
+
+        applicationUser = userRepository.findById(1L).orElseThrow();
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
+    }
+
+    @Test
+    @DisplayName("Endpoint test for findById with matching ID")
+    void findById() throws Exception {
+        // given
+        long expenseId = 4L;
+
+        Expense expected = expenseRepository.findById(expenseId).orElseThrow();
+        List<DebitDto> expectedDebitDtoList = debitMapper.entityListToDebitDtoList(expected);
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URI + "/" + expenseId)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        ExpenseDto expenseDto = objectMapper.readValue(response.getContentAsString(), ExpenseDto.class);
+
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType()),
+            () -> assertThat(expenseDto).extracting(
+                ExpenseDto::id,
+                ExpenseDto::title,
+                ExpenseDto::description,
+                ExpenseDto::amountInCents,
+                ExpenseDto::createdAt,
+                ExpenseDto::isRepeating,
+                expenseDto1 -> expenseDto1.paidBy().id()
+            ).contains(
+                expenseId,
+                expected.getTitle(),
+                expected.getDescription(),
+                expected.getAmountInCents(),
+                expected.getCreatedAt(),
+                expected.getPeriodInDays() != null && expected.getPeriodInDays() < 0,
+                expected.getPaidBy().getId()
+            ),
+            () -> assertThat(expenseDto.debitUsers()).isEqualTo(expectedDebitDtoList)
+        );
+    }
+
+    @Test
+    @DisplayName("Endpoint test for findById of not allowed ID")
+    void findByIdNotAuthorized() throws Exception {
+        // given
+        long expenseId = 1L;
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URI + "/" + expenseId)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatus())
+        );
+    }
+
+    @Test
+    @DisplayName("Test if calculate debits creates a correct response")
+    void calculateDebits() throws Exception {
+        // given
+        // when
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URI + "/debits")
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        TypeReference<List<BalanceDebitDto>> typeReference = new TypeReference<>() {
+        };
+        List<BalanceDebitDto> actual = objectMapper.readValue(response.getContentAsString(), typeReference);
+
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType()),
+            () -> assertThat(actual).extracting(
+                (BalanceDebitDto balanceDebitDto) -> balanceDebitDto.debtor().id(),
+                (BalanceDebitDto balanceDebitDto) -> balanceDebitDto.creditor().id(),
+                (BalanceDebitDto balanceDebitDto) -> Math.round(balanceDebitDto.valueInCent() * 10) / 10.0
+            ).contains(
+                new Tuple(11L, 6L, 791.8),
+                new Tuple(1L, 6L, 331.7),
+                new Tuple(16L, 21L, 153.9),
+                new Tuple(16L, 6L, 115.4)
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Test if calculate total expenses per user creates a correct response")
+    void calculateTotalExpensesPerUser() throws Exception {
+        // given
+        // when
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URI + "/statistics/expenses")
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        TypeReference<List<UserValuePairDto>> typeReference = new TypeReference<>() {
+        };
+        List<UserValuePairDto> actual = objectMapper.readValue(response.getContentAsString(), typeReference);
+
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType()),
+            () -> assertThat(actual).size().isEqualTo(applicationUser.getSharedFlat().getUsers().size()),
+            () -> assertThat(actual.stream()
+                .map(pair ->
+                    pair.user().id()
+                ).toList()
+            ).containsAnyElementsOf(
+                applicationUser.getSharedFlat()
+                    .getUsers()
+                    .stream()
+                    .map(ApplicationUser::getId)
+                    .toList()
+            ),
+            () -> assertThat(actual.stream()
+                .map(pair ->
+                    Math.round((pair.value()) * 10) / 10.0
+                ).toList()
+            ).containsAll(
+                List.of(
+                    2549.4,
+                    1562.0,
+                    2952.8,
+                    745.7,
+                    0.0
+                )
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Test if calculate total debit per user creates a correct response")
+    void calculateTotalDebitsPerUser() throws Exception {
+        // given
+        // when
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URI + "/statistics/debits")
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        TypeReference<List<UserValuePairDto>> typeReference = new TypeReference<>() {
+        };
+        List<UserValuePairDto> actual = objectMapper.readValue(response.getContentAsString(), typeReference);
+
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType()),
+            () -> assertThat(actual).size().isEqualTo(applicationUser.getSharedFlat().getUsers().size()),
+            () -> assertThat(actual.stream()
+                .map(pair ->
+                    pair.user().id()
+                ).toList()
+            ).containsAnyElementsOf(
+                applicationUser.getSharedFlat()
+                    .getUsers()
+                    .stream()
+                    .map(ApplicationUser::getId)
+                    .toList()
+            ),
+            () -> assertThat(actual.stream()
+                .map(pair ->
+                    Math.round((pair.value()) * 10) / 10.0
+                ).toList()
+            ).containsAll(
+                List.of(
+                    2881.2,
+                    1408.0,
+                    1713.9,
+                    1537.5,
+                    269.3
+                )
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Test if calculate balances per user creates a correct response")
+    void calculateBalancePerUser() throws Exception {
+        // given
+        // when
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URI + "/statistics/balance")
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        TypeReference<List<UserValuePairDto>> typeReference = new TypeReference<>() {
+        };
+        List<UserValuePairDto> actual = objectMapper.readValue(response.getContentAsString(), typeReference);
+
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType()),
+            () -> assertThat(actual).isNotNull(),
+            () -> assertThat(actual).extracting(
+                (UserValuePairDto userValuePairDto) -> userValuePairDto.user().id(),
+                (UserValuePairDto userValuePairDto) -> Math.round((userValuePairDto.value()) * 10) / 10.0
+            ).containsExactlyInAnyOrder(
+                new Tuple(1L, -331.7),
+                new Tuple(21L, 153.9),
+                new Tuple(6L, 1238.9),
+                new Tuple(11L, -791.8),
+                new Tuple(16L, -269.3)
+            )
+        );
+    }
+
+
+    @Test
+    @DisplayName("Creates expense with debits")
+    void create() throws Exception {
+        // given
+        ExpenseDto expenseDto = this.generateExpenseDto();
+
+        String body = objectMapper.writeValueAsString(expenseDto);
+        // when
+        MvcResult mvcResult = mockMvc.perform(post(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+        ExpenseDto actual = objectMapper.readValue(response.getContentAsString(), ExpenseDto.class);
+
+        // then
+        assertAll(
+            () -> assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE),
+            () -> assertThat(actual).isEqualTo(expenseDto.withId(actual.id()))
+        );
+    }
+
+    @Test
+    @DisplayName("Negative test for creating expense")
+    void create_shouldThrow() throws Exception {
+        // given
+        ExpenseDto expenseDto = this.generateWrongExpenseDto();
+
+        String body = objectMapper.writeValueAsString(expenseDto);
+        // when
+        MvcResult mvcResult = mockMvc.perform(post(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertThat(response.getStatus()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value()),
+            () -> assertThat(response.getContentType()).contains(MediaType.TEXT_PLAIN_VALUE),
+            () -> assertThat(response.getContentAsString()).contains(
+                "sum",
+                "Title"
+            )
+        );
+    }
+
+    @Test
+    void update() {
+    }
+
+    private ExpenseDto generateWrongExpenseDto() {
+        double totalAmount = 1000.0;
+        List<UserListDto> flatUsers = this.generateListOfUserListDtoInFlat();
+        List<DebitDto> debitDtos = this.generateDebitUsers(totalAmount + 10);
+
+        return ExpenseDtoBuilder.builder()
+            .description("Random desc")
+            .amountInCents(totalAmount)
+            .createdAt(LocalDateTime.now())
+            .paidBy(flatUsers.get(0))
+            .debitUsers(debitDtos)
+            .build();
+    }
+
+    private ExpenseDto generateExpenseDto() {
+        double totalAmount = 1000.0;
+        List<UserListDto> flatUsers = this.generateListOfUserListDtoInFlat();
+        List<DebitDto> debitDtos = this.generateDebitUsers(totalAmount);
+
+        return ExpenseDtoBuilder.builder()
+            .title("Next Expense")
+            .description("Random desc")
+            .amountInCents(totalAmount)
+            .createdAt(LocalDateTime.now())
+            .paidBy(flatUsers.get(0))
+            .debitUsers(debitDtos)
+            .isRepeating(false)
+            .build();
+    }
+
+    private List<UserListDto> generateListOfUserListDtoInFlat() {
+        return applicationUser.getSharedFlat().getUsers().stream()
+            .map(userMapper::entityToUserListDto).
+            collect(Collectors.toList());
+    }
+
+    private List<DebitDto> generateDebitUsers(double amount) {
+        List<UserListDto> flatUsers = this.generateListOfUserListDtoInFlat();
+
+        return flatUsers.stream()
+            .map((user) ->
+                DebitDtoBuilder.builder()
+                    .user(user)
+                    .splitBy(SplitBy.EQUAL)
+                    .value(amount / flatUsers.size())
+                    .build()
+            ).collect(Collectors.toList());
+    }
+}
