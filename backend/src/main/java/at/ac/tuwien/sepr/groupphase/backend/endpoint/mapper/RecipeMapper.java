@@ -18,5 +18,6 @@ public abstract class RecipeMapper {
     public abstract RecipeSuggestion dtoToEntity(RecipeSuggestionDto recipeSuggestionDto,
                                                  @Context List<RecipeIngredient> ingredients);
 
+
     public abstract RecipeSuggestionDto entityToRecipeSuggestionDto(RecipeSuggestion recipeSuggestion);
 }

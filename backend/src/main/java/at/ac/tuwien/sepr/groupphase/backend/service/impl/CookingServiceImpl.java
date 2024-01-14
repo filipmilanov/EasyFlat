@@ -50,6 +50,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.RecipeValidat
 import com.deepl.api.DeepLException;
 import com.deepl.api.TextResult;
 import com.deepl.api.Translator;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -450,6 +451,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
+    @Transactional
     public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws ConflictException, ValidationException,
         AuthenticationException {
         if (recipe.id() != null) {
@@ -478,7 +480,7 @@ public class CookingServiceImpl implements CookingService {
         if (id == null) {
             return null;
         }
-        RecipeSuggestion recipe = repository.findById(id).orElseThrow();
+        RecipeSuggestion recipe = repository.findById(id).orElseThrow(() -> new NotFoundException("Id does not exist in database!"));
         RecipeSuggestionDto recipeToReturn = recipeMapper.entityToRecipeSuggestionDto(recipe);
         List<RecipeIngredientDto> matchedIngr = getMatchedIngredients(recipeToReturn.extendedIngredients());
 
@@ -486,12 +488,11 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
+    @Transactional
     public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException, AuthenticationException {
 
-
         recipeValidator.validateForUpdate(recipe);
-        RecipeSuggestionDto oldRec = this.getCookbookRecipe(recipe.id());
-        RecipeSuggestion oldRecipe = recipeMapper.dtoToEntity(oldRec, recipeIngredientMapper.dtoListToEntityList(oldRec.extendedIngredients()));
+        RecipeSuggestion oldRecipe = repository.findById(recipe.id()).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
 
         Long cookbookId = this.getCookbookIdForUser();
         Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));

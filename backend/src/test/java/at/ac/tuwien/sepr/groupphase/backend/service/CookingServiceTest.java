@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -301,8 +302,6 @@ public class CookingServiceTest {
             .build();
 
 
-
-
         RecipeSuggestion updatedRecipe = cookingService.updateCookbookRecipe(updatedRecipeDto);
 
         assertNotNull(updatedRecipe);
@@ -311,7 +310,6 @@ public class CookingServiceTest {
         assertEquals(updatedRecipeDto.servings(), updatedRecipe.getServings());
         assertEquals(updatedRecipeDto.readyInMinutes(), updatedRecipe.getReadyInMinutes());
         assertEquals(updatedRecipeDto.summary(), updatedRecipe.getSummary());
-        // Additional assertions as needed
     }
 
     @Test
