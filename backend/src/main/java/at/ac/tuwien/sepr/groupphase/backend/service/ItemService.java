@@ -3,7 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -19,9 +19,9 @@ public interface ItemService {
      *
      * @param id a valid ID
      * @return if the id exists in the DB, a persisted DigitalStorageItem with given ID, a not found exception otherwise
-     * @throws AuthenticationException if the user is not authenticated
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    DigitalStorageItem findById(Long id) throws AuthenticationException;
+    DigitalStorageItem findById(Long id) throws AuthorizationException;
 
     /**
      * Search for an item in the database where one field is matching.
@@ -44,28 +44,28 @@ public interface ItemService {
      *
      * @param item a storage without ID
      * @return an object of type {@link DigitalStorageItem} which is persisted and has an ID
-     * @throws AuthenticationException if the user is not authenticated
+     * @throws AuthorizationException if the user is not authorized to access a resource
      * @throws ValidationException if the item does not follow the validation given in the ItemDto
      * @throws ConflictException if AIS or storage does is not specified
      */
-    DigitalStorageItem create(ItemDto item) throws AuthenticationException, ValidationException, ConflictException;
+    DigitalStorageItem create(ItemDto item) throws AuthorizationException, ValidationException, ConflictException;
 
     /**
      * Validates and Updates a new {@link DigitalStorageItem} in the db.
      *
      * @param item a storage with existing ID
      * @return an object of type {@link DigitalStorageItem} which is updated
-     * @throws AuthenticationException if the user is not authenticated
+     * @throws AuthorizationException if the user is not authorized to access a resource
      * @throws ValidationException if the item does not follow the validation given in the ItemDto
      * @throws ConflictException if AIS or storage does is not specified
      */
-    DigitalStorageItem update(ItemDto item) throws AuthenticationException, ValidationException, ConflictException;
+    DigitalStorageItem update(ItemDto item) throws AuthorizationException, ValidationException, ConflictException;
 
     /**
      * Removes an {@link DigitalStorageItem} stored in the db.
      *
      * @param id an ID of a stored {@link DigitalStorageItem}
-     * @throws AuthenticationException if the user is not authenticated
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
     void delete(Long id) throws AuthenticationException;
 

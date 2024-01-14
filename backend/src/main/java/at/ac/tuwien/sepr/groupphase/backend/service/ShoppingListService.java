@@ -6,6 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -21,7 +22,7 @@ public interface ShoppingListService {
      * @return an object of type {@link ShoppingItem} which is persisted and has an ID
      * @throws AuthenticationException If authentication fails or the user does not exist
      */
-    ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException;
+    ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException, AuthorizationException;
 
     /**
      * Search for a shopping item in the database with given ID.
@@ -110,6 +111,7 @@ public interface ShoppingListService {
      * @throws ConflictException if there is a conflict with the persisted data
      * @throws ValidationException if the data in shoppingItemDto is not valid
      */
-    ShoppingItem update(ShoppingItemDto shoppingItemDto, String jwt) throws ConflictException, AuthenticationException, ValidationException;
+    ShoppingItem update(ShoppingItemDto shoppingItemDto, String jwt)
+        throws ConflictException, AuthenticationException, ValidationException, AuthorizationException;
 }
 

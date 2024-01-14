@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import jakarta.annotation.security.PermitAll;
@@ -21,7 +22,7 @@ public class RegisterEndpoint {
 
     @PermitAll
     @PostMapping
-    public String register(@RequestBody UserDetailDto userDetailDto) throws ValidationException {
+    public String register(@RequestBody UserDetailDto userDetailDto) throws ValidationException, ConflictException {
         return userService.register(userDetailDto);
     }
 }

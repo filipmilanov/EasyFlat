@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
@@ -12,12 +13,15 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.UserValidator;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class CustomUserDetailService implements UserService {
@@ -80,7 +85,7 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public String login(UserLoginDto userLoginDto) throws ValidationException {
+    public String login(UserLoginDto userLoginDto) throws ValidationException, ConflictException {
         userValidator.validateForLogIn(userLoginDto);
         UserDetails userDetails = loadUserByUsername(userLoginDto.getEmail());
         if (userDetails != null
@@ -95,16 +100,16 @@ public class CustomUserDetailService implements UserService {
                 .toList();
             return jwtTokenizer.getAuthToken(userDetails.getUsername(), roles);
         }
-        throw new BadCredentialsException("Username or password is incorrect or account is locked");
+        throw new ConflictException("Username or password is incorrect or account is locked");
     }
 
     @Override
-    public String register(UserDetailDto userDetailDto) throws ValidationException {
+    public String register(UserDetailDto userDetailDto) throws ValidationException, ConflictException {
         userValidator.validateForRegister(userDetailDto);
         LOGGER.debug("Registering a new user");
 
         if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
-            throw new BadCredentialsException("User with this email already exists");
+            throw new ConflictException("User with this email already exists");
         }
 
         ApplicationUser newUser = new ApplicationUser();
@@ -124,7 +129,7 @@ public class CustomUserDetailService implements UserService {
             return jwtTokenizer.getAuthToken(userDetails.getUsername(), roles);
         }
 
-        throw new BadCredentialsException("Failed to register the user");
+        throw new ConflictException("Failed to register the user");
     }
 
     @Override
@@ -134,7 +139,7 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public UserDetailDto update(UserDetailDto userDetailDto) throws ValidationException {
+    public UserDetailDto update(UserDetailDto userDetailDto) throws ValidationException, ConflictException {
         userValidator.validateForUpdate(userDetailDto);
         if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
             ApplicationUser user = userRepository.findUserByEmail(userDetailDto.getEmail());
@@ -148,7 +153,7 @@ public class CustomUserDetailService implements UserService {
             ApplicationUser returnUser = userRepository.save(user);
             return userMapper.entityToUserDetailDto(returnUser);
         }
-        throw new BadCredentialsException("User with this email doesn't exists");
+        throw new ConflictException("User with this email doesn't exists");
     }
 
     @Override
@@ -162,15 +167,15 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDetailDto signOut(String flatName, String authToken) {
         LOGGER.trace("signOut({}, {})", flatName, authToken);
-        String userEmail = jwtTokenizer.getEmailFromToken(authToken);
-        ApplicationUser user = userRepository.findUserByEmail(userEmail);
+        String email = jwtTokenizer.getEmailFromToken(authToken);
+        ApplicationUser user = userRepository.findUserByEmail(email);
         SharedFlat userFlat = user.getSharedFlat();
         if (userFlat == null) {
             throw new BadCredentialsException("");
         }
-
         if (userFlat.getName().equals(flatName)) {
             user.setSharedFlat(null);
             user.setAdmin(false);
@@ -183,6 +188,33 @@ public class CustomUserDetailService implements UserService {
         }
         throw new BadCredentialsException("");
 
+    }
+
+    @Override
+    public List<UserDetailDto> getAllOtherUsers(String authToken) {
+        LOGGER.trace("getAllOtherUsers()");
+        String email = jwtTokenizer.getEmailFromToken(authToken);
+        ApplicationUser user = userRepository.findUserByEmail(email);
+        Long userFlatId = user.getSharedFlat().getId();
+        List<ApplicationUser> users = userRepository.findAllByFlatId(userFlatId);
+        users.remove(user);
+        return userMapper.entityListToUserDetailDtoList(users);
+    }
+
+    @Override
+    public UserDetailDto setAdminToTheFlat(Long selectedUserId) {
+        LOGGER.trace("setAdminToTheFlat({})", selectedUserId);
+        if (selectedUserId == null) {
+            throw new BadCredentialsException("");
+        }
+        ApplicationUser user = userRepository.findApplicationUserById(selectedUserId);
+        if (user != null) {
+            user.setAdmin(true);
+            userRepository.save(user);
+        } else {
+            throw new NoSuchElementException("User with this id does not exist");
+        }
+        return userMapper.entityToUserDetailDto(user);
     }
 
 }

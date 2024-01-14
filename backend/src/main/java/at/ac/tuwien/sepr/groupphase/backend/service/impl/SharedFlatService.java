@@ -7,7 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -18,7 +18,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authorization.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.SharedFlatValidatorImpl;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -78,14 +78,13 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         this.authService = authService;
     }
 
-
-    public SharedFlat findById(Long id, String jwt) throws AuthenticationException {
+    public SharedFlat findById(Long id, String jwt) throws AuthorizationException {
         LOGGER.trace("findById({}, {})", id, jwt);
 
         Optional<SharedFlat> sharedFlatOptional = sharedFlatRepository.findById(id);
         SharedFlat sharedFlat = sharedFlatOptional.orElseThrow(() -> new NotFoundException("Shared flat not found"));
 
-        authorization.authenticateUser(
+        authorization.authorizeUser(
             sharedFlat.getUsers().stream().map(ApplicationUser::getId).toList(),
             "User does not have access to this shared flat"
         );
@@ -98,7 +97,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     public WgDetailDto create(SharedFlat sharedFlat) throws ConflictException, ValidationException {
         LOGGER.trace("create({})", sharedFlat);
         LOGGER.debug("Create a new shared flat");
-        validator.validateForCreate(sharedFlat);
+        //validator.validateForCreate(sharedFlat);
         SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(sharedFlat.getName());
         if (existingSharedFlat != null) {
             throw new ConflictException("A flat with this name already exists.");

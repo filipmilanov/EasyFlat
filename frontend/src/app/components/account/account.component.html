@@ -1,10 +1,3 @@
-<div *ngIf="error" class="alert alert-warning alert-dismissible fade show" role="alert">
-  <strong>Authentication problems!</strong> {{ errorMessage }}
-  <button type="button" (click)="vanishError()" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-
 <div class="pt-5">
   <div class="row">
     <div class="col-md-6 mx-auto">
@@ -47,20 +40,17 @@
                 <small class="form-text text-warning">Your email is required!</small>
               </div>
             </div>
-            <div class="form-group">
-              <label for="password">New password</label>
-              <input type="password" name="password" formControlName="password" class="form-control" id="password"
-                     placeholder="New password">
-              <div *ngIf="submitted && accountForm.controls.password.errors" class="error">
-                <small class="form-text text-warning" *ngIf="accountForm.controls.password.errors?.minlength">Your password
-                  must be at least 8 characters long!
-                </small>
-              </div>
-            </div>
-            <button style="margin-right: 10px;" type="submit" class="btn btn-success float-right">Save Changes</button>
-            <button style="margin-right: 10px;" type="button" (click)="delete()" class="btn btn-danger float-right">Delete Account</button>
+            <button style="margin-right: 10px; margin-top: 20px" type="submit" class="btn btn-success float-right">Save Changes</button>
+            <button style="margin-right: 10px; margin-top: 20px" type="button" data-bs-toggle="modal" [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModal(user)" class="btn btn-danger float-right">Delete Account</button>
           </form>
         </div>
+        <app-confirm-delete-dialog
+          [deleteInfo]="'account'"
+          [deleteName]="user.firstName"
+          [deleteId]="user.id.toString()"
+          (confirm)="delete()">
+        </app-confirm-delete-dialog>
+
       </div>
     </div>
   </div>
@@ -69,7 +59,7 @@
 <div *ngIf="user.flatName != null">
   <div class="row">
     <div class="col-md-6 mx-auto">
-      <span class="anchor" id="formRegister"></span>
+      <span class="anchor" id="flatForm"></span>
 
       <div class="card mt-3">
         <div class="card-header">
@@ -83,15 +73,56 @@
                 <label for="name">Flat name</label>
                 <input type="text"  name="name" formControlName="flatName" class="form-control" id="name" readonly>
               </div>
-              <div *ngIf="submitted && accountForm.get('name').errors?.required" class="error">
-                <small class="form-text text-warning">Your flat name is required!</small>
-              </div>
             </div>
-            <button style="margin-right: 10px;" type="button" (click)="signOut()" class="btn btn-danger float-right">Sign Out</button>
-            <button *ngIf="user.admin" style="margin-right: 10px;" type="button" (click)="deleteFlat()" class="btn btn-danger float-right">Delete Flat</button>
+            <button style="margin-right: 10px; margin-top: 20px" type="button" data-bs-toggle="modal"  data-bs-toggle="modal" [attr.data-bs-target]="'#sign-out-modal' + getIdFormatForDeleteModal(user)" class="btn btn-danger float-right">Sign Out</button>
+            <button *ngIf="user.admin" style="margin-right: 10px; margin-top: 20px" type="button" (click)="deleteFlat()" class="btn btn-danger float-right">Delete Flat</button>
           </form>
+          <app-sign-out-modal
+            [signOutInfo]="'from flat'"
+            [signOutName]="user.firstName"
+            [signOutId]="user.id.toString()"
+            (confirm)="openAdminSelectionModal()">
+          </app-sign-out-modal>
         </div>
       </div>
     </div>
   </div>
 </div>
+<br>
+<div class="row">
+  <div class="col-md-6 mx-auto">
+    <span class="anchor" id="passwordForm"></span>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h3 class="mb-0">Change password</h3>
+      </div>
+
+      <div class="card-body">
+        <form class="form" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+        <div>
+          <label for="newPassword">New password</label>
+          <input type="password" name="newPassword" formControlName="newPassword" class="form-control" id="newPassword"
+                 placeholder="New password">
+          <div *ngIf="submittedPassword && passwordForm.controls.newPassword.errors" class="error">
+            <small class="form-text text-warning" *ngIf="passwordForm.controls.newPassword.errors?.minlength">Your password
+              must be at least 8 characters long!
+            </small>
+          </div>
+          <label for="repeatPassword">Repeat new password</label>
+          <input type="password" name="repeatPassword" formControlName="repeatPassword" class="form-control" id="repeatPassword"
+                 placeholder="Repeat new password">
+          <div *ngIf="submittedPassword && passwordForm.controls.repeatPassword.errors" class="error">
+            <small class="form-text text-warning" *ngIf="passwordForm.controls.repeatPassword.errors?.minlength">Your password
+              must be at least 8 characters long!
+            </small>
+          </div>
+          <button style="margin-right: 10px; margin-top: 20px" type="submit" class="btn btn-success float-right">Save Password</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+

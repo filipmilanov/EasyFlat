@@ -119,11 +119,11 @@ export class ItemDetailListComponent implements OnInit {
     this.itemService.deleteItem(item.itemId).subscribe({
       next: () => {
         this.router.navigate(['/digital-storage/']);
-        this.notification.success(`Item ${item.generalName} was successfully deleted`, "Success");
+        this.notification.success(`Item ${item.productName} was successfully deleted`, "Success");
       },
       error: error => {
         console.error(`Item could not be deleted: ${error}`);
-        this.notification.error(`Item ${item.generalName} could not be deleted`, "Error");
+        this.notification.error(`Item ${item.productName} could not be deleted`, "Error");
       }
     });
   }
@@ -173,4 +173,8 @@ export class ItemDetailListComponent implements OnInit {
   }
 
   protected readonly QuantityChange = QuantityChange;
+
+  getIdFormatForDeleteModal(item:ItemDto): string {
+    return `${item.productName}${item.itemId.toString()}`.replace(/\s/g, '');
+  }
 }

@@ -11,8 +11,9 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
@@ -26,12 +27,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -70,18 +69,17 @@ class DigitalStorageServiceTest {
 
 
     @Test
-    void givenDigitalStorageIdWhenFindByIdThenDigitalStorageIsReturned() {
+    void givenDigitalStorageIdWhenFindByIdThenDigitalStorageIsReturned() throws AuthorizationException {
         // given
         Long id = 1L;
 
 
         // when
-        Optional<DigitalStorage> actual = service.findById(id);
+        DigitalStorage actual = service.findById(id);
 
         // then
         assertAll(
-            () -> assertTrue(actual.isPresent()),
-            () -> assertThat(actual.get().getStorageId()).isEqualTo(id)
+            () -> assertThat(actual.getStorageId()).isEqualTo(id)
         );
     }
 
@@ -90,15 +88,12 @@ class DigitalStorageServiceTest {
         // given
         Long id = -1L;
 
-        // when
-        Optional<DigitalStorage> actual = service.findById(id);
-
-        // then
-        assertTrue(actual.isEmpty());
+        // when + then
+        assertThrows(NotFoundException.class, () -> service.findById(id));
     }
 
     @Test
-    void givenNothingWhenFindAllThenAllDigitalStoragesOfActiveUserAreReturned() throws AuthenticationException {
+    void givenNothingWhenFindAllThenAllDigitalStoragesOfActiveUserAreReturned() throws AuthorizationException {
         // when
         List<DigitalStorage> actual = service.findAll(null);
 
@@ -129,11 +124,10 @@ class DigitalStorageServiceTest {
         DigitalStorage actual = service.create(digitalStorageDto);
 
         // then
-        Optional<DigitalStorage> persisted = service.findById(actual.getStorageId());
+        DigitalStorage persisted = service.findById(actual.getStorageId());
 
         assertAll(
-            () -> assertTrue(persisted.isPresent()),
-            () -> assertThat(actual).isEqualTo(persisted.get()),
+            () -> assertThat(actual).isEqualTo(persisted),
             () -> assertThat(actual.getTitle()).isEqualTo(digitalStorageDto.title())
         );
     }
@@ -161,7 +155,7 @@ class DigitalStorageServiceTest {
     }
 
     @Test
-    void givenValidSearchParamsWhenSearchItemsThenReturnList() throws ValidationException, AuthenticationException {
+    void givenValidSearchParamsWhenSearchItemsThenReturnList() throws ValidationException, AuthorizationException {
         // given
         ItemSearchDto searchParams = new ItemSearchDto(false, null, null, null);
         ItemListDto itemListDto = ItemListDtoBuilder.builder()

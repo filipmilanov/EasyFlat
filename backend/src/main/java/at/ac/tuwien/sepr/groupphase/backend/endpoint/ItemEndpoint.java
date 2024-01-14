@@ -3,7 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
@@ -43,7 +43,7 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("{itemId}")
-    public ItemDto findById(@PathVariable Long itemId) throws AuthenticationException {
+    public ItemDto findById(@PathVariable Long itemId) throws AuthorizationException {
         LOGGER.info("findById({})", itemId);
 
         return itemMapper.entityToDto(
@@ -82,7 +82,7 @@ public class ItemEndpoint {
     @Secured("ROLE_USER")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(@RequestBody ItemDto itemDto) throws ValidationException, ConflictException, AuthenticationException {
+    public ItemDto create(@RequestBody ItemDto itemDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.info("create({})", itemDto);
         return itemMapper.entityToDto(
             itemService.create(itemDto)
@@ -91,7 +91,7 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping("{id}")
-    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto) throws ValidationException, ConflictException, AuthenticationException {
+    public ItemDto update(@PathVariable long id, @RequestBody ItemDto itemDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.info("update({},{})", id, itemDto);
         return itemMapper.entityToDto(
             itemService.update(itemDto.withId(id))
@@ -101,7 +101,7 @@ public class ItemEndpoint {
     @Secured("ROLE_USER")
     @DeleteMapping("{itemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long itemId) throws AuthenticationException {
+    public void delete(@PathVariable Long itemId) throws AuthorizationException {
         LOGGER.info("delete({})", itemId);
         itemService.delete(itemId);
     }

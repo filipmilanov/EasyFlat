@@ -23,11 +23,15 @@ import {ItemDetailListComponent} from './components/digital-storage/item-detail-
 import {RegisterComponent} from './components/register/register.component';
 import {AccountComponent} from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
-import { CreateFlatComponent } from './components/create-flat/create-flat.component';
-import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
-import {ShoppingItemCreateEditComponent} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
+import {CreateFlatComponent} from './components/create-flat/create-flat.component';
+import {ShoppingListComponent} from './components/shopping-list/shopping-list.component';
+import {
+    ShoppingItemCreateEditComponent
+} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
 import {ColorPickerModule} from "ngx-color-picker";
-import { ShoppingListCreateComponent } from './components/shopping-list/shopping-list-create/shopping-list-create.component';
+import {
+    ShoppingListCreateComponent
+} from './components/shopping-list/shopping-list-create/shopping-list-create.component';
 import {CookingComponent} from './components/cooking/cooking.component';
 import {RecipeCardComponent} from './components/cooking/recipe-card/recipe-card.component';
 import {NgOptimizedImage} from "@angular/common";
@@ -40,52 +44,57 @@ import {CookbookModalComponent} from './components/cookbook/cookbook-modal/cookb
 import {CookingModalComponent} from './components/cooking/cooking-modal/cooking-modal.component';
 import {LOAD_WASM, NgxScannerQrcodeModule} from "ngx-scanner-qrcode";
 import {ConfirmDeleteDialogComponent} from "./components/utils/confirm-delete-dialog/confirm-delete-dialog.component";
-import { ShoppingListsComponent } from './components/shopping-list/shopping-lists/shopping-lists.component';
-import { ShoppingListCardComponent } from './components/shopping-list/shopping-list-card/shopping-list-card.component';
-import { MatchingModalComponent } from './components/cooking/matching-modal/matching-modal.component';
-import { MatchingModalCookbookComponent } from './components/cookbook/matching-modal-cookbook/matching-modal-cookbook.component';
-import {NgxSpinnerModule} from "ngx-spinner";
+import {ShoppingListsComponent} from './components/shopping-list/shopping-lists/shopping-lists.component';
+import {ShoppingListCardComponent} from './components/shopping-list/shopping-list-card/shopping-list-card.component';
+import {AdminSelectionModalComponent} from './components/admin-selection-modal/admin-selection-modal.component';
+import {SignOutModalComponent} from './components/utils/sign-out-modal/sign-out-modal.component';
+import {EventsComponent} from "./components/events/events.component";
+import {EventsCreateComponent} from "./components/events/events-create/events-create.component";
+import {EventCardComponent} from "./components/events/event-card/event-card.component";
 
 
 LOAD_WASM().subscribe();
 
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    FooterComponent,
-    HomeComponent,
-    LoginComponent,
-    MessageComponent,
-    DigitalStorageComponent,
-    ItemCardComponent,
-    ItemCreateEditComponent,
-    ItemDetailComponent,
-    AutocompleteComponent,
-    ItemDetailListComponent,
-    RegisterComponent,
-    AccountComponent,
-    LoginFlatComponent,
-    CreateFlatComponent,
-    ShoppingListComponent,
-    ShoppingItemCreateEditComponent,
-    ShoppingListCreateComponent,
-    CookingComponent,
-    RecipeCardComponent,
-    CookbookComponent,
-    CookbookCardComponent,
-    RecipeDetailComponent,
-    CookbookCreateComponent,
-    CookbookDetailComponent,
-    CookbookModalComponent,
-    CookingModalComponent,
-    ConfirmDeleteDialogComponent,
-    ShoppingListsComponent,
-    ShoppingListCardComponent,
-    MatchingModalComponent,
-    MatchingModalCookbookComponent
-  ],
+    declarations: [
+        AppComponent,
+        HeaderComponent,
+        FooterComponent,
+        HomeComponent,
+        LoginComponent,
+        MessageComponent,
+        DigitalStorageComponent,
+        ItemCardComponent,
+        ItemCreateEditComponent,
+        ItemDetailComponent,
+        AutocompleteComponent,
+        ItemDetailListComponent,
+        RegisterComponent,
+        AccountComponent,
+        LoginFlatComponent,
+        CreateFlatComponent,
+        ShoppingListComponent,
+        ShoppingItemCreateEditComponent,
+        ShoppingListCreateComponent,
+        CookingComponent,
+        RecipeCardComponent,
+        CookbookComponent,
+        CookbookCardComponent,
+        RecipeDetailComponent,
+        CookbookCreateComponent,
+        CookbookDetailComponent,
+        CookbookModalComponent,
+        CookingModalComponent,
+        ConfirmDeleteDialogComponent,
+        ShoppingListsComponent,
+        ShoppingListCardComponent,
+        AdminSelectionModalComponent,
+        SignOutModalComponent,
+        EventsComponent,
+        EventsCreateComponent,
+        EventCardComponent
+    ],
     imports: [
         BrowserModule,
         AppRoutingModule,
@@ -93,15 +102,18 @@ LOAD_WASM().subscribe();
         HttpClientModule,
         NgbModule,
         FormsModule,
-        ToastrModule.forRoot(),
+        ToastrModule.forRoot({
+            timeOut: 10000,
+            positionClass: 'toast-top-right',
+            preventDuplicates: true,
+        }),
         BrowserAnimationsModule,
         ColorPickerModule,
         NgOptimizedImage,
-        NgxScannerQrcodeModule,
-        NgxSpinnerModule
+        NgxScannerQrcodeModule
     ],
-  providers: [httpInterceptorProviders],
-  bootstrap: [AppComponent]
+    providers: [httpInterceptorProviders],
+    bootstrap: [AppComponent]
 })
 
 export class AppModule {

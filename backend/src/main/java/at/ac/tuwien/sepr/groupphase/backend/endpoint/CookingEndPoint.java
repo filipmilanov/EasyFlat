@@ -99,7 +99,7 @@ public class CookingEndPoint {
     @PermitAll
     @PostMapping("/shopping")
     public RecipeSuggestionDto addToShoppingList(@RequestBody RecipeSuggestionDto recipeToCook, @RequestHeader("Authorization") String jwt)
-        throws ValidationException, AuthenticationException, ConflictException {
+        throws ValidationException, AuthenticationException, ConflictException, AuthorizationException {
         return cookingService.addToShoppingList(recipeToCook, jwt);
     }
 

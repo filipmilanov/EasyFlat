@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 //TODO: replace this class with a correct ApplicationUser JPARepository implementation
 @Repository
 public interface UserRepository extends JpaRepository<ApplicationUser, Long> {
@@ -23,4 +25,7 @@ public interface UserRepository extends JpaRepository<ApplicationUser, Long> {
     boolean existsBySharedFlat(SharedFlat flat);
 
     ApplicationUser findApplicationUserById(long id);
+
+    @Query("SELECT u FROM application_user u WHERE u.sharedFlat.id = :flatId")
+    List<ApplicationUser> findAllByFlatId(@Param("flatId") Long flatId);
 }

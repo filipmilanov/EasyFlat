@@ -17,8 +17,9 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
@@ -26,7 +27,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authorization.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.DigitalStorageValidator;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -80,23 +81,32 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public Optional<DigitalStorage> findById(Long id) {
+    public DigitalStorage findById(Long id) throws AuthorizationException {
         LOGGER.trace("findById({})", id);
+
         if (id == null) {
-            return Optional.empty();
+            throw new NotFoundException("No storage ID given!");
         }
 
-        return digitalStorageRepository.findById(id);
+        Optional<DigitalStorage> digitalStorage = digitalStorageRepository.findById(id);
+
+        if (digitalStorage.isEmpty()) {
+            throw new NotFoundException("The given item ID could not be found in the database!");
+        }
+
+        List<Long> allowedUsers = digitalStorage.get().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
+        authorization.authorizeUser(
+            allowedUsers
+        );
+
+        return digitalStorage.get();
     }
 
     @Override
-    public List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto) throws AuthenticationException {
+    public List<DigitalStorage> findAll(DigitalStorageSearchDto digitalStorageSearchDto) throws AuthorizationException {
         LOGGER.trace("findAll({})", digitalStorageSearchDto);
 
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exists"));
-        }
 
         return digitalStorageRepository.findByTitleContainingAndSharedFlatIs(
             (digitalStorageSearchDto != null && digitalStorageSearchDto.title() != null)
@@ -107,13 +117,10 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<ItemListDto> searchItems(ItemSearchDto searchItem) throws ValidationException, AuthenticationException {
+    public List<ItemListDto> searchItems(ItemSearchDto searchItem) throws AuthorizationException, ValidationException {
         LOGGER.trace("searchItems({})", searchItem);
 
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
 
         digitalStorageValidator.validateForSearchItems(searchItem);
 
@@ -160,25 +167,15 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }).toList();
     }
 
+    /**
+     * The create method is only used for creating storages used in digital storage tests.
+     */
     @Transactional
     @Override
-    public DigitalStorage create(DigitalStorageDto storageDto) throws ConflictException, ValidationException, AuthenticationException {
+    public DigitalStorage create(DigitalStorageDto storageDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.trace("create({})", storageDto);
 
-        ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-
         digitalStorageValidator.validateForCreate(storageDto);
-
-        List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
-            .map(ApplicationUser::getId)
-            .toList();
-        authorization.authenticateUser(
-            allowedUsers,
-            "The given cookbook does not belong to the user's shared flat!"
-        );
 
         DigitalStorage storage = digitalStorageMapper.dtoToEntity(storageDto);
 
@@ -187,13 +184,11 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Transactional
     @Override
-    public ShoppingItem addItemToShopping(ItemDto itemDto) throws AuthenticationException {
+    public ShoppingItem addItemToShopping(ItemDto itemDto) throws AuthorizationException {
         LOGGER.trace("addItemToShopping({})", itemDto);
 
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
+
         ShoppingList shoppingList = shoppingListRepository.findByNameAndSharedFlatIs("Default", applicationUser.getSharedFlat());
         ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto,
             ingredientMapper.dtoListToEntityList(itemDto.ingredients()),
@@ -231,6 +226,4 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         }
         return toRet;
     }
-
-
 }

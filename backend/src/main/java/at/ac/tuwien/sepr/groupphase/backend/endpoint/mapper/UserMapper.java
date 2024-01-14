@@ -6,6 +6,8 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper
 public abstract class UserMapper {
     public abstract UserLoginDto entityToUserLoginDto(ApplicationUser applicationUser);
@@ -13,5 +15,8 @@ public abstract class UserMapper {
     @Mapping(source = "applicationUser.sharedFlat.name", target = "flatName")
     @Mapping(source = "applicationUser.id", target = "id")
     public abstract UserDetailDto entityToUserDetailDto(ApplicationUser applicationUser);
+
+
+    public abstract List<UserDetailDto> entityListToUserDetailDtoList(List<ApplicationUser> users);
 
 }
