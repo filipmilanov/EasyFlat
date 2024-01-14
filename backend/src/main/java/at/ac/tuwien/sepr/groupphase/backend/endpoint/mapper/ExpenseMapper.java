@@ -17,6 +17,9 @@ public abstract class ExpenseMapper {
     @Mapping(target = "debitUsers", source = "expense")
     public abstract ExpenseDto entityToExpenseDto(Expense expense);
 
+    @Mapping(target = "debitUsers", source = "expense")
+    public abstract List<ExpenseDto> entityListToExpenseDtoList(List<Expense> expense);
+
     @Mapping(target = "splitBy", source = "expenseDto.debitUsers")
     @Mapping(target = "debitUsers", expression = "java( debits )")
     @Mapping(target = "periodInDays", expression = "java( setPeriodOfDaysToCorrectPredefinedRepeatingInterval(expenseDto) )")
