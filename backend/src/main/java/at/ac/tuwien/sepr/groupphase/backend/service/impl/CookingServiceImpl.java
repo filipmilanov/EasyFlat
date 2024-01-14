@@ -544,6 +544,8 @@ public class CookingServiceImpl implements CookingService {
         }
         if (recipeSuggestionDto != null) {
             List<RecipeIngredientDto> missingIngredients = new LinkedList<>();
+            List<RecipeIngredientDto> matched = this.getMatchedIngredients(recipeSuggestionDto.extendedIngredients());
+            recipeSuggestionDto = recipeSuggestionDto.withExtendedIngredients(matched);
             for (RecipeIngredientDto ingredient : recipeSuggestionDto.extendedIngredients()) {
                 List<DigitalStorageItem> items = itemRepository.findAllByDigitalStorage_StorageId(digitalStorageOfUser.getStorageId());
                 if (items.isEmpty()) {
