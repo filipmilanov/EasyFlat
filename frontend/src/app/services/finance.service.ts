@@ -1,8 +1,10 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
-import {HttpClient} from "@angular/common/http";
-import {BalanceDebitDto, ExpenseDto, UserValuePairDto} from "../dtos/expenseDto";
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {BalanceDebitDto, ExpenseDto, ExpenseSearchDto, UserValuePairDto} from "../dtos/expenseDto";
 import {Observable} from "rxjs";
+import {formatDate} from "@angular/common";
+import {tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +54,27 @@ export class FinanceService {
     return this.http.get<ExpenseDto>(this.baseUri + '/' + id);
   }
 
-  findAll(): Observable<ExpenseDto[]> {
-    return this.http.get<ExpenseDto[]>(this.baseUri);
+  findAll(searchParams: ExpenseSearchDto): Observable<ExpenseDto[]> {
+    if (searchParams.title === '') {
+      delete searchParams.title;
+    }
+    let params = new HttpParams();
+    if (searchParams.title) {
+      params = params.append('title', searchParams.title);
+    }
+    if (searchParams.paidBy) {
+      params = params.append('paidById', searchParams.paidBy.id);
+    }
+    if (searchParams.amountInEuro) {
+      params = params.append('amountInCents', searchParams.amountInEuro * 100);
+    }
+    if (searchParams.createdAt) {
+      params = params.append('createdAt', formatDate(searchParams.createdAt, 'dd-MM-yyyy', 'en-US'));
+    }
+
+    return this.http.get<ExpenseDto[]>(this.baseUri, {params})
+      .pipe(tap(expenses => expenses.map(e => {
+        e.createdAt = new Date(e.createdAt); // Parse date string
+      })));
   }
 }
