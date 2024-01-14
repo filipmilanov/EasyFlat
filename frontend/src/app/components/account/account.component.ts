@@ -177,6 +177,7 @@ export class AccountComponent implements OnInit {
       next: () => {
         console.log('User signed out from flat: ' + this.user.flatName);
         this.router.navigate(['']);
+        this.sharedFlatService.changeEventToFalse();
       },
       error: error => {
         console.log('Could not sign out due to:');
