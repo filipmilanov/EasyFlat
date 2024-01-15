@@ -108,10 +108,7 @@ export class ShoppingListService {
 
   deleteList(shopId: string): Observable<ShoppingListDto> {
     console.log('Delete list with ID ');
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
-    return this.http.delete<ShoppingListDto>(this.baseUri + '/delete/' + shopId, {headers});
+    return this.http.delete<ShoppingListDto>(this.baseUri + '/delete/' + shopId);
   }
 
   /**

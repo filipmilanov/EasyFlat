@@ -42,7 +42,7 @@ export class ShoppingListComponent implements OnInit {
   ngOnInit(): void {
     this.shoppingListService.getShoppingLists('').subscribe({
       next: res => {
-          this.shoppingLists = res;
+        this.shoppingLists = res;
         this.route.params.subscribe({
           next: params => {
             this.shopId = params.id;
@@ -90,11 +90,12 @@ export class ShoppingListComponent implements OnInit {
     if (confirm("Are you sure you want to delete this item?")) {
       this.shoppingListService.deleteItem(itemId).subscribe({
         next: (deletedItem: ShoppingItemDto) => {
-          console.log(deletedItem.generalName, ' was deleted form the list');
+          this.notification.success(deletedItem.productName + "was successfully deleted", "Success");
           this.ngOnInit();
         },
         error: error => {
           console.error(error.message, error);
+          this.notification.error("Item was not deleted", error);
         }
       });
     }
@@ -102,13 +103,15 @@ export class ShoppingListComponent implements OnInit {
 
   deleteList() {
     if (confirm("Are you sure you want to delete this list?")) {
+      console.log(this.shopId)
       this.shoppingListService.deleteList(this.shopId).subscribe({
         next: (deletedList: ShoppingListDto) => {
-          console.log(deletedList.name, ' was deleted successfully');
           this.router.navigate(['shopping-lists']);
+          this.notification.success(deletedList.name + "was successfully deleted from the list", "Success");
         },
         error: error => {
           console.error(error.message, error);
+          this.notification.error("List was not deleted");
         }
       });
     }
@@ -128,7 +131,7 @@ export class ShoppingListComponent implements OnInit {
     const checkedItems = this.checkedItems.slice();
 
     if (checkedItems.length === 0) {
-      this.notification.error('No items are checked for deletion.');
+      this.notification.info('Please, mark the items you want to delete');
       return;
     }
 
@@ -137,14 +140,14 @@ export class ShoppingListComponent implements OnInit {
         this.shoppingListService.deleteItem(item.itemId).subscribe({
           next: (deletedItem: ShoppingItemDto) => {
             console.log(deletedItem.generalName, ' was deleted from the list');
-
+            this.notification.success(deletedItem.productName + "was successfully deleted from the list", "Success");
             this.items = this.items.filter(listItem => listItem.itemId !== deletedItem.itemId);
-
             this.checkedItems = this.getCheckedItems();
             console.log('Checked Items:', this.checkedItems);
           },
           error: error => {
             console.error(error.message, error);
+            this.notification.error("Items wasn't deleted successfully", error);
           }
         });
       });
@@ -172,6 +175,9 @@ export class ShoppingListComponent implements OnInit {
         next: data => {
           this.notification.success(`Items successfully added to the storage.`);
           this.router.navigate([`/digital-storage`])
+        },
+        error: err => {
+          this.notification.error('Items were not added to the storage', err )
         }
       }
     );

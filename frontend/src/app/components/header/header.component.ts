@@ -40,27 +40,6 @@ export class HeaderComponent implements OnInit {
     this.authService.logoutUser();
   }
 
-  navigateTo(route: string) {
-    switch (route) {
-      case 'allChores':
-        this.router.navigate(['/allChores']);
-        break;
-      case 'myChores':
-        this.router.navigate(['/myChores']);
-        break;
-      case 'chorePreference':
-        this.router.navigate(['/chorePreference']);
-        break;
-      case 'newChore':
-        this.router.navigate(['/newChore']);
-        break;
-      default:
-        this.router.navigate(['']);
-        break;
-    }
-  }
-
-
   navigateToAllChores() {
     this.router.navigate(['/chores/all']);
   }

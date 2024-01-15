@@ -47,8 +47,7 @@ export class NewChoreComponent {
         this.router.navigate(['/chores', 'all']);
       },
       error: error => {
-        console.error(`Error item was not created`);
-        this.notification.error("Validation error")
+        this.notification.error("Chore was not created")
       }
     });
   }

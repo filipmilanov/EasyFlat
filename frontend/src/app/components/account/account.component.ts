@@ -114,6 +114,7 @@ export class AccountComponent implements OnInit {
         console.log('User signed out from flat: ' + this.user.flatName);
         this.sharedFlatService.changeEventToFalse();
         this.router.navigate(['']);
+        this.notification.success("You have successfully signed out" , "Success");
       },
       error: error => {
         console.log('Could not register due to:');
@@ -124,6 +125,7 @@ export class AccountComponent implements OnInit {
         } else {
           this.errorMessage = error.error;
         }
+        this.notification.error("You have not signed out due to: ", error);
       }
     });
   }
@@ -134,9 +136,11 @@ export class AccountComponent implements OnInit {
         next: (deletedFlat: SharedFlat) => {
           console.log('Shared flat deleted from user :', deletedFlat);
           this.router.navigate(['']);
+          this.notification.success("Flat" + deletedFlat + "is successfully deleted.", "Success");
         },
         error: error => {
           console.error(error.message, error);
+          this.notification.error("Flat is not deleted due to: ", error);
         }
       });
     }

@@ -53,7 +53,7 @@ export class AllChoreComponent {
             },
             error: err => {
                 console.error("Error fetching chores with users")
-                this.notification.error("Error loading chores")
+                this.notification.error("Error assigning chores")
             }
         });
     }

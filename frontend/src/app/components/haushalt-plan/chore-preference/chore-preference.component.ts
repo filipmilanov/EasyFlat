@@ -80,7 +80,7 @@ export class ChorePreferenceComponent implements OnInit {
         },
         error: error => {
           console.error(`Error preferences were not changed`);
-          this.notification.error("Validation error");
+          this.notification.error("Preferences were not changed");
         }
       });
     }

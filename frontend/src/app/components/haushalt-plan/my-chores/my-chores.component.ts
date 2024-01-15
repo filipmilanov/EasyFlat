@@ -31,7 +31,6 @@ export class MyChoresComponent {
 
     modalRef.result.then((result) => {
       if (result) {
-        console.log('User confirmed to repeat the chore:', result);
         for (let i = 0; i < this.completedChores.length; i++) {
           this.choreService.repeatChore(this.completedChores[i], result.date).subscribe({
             next: (repetedChore ) => {
@@ -46,7 +45,6 @@ export class MyChoresComponent {
           });
         }
       } else {
-        console.log('User chose not to repeat the chore');
         this.deleteCompletedChores();
       }
     });
