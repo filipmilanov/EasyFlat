@@ -399,6 +399,9 @@ public class ChoreServiceImpl implements ChoreService {
             Chore changeChore = toChange.get();
             changeChore.setUser(null);
             changeChore.setEndDate(newDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            ApplicationUser user = authService.getUserFromToken();
+            user.setPoints(user.getPoints() + changeChore.getPoints());
+            userRepository.save(user);
             choreRepository.save(changeChore);
             return choreMapper.entityToChoreDto(changeChore);
         } else {

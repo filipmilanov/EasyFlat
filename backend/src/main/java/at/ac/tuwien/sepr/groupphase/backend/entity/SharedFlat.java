@@ -32,7 +32,6 @@ public class SharedFlat {
     private DigitalStorage digitalStorage;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sharedFlat")
-
     private List<ShoppingList> shoppingLists;
     @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
     private Cookbook cookbook;

@@ -31,7 +31,7 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
      * @return The found ShoppingList if it exists for the given name and SharedFlat.
      */
     @Query("SELECT sl FROM ShoppingList sl WHERE sl.id = :shopId AND sl.sharedFlat = :sharedFlat")
-    ShoppingList findByIdAndSharedFlatIs(Long shopId, SharedFlat sharedFlat);
+    ShoppingList findByIdAndSharedFlatIs(@Param("shopId") Long shopId, @Param("sharedFlat") SharedFlat sharedFlat);
 
     /**
      * Retrieves a ShoppingList by name and its associated SharedFlat.
@@ -65,7 +65,8 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
      *
      * @param listId The ID of the ShoppingList to be deleted.
      */
-    @Modifying
     @Query("DELETE FROM ShoppingList sl WHERE sl.id = :listId")
     void deleteByListId(@Param("listId") Long listId);
+
+
 }

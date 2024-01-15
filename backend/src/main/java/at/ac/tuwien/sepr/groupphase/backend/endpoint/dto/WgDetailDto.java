@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
@@ -8,10 +9,10 @@ public class WgDetailDto {
 
     private Long id;
 
-    @NotNull(message = "Name must not be null")
+    @NotEmpty(message = "Name must not be empty")
     private String name;
 
-    @NotNull(message = "Password must not be null")
+    @NotEmpty(message = "Password must not be empty")
     private String password;
 
     public Long getId() {
