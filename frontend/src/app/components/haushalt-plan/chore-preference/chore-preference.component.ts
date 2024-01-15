@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {ChoresDto, ChoreSearchDto} from "../../../dtos/chores";
 import {Observable} from "rxjs";
@@ -28,6 +28,7 @@ export class ChorePreferenceComponent implements OnInit {
     fourth: null
   };
   chores: ChoresDto[] = [];
+  filteredChores: any[][] = [];
 
   oldPreference: Preference = {
     id: null,
@@ -50,6 +51,11 @@ export class ChorePreferenceComponent implements OnInit {
     private choreService: ChoreService,
   ) {
   }
+
+  filterChores(choreList: any[], selectedChores: any[]): any[] {
+    return choreList.filter(chore => !selectedChores.includes(chore));
+  }
+
 
   public onSubmit(form: NgForm): void {
     console.log('is form valid?', form.valid, this.preference);
@@ -101,6 +107,11 @@ export class ChorePreferenceComponent implements OnInit {
         this.choreService.getUnassignedChores().subscribe({
           next: (chores: any[]) => {
             this.chores = chores;
+            // Initialize filteredChores array based on all chores
+            this.filteredChores[0] = this.chores;
+            this.filteredChores[1] = this.chores.slice(); // Create a copy to avoid modifying the original array
+            this.filteredChores[2] = this.chores.slice();
+            this.filteredChores[3] = this.chores.slice();
             console.log('chores', this.chores)
           },
           error: (error: any) => {
@@ -114,6 +125,7 @@ export class ChorePreferenceComponent implements OnInit {
         this.choreService.getUnassignedChores().subscribe({
           next: (chores: any[]) => {
             this.chores = chores;
+
           },
           error: (choreError: any) => {
             console.error('Error fetching chores:', choreError);

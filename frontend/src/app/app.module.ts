@@ -58,6 +58,9 @@ import {
 } from "./components/haushalt-plan/my-chores/chore-confirmation-modal/chore-confirmation-modal.component";
 
 
+
+
+
 LOAD_WASM().subscribe();
 
 
@@ -118,7 +121,8 @@ LOAD_WASM().subscribe();
     NgOptimizedImage,
     NgxScannerQrcodeModule,
     MatListModule,
-    MatCardModule
+    MatCardModule,
+
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
