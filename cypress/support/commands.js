@@ -17,7 +17,7 @@ Cypress.Commands.add('login', (email, password) => {
 Cypress.Commands.add('resetDb', () => {
     // Your logic to reset the database goes here
     // For example, you can make API calls or interact with your backend to reset the database.
-    // This is just a placeholder.
+
     cy.log('Resetting the database...');
 });
 

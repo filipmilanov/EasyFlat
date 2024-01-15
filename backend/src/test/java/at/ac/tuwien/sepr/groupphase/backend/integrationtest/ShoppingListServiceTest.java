@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 public class ShoppingListServiceTest implements TestData {
 
-    @Autowired
+    @InjectMocks
     private ShoppingListServiceImpl shoppingListService; // Replace with the actual service class name
 
     @Mock
@@ -93,12 +94,6 @@ public class ShoppingListServiceTest implements TestData {
 
     @Mock
     private Logger logger;
-
-    @Mock
-    private ItemMapper itemMapper;
-
-    @Mock
-    private ShoppingListMapper shoppingListMapper;
 
     @Test
     @Disabled

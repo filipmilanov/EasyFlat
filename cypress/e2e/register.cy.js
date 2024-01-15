@@ -1,6 +1,6 @@
 describe('register/login page', () => {
     it('when launch application should be able to register or log in', () => {
-        cy.visit()
+        cy.visit('/')
         cy.get('[data-cy="not-logged-in-register"]')
         cy.get('[data-cy="not-logged-in-login"]')
     })

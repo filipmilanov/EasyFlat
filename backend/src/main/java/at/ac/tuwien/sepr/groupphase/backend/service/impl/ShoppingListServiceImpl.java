@@ -100,7 +100,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         ShoppingItem si = itemMapper.dtoToShopping(itemDto, labels);
 
-        return shoppingItemRepository.save(itemMapper.dtoToShopping(itemDto, labels));
+        return shoppingItemRepository.save(si);
     }
 
     @Override

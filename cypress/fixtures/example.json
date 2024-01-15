@@ -1,7 +1,7 @@
 {
   "user": {
     "firstName": "Marin",
-    "secondName": "Stanev",
+    "lastName": "Stanev",
     "validEmail": "user@email.com",
     "invalidEmail": "useremail.com",
     "password": "password"
