@@ -108,8 +108,6 @@ public class ShoppingListServiceTest implements TestData {
         when(unitService.findAll()).thenReturn(Collections.emptyList());
 
         // Use doCallRealMethod() to allow the real implementation to be called
-        when(itemMapper.dtoToShopping(any(), anyList())).thenReturn(new ShoppingItem().setShoppingList(new ShoppingList().setId(1L)));
-        ItemMapper itemMapperSpy = spy(ItemMapper.class);
 
         doNothing().when(shoppingItemValidator).validateForCreate(
             eq(validShoppingItemDto),

@@ -277,6 +277,7 @@ public class ChoreServiceImpl implements ChoreService {
     @Override
     public List<Chore> deleteChores(List<Long> choreIds) {
         LOGGER.trace("deleteChores({})", choreIds);
+
         List<Chore> toDelete = choreRepository.findAllById(choreIds);
         if (toDelete.size() != choreIds.size()) {
             throw new NotFoundException("The given chores do not exist in the persistent data");
@@ -406,6 +407,29 @@ public class ChoreServiceImpl implements ChoreService {
             return choreMapper.entityToChoreDto(changeChore);
         } else {
             throw new NotFoundException("Chore to repeat is not found");
+        }
+    }
+
+    @Override
+    public List<Chore> getUnassignedChores() {
+        LOGGER.trace("getUnassignedChores()");
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        return choreRepository.searchBySharedFlatAndUserIs(applicationUser.getSharedFlat(), null);
+    }
+
+    @Override
+    public void deleteAllUserPreference() {
+        ApplicationUser user = authService.getUserFromToken();
+        List<ApplicationUser> users = userRepository.findAllBySharedFlat(user.getSharedFlat());
+        for (int i = 0; i < users.size(); i++) {
+            users.get(i).setPreference(null);
+            userRepository.save(users.get(i));
+        }
+        List<Preference> preferences = preferenceRepository.findAllByUserSharedFlatIs(user.getSharedFlat());
+        for (int i = 0; i < preferences.size(); i++) {
+            preferences.get(i).setUserId(null);
+            preferenceRepository.save(preferences.get(i));
+            preferenceRepository.deleteById(preferences.get(i).getId());
         }
     }
 

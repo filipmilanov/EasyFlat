@@ -71,10 +71,20 @@ public class ChoresEndpoint {
         return choreMapper.entityListToDtoList(lists);
     }
 
+    @PermitAll
+    @GetMapping("/unassigned")
+    public List<ChoreDto> getUnassignedChores() {
+        LOGGER.trace("getUnassignedChores()");
+        List<Chore> chores = choreService.getUnassignedChores();
+        return choreMapper.entityListToDtoList(chores);
+    }
+
     @PutMapping
     public List<ChoreDto> assignChores() throws AuthenticationException {
         LOGGER.trace("assignChores()");
-        return this.choreService.assignChores();
+        List<ChoreDto> ret = this.choreService.assignChores();
+        this.choreService.deleteAllUserPreference();
+        return ret;
     }
 
     @GetMapping("/user")

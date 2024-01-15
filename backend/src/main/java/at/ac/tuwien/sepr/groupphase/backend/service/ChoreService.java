@@ -31,4 +31,8 @@ public interface ChoreService {
     byte[] generatePdf() throws IOException, AuthenticationException;
 
     ChoreDto repeatChore(Long choreId, Date newDate);
+
+    List<Chore> getUnassignedChores();
+
+    void deleteAllUserPreference();
 }

@@ -21,6 +21,10 @@ export class ChoreService {
     return this.httpClient.post<ChoresDto>(this.choreBaseUri, chore);
   }
 
+  getUnassignedChores() {
+    return this.httpClient.get<ChoresDto[]>(this.choreBaseUri + '/unassigned');
+  }
+
   getChores(searchParams: ChoreSearchDto): Observable<ChoresDto[]> {
     let params = new HttpParams();
     if (searchParams.userName) {

@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,20 +25,15 @@ public class Preference {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Chore firstId;
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Chore secondId;
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Chore thirdId;
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Chore fourthId;
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     private ApplicationUser user;
 
     public Long getId() {

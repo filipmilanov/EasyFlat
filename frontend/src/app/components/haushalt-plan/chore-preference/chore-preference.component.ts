@@ -98,7 +98,7 @@ export class ChorePreferenceComponent implements OnInit {
         }
 
         // Rest of your code...
-        this.choreService.getChores(this.searchParams).subscribe({
+        this.choreService.getUnassignedChores().subscribe({
           next: (chores: any[]) => {
             this.chores = chores;
             console.log('chores', this.chores)
@@ -111,7 +111,7 @@ export class ChorePreferenceComponent implements OnInit {
       error: (error: any) => {
         console.error('Error fetching last preference:', error);
 
-        this.choreService.getChores(this.searchParams).subscribe({
+        this.choreService.getUnassignedChores().subscribe({
           next: (chores: any[]) => {
             this.chores = chores;
           },

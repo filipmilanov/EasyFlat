@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.repository;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
+import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -37,4 +38,6 @@ public interface ChoreRepository extends JpaRepository<Chore, Long> {
         + "AND (:userName IS NULL OR LOWER(CONCAT(c.user.firstName, ' ', c.user.lastName)) LIKE LOWER(CONCAT('%', :userName, '%'))) "
         + "AND (:endDate IS NULL OR c.endDate >= :endDate)")
     List<Chore> searchChores(@Param("userName") String userName, @Param("endDate") LocalDate endDate, @Param("id") Long id);
+
+    List<Chore> searchBySharedFlatAndUserIs(SharedFlat sharedFlat, ApplicationUser o);
 }
