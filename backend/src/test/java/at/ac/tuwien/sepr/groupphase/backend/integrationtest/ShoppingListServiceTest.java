@@ -14,6 +14,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
@@ -97,7 +98,7 @@ public class ShoppingListServiceTest implements TestData {
 
     @Test
     @Disabled
-    public void testCreate() throws AuthenticationException, ValidationException, ConflictException {
+    public void testCreate() throws AuthenticationException, ValidationException, ConflictException, AuthorizationException {
 
         String jwt = "mockedJWT";
 

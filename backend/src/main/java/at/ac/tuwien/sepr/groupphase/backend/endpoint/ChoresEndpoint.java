@@ -111,7 +111,7 @@ public class ChoresEndpoint {
         LOGGER.error("Error: getting users");
         List<ApplicationUser> users = choreService.getUsers();
 
-        return userMapper.entityListToDtoList(users);
+        return userMapper.entityListToUserDetailDtoList(users);
     }
 
     @PatchMapping("/{userId}")

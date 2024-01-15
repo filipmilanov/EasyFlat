@@ -184,12 +184,15 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
 
     @Transactional
     @Override
-    public ShoppingItem addItemToShopping(ItemDto itemDto) throws AuthorizationException {
+    public ShoppingItem addItemToShopping(ItemDto itemDto) {
         LOGGER.trace("addItemToShopping({})", itemDto);
 
         ApplicationUser applicationUser = authService.getUserFromToken();
 
-        ShoppingList shoppingList = shoppingListRepository.findByNameAndSharedFlatIs("Default", applicationUser.getSharedFlat());
+        ShoppingList shoppingList = shoppingListRepository.findByNameAndSharedFlatIs("Shopping List (Default)", applicationUser.getSharedFlat());
+        if (shoppingList == null) {
+            throw new NotFoundException("Shopping List not found!");
+        }
         ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto,
             ingredientMapper.dtoListToEntityList(itemDto.ingredients()),
             shoppingList

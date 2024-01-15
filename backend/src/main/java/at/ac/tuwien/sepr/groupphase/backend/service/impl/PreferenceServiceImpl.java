@@ -11,7 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.PreferenceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.PreferenceService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.authenticator.Authorization;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.authorization.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

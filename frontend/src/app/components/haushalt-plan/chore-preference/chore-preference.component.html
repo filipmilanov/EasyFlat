@@ -11,7 +11,7 @@
           <div class="form-elements">
             <div class="col-md-2 col-lg-2 mt-2">
               <select style="width: 250px" class="form-select form-select-md" name="selectedChore" [(ngModel)]="preference.first" >
-                <option *ngFor="let chore of chores" [ngValue]="chore">{{ chore.name }}</option>
+                <option *ngFor="let chore of filterChores(chores, [preference.second, preference.third, preference.fourth])" [ngValue]="chore">{{ chore.name }}</option>
                 <option [ngValue]="null">No Chore</option>
               </select>
             </div>
@@ -24,7 +24,7 @@
           <div class="form-elements">
             <div class="col-md-2 col-lg-2 mt-2">
               <select style="width: 250px" class="form-select form-select-md" name="selectedShoppingList" [(ngModel)]="preference.second" >
-                <option *ngFor="let chore of filterChores(chores, [preference.first])" [ngValue]="chore">{{ chore.name }}</option>
+                <option *ngFor="let chore of filterChores(chores, [preference.first, preference.third, preference.fourth])" [ngValue]="chore">{{ chore.name }}</option>
                 <option [ngValue]="null">No Chore</option>
               </select>
             </div>
@@ -37,7 +37,7 @@
           <div class="form-elements">
             <div class="col-md-2 col-lg-2 mt-2">
               <select style="width: 250px" class="form-select form-select-md" name="selectedShoppingList" [(ngModel)]="preference.third"  >
-                <option *ngFor="let chore of filterChores(chores, [preference.first, preference.second])" [ngValue]="chore">{{ chore.name }}</option>
+                <option *ngFor="let chore of filterChores(chores, [preference.first, preference.second, preference.fourth])" [ngValue]="chore">{{ chore.name }}</option>
                 <option [ngValue]="null">No Chore</option>
               </select>
             </div>
@@ -56,11 +56,6 @@
             </div>
           </div>
         </div>
-
-        <button type="submit" class="btn btn-primary p-2" style="margin: 10px;" [disabled]="!form.valid">Save</button>
-
-
-
         <button type="submit" class="btn btn-primary p-2" style="margin: 10px;" [disabled]="!form.valid">Save</button>
       </form>
     </div>

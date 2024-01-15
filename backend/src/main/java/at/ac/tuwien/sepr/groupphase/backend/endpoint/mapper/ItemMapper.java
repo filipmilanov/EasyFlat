@@ -64,7 +64,6 @@ public abstract class ItemMapper {
     @Mapping(target = "minimumQuantity", expression = "java( digitalStorageItem.getMinimumQuantity() )")
     public abstract ItemDto entityToDto(DigitalStorageItem digitalStorageItem);
 
-    @Mapping(target = "alwaysIsStock", expression = "java( itemDto.alwaysInStock() )")
     @Mapping(target = "labels", expression = "java( labels )")
     @Mapping(target = "itemCache.ean", source = "ean")
     @Mapping(target = "itemCache.generalName", source = "generalName")

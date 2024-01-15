@@ -90,7 +90,7 @@ export class ShoppingListComponent implements OnInit {
     if (confirm("Are you sure you want to delete this item?")) {
       this.shoppingListService.deleteItem(itemId).subscribe({
         next: (deletedItem: ShoppingItemDto) => {
-          this.notification.success(deletedItem.productName + "was successfully deleted", "Success");
+          this.notification.success(deletedItem.productName + " was successfully deleted", "Success");
           this.ngOnInit();
         },
         error: error => {
@@ -140,7 +140,7 @@ export class ShoppingListComponent implements OnInit {
         this.shoppingListService.deleteItem(item.itemId).subscribe({
           next: (deletedItem: ShoppingItemDto) => {
             console.log(deletedItem.generalName, ' was deleted from the list');
-            this.notification.success(deletedItem.productName + "was successfully deleted from the list", "Success");
+            this.notification.success(deletedItem.productName + " was successfully deleted from the list", "Success");
             this.items = this.items.filter(listItem => listItem.itemId !== deletedItem.itemId);
             this.checkedItems = this.getCheckedItems();
             console.log('Checked Items:', this.checkedItems);

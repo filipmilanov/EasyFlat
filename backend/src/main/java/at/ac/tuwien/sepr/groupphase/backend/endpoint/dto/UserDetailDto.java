@@ -26,7 +26,6 @@ public class UserDetailDto {
 
     private boolean admin;
 
-    public Long getId() {
     private Integer points;
 
     public Integer getPoints() {

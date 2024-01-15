@@ -144,9 +144,9 @@ export class ShoppingItemCreateEditComponent implements OnInit {
 
     if (form.valid) {
       let observable: Observable<ShoppingItemDto>;
+      this.item.quantityCurrent = this.item.quantityTotal;
       switch (this.mode) {
         case ItemCreateEditMode.create:
-          this.item.quantityCurrent = this.item.quantityTotal;
           if (this.item.generalName == null) {
             this.item.generalName = this.item.productName;
           }
