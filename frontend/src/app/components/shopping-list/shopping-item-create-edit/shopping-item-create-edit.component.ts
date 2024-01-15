@@ -15,6 +15,10 @@ import {UnitService} from "../../../services/unit.service";
 import {ShoppingListDto} from "../../../dtos/shoppingList";
 import {DomSanitizer} from "@angular/platform-browser";
 
+export enum ShoppingItemCreateEditMode {
+  create,
+  edit,
+}
 
 @Component({
   selector: 'app-item-create-edit',
@@ -30,6 +34,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   }
   selectedLabelColor = '#ffffff';
   availableUnits: Unit[] = [];
+  unitName: string;
 
   constructor(
     private shoppingService: ShoppingListService,
@@ -114,7 +119,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
           this.shoppingService.getById(itemId).subscribe({
             next: res => {
               this.item = res;
-              this.item.unit = res.unit;
+              this.unitName = res.unit.name;
               console.log(this.item.unit)
             },
             error: error => {
@@ -142,7 +147,9 @@ export class ShoppingItemCreateEditComponent implements OnInit {
       switch (this.mode) {
         case ItemCreateEditMode.create:
           this.item.quantityCurrent = this.item.quantityTotal;
-          this.item.generalName = this.item.productName;
+          if (this.item.generalName == null) {
+            this.item.generalName = this.item.productName;
+          }
           observable = this.shoppingService.createItem(this.item);
           break;
         case ItemCreateEditMode.edit:
@@ -195,4 +202,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
     return unit ? unit.name : '';
   }
 
+  public compareUnitObjects(itemUnit: Unit, availableUnit: Unit): boolean {
+    return itemUnit && availableUnit ? itemUnit.name === availableUnit.name : itemUnit === availableUnit;
+  }
 }

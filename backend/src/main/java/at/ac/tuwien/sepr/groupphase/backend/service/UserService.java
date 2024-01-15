@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 
+import java.util.Map;
+
 public interface UserService extends UserDetailsService {
 
     /**

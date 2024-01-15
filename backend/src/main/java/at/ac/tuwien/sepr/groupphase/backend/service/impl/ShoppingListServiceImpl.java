@@ -33,6 +33,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListV
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -94,7 +95,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         List<ItemLabel> labels = findLabelsAndCreateMissing(itemDto.labels());
 
-        return shoppingItemRepository.save(itemMapper.dtoToShopping(itemDto, labels, shoppingListMapper.dtoToEntity(itemDto.shoppingList())));
+        ShoppingItem si = itemMapper.dtoToShopping(itemDto, labels);
+
+        return shoppingItemRepository.save(si);
     }
 
     @Override
@@ -140,7 +143,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (id == null) {
             return Optional.empty();
         }
-        return shoppingListRepository.getByShopListIdAndSharedFlatIs(id, applicationUser.getSharedFlat());
+        return shoppingListRepository.getByIdAndSharedFlatIs(id, applicationUser.getSharedFlat());
     }
 
     @Override
@@ -191,10 +194,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
+        // Input validation
+        if (itemId == null || itemId <= 0) {
+            throw new IllegalArgumentException("Invalid itemId");
+        }
         Optional<ShoppingItem> toDeleteOptional = shoppingItemRepository.findById(itemId);
-
         if (toDeleteOptional.isPresent()) {
             ShoppingItem toDelete = toDeleteOptional.get();
+            // Enhanced authorization
             if (!toDelete.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
                 throw new AuthenticationException("Authentication wrong", List.of("User can not delete this item"));
             }
@@ -207,27 +214,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     @Transactional
-    @Secured("ROLE_USER")
-    public ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException {
+    public ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException, AuthorizationException {
         LOGGER.trace("deleteList({})", shopId);
+        //Authentication(check the correct user)
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
         List<ShoppingItem> items = shoppingItemRepository.findByShoppingListId(shopId);
         shoppingItemRepository.deleteAll(items);
-        Optional<ShoppingList> toDeleteOptional = shoppingListRepository.findById(shopId);
-        if (toDeleteOptional.isPresent()) {
-            ShoppingList toDelete = toDeleteOptional.get();
-
-            if (toDelete.getName().equals("Shopping List (Default)")) {
-                throw new ValidationException("Default list can not be deleted!", null);
-            }
-            shoppingListRepository.deleteByListId(shopId);
-            return toDelete;
-        } else {
-            throw new NoSuchElementException("Shopping list with this id does not exist!");
+        //Authorization(check if the user can work with this object)
+        ShoppingList check = shoppingListRepository.findByIdAndSharedFlatIs(shopId, applicationUser.getSharedFlat());
+        if (check == null) {
+            throw new AuthorizationException("Authorization failed", List.of("User has no access to this shopping list!"));
         }
+
+        shoppingListRepository.deleteById(check.getId());
+        return check;
     }
 
     @Override
@@ -237,7 +237,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        return shoppingListRepository.findAllByNameContainingIgnoreCaseAndSharedFlatIs(name != null ? name : "", applicationUser.getSharedFlat());
+        List<ShoppingList> ret = shoppingListRepository.findAllByNameContainingIgnoreCaseAndSharedFlatIs(name != null ? name : "", applicationUser.getSharedFlat());
+        for (ShoppingList shoppingList : ret) {
+            shoppingList.setItems(this.getItemsById(shoppingList.getId(), new ShoppingItemSearchDto(null, null, null), jwt));
+        }
+        return ret;
     }
 
     @Override
@@ -248,7 +252,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage", applicationUser.getSharedFlat());
+        List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage " + applicationUser.getSharedFlat().getName(), applicationUser.getSharedFlat());
         List<DigitalStorageItem> itemsList = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
             DigitalStorageItem item;
@@ -280,8 +284,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
-        ShoppingItem item = itemMapper.dtoToShopping(itemDto, labels,
-            shoppingListMapper.dtoToEntity(itemDto.shoppingList()));
+        ShoppingItem item = itemMapper.dtoToShopping(itemDto, labels);
         item.getItemCache().setIngredientList(ingredientList);
         item.setLabels(labels);
         return shoppingItemRepository.save(item);

@@ -1,0 +1,13 @@
+<div class="modal-header">
+  <h5 class="modal-title">Chore Confirmation</h5>
+  <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+  <p>Do you want to repeat that chore?</p>
+  <label for="repeatDate">Select a date:</label>
+  <input type="date" id="repeatDate" [(ngModel)]="repeatDate" class="form-control">
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="closeModal()">No</button>
+  <button type="button" class="btn btn-primary" (click)="confirmRepeat()">Yes</button>
+</div>

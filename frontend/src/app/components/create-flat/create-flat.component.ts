@@ -4,6 +4,7 @@ import {SharedFlatService} from "../../services/sharedFlat.service";
 import {Router} from "@angular/router";
 import {SharedFlat} from "../../dtos/sharedFlat";
 import {AuthService} from "../../services/auth.service";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-create-flat',
@@ -17,7 +18,7 @@ export class CreateFlatComponent implements OnInit{
   errorMessage = '';
 
 
-  constructor(private formBuilder: UntypedFormBuilder, private sharedFlatService: SharedFlatService,private authService: AuthService, private router: Router) {
+  constructor(private formBuilder: UntypedFormBuilder, private notification: ToastrService, private sharedFlatService: SharedFlatService,private authService: AuthService, private router: Router) {
     this.createForm = this.formBuilder.group({
       name: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8)]]
@@ -31,18 +32,17 @@ export class CreateFlatComponent implements OnInit{
       console.log(sharedFlat);
       this.sharedFlatService.createWG(sharedFlat, this.authService.getToken()).subscribe({
         next: () => {
-          console.log('Successfully created shared flat: ' + sharedFlat.name);
           this.router.navigate(['/account']);
+          this.notification.success('Successfully created shared flat: ' + sharedFlat.name, "Success");
         },
         error: error => {
-          console.log('Could not register due to:');
-          console.log(error);
           this.error = true;
           if (typeof error.error === 'object') {
             this.errorMessage = error.error.error;
           } else {
             this.errorMessage = error.error;
           }
+          this.notification.error("Could not create a shared flat due to: ", error);
         }
       });
     } else {

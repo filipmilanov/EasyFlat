@@ -13,6 +13,9 @@ import java.util.Set;
 @Entity
 public class Unit {
 
+    public Unit() {
+    }
+
     @Id
     private String name;
 

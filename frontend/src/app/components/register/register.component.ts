@@ -30,7 +30,7 @@ export class RegisterComponent implements OnInit{
     this.submitted = true;
     if (this.registerForm.valid) {
       if(this.registerForm.controls.password.value == this.registerForm.controls.password2.value) {
-        const userDetail: UserDetail = new UserDetail(null,this.registerForm.controls.firstName.value,this.registerForm.controls.lastName.value,  this.registerForm.controls.email.value,null, this.registerForm.controls.password.value,null);
+        const userDetail: UserDetail = new UserDetail(null,this.registerForm.controls.firstName.value,this.registerForm.controls.lastName.value,  this.registerForm.controls.email.value,null, this.registerForm.controls.password.value,null, 0);
         console.log(userDetail)
         this.authService.registerUser(userDetail).subscribe({
           next: () => {

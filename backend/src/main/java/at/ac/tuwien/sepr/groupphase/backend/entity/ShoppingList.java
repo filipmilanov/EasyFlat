@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,32 +20,34 @@ public class ShoppingList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long shopListId;
+    private Long id;
 
     @Column
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<ShoppingItem> items;
 
     @ManyToOne
     private SharedFlat sharedFlat;
 
 
-    public Long getShopListId() {
-        return shopListId;
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setShopListId(Long shopListId) {
-        this.shopListId = shopListId;
+    public ShoppingList setId(Long shopListId) {
+        this.id = shopListId;
+        return this;
     }
 
-    public void setName(String name) {
+    public ShoppingList setName(String name) {
         this.name = name;
+        return this;
     }
 
     public List<ShoppingItem> getItems() {

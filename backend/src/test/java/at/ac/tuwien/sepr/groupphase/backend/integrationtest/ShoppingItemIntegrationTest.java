@@ -10,10 +10,14 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +44,8 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -82,8 +88,35 @@ public class ShoppingItemIntegrationTest implements TestData  {
     private ShoppingListMapper shoppingListMapper;
 
     private final String baseUri = "/api/v1/shopping";
-    private final ShoppingListDto shoppingListDto = new ShoppingListDto(1L, "Default");
+    private final ShoppingListDto shoppingListDto = new ShoppingListDto(1L, "Default", new ArrayList<>());
     private final ApplicationUser testUser = new ApplicationUser(null, "", "", "user@email.com", "password", Boolean.FALSE, null);
+
+    private ShoppingListService shoppingListServiceMock;
+
+    @Test
+    @BeforeEach
+    public void createShoppingItem_then200() throws ValidationException, AuthenticationException, ConflictException {
+        ShoppingItemDto validShoppingItemDto = new ShoppingItemDto(
+            null,
+            "1234567890123",
+            "pear",
+            "pear1",
+            "lidl",
+            10.0,
+            20.0,
+            g,
+            "Description",
+            500L,
+            true,
+            5.0,
+            "Store",
+            new DigitalStorageDto(1L, "Storage", null),
+            null,
+            null,
+            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
+            new ShoppingListDto(1L, "Default", new ArrayList<>()));
+
+    }
 
     private void createValidUserAndValidShoppingList() throws Exception {
         userRepository.save(testUser);
@@ -152,7 +185,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
     @BeforeEach
     public void testUpdateValidShoppingItem_then200() throws Exception {
         createValidUserAndValidShoppingList();
-        ShoppingItem saved = shoppingItemRepository.save(itemMapper.dtoToShopping(validShoppingItemDto, null, null));
+        ShoppingItem saved = shoppingItemRepository.save(itemMapper.dtoToShopping(validShoppingItemDto, null));
         ShoppingItemDto updated = new ShoppingItemDto(
             saved.getItemId(),
             "1234567890123",
@@ -171,7 +204,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
             null,
             null,
             new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
-            new ShoppingListDto(1L, "Default"));
+            new ShoppingListDto(1L, "Default", new ArrayList<>()));
         MvcResult mvcResult = mockMvc.perform(put(this.baseUri + "/" + updated.itemId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updated))
@@ -191,7 +224,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
     @BeforeEach
     public void updateInvalidShoppingItem_then409() throws Exception {
         createValidUserAndValidShoppingList();
-        ShoppingItem saved = shoppingItemRepository.save(itemMapper.dtoToShopping(validShoppingItemDto, null, null));
+        ShoppingItem saved = shoppingItemRepository.save(itemMapper.dtoToShopping(validShoppingItemDto, null));
         ShoppingItemDto updated = new ShoppingItemDto(
             saved.getItemId(),
             "1234567890123",
@@ -210,7 +243,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
             null,
             null,
             new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
-            new ShoppingListDto(1L, "Default"));
+            new ShoppingListDto(1L, "Default", new ArrayList<>()));
         MvcResult mvcResult = mockMvc.perform(put(this.baseUri + "/" + updated.itemId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updated))

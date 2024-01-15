@@ -14,6 +14,7 @@ export class UserDetail {
     public email: string,
     public flatName: string,
     public password: string,
-    public admin: boolean
+    public admin: boolean,
+    public points: number
   ) {}
 }

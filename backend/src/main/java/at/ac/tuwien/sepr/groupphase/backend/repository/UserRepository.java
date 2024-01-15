@@ -28,4 +28,6 @@ public interface UserRepository extends JpaRepository<ApplicationUser, Long> {
 
     @Query("SELECT u FROM application_user u WHERE u.sharedFlat.id = :flatId")
     List<ApplicationUser> findAllByFlatId(@Param("flatId") Long flatId);
+
+    List<ApplicationUser> findAllBySharedFlat(SharedFlat sharedFlat);
 }

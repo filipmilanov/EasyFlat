@@ -17,10 +17,10 @@ import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
 import {CreateFlatComponent} from "./components/create-flat/create-flat.component";
 import {ShoppingListComponent} from "./components/shopping-list/shopping-list.component";
 import {
-    ShoppingItemCreateEditComponent
+  ShoppingItemCreateEditComponent, ShoppingItemCreateEditMode
 } from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
 import {
-    ShoppingListCreateComponent
+  ShoppingListCreateComponent
 } from "./components/shopping-list/shopping-list-create/shopping-list-create.component";
 import {CookingComponent} from "./components/cooking/cooking.component";
 import {CookbookComponent} from "./components/cookbook/cookbook.component";
@@ -37,14 +37,20 @@ import {
 import {FinanceComponent} from "./components/finance/finance.component";
 import {ExpenseDetailComponent} from "./components/finance/expense-detail/expense-detail.component";
 import {ExpenseOverviewComponent} from "./components/finance/expense-overview/expense-overview.component";
+import {HaushaltPlanComponent} from "./components/haushalt-plan/haushalt-plan.component";
+import {ChorePreferenceComponent} from "./components/haushalt-plan/chore-preference/chore-preference.component";
+import {AllChoreComponent} from "./components/haushalt-plan/all-chore/all-chore.component";
+import {MyChoresComponent} from "./components/haushalt-plan/my-chores/my-chores.component";
+import {NewChoreComponent} from "./components/haushalt-plan/new-chore/new-chore.component";
+import {LeaderboardComponent} from "./components/haushalt-plan/leaderboard/leaderboard.component";
 
 const routes: Routes = [
-    {path: '', component: HomeComponent},
-    {path: 'login', component: LoginComponent},
-    {
-        path: 'digital-storage', children: [
-            {path: '', component: DigitalStorageComponent},
-            {path: ':name', component: ItemDetailListComponent }
+  {path: '', component: HomeComponent},
+  {path: 'login', component: LoginComponent},
+  {
+    path: 'digital-storage', children: [
+      {path: '', component: DigitalStorageComponent},
+      {path: ':name', component: ItemDetailListComponent }
   ]},
   { path: 'item', children: [
       { path: 'create', component: ItemCreateEditComponent, data: { mode: ItemCreateEditMode.create } },
@@ -66,8 +72,8 @@ const routes: Routes = [
           {path: '', component: ShoppingListComponent},
           {
             path: 'item', children: [
-              {path: 'create', component: ShoppingItemCreateEditComponent, data: {mode: ItemCreateEditMode.create}},
-              {path: ':id/edit', component: ShoppingItemCreateEditComponent, data: {mode: ItemCreateEditMode.edit}},
+              {path: 'create', component: ShoppingItemCreateEditComponent, data: {mode: ShoppingItemCreateEditMode.create}},
+              {path: ':id/edit', component: ShoppingItemCreateEditComponent, data: {mode: ShoppingItemCreateEditMode.edit}},
             ]
           },
         ]
@@ -75,6 +81,14 @@ const routes: Routes = [
     ]
   },
   {path: 'register', component: RegisterComponent},
+  {path: 'chores', children: [
+      {path: '', component: HaushaltPlanComponent},
+      {path: 'preference', component: ChorePreferenceComponent},
+      {path: 'all', component: AllChoreComponent},
+      {path: 'my', component: MyChoresComponent},
+      {path: 'add', component: NewChoreComponent},
+      {path: 'leaderboard', component: LeaderboardComponent},
+    ]},
   {path: 'account', component: AccountComponent},
   {path: 'wgLogin', component: LoginFlatComponent},
   {path: 'wgCreate', component: CreateFlatComponent},
@@ -116,8 +130,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes, {useHash: true})],
-    exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes, {useHash: true})],
+  exports: [RouterModule]
 })
 
 export class AppRoutingModule {

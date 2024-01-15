@@ -1,0 +1,14 @@
+<div class="card">
+    <div [class.completed-chore]="completed">
+        <div class = "card-header">
+            <h5 class="card-title">{{ choreName }}</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text" *ngIf="description">Description: {{ description }}</p>
+            <p class="card-text">Deadline: {{ endDate | date }}</p>
+        </div>
+        <div class="card-footer">
+            <p class="card-text">Points: {{ points }}</p>
+        </div>
+    </div>
+</div>

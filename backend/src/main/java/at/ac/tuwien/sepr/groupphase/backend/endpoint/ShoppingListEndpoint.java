@@ -130,7 +130,7 @@ public class ShoppingListEndpoint {
 
     @PermitAll
     @DeleteMapping("/delete/{shopId}")
-    public ShoppingListDto deleteList(@PathVariable Long shopId) throws ValidationException, AuthenticationException {
+    public ShoppingListDto deleteList(@PathVariable Long shopId) throws ValidationException, AuthenticationException, AuthorizationException {
         LOGGER.info("deleteList({})", shopId);
         ShoppingList deletedList = shoppingService.deleteList(shopId);
         return shoppingListMapper.entityToDto(deletedList);

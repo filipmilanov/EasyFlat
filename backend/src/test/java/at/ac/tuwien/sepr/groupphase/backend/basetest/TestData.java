@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,23 +48,23 @@ public interface TestData {
 
     ShoppingItemDto validShoppingItemDto = new ShoppingItemDto(
         null,
-        "1234567890123",
+        null,
         "pear",
         "pear1",
-        "lidl",
+        null,
         10.0,
         20.0,
         g,
-        "Description",
-        500L,
-        true,
-        5.0,
-        "Store",
+        null,
+        null,
+        false,
+        null,
+        null,
         new DigitalStorageDto(1L, "Storage", null),
         null,
         null,
-        new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
-        new ShoppingListDto(1L, "Default"));
+        null, // Labels
+        new ShoppingListDto(1L, "Default", new ArrayList<>()));
 
     ShoppingItemDto invalidShoppingItemDto = new ShoppingItemDto(
         null,
@@ -84,4 +85,7 @@ public interface TestData {
         null,
         null,
         null);
+
+    ApplicationUser testUser = new ApplicationUser(null, "", "", "user@email.com", "password", Boolean.FALSE, null);
+
 }

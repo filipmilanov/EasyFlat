@@ -83,7 +83,7 @@ public interface ShoppingListService {
      * @param shopId a valid ID of a ShoppingList
      * @return the deleted ShoppingList
      */
-    ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException;
+    ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException, AuthorizationException;
 
     /**
      * Get all ShoppingLists from the db filtered by search parameters.

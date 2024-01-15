@@ -1,11 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import jakarta.validation.constraints.NotEmpty;
+
+import java.util.List;
 
 public record ShoppingListDto(
     Long id,
-    String name
+    @NotEmpty(message = "The name cannot be empty")String name,
+    List<ShoppingItemDto> items
 
 ) {
 

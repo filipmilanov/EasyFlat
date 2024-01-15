@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.UserValidator;
@@ -118,6 +119,7 @@ public class CustomUserDetailService implements UserService {
         newUser.setEmail(userDetailDto.getEmail());
         newUser.setPassword(passwordEncoder.encode(userDetailDto.getPassword()));
         newUser.setAdmin(false);
+        newUser.setPoints(0);
         userRepository.save(newUser);
 
         UserDetails userDetails = loadUserByUsername(userDetailDto.getEmail());
@@ -147,6 +149,7 @@ public class CustomUserDetailService implements UserService {
             user.setLastName(userDetailDto.getLastName());
             user.setEmail(userDetailDto.getEmail());
             user.setSharedFlat(user.getSharedFlat());
+            user.setPoints(user.getPoints());
             if (userDetailDto.getPassword().length() >= 8) {
                 user.setPassword(passwordEncoder.encode(userDetailDto.getPassword()));
             }
@@ -170,8 +173,8 @@ public class CustomUserDetailService implements UserService {
     @Transactional
     public UserDetailDto signOut(String flatName, String authToken) {
         LOGGER.trace("signOut({}, {})", flatName, authToken);
-        String email = jwtTokenizer.getEmailFromToken(authToken);
-        ApplicationUser user = userRepository.findUserByEmail(email);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ApplicationUser user = findApplicationUserByEmail((String) authentication.getPrincipal());
         SharedFlat userFlat = user.getSharedFlat();
         if (userFlat == null) {
             throw new BadCredentialsException("");

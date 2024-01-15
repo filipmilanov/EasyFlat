@@ -29,15 +29,11 @@ import {ItemDetailListComponent} from './components/digital-storage/item-detail-
 import {RegisterComponent} from './components/register/register.component';
 import {AccountComponent} from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
-
-import {ShoppingListComponent} from './components/shopping-list/shopping-list.component';
-import {
-    ShoppingItemCreateEditComponent
-} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
+import { CreateFlatComponent } from './components/create-flat/create-flat.component';
+import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
+import {ShoppingItemCreateEditComponent} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
 import {ColorPickerModule} from "ngx-color-picker";
-import {
-    ShoppingListCreateComponent
-} from './components/shopping-list/shopping-list-create/shopping-list-create.component';
+import { ShoppingListCreateComponent } from './components/shopping-list/shopping-list-create/shopping-list-create.component';
 import {CookingComponent} from './components/cooking/cooking.component';
 import {RecipeCardComponent} from './components/cooking/recipe-card/recipe-card.component';
 import {JsonPipe, NgOptimizedImage} from "@angular/common";
@@ -61,17 +57,30 @@ import {MatchingModalComponent} from "./components/cooking/matching-modal/matchi
 import {
     MatchingModalCookbookComponent
 } from "./components/cookbook/matching-modal-cookbook/matching-modal-cookbook.component";
-
-import {CreateFlatComponent} from './components/create-flat/create-flat.component';
 import {FinanceComponent} from './components/finance/finance.component';
 import {ExpenseCreateEditComponent} from './components/finance/expense-create-edit/expense-create-edit.component';
 import {
   RadioButtonsComponentComponent
 } from './components/utils/radio-buttons-component/radio-buttons-component.component';
 import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expense/show-user-for-expense.component';
+import { HaushaltPlanComponent } from './components/haushalt-plan/haushalt-plan.component';
+import { ChorePreferenceComponent } from './components/haushalt-plan/chore-preference/chore-preference.component';
+import { AllChoreComponent } from './components/haushalt-plan/all-chore/all-chore.component';
+import { MyChoresComponent } from './components/haushalt-plan/my-chores/my-chores.component';
+import { NewChoreComponent } from './components/haushalt-plan/new-chore/new-chore.component';
+import { ChoreCardComponent } from './components/haushalt-plan/chore-card/chore-card.component';
+import { LeaderboardComponent } from './components/haushalt-plan/leaderboard/leaderboard.component';
+import { MatListModule } from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
+import { ChorePreferenceCardComponent } from './components/haushalt-plan/chore-preference-card/chore-preference-card.component';
+import { MyChoreCardComponent } from './components/haushalt-plan/my-chore-card/my-chore-card.component';
+import {
+  ChoreConfirmationModalComponent
+} from "./components/haushalt-plan/my-chores/chore-confirmation-modal/chore-confirmation-modal.component";
+
+
+
 import {UserDropdownComponent} from './components/utils/user-dropdown/user-dropdown.component';
-
-
 import {DebitsComponent} from './components/finance/debits/debits.component';
 import {ConfirmPayedPackComponent} from './components/utils/confirm-payed-pack/confirm-payed-pack.component';
 import {BarchartVerticalComponent} from './components/finance/graphs/barchart-nagative/barchart-vertical.component';
@@ -81,6 +90,7 @@ import {ExpenseDetailComponent} from './components/finance/expense-detail/expens
 import { ExpenseOverviewComponent } from './components/finance/expense-overview/expense-overview.component';
 
 LOAD_WASM().subscribe();
+
 
 @NgModule({
     declarations: [
@@ -133,7 +143,17 @@ LOAD_WASM().subscribe();
         RadarComponent,
         ExpenseDetailComponent,
         ConfirmDeleteDialogComponent,
-        ExpenseOverviewComponent
+        ExpenseOverviewComponent,
+        HaushaltPlanComponent,
+        ChorePreferenceComponent,
+        AllChoreComponent,
+        MyChoresComponent,
+        NewChoreComponent,
+        ChoreCardComponent,
+        LeaderboardComponent,
+        ChorePreferenceCardComponent,
+        MyChoreCardComponent,
+        ChoreConfirmationModalComponent,
     ],
     imports: [
         BrowserModule,
@@ -161,7 +181,9 @@ LOAD_WASM().subscribe();
         NgbDatepickerModule,
         NgbTimepickerModule,
         NgbAlertModule,
-        JsonPipe
+        JsonPipe,
+        MatListModule,
+        MatCardModule,
       ],
     providers: [
       httpInterceptorProviders,

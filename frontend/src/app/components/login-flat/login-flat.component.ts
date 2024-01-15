@@ -6,6 +6,7 @@ import {SharedFlat} from "../../dtos/sharedFlat";
 import {UserDetail} from "../../dtos/auth-request";
 import {AuthService} from "../../services/auth.service";
 import {getTokenAtPosition} from "@angular/compiler-cli/src/ngtsc/util/src/typescript";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-login-flat',
@@ -20,7 +21,7 @@ export class LoginFlatComponent implements OnInit{
   errorMessage = '';
 
 
-  constructor(private formBuilder: UntypedFormBuilder, private sharedFlatService: SharedFlatService,private authService: AuthService, private router: Router) {
+  constructor(private formBuilder: UntypedFormBuilder, private sharedFlatService: SharedFlatService,private authService: AuthService, private notification: ToastrService, private router: Router) {
     this.loginForm = this.formBuilder.group({
       flatName: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8)]]
@@ -37,7 +38,8 @@ export class LoginFlatComponent implements OnInit{
       this.sharedFlatService.loginWG(sharedFlat, this.authService.getToken()).subscribe(
         () => {
           console.log('You have successfully logged in!');
-          this.router.navigate(['/account']); // Navigate on successful login
+          this.router.navigate(['/account']);
+          this.notification.success("You have successfully logged in shared flat: " + sharedFlat.name , "Success");
         },
         (error) => {
           console.log('Could not log in due to:');
@@ -45,13 +47,14 @@ export class LoginFlatComponent implements OnInit{
           this.error = true;
           if (error) {
             this.errorMessage = 'Invalid credentials. Could not log in.';
-            // Navigate to /wgLogin
             this.router.navigate(['/wgLogin']);
+            this.notification.error("", this.errorMessage);
           }
         }
       );
     } else {
       console.log('Invalid input');
+      this.notification.error("Invalid input");
     }
   }
 

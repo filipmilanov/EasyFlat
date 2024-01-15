@@ -9,6 +9,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.OneToMany;
 
 import java.util.ArrayList;
@@ -30,7 +33,6 @@ public class ApplicationUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column
     private String firstName;
     @Column
@@ -49,7 +51,10 @@ public class ApplicationUser implements UserDetails {
     private List<Debit> debits = new ArrayList<>();
     @Enumerated(EnumType.STRING)
     private Role role;
-
+    @Column
+    private Integer points;
+    @OneToOne
+    private Preference preference;
 
     public ApplicationUser() {
     }
@@ -86,6 +91,15 @@ public class ApplicationUser implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+
+    public Integer getPoints() {
+        return points;
+    }
+
+    public void setPoints(Integer points) {
+        this.points = points;
     }
 
     @Override
@@ -147,6 +161,14 @@ public class ApplicationUser implements UserDetails {
 
     public SharedFlat getSharedFlat() {
         return sharedFlat;
+    }
+
+    public Preference getPreference() {
+        return preference;
+    }
+
+    public void setPreference(Preference preference) {
+        this.preference = preference;
     }
 
     public void setId(Long id) {

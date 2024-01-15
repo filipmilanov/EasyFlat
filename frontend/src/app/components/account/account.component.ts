@@ -7,6 +7,7 @@ import {Router} from "@angular/router";
 import {SharedFlat} from "../../dtos/sharedFlat";
 import {SharedFlatService} from "../../services/sharedFlat.service";
 import {ToastrService} from "ngx-toastr";
+import {ShoppingListService} from "../../services/shopping-list.service";
 import {NgbModal, NgbModalOptions} from '@ng-bootstrap/ng-bootstrap';
 import {AdminSelectionModalComponent} from '../admin-selection-modal/admin-selection-modal.component';
 import {LocalNgModuleData} from "@angular/compiler-cli/src/ngtsc/scope";
@@ -27,7 +28,8 @@ export class AccountComponent implements OnInit {
     email: '',
     flatName: '',
     password: '',
-    admin: false
+    admin: false,
+    points: 0
   };
   accountForm: FormGroup;
   passwordForm: FormGroup;
@@ -38,7 +40,7 @@ export class AccountComponent implements OnInit {
 
   users: UserDetail[];
 
-  constructor(private modalService: NgbModal, private formBuilder: FormBuilder, private authService: AuthService, private sharedFlatService: SharedFlatService, private router: Router, private notification: ToastrService) {
+  constructor(private modalService: NgbModal, private formBuilder: FormBuilder, private shoppingListService: ShoppingListService, private authService: AuthService, private sharedFlatService: SharedFlatService, private router: Router, private notification: ToastrService) {
     this.accountForm = this.formBuilder.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
@@ -141,7 +143,7 @@ export class AccountComponent implements OnInit {
     console.log(this.accountForm.valid)
 
     if (this.accountForm.valid) {
-      const userDetail: UserDetail = new UserDetail(this.user.id, this.accountForm.controls.firstName.value, this.accountForm.controls.lastName.value, this.accountForm.controls.email.value, null, this.accountForm.controls.password.value, this.accountForm.controls.admin.value);
+      const userDetail: UserDetail = new UserDetail(this.user.id,this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,  this.accountForm.controls.email.value, null , this.accountForm.controls.password.value,this.accountForm.controls.admin.value, this.user.points);
       console.log(userDetail)
       this.authService.update(userDetail).subscribe({
         next: () => {
@@ -190,6 +192,7 @@ export class AccountComponent implements OnInit {
       next: () => {
         console.log('User signed out from flat: ' + this.user.flatName);
         this.router.navigate(['']);
+        this.notification.success("You have successfully signed out" , "Success");
         this.sharedFlatService.changeEventToFalse();
       },
       error: error => {
@@ -205,16 +208,17 @@ export class AccountComponent implements OnInit {
     });
   }
 
-
   deleteFlat() {
     if (confirm("Are you sure you want to delete the shared flat?")) {
       this.sharedFlatService.delete(this.user).subscribe({
         next: (deletedFlat: SharedFlat) => {
           console.log('Shared flat deleted from user :', deletedFlat);
           this.router.navigate(['']);
+          this.notification.success("Flat" + deletedFlat + "is successfully deleted.", "Success");
         },
         error: error => {
           console.error(error.message, error);
+          this.notification.error("Flat is not deleted due to: ", error);
         }
       });
     }
