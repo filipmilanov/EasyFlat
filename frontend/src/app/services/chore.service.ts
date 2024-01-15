@@ -61,4 +61,13 @@ export class ChoreService {
   generateChoreListPDF() {
     return this.httpClient.get(this.choreBaseUri + '/pdf', { observe: 'response', responseType: 'blob' });
   }
+
+  repeatChore(chore: ChoresDto, newDate: Date): Observable<ChoresDto> {
+    console.log(chore);
+    console.log(newDate);
+    chore.endDate = newDate;
+    console.log('Chore with new date');
+    const requestBody = { id: chore.id, date: newDate };
+    return this.httpClient.patch<ChoresDto>(this.choreBaseUri + "/repeat", requestBody)
+  }
 }

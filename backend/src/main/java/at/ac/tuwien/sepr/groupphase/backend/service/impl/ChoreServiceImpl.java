@@ -32,8 +32,10 @@ import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -387,6 +389,20 @@ public class ChoreServiceImpl implements ChoreService {
             return outputStream.toByteArray();
         } catch (DocumentException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ChoreDto repeatChore(Long choreId, Date newDate) {
+        Optional<Chore> toChange = choreRepository.findById(choreId);
+        if (toChange.isPresent()) {
+            Chore changeChore = toChange.get();
+            changeChore.setUser(null);
+            changeChore.setEndDate(newDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            choreRepository.save(changeChore);
+            return choreMapper.entityToChoreDto(changeChore);
+        } else {
+            throw new NotFoundException("Chore to repeat is not found");
         }
     }
 

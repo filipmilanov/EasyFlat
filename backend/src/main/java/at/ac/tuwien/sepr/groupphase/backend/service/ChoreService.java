@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 public interface ChoreService {
@@ -28,4 +29,6 @@ public interface ChoreService {
     ApplicationUser updatePoints(Long userId, Integer points);
 
     byte[] generatePdf() throws IOException, AuthenticationException;
+
+    ChoreDto repeatChore(Long choreId, Date newDate);
 }

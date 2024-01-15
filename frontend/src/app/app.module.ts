@@ -53,6 +53,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 import { ChorePreferenceCardComponent } from './components/haushalt-plan/chore-preference-card/chore-preference-card.component';
 import { MyChoreCardComponent } from './components/haushalt-plan/my-chore-card/my-chore-card.component';
+import { ChoreConfirmationModalComponent } from './components/haushalt-plan/my-chores/chore-confirmation-modal/chore-confirmation-modal.component';
 
 
 LOAD_WASM().subscribe();
@@ -99,7 +100,8 @@ LOAD_WASM().subscribe();
     ChoreCardComponent,
     LeaderboardComponent,
     ChorePreferenceCardComponent,
-    MyChoreCardComponent
+    MyChoreCardComponent,
+    ChoreConfirmationModalComponent,
   ],
   imports: [
     BrowserModule,

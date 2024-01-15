@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.RepeatChoreRequest;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ChoreMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
@@ -29,10 +30,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -117,5 +121,14 @@ public class ChoresEndpoint {
 
         return new ResponseEntity<>(pdfBytes, HttpStatus.OK);
     }
+
+    @PatchMapping("/repeat")
+    public ChoreDto repeatChore(@RequestBody RepeatChoreRequest request) {
+        LOGGER.trace("repeatChore({})", request);
+        Long id = request.getId();
+        Date date = request.getDate();
+        return choreService.repeatChore(id, date);
+    }
+
 
 }
