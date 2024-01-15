@@ -4,7 +4,7 @@ import {ChoreService} from "../../../services/chore.service";
 import {ToastrService} from "ngx-toastr";
 import {ChoresDto} from "../../../dtos/chores";
 import {AuthService} from "../../../services/auth.service";
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ChoreConfirmationModalComponent} from "./chore-confirmation-modal/chore-confirmation-modal.component";
 
 
@@ -17,11 +17,11 @@ export class MyChoresComponent {
   chores: ChoresDto[] = [];
   completedChores: ChoresDto[] = [];
   private searchParams: string;
+  message: string;
 
   constructor(private router: Router,
               private choreService: ChoreService,
               private notification: ToastrService,
-              private authService: AuthService,
               private modalService: NgbModal) {
   }
 
@@ -33,9 +33,9 @@ export class MyChoresComponent {
       if (result) {
         for (let i = 0; i < this.completedChores.length; i++) {
           this.choreService.repeatChore(this.completedChores[i], result.date).subscribe({
-            next: (repetedChore ) => {
-              console.log('This is the repeated chore: ',repetedChore)
-              this.router.navigate(['chores','all']);
+            next: (repetedChore) => {
+              console.log('This is the repeated chore: ', repetedChore)
+              this.router.navigate(['chores', 'all']);
               this.notification.success("Chores completed and points awarded.", "Success");
               this.notification.success("Chores are repeated.", "Success");
             },
@@ -53,9 +53,13 @@ export class MyChoresComponent {
   ngOnInit() {
     this.choreService.getChoresByUser(this.searchParams).subscribe({
       next: res => {
-        this.chores = res.sort((a: ChoresDto, b: ChoresDto) => {
-          return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
-        });
+        if (res.length == 0) {
+          this.message = 'Good Job!'
+        } else {
+          this.chores = res.sort((a: ChoresDto, b: ChoresDto) => {
+            return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
+          });
+        }
       },
       error: err => {
         console.error("Error fetching chores", err);
@@ -82,8 +86,12 @@ export class MyChoresComponent {
   deleteCompletedChores() {
     return this.choreService.deleteChores(this.completedChores).subscribe({
       next: res => {
-        for (let i = 0; i < res.length; i++) {
-          this.chores = this.chores.filter(chore => chore.id !== res[i].id);
+        if (res.length == 0) {
+          this.message = 'Good Job!';
+        } else {
+          for (let i = 0; i < res.length; i++) {
+            this.chores = this.chores.filter(chore => chore.id !== res[i].id);
+          }
         }
         this.awardPoints();
         this.completedChores = [];
@@ -98,7 +106,7 @@ export class MyChoresComponent {
   awardPoints() {
     for (let i = 0; i < this.completedChores.length; i++) {
       let curr = this.completedChores[i];
-      let points = curr.points;
+      let points = curr.points + curr.user.points;
       this.choreService.updatePoints(points, curr.user.id).subscribe({
         next: () => {
         },
@@ -108,6 +116,7 @@ export class MyChoresComponent {
       });
     }
   }
+
   navigateToAllChores() {
     this.router.navigate(['/chores/all']);
   }

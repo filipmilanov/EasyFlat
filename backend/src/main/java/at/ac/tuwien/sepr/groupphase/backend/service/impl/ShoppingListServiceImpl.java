@@ -231,19 +231,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             throw new AuthorizationException("Authorization failed", List.of("User has no access to this shopping list!"));
         }
 
-        Optional<ShoppingList> toDeleteOptional = shoppingListRepository.findById(shopId);
-        if (toDeleteOptional.isPresent()) {
-            ShoppingList toDelete = toDeleteOptional.get();
-
-            if (toDelete.getName().equals("Shopping List (Default)")) {
-                throw new ValidationException("Default list can not be deleted!", null);
-            }
-
-            shoppingListRepository.deleteById(shopId);
-            return toDelete;
-        } else {
-            throw new NoSuchElementException("Shopping list with this id does not exist!");
-        }
+        shoppingListRepository.deleteById(check.getId());
+        return check;
     }
 
     @Override

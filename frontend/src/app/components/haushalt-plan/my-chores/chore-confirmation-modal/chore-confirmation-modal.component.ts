@@ -5,7 +5,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-chore-confirmation-modal',
   templateUrl: './chore-confirmation-modal.component.html',
-  styleUrls: ['./chore-confirmation-modal.component.css']
+  styleUrls: ['./chore-confirmation-modal.component.scss']
 })
 export class ChoreConfirmationModalComponent {
   @Input() choreName: string;

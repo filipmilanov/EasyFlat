@@ -27,7 +27,4 @@ public interface UserRepository extends JpaRepository<ApplicationUser, Long> {
     ApplicationUser findApplicationUserById(long id);
 
     List<ApplicationUser> findAllBySharedFlat(SharedFlat sharedFlat);
-
-    @Query("UPDATE application_user SET preference = null")
-    void deletePreference();
 }
