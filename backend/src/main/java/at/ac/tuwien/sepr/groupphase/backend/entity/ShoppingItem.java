@@ -11,6 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 import java.util.Objects;
@@ -51,6 +53,7 @@ public class ShoppingItem {
     private List<ItemLabel> labels;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ShoppingList shoppingList;
 
     public ShoppingList getShoppingList() {

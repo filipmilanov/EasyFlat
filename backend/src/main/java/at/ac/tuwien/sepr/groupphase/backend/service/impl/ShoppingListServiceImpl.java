@@ -219,7 +219,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     @Transactional
-    @Secured("ROLE_ADMIN")
     public ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException, AuthorizationException {
         LOGGER.trace("deleteList({})", shopId);
         //Authentication(check the correct user)
@@ -240,7 +239,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 throw new ValidationException("Default list can not be deleted!", null);
             }
 
-            shoppingListRepository.deleteByListId(shopId);
+            shoppingListRepository.deleteById(shopId);
             return toDelete;
         } else {
             throw new NoSuchElementException("Shopping list with this id does not exist!");
