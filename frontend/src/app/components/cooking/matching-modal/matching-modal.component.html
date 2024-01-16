@@ -1,26 +1,27 @@
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
+      <!-- Recipe Ingredient Section -->
       <div class="row p-2">
         <div class="col-md-2 col-lg-4">
           <label for="recipeIngredient" class="col-form-label text-muted">Recipe Ingredient</label>
         </div>
-
         <div class="col-md-10 col-lg-8 d-flex justify-content-center align-items-center">
-          <h5 id="recipeIngredient" class="p-2">{{ingredient.name}}</h5>
+          <h5 id="recipeIngredient" class="p-2">{{ ingredient.name }}</h5>
         </div>
       </div>
+      <!-- Arrow Down Section -->
       <div class="row p-2">
         <div class="col-md-2 col-lg-4"></div>
         <div class="col-md-10 col-lg-8 d-flex justify-content-center align-items-center">
           <span class="bi bi-arrow-down" style="font-size: 24px;"></span>
         </div>
       </div>
+      <!-- Digital Storage Ingredient Section -->
       <div class="row p-2">
         <div class="col-md-2 col-lg-4">
           <label for="dsIngredient" class="col-form-label text-muted">Digital Storage Ingredient</label>
         </div>
-
         <div class="col-md-10 col-lg-8 d-flex justify-content-center align-items-center">
           <app-autocomplete
             id="dsIngredient"
@@ -33,12 +34,21 @@
             [(ngModel)]="selectedItem"
             aria-describedby="generalNameHelp"
           ></app-autocomplete>
+          <!-- Unit Matching Information Circle -->
+          <div class="d-flex align-items-center position-relative" *ngIf="selectedItem">
+            <span class="bi bi-info-circle text-danger ms-2 info-icon" data-bs-toggle="tooltip"  title="Units do not match" *ngIf="selectedItem.unit.name !== ingredient.unit"></span>
+          </div>
         </div>
-
       </div>
     </div>
   </div>
-  <button type="button" class="btn btn-success position-absolute bottom-0 end-0" style="margin: 20px" (click)="match()">
-    Match
-  </button>
+
+  <!-- Match Button -->
+  <div class="row p-2">
+    <div class="col-md-12">
+      <button type="button" class="btn btn-success position-absolute bottom-0 end-0" style="margin: 20px" (click)="match()">
+        Match
+      </button>
+    </div>
+  </div>
 </div>

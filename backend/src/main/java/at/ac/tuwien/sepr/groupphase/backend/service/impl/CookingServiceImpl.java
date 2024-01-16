@@ -324,7 +324,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion deleteCookbookRecipe(Long id) throws  AuthorizationException {
+    public RecipeSuggestion deleteCookbookRecipe(Long id) throws AuthorizationException {
         RecipeSuggestionDto deletedRecipe = this.getCookbookRecipe(id);
         this.getCookbookIdForUser();
         repository.delete(recipeMapper.dtoToEntity(deletedRecipe, recipeIngredientMapper.dtoListToEntityList(deletedRecipe.extendedIngredients())));
@@ -499,6 +499,8 @@ public class CookingServiceImpl implements CookingService {
             filterTypes.add("marinade");
             filterTypes.add("starter");
             filterTypes.add("antipasti");
+        } else if (type.equals("all types")) {
+            return recipeSuggestions;
         }
 
         Map<String, RecipeSuggestionDto> results = new HashMap<>();
@@ -602,7 +604,7 @@ public class CookingServiceImpl implements CookingService {
         return recipeMapper.dtoToEntity(toReturn, ingredientMapper.dtoListToEntityList(matchedIngredients));
     }
 
-    private  String getNewReqStringForInformation(Long id) {
+    private String getNewReqStringForInformation(Long id) {
         String newReqString = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/" + id + "/information";
         newReqString += "?includeNutrition=false";
         return newReqString;
@@ -699,7 +701,7 @@ public class CookingServiceImpl implements CookingService {
             if (digitalStorageItem.getItemCache().getProductName().equals(ingredient.name())) {
                 if (digitalStorageItem.getItemCache().getUnit().equals(test)) {
                     toRet += digitalStorageItem.getQuantityCurrent();
-                } else {
+                } else if (getMinUnit(digitalStorageItem.getItemCache().getUnit()).equals(test)) {
                     Double convert = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), test, digitalStorageItem.getQuantityCurrent());
                     toRet += convert;
                 }

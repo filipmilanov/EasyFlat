@@ -29,7 +29,7 @@ export class CookingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+this.type = "all types"
   }
 
   onTypeChange(): void {
