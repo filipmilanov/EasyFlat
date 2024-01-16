@@ -12,7 +12,7 @@ export class ExpenseDto {
   items?: ItemDto[];
   isRepeating?: boolean;
   periodInDays?: number;
-  repeatingExpenseTyp?: RepeatingExpenseType;
+  repeatingExpenseType?: RepeatingExpenseType;
 }
 
 export class ExpenseSearchDto {

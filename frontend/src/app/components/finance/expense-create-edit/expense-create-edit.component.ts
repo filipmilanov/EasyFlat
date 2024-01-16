@@ -105,7 +105,7 @@ export class ExpenseCreateEditComponent implements OnInit {
             next: (user) => {
               // TODO: this is a quickfix. The UserDetail should contain the ID of the user, but that's not the case
               this.expense.paidBy = this.users.find(u => u.firstName === user.firstName && u.lastName === user.lastName);
-              this.expense.repeatingExpenseTyp = RepeatingExpenseType.FIRST_OF_MONTH;
+              this.expense.repeatingExpenseType = RepeatingExpenseType.FIRST_OF_MONTH;
             },
             error: (error) => {
               console.error(error);
@@ -173,6 +173,7 @@ export class ExpenseCreateEditComponent implements OnInit {
       let observable: Observable<ExpenseDto>;
       switch (this.mode) {
         case ExpenseCreateEditMode.create:
+          console.log("trata", this.expense);
           observable = this.financeService.createExpense(this.expense);
           break;
         case ExpenseCreateEditMode.edit:
@@ -238,7 +239,7 @@ export class ExpenseCreateEditComponent implements OnInit {
     );
     this.expense.amountInCents = this.amountInEuro * 100;
     if (this.selectedRepeatingOption != RepeatingExpenseOptions.REPEAT_AT) {
-      this.expense.repeatingExpenseTyp = null;
+      this.expense.repeatingExpenseType = null;
     }
     if (this.selectedSplitBy === SplitBy.EQUAL || this.selectedSplitBy === SplitBy.UNEQUAL) {
       this.expense.debitUsers.forEach(user => {

@@ -155,9 +155,9 @@
           <select class="form-control"
                   id="repeatingExpenseTyp"
                   name="repeatingExpenseTyp"
-                  [(ngModel)]="this.expense.repeatingExpenseTyp">
+                  [(ngModel)]="this.expense.repeatingExpenseType">
             <option value="{{RepeatingExpenseTyp.FIRST_OF_MONTH}}"
-                    [selected]="this.expense.repeatingExpenseTyp === RepeatingExpenseTyp.FIRST_OF_MONTH">
+                    [selected]="this.expense.repeatingExpenseType === RepeatingExpenseTyp.FIRST_OF_MONTH">
               First of the month
             </option>
             <option value="{{RepeatingExpenseTyp.FIRST_OF_QUARTER}}">
