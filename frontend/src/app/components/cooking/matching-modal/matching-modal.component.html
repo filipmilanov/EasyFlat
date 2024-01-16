@@ -5,7 +5,6 @@
         <div class="col-md-2 col-lg-4">
           <label for="recipeIngredient" class="col-form-label text-muted">Recipe Ingredient</label>
         </div>
-
         <div class="col-md-10 col-lg-8 d-flex justify-content-center align-items-center">
           <h5 id="recipeIngredient" class="p-2">{{ingredient.name}}</h5>
         </div>
@@ -17,11 +16,19 @@
         </div>
       </div>
       <div class="row p-2">
-        <div class="col-md-2 col-lg-4">
+        <div class="col-md-3 col-lg-4">
           <label for="dsIngredient" class="col-form-label text-muted">Digital Storage Ingredient</label>
         </div>
-
-        <div class="col-md-10 col-lg-8 d-flex justify-content-center align-items-center">
+        <div class="col-md-3 col-lg-2 d-flex align-items-center"> <!-- Adjusted column size for the number input -->
+          <input type="number"
+                 min="0"
+                 class="form-control"
+                 id="amount"
+                 name="amount"
+                 style="width: 50px">
+          <div class="col-md-3 col-lg-2 d-flex align-items-center" style="margin: 8px">g</div> <!-- Unit name on the same line -->
+        </div>
+        <div class="col-md-6 col-lg-6 d-flex align-items-center">
           <app-autocomplete
             id="dsIngredient"
             name="generalName"
@@ -34,7 +41,6 @@
             aria-describedby="generalNameHelp"
           ></app-autocomplete>
         </div>
-
       </div>
     </div>
   </div>

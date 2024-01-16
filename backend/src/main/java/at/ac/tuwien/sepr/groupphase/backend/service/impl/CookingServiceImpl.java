@@ -701,7 +701,7 @@ public class CookingServiceImpl implements CookingService {
             if (digitalStorageItem.getItemCache().getProductName().equals(ingredient.name())) {
                 if (digitalStorageItem.getItemCache().getUnit().equals(test)) {
                     toRet += digitalStorageItem.getQuantityCurrent();
-                } else {
+                } else if (getMinUnit(digitalStorageItem.getItemCache().getUnit()).equals(test)) {
                     Double convert = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), test, digitalStorageItem.getQuantityCurrent());
                     toRet += convert;
                 }
