@@ -85,6 +85,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
+    @Transactional
     public ShoppingItem create(ShoppingItemDto itemDto, String jwt)
         throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
         LOGGER.trace("create({},{})", itemDto, jwt);
@@ -101,7 +102,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    @Secured("ROLE_USER")
     public Optional<ShoppingItem> getById(Long itemId) throws AuthenticationException {
         LOGGER.trace("getById({})", itemId);
         ApplicationUser applicationUser = authService.getUserFromToken();
@@ -167,7 +167,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     @Transactional
-    @Secured("ROLE_USER")
     public ShoppingList createList(String listName) throws ValidationException, AuthenticationException, ConflictException {
         LOGGER.trace("createList({})", listName);
         ApplicationUser applicationUser = authService.getUserFromToken();
@@ -187,7 +186,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     @Transactional
-    @Secured("ROLE_USER")
     public ShoppingItem deleteItem(Long itemId) throws AuthenticationException {
         LOGGER.trace("deleteItem({})", itemId);
         ApplicationUser applicationUser = authService.getUserFromToken();
@@ -216,19 +214,27 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Transactional
     public ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException, AuthorizationException {
         LOGGER.trace("deleteList({})", shopId);
-        //Authentication(check the correct user)
+
+        // Authentication (check the correct user)
         ApplicationUser applicationUser = authService.getUserFromToken();
-        List<ShoppingItem> items = shoppingItemRepository.findByShoppingListId(shopId);
-        shoppingItemRepository.deleteAll(items);
-        //Authorization(check if the user can work with this object)
+
+        // Authorization (check if the user can work with this object)
         ShoppingList check = shoppingListRepository.findByIdAndSharedFlatIs(shopId, applicationUser.getSharedFlat());
         if (check == null) {
             throw new AuthorizationException("Authorization failed", List.of("User has no access to this shopping list!"));
         }
 
-        shoppingListRepository.deleteById(check.getId());
-        return check;
+        // Attempt to find and delete the shopping list
+        Optional<ShoppingList> deletedListOptional = shoppingListRepository.findById(shopId);
+        if (deletedListOptional.isPresent()) {
+            ShoppingList deletedList = deletedListOptional.get();
+            shoppingListRepository.deleteById(shopId);
+            return deletedList;
+        } else {
+            throw new ValidationException("Validation failed", List.of("Shopping list not found"));
+        }
     }
+
 
     @Override
     public List<ShoppingList> getShoppingLists(String name, String jwt) throws AuthenticationException {
@@ -269,6 +275,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
+    @Transactional
     public ShoppingItem update(ShoppingItemDto itemDto, String jwt)
         throws ConflictException, AuthenticationException, ValidationException, AuthorizationException {
         LOGGER.trace("update({})", itemDto);

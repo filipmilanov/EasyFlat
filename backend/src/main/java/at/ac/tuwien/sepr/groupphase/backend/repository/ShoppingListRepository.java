@@ -69,4 +69,6 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
     void deleteByListId(@Param("listId") Long listId);
 
 
+
+
 }

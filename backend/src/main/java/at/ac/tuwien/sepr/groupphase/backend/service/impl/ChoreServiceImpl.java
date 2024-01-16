@@ -17,6 +17,7 @@ import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ChoreService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ChoreValidator;
 import com.itextpdf.text.DocumentException;
+import jakarta.transaction.Transactional;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -66,7 +67,7 @@ public class ChoreServiceImpl implements ChoreService {
         this.choreValidator = choreValidator;
     }
 
-    @Secured("ROLE_USER")
+    @Transactional
     public ChoreDto createChore(ChoreDto choreDto) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.trace("createChore({})", choreDto);
         this.choreValidator.validateForCreate(choreDto);
@@ -81,7 +82,6 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     @Override
-    @Secured("ROLE_USER")
     public List<Chore> getChores(ChoreSearchDto searchParams) throws AuthenticationException {
         LOGGER.trace("createChore({})", searchParams);
         ApplicationUser applicationUser = authService.getUserFromToken();
@@ -95,7 +95,6 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     @Override
-    @Secured("ROLE_USER")
     public List<ChoreDto> assignChores() throws AuthenticationException {
         LOGGER.trace("assignChores()");
         //check the user
@@ -275,6 +274,7 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     @Override
+    @Transactional
     public List<Chore> deleteChores(List<Long> choreIds) {
         LOGGER.trace("deleteChores({})", choreIds);
 
@@ -367,6 +367,7 @@ public class ChoreServiceImpl implements ChoreService {
         return userRepository.save(existingUser);
     }
 
+    @Transactional
     public byte[] generatePdf() throws IOException, AuthenticationException {
         String htmlContent = this.createChoreListHtml();
 
@@ -418,6 +419,7 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     @Override
+    @Transactional
     public void deleteAllUserPreference() {
         ApplicationUser user = authService.getUserFromToken();
         List<ApplicationUser> users = userRepository.findAllBySharedFlat(user.getSharedFlat());
@@ -433,6 +435,7 @@ public class ChoreServiceImpl implements ChoreService {
         }
     }
 
+    @Transactional
     private String createChoreListHtml() throws AuthenticationException {
         List<Chore> chores = this.getChores(new ChoreSearchDto(null, null));
         chores.sort(Comparator.comparing(Chore::getEndDate));

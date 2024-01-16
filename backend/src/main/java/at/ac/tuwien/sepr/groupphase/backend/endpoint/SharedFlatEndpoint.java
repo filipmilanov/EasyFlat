@@ -28,16 +28,15 @@ public class SharedFlatEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final SharedFlatService sharedFlatService;
 
-    private final CustomUserDetailService customUserDetailService;
-
     @Autowired
-    public SharedFlatEndpoint(SharedFlatService sharedFlatService, CustomUserDetailService customUserDetailService) {
+    public SharedFlatEndpoint(SharedFlatService sharedFlatService) {
         this.sharedFlatService = sharedFlatService;
-        this.customUserDetailService = customUserDetailService;
     }
 
     @PostMapping
+    @Secured("ROLE_USER")
     public WgDetailDto create(@RequestBody SharedFlat wgDetailDto) throws ValidationException, ConflictException {
+        LOGGER.trace("create({})", wgDetailDto);
         return sharedFlatService.create(wgDetailDto);
     }
 }

@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ public class DigitalStorage {
     private String title;
 
     @OneToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private SharedFlat sharedFlat;
 
     @OneToMany(mappedBy = "digitalStorage", fetch = FetchType.EAGER)

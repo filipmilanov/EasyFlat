@@ -7,6 +7,9 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import jakarta.annotation.security.PermitAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,63 +21,64 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/authentication")
 public class LoginEndpoint {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final UserService userService;
     private final UserMapper userMapper;
 
+    @Autowired
     public LoginEndpoint(UserService userService, UserMapper userMapper) {
         this.userService = userService;
         this.userMapper = userMapper;
     }
 
-    @PermitAll
     @PostMapping
     public String login(@RequestBody UserLoginDto userLoginDto) throws ValidationException, ConflictException {
+        LOGGER.trace("login({})", userLoginDto);
         return userService.login(userLoginDto);
     }
 
-    @Secured("ROLE_USER")
     @GetMapping
     public UserDetailDto getUser(@RequestHeader("Authorization") String authToken) {
+        LOGGER.trace("getUser()");
         return userMapper.entityToUserDetailDto(
             userService.getUser(authToken)
         );
     }
 
-    @PermitAll
     @PutMapping("/{id}")
     public UserDetailDto update(@PathVariable long id, @RequestBody UserDetailDto userDetailDto) throws ValidationException, ConflictException {
+        LOGGER.trace("update({},{})", id, userDetailDto);
         return userService.update(userDetailDto);
     }
 
-
-    @PermitAll
     @DeleteMapping("/{id}")
     public UserDetailDto delete(@PathVariable long id) {
+        LOGGER.trace("delete({})", id);
         return userService.delete(id);
     }
 
 
-    @PermitAll
     @PutMapping("/signOut")
     public UserDetailDto signOut(@RequestBody String flatName, @RequestHeader("Authorization") String authToken) {
+        LOGGER.trace("signOut({})", flatName);
         return userService.signOut(flatName, authToken);
     }
 
-    @PermitAll
     @GetMapping("/users")
     public List<UserDetailDto> getUsers(@RequestHeader("Authorization") String authToken) {
+        LOGGER.trace("getUsers()");
         return userService.getAllOtherUsers(authToken);
     }
 
-    @PermitAll
     @PutMapping("/admin")
     public UserDetailDto setAdmin(@RequestBody Long selectedUserId) {
+        LOGGER.trace("setAdmin({})", selectedUserId);
         return userService.setAdminToTheFlat(selectedUserId);
     }
 

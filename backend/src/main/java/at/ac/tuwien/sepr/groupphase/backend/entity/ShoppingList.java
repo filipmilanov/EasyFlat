@@ -12,6 +12,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -29,6 +31,7 @@ public class ShoppingList {
     private List<ShoppingItem> items;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private SharedFlat sharedFlat;
 
 

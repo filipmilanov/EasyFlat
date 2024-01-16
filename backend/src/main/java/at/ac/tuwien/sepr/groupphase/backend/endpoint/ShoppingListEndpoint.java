@@ -19,6 +19,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,6 +48,7 @@ public class ShoppingListEndpoint {
     private final ItemMapper itemMapper;
     private final ShoppingListMapper shoppingListMapper;
 
+    @Autowired
     public ShoppingListEndpoint(ShoppingListService shoppingService, ItemMapper mapper, ShoppingListMapper shoppingListMapper, IngredientMapper ingredientsMapper, LabelMapper labelMapper) {
         this.shoppingService = shoppingService;
         this.itemMapper = mapper;
@@ -99,7 +101,7 @@ public class ShoppingListEndpoint {
         return ret.flatMap(shoppingList -> Optional.ofNullable(shoppingListMapper.entityToDto(shoppingList)));
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping("/list-items/{id}")
     public List<ShoppingItemDto> getItemsById(@PathVariable Long id, ShoppingItemSearchDto itemSearchDto,
                                               @RequestHeader("Authorization") String jwt) throws AuthenticationException {
@@ -112,7 +114,7 @@ public class ShoppingListEndpoint {
         return ret;
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @PostMapping("/list-create")
     public ShoppingListDto createList(@RequestBody String listName) throws ValidationException, AuthenticationException, ConflictException {
         LOGGER.info("createList({})", listName);
@@ -120,7 +122,7 @@ public class ShoppingListEndpoint {
         return shoppingListMapper.entityToDto(shoppingList);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @DeleteMapping("/{itemId}")
     public ShoppingItemDto deleteItem(@PathVariable Long itemId) throws AuthenticationException {
         LOGGER.info("deleteItem({})", itemId);
@@ -128,7 +130,7 @@ public class ShoppingListEndpoint {
         return itemMapper.entityToShopping(deletedItem, shoppingListMapper.entityToDto(deletedItem.getShoppingList()));
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @DeleteMapping("/delete/{shopId}")
     public ShoppingListDto deleteList(@PathVariable Long shopId) throws ValidationException, AuthenticationException, AuthorizationException {
         LOGGER.info("deleteList({})", shopId);
@@ -136,7 +138,7 @@ public class ShoppingListEndpoint {
         return shoppingListMapper.entityToDto(deletedList);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping("/lists")
     public List<ShoppingListDto> getShoppingLists(@RequestParam(name = "searchParams", required = false) String searchParams, @RequestHeader("Authorization") String jwt) throws AuthenticationException {
         LOGGER.info("getShoppingLists({}, {})", searchParams, jwt);
@@ -144,7 +146,7 @@ public class ShoppingListEndpoint {
         return shoppingListMapper.entityListToDtoList(lists);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @PostMapping("/storage")
     public List<ItemDto> transferToStorage(@RequestBody List<ShoppingItemDto> items) throws AuthenticationException {
         LOGGER.info("transferToStorage({})", items);

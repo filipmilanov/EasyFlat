@@ -4,13 +4,14 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ChoreRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
-import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.UserValidator;
@@ -19,10 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,16 +43,19 @@ public class CustomUserDetailService implements UserService {
     private final UserMapper userMapper;
     private final UserValidator userValidator;
 
+    private final ChoreRepository choreRepository;
+
     @Autowired
     public CustomUserDetailService(UserRepository userRepository, SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder,
                                    JwtTokenizer jwtTokenizer,
-                                   UserMapper userMapper, UserValidator userValidator) {
+                                   UserMapper userMapper, UserValidator userValidator, ChoreRepository choreRepository) {
         this.userRepository = userRepository;
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenizer = jwtTokenizer;
         this.userMapper = userMapper;
         this.userValidator = userValidator;
+        this.choreRepository = choreRepository;
     }
 
     @Override
@@ -141,6 +143,7 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDetailDto update(UserDetailDto userDetailDto) throws ValidationException, ConflictException {
         userValidator.validateForUpdate(userDetailDto);
         if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
@@ -160,9 +163,17 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDetailDto delete(Long id) {
         if (userRepository.findApplicationUserById(id) != null) {
             ApplicationUser deletedUser = userRepository.findApplicationUserById(id);
+            List<Chore> chores = choreRepository.allChoresByUserId(deletedUser.getSharedFlat().getId(), deletedUser.getId());
+            if (!chores.isEmpty()) {
+                for (Chore chore : chores) {
+                    chore.setUser(null);
+                    choreRepository.save(chore);
+                }
+            }
             userRepository.delete(deletedUser);
             return userMapper.entityToUserDetailDto(deletedUser);
         }
@@ -172,9 +183,9 @@ public class CustomUserDetailService implements UserService {
     @Override
     @Transactional
     public UserDetailDto signOut(String flatName, String authToken) {
-        LOGGER.trace("signOut({}, {})", flatName, authToken);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        ApplicationUser user = findApplicationUserByEmail((String) authentication.getPrincipal());
+        LOGGER.trace("signOut({})", flatName);
+        String email = jwtTokenizer.getEmailFromToken(authToken);
+        ApplicationUser user = findApplicationUserByEmail(email);
         SharedFlat userFlat = user.getSharedFlat();
         if (userFlat == null) {
             throw new BadCredentialsException("");
@@ -184,7 +195,11 @@ public class CustomUserDetailService implements UserService {
             user.setAdmin(false);
             ApplicationUser updatedUser = userRepository.save(user);
             boolean exist = userRepository.existsBySharedFlat(userFlat);
-            if (!exist) {
+            if (!exist) {  // are there users
+                List<Chore> chores = choreRepository.findAllBySharedFlatId(userFlat.getId());
+                if (!chores.isEmpty()) {    //are there chores
+                    choreRepository.deleteAll();
+                }
                 sharedFlatRepository.deleteById(userFlat.getId());
             }
             return userMapper.entityToUserDetailDto(updatedUser);
@@ -192,6 +207,7 @@ public class CustomUserDetailService implements UserService {
         throw new BadCredentialsException("");
 
     }
+
 
     @Override
     public List<UserDetailDto> getAllOtherUsers(String authToken) {

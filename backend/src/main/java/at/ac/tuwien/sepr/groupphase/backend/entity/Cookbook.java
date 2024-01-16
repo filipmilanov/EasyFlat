@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,7 +24,7 @@ public class Cookbook {
     @Column
     private String title;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     private SharedFlat sharedFlat;
 
     @OneToMany(mappedBy = "cookbook", fetch = FetchType.EAGER)

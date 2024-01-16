@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
@@ -11,6 +12,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ChoreRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
@@ -21,6 +23,7 @@ import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authorization.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.SharedFlatValidatorImpl;
 import jakarta.transaction.Transactional;
+import jdk.dynalink.linker.LinkerServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,6 +56,10 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
 
     private final AuthService authService;
 
+    private final CustomUserDetailService customUserDetailService;
+
+    private final ChoreRepository choreRepository;
+
     @Autowired
     public SharedFlatService(SharedFlatRepository sharedFlatRepository,
                              PasswordEncoder passwordEncoder,
@@ -62,7 +70,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
                              UserRepository userRepository,
                              Authorization authorization,
                              ShoppingListRepository shoppingListRepository,
-                             SharedFlatValidatorImpl validator, AuthService authService) {
+                             SharedFlatValidatorImpl validator, AuthService authService, CustomUserDetailService customUserDetailService, ChoreRepository choreRepository) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.sharedFlatMapper = sharedFlatMapper;
@@ -76,6 +84,8 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         this.shoppingListRepository = shoppingListRepository;
         this.validator = validator;
         this.authService = authService;
+        this.customUserDetailService = customUserDetailService;
+        this.choreRepository = choreRepository;
     }
 
     public SharedFlat findById(Long id, String jwt) throws AuthorizationException {
@@ -92,7 +102,6 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         return sharedFlat;
     }
 
-    @Secured("ROLE_USER")
     @Transactional
     public WgDetailDto create(SharedFlat sharedFlat) throws ConflictException, ValidationException {
         LOGGER.trace("create({})", sharedFlat);
@@ -134,7 +143,6 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     }
 
     @Override
-    @Secured("ROLE_USER")
     public WgDetailDto loginWg(SharedFlat wgDetailDto) {
         LOGGER.trace("loginWg({})", wgDetailDto);
         String name = wgDetailDto.getName();
@@ -165,10 +173,9 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
 
     @Override
     @Transactional
-    @Secured("ROLE_ADMIN")
-    public WgDetailDto delete() {
+    public WgDetailDto delete(String email) {
         LOGGER.trace("delete()");
-        ApplicationUser user = authService.getUserFromToken();
+        ApplicationUser user = customUserDetailService.findApplicationUserByEmail(email);
         if (!user.getAdmin()) {
             throw new BadCredentialsException("User is not admin, so he can not delete the flat");
         } else {
@@ -181,8 +188,12 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
             userRepository.save(user);
             boolean exist = userRepository.existsBySharedFlat(flat);
 
-            if (!exist) {
+            if (!exist) { // are there users
                 Long deletedFlatId = flat.getId();
+                List<Chore> chores = choreRepository.findAllBySharedFlatId(deletedFlatId);
+                if (!chores.isEmpty()) {    //are there chores
+                    choreRepository.deleteAll();
+                }
                 sharedFlatRepository.deleteById(deletedFlatId);
                 return sharedFlatMapper.entityToWgDetailDto(flat);
             } else {

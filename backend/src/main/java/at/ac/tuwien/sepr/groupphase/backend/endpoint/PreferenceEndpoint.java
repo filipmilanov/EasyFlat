@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.ChoreService;
 import at.ac.tuwien.sepr.groupphase.backend.service.PreferenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,7 +30,7 @@ public class PreferenceEndpoint {
 
     private final PreferenceMapper preferenceMapper;
 
-
+    @Autowired
     public PreferenceEndpoint(ChoreService choreService, PreferenceService preferenceService, PreferenceMapper preferenceMapper) {
         this.choreService = choreService;
         this.preferenceService = preferenceService;

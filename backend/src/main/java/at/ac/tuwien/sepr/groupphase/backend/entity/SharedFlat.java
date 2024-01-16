@@ -27,12 +27,12 @@ public class SharedFlat {
     private String password;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "sharedFlat")
     private Set<ApplicationUser> users = new HashSet<>();
-    @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private DigitalStorage digitalStorage;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sharedFlat")
     private List<ShoppingList> shoppingLists;
-    @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Cookbook cookbook;
 
     public SharedFlat() {
