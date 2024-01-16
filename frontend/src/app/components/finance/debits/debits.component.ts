@@ -11,6 +11,7 @@ import {ToastrService} from "ngx-toastr";
 })
 export class DebitsComponent {
     @Input() balanceDebits: BalanceDebitDto[] = [];
+  @Input() activeUserId: number;
 
     @Output() reloadData = new EventEmitter<void>();
 
