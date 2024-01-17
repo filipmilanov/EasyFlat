@@ -127,6 +127,10 @@ export class ItemDetailListComponent implements OnInit {
     });
   }
 
+  getIdFormatForDeleteModal(item:ItemDto): string {
+    return `${item.productName}${item.itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
+  }
+
   public showExpiryStatus(expireDate: Date): string {
     let daysForWarningSymbol: number = 3;
     let daysForDangerSymbol: number = 0;
@@ -174,8 +178,4 @@ export class ItemDetailListComponent implements OnInit {
   }
 
   protected readonly QuantityChange = QuantityChange;
-
-  getIdFormatForDeleteModal(item:ItemDto): string {
-    return `${item.productName}${item.itemId.toString()}`.replace(/\s/g, '');
-  }
 }

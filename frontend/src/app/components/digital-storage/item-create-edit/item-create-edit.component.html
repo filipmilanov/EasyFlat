@@ -40,6 +40,7 @@
 <app-confirm-delete-dialog
   deleteInfo="item"
   [deleteName]="item.productName"
+  [deleteId]="item.itemId ? item.itemId.toString() : null"
   (confirm)="delete()">
 </app-confirm-delete-dialog>
 <form class="row g-3 mt-2 mb-4" #form="ngForm" (keydown.enter)="$event.preventDefault()" (submit)="onSubmit(form)">
@@ -59,7 +60,7 @@
       <button type="button"
               class="btn btn-danger me-2"
               data-bs-toggle="modal"
-              data-bs-target="#confirm-delete-modal"
+              [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModal(item)"
               aria-label="Delete item"
               *ngIf="!modeIsCreate"
       >

@@ -300,6 +300,10 @@ export class ItemCreateEditComponent implements OnInit {
     });
   }
 
+  getIdFormatForDeleteModal(item:ItemDto): string {
+    return `${item.productName}${item.itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
+  }
+
   public compareUnitObjects(itemUnit: Unit, availableUnit: Unit): boolean {
     return itemUnit && availableUnit ? itemUnit.name === availableUnit.name : itemUnit === availableUnit;
   }

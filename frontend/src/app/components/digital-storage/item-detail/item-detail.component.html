@@ -15,7 +15,7 @@
       <button type="button"
               class="btn btn-danger me-2"
               data-bs-toggle="modal"
-              data-bs-target="#confirm-delete-modal"
+              [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModal(item)"
               aria-label="Delete item"
       >
         <i class="bi bi-trash"></i>
@@ -31,6 +31,7 @@
   <app-confirm-delete-dialog
     deleteInfo="item"
     [deleteName]="item.productName"
+    [deleteId]="item.itemId.toString()"
     (confirm)="delete()">
   </app-confirm-delete-dialog>
 

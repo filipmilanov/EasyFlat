@@ -75,4 +75,8 @@ export class ItemDetailComponent implements OnInit {
     });
   }
 
+  getIdFormatForDeleteModal(item:ItemDto): string {
+    return `${item.productName}${item.itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
+  }
+
 }
