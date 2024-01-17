@@ -251,10 +251,10 @@ export class ItemCreateEditComponent implements OnInit {
     this.item.ean = this.scanner.data.value[0].value;
 
     this.notification.info("Fetching barcode data...", "Fetching data");
-    this.searchForEan(this.item.ean);
+    this.searchForEan(this.item.ean, true);
   }
 
-  searchForEan(ean: string) {
+  searchForEan(ean: string, wasFromScanner: boolean) {
     let o = this.openFoodFactService.findByEan(ean);
     o.subscribe({
       next: data => {
@@ -277,7 +277,9 @@ export class ItemCreateEditComponent implements OnInit {
         }
       },
       error: error => {
-        this.notification.error("An error occurred while fetching EAN data.", "Error");
+        if (wasFromScanner) {
+          this.notification.error("An error occurred while fetching EAN data.", "Error");
+        }
         console.log("Failed at loading EAN number:", error);
       }
     })
