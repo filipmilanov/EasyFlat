@@ -17,3 +17,7 @@
 .navbar-nav .nav-item:hover .dropdown-menu {
   display: block;
 }
+
+.navbar-nav:hover {
+  cursor: pointer;
+}

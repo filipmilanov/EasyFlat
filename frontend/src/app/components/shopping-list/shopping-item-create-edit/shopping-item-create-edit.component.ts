@@ -140,7 +140,6 @@ export class ShoppingItemCreateEditComponent implements OnInit {
 
 
   public onSubmit(form: NgForm): void {
-    console.log('is form valid?', form.valid, this.item);
 
     if (form.valid) {
       let observable: Observable<ShoppingItemDto>;
@@ -150,6 +149,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
           if (this.item.generalName == null) {
             this.item.generalName = this.item.productName;
           }
+          console.log(this.item)
           observable = this.shoppingService.createItem(this.item);
           break;
         case ItemCreateEditMode.edit:
@@ -166,7 +166,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
         },
         error: error => {
           console.error(`Error item was not ${this.modeActionFinished}`);
-          this.notification.error("Validation error")
+          this.notification.error(`Item could not be ${this.modeActionFinished}.`)
           if (this.modeIsEdit && this.item.alwaysInStock) {
             this.notification.error("Check if you set minimum quantity");
           }
@@ -179,16 +179,15 @@ export class ShoppingItemCreateEditComponent implements OnInit {
     if (label == undefined || label.length == 0) {
       return
     }
-    console.log(label, selectedLabelColor)
     if (this.item.labels === undefined) {
       this.item.labels = [{
         labelValue: label,
-        labelColour: (selectedLabelColor != '#ffffff' ? selectedLabelColor : '#000000')
+        labelColour: (selectedLabelColor != '#ffffff' ? selectedLabelColor : '#000000'),
       }];
     } else {
       this.item.labels.push({
         labelValue: label,
-        labelColour: (selectedLabelColor != '#ffffff' ? selectedLabelColor : '#000000')
+        labelColour: (selectedLabelColor != '#ffffff' ? selectedLabelColor : '#000000'),
       });
     }
   }

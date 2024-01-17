@@ -30,7 +30,7 @@ public class SharedFlat {
     @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private DigitalStorage digitalStorage;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sharedFlat")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "sharedFlat")
     private List<ShoppingList> shoppingLists;
     @OneToOne(mappedBy = "sharedFlat", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Cookbook cookbook;

@@ -190,13 +190,11 @@ export class AccountComponent implements OnInit {
   signOut() {
     this.authService.signOut(this.accountForm.controls.flatName.value, this.authService.getToken()).subscribe({
       next: () => {
-        console.log('User signed out from flat: ' + this.user.flatName);
         this.router.navigate(['']);
         this.notification.success("You have successfully signed out" , "Success");
         this.sharedFlatService.changeEventToFalse();
       },
       error: error => {
-        console.log('Could not sign out due to:');
         let firstBracket = error.error.indexOf('[');
         let lastBracket = error.error.indexOf(']');
         let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
@@ -218,7 +216,13 @@ export class AccountComponent implements OnInit {
         },
         error: error => {
           console.error(error.message, error);
-          this.notification.error("Flat is not deleted due to: ", error);
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
         }
       });
     }

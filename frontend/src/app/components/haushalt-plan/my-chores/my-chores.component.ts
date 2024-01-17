@@ -40,7 +40,13 @@ export class MyChoresComponent {
               this.notification.success("Chores are repeated.", "Success");
             },
             error: (error) => {
-              console.error('Error repeating chore:', error);
+              let firstBracket = error.error.indexOf('[');
+              let lastBracket = error.error.indexOf(']');
+              let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+              let errorDescription = error.error.substring(0, firstBracket);
+              errorMessages.forEach(message => {
+                this.notification.error(message, errorDescription);
+              });
             }
           });
         }
@@ -61,9 +67,14 @@ export class MyChoresComponent {
           });
         }
       },
-      error: err => {
-        console.error("Error fetching chores", err);
-        this.notification.error("Error loading chores")
+      error: error => {
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
       }
     });
   }
@@ -84,23 +95,25 @@ export class MyChoresComponent {
   }
 
   deleteCompletedChores() {
-    return this.choreService.deleteChores(this.completedChores).subscribe({
-      next: res => {
-        if (res.length == 0) {
-          this.message = 'Good Job!';
-        } else {
-          for (let i = 0; i < res.length; i++) {
-            this.chores = this.chores.filter(chore => chore.id !== res[i].id);
+    if (confirm("Are you sure you want to delete this item?")) {
+      return this.choreService.deleteChores(this.completedChores).subscribe({
+        next: res => {
+          if (res.length == 0) {
+            this.message = 'Good Job!';
+          } else {
+            for (let i = 0; i < res.length; i++) {
+              this.chores = this.chores.filter(chore => chore.id !== res[i].id);
+            }
           }
+          this.awardPoints();
+          this.completedChores = [];
+          this.notification.success("Chores completed and points awarded.", "Success");
+        },
+        error: err => {
+          console.error("Chores could not be deleted", err);
         }
-        this.awardPoints();
-        this.completedChores = [];
-        this.notification.success("Chores completed and points awarded.", "Success");
-      },
-      error: err => {
-        console.error("Chores could not be deleted", err);
-      }
-    });
+      });
+    }
   }
 
   awardPoints() {

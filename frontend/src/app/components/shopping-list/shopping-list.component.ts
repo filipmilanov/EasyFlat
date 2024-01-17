@@ -53,17 +53,35 @@ export class ShoppingListComponent implements OnInit {
                 this.getItems();
               },
               error: (error: any) => {
-                console.error('Error fetching shopping list:', error);
+                let firstBracket = error.error.indexOf('[');
+                let lastBracket = error.error.indexOf(']');
+                let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+                let errorDescription = error.error.substring(0, firstBracket);
+                errorMessages.forEach(message => {
+                  this.notification.error(message, errorDescription);
+                });
               }
             });
           },
           error: error => {
-            console.error("Error fetching parameters:", error);
+            let firstBracket = error.error.indexOf('[');
+            let lastBracket = error.error.indexOf(']');
+            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+            let errorDescription = error.error.substring(0, firstBracket);
+            errorMessages.forEach(message => {
+              this.notification.error(message, errorDescription);
+            });
           }
         });
       },
-      error: err => {
-        console.error('Error fetching shopping lists');
+      error: error => {
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
       }
     });
 
@@ -76,29 +94,20 @@ export class ShoppingListComponent implements OnInit {
         this.items = res;
         console.log(this.items)
       },
-      error: err => {
-        console.error("Error finding items:", err);
+      error: error => {
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
       }
     });
   }
 
   navigateToCreateItem() {
     this.router.navigate([this.baseUri, this.shoppingList.id, 'item', 'create']);
-  }
-
-  deleteItem(itemId: number) {
-    if (confirm("Are you sure you want to delete this item?")) {
-      this.shoppingListService.deleteItem(itemId).subscribe({
-        next: (deletedItem: ShoppingItemDto) => {
-          this.notification.success(deletedItem.productName + " was successfully deleted", "Success");
-          this.ngOnInit();
-        },
-        error: error => {
-          console.error(error.message, error);
-          this.notification.error("Item was not deleted", error);
-        }
-      });
-    }
   }
 
   deleteList() {
@@ -110,8 +119,13 @@ export class ShoppingListComponent implements OnInit {
           this.notification.success(deletedList.name + " was successfully deleted from the list", "Success");
         },
         error: error => {
-          console.error(error.message, error);
-          this.notification.error("List was not deleted");
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
         }
       });
     }
@@ -139,15 +153,19 @@ export class ShoppingListComponent implements OnInit {
       checkedItems.forEach(item => {
         this.shoppingListService.deleteItem(item.itemId).subscribe({
           next: (deletedItem: ShoppingItemDto) => {
-            console.log(deletedItem.generalName, ' was deleted from the list');
             this.notification.success(deletedItem.productName + " was successfully deleted from the list", "Success");
             this.items = this.items.filter(listItem => listItem.itemId !== deletedItem.itemId);
             this.checkedItems = this.getCheckedItems();
             console.log('Checked Items:', this.checkedItems);
           },
           error: error => {
-            console.error(error.message, error);
-            this.notification.error("Items wasn't deleted successfully", error);
+            let firstBracket = error.error.indexOf('[');
+            let lastBracket = error.error.indexOf(']');
+            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+            let errorDescription = error.error.substring(0, firstBracket);
+            errorMessages.forEach(message => {
+              this.notification.error(message, errorDescription);
+            });
           }
         });
       });

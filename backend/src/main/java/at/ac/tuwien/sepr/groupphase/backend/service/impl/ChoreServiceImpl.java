@@ -106,7 +106,7 @@ public class ChoreServiceImpl implements ChoreService {
         List<Chore> chores = choreRepository.findAllBySharedFlatId(applicationUser.getSharedFlat().getId());
         List<Chore> choresAfterAssign = choreRepository.findAllBySharedFlatIdWhereUserIsNull(applicationUser.getSharedFlat().getId());
         if (choresAfterAssign.size() == 0) {
-            throw new UnsupportedOperationException("All of the chores are assigned to users");
+            throw new NotFoundException("All of the chores are assigned to users");
         } else if (choresAfterAssign.size() == chores.size()) {
             return assignChoresHelp(chores);
         } else {

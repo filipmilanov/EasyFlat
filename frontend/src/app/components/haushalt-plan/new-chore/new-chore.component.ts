@@ -47,7 +47,14 @@ export class NewChoreComponent {
         this.router.navigate(['/chores', 'all']);
       },
       error: error => {
-        this.notification.error("Chore was not created")
+        console.log(error);
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
       }
     });
   }
