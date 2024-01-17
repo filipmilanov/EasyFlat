@@ -183,7 +183,7 @@ public class CookingServiceImpl implements CookingService {
         }
 
         toReturn = saveUnitsAlsUnits(toReturn);
-
+        toReturn = setMatchedIngredients(toReturn);
 
         return toReturn;
     }
@@ -204,9 +204,11 @@ public class CookingServiceImpl implements CookingService {
         if (responseSteps.getBody() != null && !responseSteps.getBody().isEmpty()) {
             steps = responseSteps.getBody().get(0);
         }
-        List<RecipeIngredientDto> matchedIngredients = getMatchedIngredients(response.getBody().extendedIngredients());
+        RecipeDetailDto withUnits = saveUnitAlsUnitsForDetail(recipeDetailDto);
+        List<RecipeIngredientDto> matchedIngredients = getMatchedIngredients(withUnits.extendedIngredients());
+
         if (recipeDetailDto != null) {
-            return saveUnitAlsUnitsForDetail(new RecipeDetailDto(
+            return new RecipeDetailDto(
                 recipeId,
                 recipeDetailDto.title(),
                 recipeDetailDto.servings(),
@@ -214,7 +216,7 @@ public class CookingServiceImpl implements CookingService {
                 matchedIngredients,
                 recipeDetailDto.summary(),
                 steps
-            ));
+            );
         }
         return null;
     }
@@ -532,16 +534,38 @@ public class CookingServiceImpl implements CookingService {
             for (int i = 0; i < response.size(); i++) {
                 RecipeDto hereWeHaveMissIng = exchange.getBody().get(i);
                 RecipeSuggestionDto details = response.get(i);
-                List<RecipeIngredientDto> matchedIngredients = getMatchedIngredients(details.extendedIngredients());
+
                 RecipeSuggestionDto toAdd = new RecipeSuggestionDto(
                     details.id(),
                     details.title(),
                     details.servings(),
                     details.readyInMinutes(),
-                    matchedIngredients,
+                    details.extendedIngredients(),
                     details.summary(),
                     hereWeHaveMissIng.missedIngredients(),
                     details.dishTypes()
+                );
+                toReturn.add(toAdd);
+            }
+        }
+        return toReturn;
+    }
+
+    private List<RecipeSuggestionDto> setMatchedIngredients(List<RecipeSuggestionDto> recipeSuggestionDtos) {
+        List<RecipeSuggestionDto> toReturn = new LinkedList<>();
+
+        if (recipeSuggestionDtos != null) {
+            for (RecipeSuggestionDto recipe : recipeSuggestionDtos) {
+                List<RecipeIngredientDto> matchedIngredients = getMatchedIngredients(recipe.extendedIngredients());
+                RecipeSuggestionDto toAdd = new RecipeSuggestionDto(
+                    recipe.id(),
+                    recipe.title(),
+                    recipe.servings(),
+                    recipe.readyInMinutes(),
+                    matchedIngredients,
+                    recipe.summary(),
+                    recipe.missedIngredients(),
+                    recipe.dishTypes()
                 );
                 toReturn.add(toAdd);
             }
@@ -611,6 +635,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     private List<RecipeIngredientDto> getMatchedIngredients(List<RecipeIngredientDto> ingredientDtos) {
+
         ApplicationUser user = authService.getUserFromToken();
         List<DigitalStorageItem> itemsInStorage = itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId());
 
@@ -619,7 +644,9 @@ public class CookingServiceImpl implements CookingService {
         for (RecipeIngredientDto recipeIngredient : ingredientDtos) {
             boolean matched = false;
             for (DigitalStorageItem digitalStorageItem : itemsInStorage) {
-                if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name())) {
+                Unit recipeIngredientUnit = unitMapper.unitDtoToEntity(recipeIngredient.unitEnum());
+                Unit digitalStorageItemUnit = digitalStorageItem.getItemCache().getUnit();
+                if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)) {
                     RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
                         digitalStorageItem.getItemCache().getProductName(),
                         recipeIngredient.unit(),
