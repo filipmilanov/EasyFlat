@@ -137,6 +137,9 @@ export class ItemCreateEditComponent implements OnInit {
 
   public onSubmit(form: NgForm): void {
     this.item.priceInCent = this.priceInEuro * 100;
+    if (this.item.ean == '') {
+      this.item.ean = null;
+    }
     console.log('is form valid?', form.valid, this.item);
 
     if (form.valid) {
