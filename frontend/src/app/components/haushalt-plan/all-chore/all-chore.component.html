@@ -68,6 +68,9 @@
         </a>
     </div>
 </div>
+<div *ngIf="chores.length === 0" style="text-align: center;">
+  <h3>No chores found!</h3>
+</div>
 
 <button class="btn btn-primary float-end p-2" style="margin-top: 20px" (click)="navigateToNewChore()">
     Add Chore
