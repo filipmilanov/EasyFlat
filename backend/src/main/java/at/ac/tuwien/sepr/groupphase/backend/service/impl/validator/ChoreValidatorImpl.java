@@ -79,7 +79,7 @@ public class ChoreValidatorImpl implements ChoreValidator {
         LOGGER.trace("checkValidationForCreate({})", chore);
         Set<ConstraintViolation<ChoreDto>> validationViolations = validator.validate(chore);
         if (!validationViolations.isEmpty()) {
-            throw new ValidationException("The data is not valid", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+            throw new ValidationException("Not valid data", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
         }
     }
 }

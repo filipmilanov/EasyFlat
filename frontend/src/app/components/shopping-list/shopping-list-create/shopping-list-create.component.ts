@@ -44,7 +44,13 @@ export class ShoppingListCreateComponent {
           this.router.navigate(['/shopping-lists']);
         },
         error: error => {
-          this.notification.error("Error: Shopping list wasn't created");
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
         }
       });
     }

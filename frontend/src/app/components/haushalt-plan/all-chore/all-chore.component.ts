@@ -38,9 +38,14 @@ export class AllChoreComponent {
           return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
         });
       },
-      error: err => {
-        console.error("Error fetching chores", err);
-        this.notification.error("Error loading chores")
+      error: error => {
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
       }
     })
   }
@@ -52,9 +57,8 @@ export class AllChoreComponent {
         this.notification.success("Successfully assigned chores")
         this.loadChores();
       },
-      error: err => {
-        console.error("Error fetching chores with users")
-        this.notification.error("Error assigning chores")
+      error: error => {
+        this.notification.error("Created Chores are already assigned ")
       }
     });
   }
