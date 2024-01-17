@@ -110,7 +110,6 @@ export class ItemDetailListComponent implements OnInit {
         this.quantityInputs[item.itemId] = null;
         console.error(`Item could not be updated: ${error}`);
         this.notification.error(`Item ${item.productName} could not be ${mode} by ${quantityInput}`, "Error");
-
       }
     });
   }
@@ -129,13 +128,15 @@ export class ItemDetailListComponent implements OnInit {
   }
 
   public showExpiryStatus(expireDate: Date): string {
+    let daysForWarningSymbol: number = 3;
+    let daysForDangerSymbol: number = 0;
     let today: Date = new Date();
     let expiry: Date = new Date(expireDate);
-    let differenceInDays: number = (expiry.getTime() - today.getTime()) / (1000 * 3600 * 24);
+    let differenceInDays: number = Math.floor((Date.UTC(expiry.getFullYear(), expiry.getMonth(), expiry.getDate()) - Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) ) /(1000 * 3600 * 24));
 
-    if (differenceInDays < 0) {
+    if (differenceInDays < daysForDangerSymbol) {
       return 'bi bi-x-circle-fill text-danger'; // Has already expired
-    } else if (differenceInDays < 3) {
+    } else if (differenceInDays <= daysForWarningSymbol) {
       return 'bi bi-exclamation-triangle-fill text-warning'; // Expiring soon
     }
     return '';
