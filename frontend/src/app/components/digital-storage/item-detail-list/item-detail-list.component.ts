@@ -108,7 +108,7 @@ export class ItemDetailListComponent implements OnInit {
         item.quantityCurrent = previousCurrentQuantity;
         item.quantityTotal = previousTotalQuantity;
         this.quantityInputs[item.itemId] = null;
-        console.error(`Item could not be deleted: ${error}`);
+        console.error(`Item could not be updated: ${error}`);
         this.notification.error(`Item ${item.productName} could not be ${mode} by ${quantityInput}`, "Error");
 
       }
