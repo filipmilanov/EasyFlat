@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,32 +17,38 @@ import java.util.List;
 @RecordBuilder
 public record ItemDto(
     Long itemId,
-    @Pattern(regexp = "^\\d{13}$", message = "EAN number has exactly 13 numbers")
+    @Pattern(regexp = "^\\d{13}$", message = "The EAN number has to be exactly 13 numbers long")
     String ean,
     @NotBlank(message = "The product category cannot be empty")
+    @Size(max = 30, message = "The product category cannot have more than 30 characters")
     String generalName,
     @NotBlank(message = "The product name cannot be empty")
+    @Size(max = 40, message = "The product name cannot have more than 40 characters")
     String productName,
+    @Size(max = 30, message = "The brand name cannot have more than 30 characters")
     String brand,
     @NotNull(message = "The current quantity cannot be empty")
     @Min(value = 0, message = "The current quantity must be at least 0")
-    @Max(value = 10000, message = "The current quantity cannot be greater than 10000")
+    @Max(value = 5000, message = "The current quantity cannot be greater than 5000")
     Double quantityCurrent,
     @NotNull(message = "The total quantity cannot be empty")
     @Min(value = 0, message = "The total quantity must be at least 0")
-    @Max(value = 10000, message = "The total quantity cannot be greater than 10000")
+    @Max(value = 5000, message = "The total quantity cannot be greater than 5000")
     Double quantityTotal,
     @NotNull(message = "The unit cannot be empty")
     UnitDto unit,
     @FutureOrPresent(message = "You cannot store products which have already expired")
     LocalDate expireDate,
+    @Size(max = 200, message = "The description cannot have more than 200 characters")
     String description,
     @Min(value = 0, message = "The price must be at least €0.00")
+    @Max(value = 1000000, message = "The price cannot be more than €10000")
     Long priceInCent,
     Boolean alwaysInStock,
     @Min(value = 0, message = "The minimum quantity must be at least 0")
     @Max(value = 5000, message = "The minimum quantity cannot be greater than 5000")
     Long minimumQuantity,
+    @Size(max = 30, message = "The store name cannot have more than 30 characters")
     String boughtAt,
     @NotNull(message = "An item needs to be linked to a storage")
     DigitalStorageDto digitalStorage,
@@ -49,7 +56,6 @@ public record ItemDto(
     List<ItemStats> itemStats,
 
     List<AlternativeNameDto> alternativeNames
-
 
 ) {
     @AssertTrue(message = "The current quantity cannot be larger then the total")
