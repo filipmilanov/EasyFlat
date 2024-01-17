@@ -86,8 +86,8 @@ export class ItemService {
    * @param itemId the id of the item that should be deleted
    * @return an Observable for the deleted item
    */
-  deleteItem(itemId: number): Observable<ItemDto> {
-    return this.http.delete<ItemDto>(this.baseUri + '/' + itemId);
+  deleteItem(itemId: number): Observable<void> {
+    return this.http.delete<void>(this.baseUri + '/' + itemId);
   }
 
   findByName(productName: string, unitName: string): Observable<ItemDto> {
