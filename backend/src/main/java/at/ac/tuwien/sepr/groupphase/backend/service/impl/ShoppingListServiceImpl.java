@@ -228,6 +228,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         Optional<ShoppingList> deletedListOptional = shoppingListRepository.findById(shopId);
         if (deletedListOptional.isPresent()) {
             ShoppingList deletedList = deletedListOptional.get();
+            if (deletedList.getItems().size() != 0) {
+                shoppingItemRepository.deleteAll(deletedList.getItems());
+            }
             shoppingListRepository.deleteById(shopId);
             return deletedList;
         } else {

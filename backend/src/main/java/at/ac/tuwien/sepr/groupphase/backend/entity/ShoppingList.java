@@ -27,7 +27,7 @@ public class ShoppingList {
     @Column
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER)
     private List<ShoppingItem> items;
 
     @ManyToOne

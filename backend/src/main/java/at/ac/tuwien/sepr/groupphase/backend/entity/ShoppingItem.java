@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@DiscriminatorValue("Shopping")
 public class ShoppingItem {
 
     @Id
@@ -49,11 +48,10 @@ public class ShoppingItem {
     @OneToMany
     private List<ItemStats> itemStats;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<ItemLabel> labels;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private ShoppingList shoppingList;
 
     public ShoppingList getShoppingList() {
