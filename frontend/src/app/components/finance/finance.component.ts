@@ -37,7 +37,6 @@ export class FinanceComponent implements OnInit {
         this.activeUser = user;
       },
       error: (error) => {
-        console.log(error);
         this.notification.error("Could not load active user", "Error");
       }
     });
@@ -48,11 +47,9 @@ export class FinanceComponent implements OnInit {
 
     let o = this.financeService.findBalanceDebits().subscribe({
       next: (balanceDebits) => {
-        console.log(balanceDebits);
         this.balanceDebits = balanceDebits;
       },
       error: (error) => {
-        console.log(error);
         this.notification.error("Could not load balance debits", "Error");
       }
     })

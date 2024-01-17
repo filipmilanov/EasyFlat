@@ -26,7 +26,6 @@ export class StorageService {
       params = params.append('fillLevel', searchParameters.fillLevel);
     }
     if (searchParameters.alwaysInStock != null) {
-      console.log(searchParameters)
       params = params.append('alwaysInStock', searchParameters.alwaysInStock);
     }
     const headers = new HttpHeaders({
@@ -37,7 +36,6 @@ export class StorageService {
   }
 
   findAll(titleSearch: string, limit: number): Observable<DigitalStorageDto[]> {
-    console.log(titleSearch);
     let params = new HttpParams();
     params = params.append('title', titleSearch);
     params = params.append('limit', limit);
@@ -57,8 +55,6 @@ export class StorageService {
    * @return an Observable for the saved shopping item
    */
   addItemToShoppingList(item: ItemDto): Observable<ShoppingItemDto> {
-    console.log('Add item ' + item + ' to shopping list')
-
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });

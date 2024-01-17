@@ -15,7 +15,6 @@ export class UserDropdownComponent {
   onActivatedUserChange(event: any) {
     const selectedIndex = event.target.selectedIndex;
     const selectedUser = this.users[selectedIndex];
-    console.log(selectedUser);
     this.activatedUserChange.emit(selectedUser);
   }
 
