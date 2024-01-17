@@ -17,14 +17,15 @@ public record RecipeIngredientDto(
 
     double amount,
     boolean matched,
+    boolean autoMatched,
     String realName,
     ItemDto matchedItem) {
 
 
-    public static RecipeIngredientDto createWithCustomLogic(Long id, String name, String unit, UnitDto unitEnum, double amount, boolean matched, String realName, ItemDto matchedItem) {
+    public static RecipeIngredientDto createWithCustomLogic(Long id, String name, String unit, UnitDto unitEnum, double amount, boolean matched, boolean autoMatched, String realName, ItemDto matchedItem) {
 
         // Return the new instance of RecipeIngredientDto
-        return new RecipeIngredientDto(id, name, unit, unitEnum, amount, matched, realName, matchedItem);
+        return new RecipeIngredientDto(id, name, unit, unitEnum, amount, matched, autoMatched, realName, matchedItem);
     }
 
 

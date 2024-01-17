@@ -384,6 +384,7 @@ public class CookingServiceImpl implements CookingService {
                                 unitMapper.entityToUnitDto(getMinUnit(ingredientUnit)),
                                 ingAmountMin - itemQuantityTotal,
                                 false,
+                                ingredient.autoMatched(),
                                 ingredient.realName(),
                                 ingredient.matchedItem()
                             );
@@ -398,6 +399,7 @@ public class CookingServiceImpl implements CookingService {
                                 unitMapper.entityToUnitDto(unitMapper.unitDtoToEntity(ingredient.unitEnum())),
                                 updatedQuantity,
                                 false,
+                                ingredient.autoMatched(),
                                 ingredient.realName(),
                                 ingredient.matchedItem()
                             );
@@ -653,6 +655,7 @@ public class CookingServiceImpl implements CookingService {
                         recipeIngredient.unitEnum(),
                         recipeIngredient.amount(),
                         true,
+                        true,
                         recipeIngredient.name(),
                         itemMapper.entityToDto(digitalStorageItem));
                     updatedIngredients.add(updatedIngredient);
@@ -667,6 +670,7 @@ public class CookingServiceImpl implements CookingService {
                             recipeIngredient.unitEnum(),
                             recipeIngredient.amount(),
                             true,
+                            false,
                             recipeIngredient.name(),
                             itemMapper.entityToDto(digitalStorageItem));
                         updatedIngredients.add(updatedIngredient);
@@ -848,6 +852,7 @@ public class CookingServiceImpl implements CookingService {
             unitMapper.entityToUnitDto(minUnit),
             convertedAmount,
             ingredient.matched(),
+            ingredient.autoMatched(),
             ingredient.realName(),
             ingredient.matchedItem()
         );
