@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -11,6 +12,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.OpenFoodFactsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -108,9 +110,9 @@ public class ItemEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping("/name/{name}")
-    public List<ItemDto> findByName(@PathVariable String name) {
+    public List<ItemDto> findByName(@PathVariable String name, String unitName) {
         return itemMapper.entityListToItemDtoList(
-            itemService.findByName(name)
+            itemService.findByName(name, unitName)
         );
     }
 }

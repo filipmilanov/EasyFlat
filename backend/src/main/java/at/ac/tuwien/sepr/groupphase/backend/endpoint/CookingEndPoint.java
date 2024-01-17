@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import com.deepl.api.DeepLException;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,68 +36,68 @@ public class CookingEndPoint {
         this.recipeMapper = recipeMapper;
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
         throws ValidationException, ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
         return cookingService.getRecipeSuggestion(type);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping("/cookbook")
     public List<RecipeSuggestionDto> getCookbook()
         throws ValidationException, AuthorizationException, AuthenticationException {
         return cookingService.getCookbook();
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @PostMapping("/cookbook")
     public RecipeSuggestionDto createCookbookRecipe(@RequestBody RecipeSuggestionDto recipe)
         throws ConflictException, ValidationException, AuthorizationException, AuthenticationException {
         return recipeMapper.entityToRecipeSuggestionDto(cookingService.createCookbookRecipe(recipe));
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping("/cookbook/{id}")
     public RecipeSuggestionDto getCookbookRecipe(@PathVariable Long id) {
         return cookingService.getCookbookRecipe(id);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @PutMapping("/cookbook/{id}")
     public RecipeSuggestionDto updateCookbookRecipe(@PathVariable Long id, @RequestBody RecipeSuggestionDto recipe)
         throws ConflictException, ValidationException, AuthorizationException, AuthenticationException {
         return recipeMapper.entityToRecipeSuggestionDto(cookingService.updateCookbookRecipe(recipe.withId(id)));
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @DeleteMapping("/cookbook/{id}")
     public RecipeSuggestionDto deleteCookbookRecipe(@PathVariable Long id)
         throws AuthorizationException, AuthenticationException {
         return recipeMapper.entityToRecipeSuggestionDto(cookingService.deleteCookbookRecipe(id));
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping("/cookbook/missing/{id}")
     public RecipeSuggestionDto getMissingIngredients(@PathVariable Long id)
         throws AuthorizationException, ValidationException, ConflictException {
         return cookingService.getMissingIngredients(id);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @GetMapping("/detail/{id}")
     public RecipeDetailDto getRecipeDetail(@PathVariable Long id) {
         return cookingService.getRecipeDetails(id);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @PutMapping("/cook")
     public RecipeSuggestionDto cookRecipe(@RequestBody RecipeSuggestionDto recipeToCook)
         throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
         return cookingService.cookRecipe(recipeToCook);
     }
 
-    @PermitAll
+    @Secured("ROLE_USER")
     @PostMapping("/shopping")
     public RecipeSuggestionDto addToShoppingList(@RequestBody RecipeSuggestionDto recipeToCook, @RequestHeader("Authorization") String jwt)
         throws ValidationException, AuthenticationException, ConflictException, AuthorizationException {

@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -71,9 +72,11 @@ public interface ItemService {
 
     /**
      * Searches for items in the database with names matching the specified name.
+     * And filter the returned ingredients by unit.
      *
      * @param name The name to search for.
+     * @param unitName The name of the unit of the recipe ingredient.
      * @return A list of ItemDto objects with names matching the search criteria.
      */
-    List<DigitalStorageItem> findByName(String name);
+    List<DigitalStorageItem> findByName(String name, String unitName);
 }

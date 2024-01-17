@@ -9,6 +9,7 @@ export class RecipeIngredient {
   unitEnum?:Unit;
   amount?:number;
   matched:boolean;
+  autoMatched:boolean;
   realName:string;
   matchedItem:ItemDto
 }

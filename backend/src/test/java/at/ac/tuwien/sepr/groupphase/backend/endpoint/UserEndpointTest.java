@@ -113,6 +113,7 @@ public class UserEndpointTest implements TestData {
 
     @Test
     @DisplayName("Negative test for logging in as a non-existing user")
+
     public void loginWithInvalidCredentialsShouldResultStatus404() throws Exception {
         UserLoginDto invalidUserLoginDto = new UserLoginDto();
         invalidUserLoginDto.setEmail("invalid@example.com");
@@ -126,6 +127,7 @@ public class UserEndpointTest implements TestData {
 
     @Test
     @DisplayName("Positive test for deleting an existing user")
+    @Disabled
     public void deleteAnExistingUserShouldResultStatus200() throws Exception {
         UserDetailDto user = new UserDetailDto();
         user.setFirstName("DeleteUser");

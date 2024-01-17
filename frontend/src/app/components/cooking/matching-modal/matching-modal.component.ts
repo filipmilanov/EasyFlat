@@ -62,7 +62,7 @@ export class MatchingModalComponent implements OnInit {
       return of([]); // Return an empty array if the input is empty or contains only whitespaces
     }
 
-    const suggestions$ = this.itemService.findByName(input);
+    const suggestions$ = this.itemService.findByName(input,this.ingredient.unitEnum.name);
 
     return suggestions$.pipe(
       map(suggestions => Array.isArray(suggestions) ? suggestions : [suggestions])

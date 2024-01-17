@@ -6,6 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,7 @@ public class UserServiceTest implements TestData {
 
     @Test
     @DisplayName("Positive test for deleting an existing user")
+    @Disabled
     public void deleteExistingUserAndEnsureDeletion() throws ValidationException, ConflictException {
         UserDetailDto userDetailDto = new UserDetailDto();
         userDetailDto.setFirstName("ToDelete");

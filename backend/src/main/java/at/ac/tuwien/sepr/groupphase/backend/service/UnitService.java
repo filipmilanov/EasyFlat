@@ -40,10 +40,27 @@ public interface UnitService {
      *
      * @param unit the unit to create
      * @return the created unit
+     * @throws ValidationException if the unit creation fails due to validation issues
+     * @throws ConflictException   if there is a conflict during the creation of the unit
      */
     Unit create(UnitDto unit) throws ValidationException, ConflictException;
 
+    /**
+     * Gets the minimum subunit of a unit (used for conversion calculations).
+     *
+     * @param unit the unit for which to get the minimum subunit
+     * @return the minimum subunit of the given unit
+     */
     Unit getMinUnit(Unit unit);
+
+    /**
+     * Checks whether two units are comparable.
+     *
+     * @param unit1 the first unit
+     * @param unit2 the second unit
+     * @return true if the units are comparable, false otherwise
+     */
+    boolean areUnitsComparable(Unit unit1, Unit unit2);
 
 }
 

@@ -89,4 +89,16 @@ public class UnitServiceImpl implements UnitService {
         }
         return unit;
     }
+
+    @Override
+    public boolean areUnitsComparable(Unit unit1, Unit unit2) {
+        if (unit1 == null || unit2 == null) {
+            return false;
+        }
+
+        return unit1.getName().equals(unit2.getName())
+            || getMinUnit(unit1).equals(getMinUnit(unit2));
+    }
+
+
 }

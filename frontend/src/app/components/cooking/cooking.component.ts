@@ -43,7 +43,6 @@ this.type = "all types"
     this.cookingService.loadRecipes(this.type).subscribe({
 
       next: res => {
-        console.log(this.type)
         this.recipes = res;
         this.empty = false;
 
