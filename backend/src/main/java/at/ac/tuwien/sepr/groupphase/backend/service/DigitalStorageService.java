@@ -41,10 +41,9 @@ public interface DigitalStorageService {
      *
      * @param itemSearchDto search parameters
      * @return a List of filtered items
-     * @throws AuthorizationException if the user is not authorized to access a resource
      * @throws ValidationException if alwaysInStock is null
      */
-    List<ItemListDto> searchItems(ItemSearchDto itemSearchDto) throws AuthorizationException, ValidationException;
+    List<ItemListDto> searchItems(ItemSearchDto itemSearchDto) throws ValidationException;
 
     /**
      * Validates and Creates a new {@link DigitalStorage} in the db.
