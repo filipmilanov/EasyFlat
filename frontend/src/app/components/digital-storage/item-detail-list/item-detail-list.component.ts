@@ -18,7 +18,8 @@ export enum QuantityChange {
 })
 export class ItemDetailListComponent implements OnInit {
   itemGeneralName: string;
-  items: ItemDto[];
+  filteredItems: ItemDto[];
+  stockType: string = null;
   quantityInputs: { [itemId: number]: number } = {};
 
   constructor(private storageService: StorageService,
@@ -30,6 +31,19 @@ export class ItemDetailListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParamMap.subscribe({
+      next: queryParamMap => {
+        this.stockType = queryParamMap.get('stockType');
+        if(!this.stockType){
+          this.router.navigate(['/digital-storage/']);
+          this.notification.error(`Stock type was not recognized and could not be loaded.`, "Error");
+        }
+      },
+      error: () => {
+        this.router.navigate(['/digital-storage/']);
+        this.notification.error(`Stock type was not recognized and could not be loaded.`, "Error");
+      }
+    })
     this.route.paramMap.subscribe({
       next: paramMap => {
         const generalName = paramMap.get('name');
@@ -40,7 +54,11 @@ export class ItemDetailListComponent implements OnInit {
               this.router.navigate(['/digital-storage/']);
               this.notification.error(`Items of type ${generalName} could not be loaded`, "Error");
             } else {
-              this.items = res;
+              if(this.stockType === 'in-stock'){
+                this.filteredItems = res.filter(item => !item.alwaysInStock);
+              } else {
+                this.filteredItems = res.filter(item => item.alwaysInStock);
+              }
             }
           },
           error: error => {

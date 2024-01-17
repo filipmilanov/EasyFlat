@@ -23,7 +23,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let item of items" class="center-td">
+      <tr *ngFor="let item of filteredItems" class="center-td">
         <td>{{ item.productName }}</td>
         <td class="d-none d-md-table-cell">
           {{ item.expireDate | date:'dd.MM.yyyy' }}

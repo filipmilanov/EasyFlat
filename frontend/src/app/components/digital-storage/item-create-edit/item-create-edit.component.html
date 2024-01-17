@@ -68,7 +68,8 @@
         Delete
       </button>
       <button type="button" class="btn btn-secondary"
-              [routerLink]="modeIsCreate ? ['/digital-storage'] : ['/digital-storage', item.generalName]">
+              [routerLink]="modeIsCreate ? ['/digital-storage'] : ['/digital-storage', item.generalName]"
+              [queryParams]="item.alwaysInStock ? {stockType: 'always-in-stock'} : {stockType: 'in-stock'}">
         <i class="bi" [class.bi-arrow-left]="modeIsCreate" [class.bi-ban]="!modeIsCreate"></i>
         {{ modeIsCreate ? 'Back' : 'Cancel' }}
       </button>

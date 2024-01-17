@@ -21,7 +21,10 @@
         <i class="bi bi-trash"></i>
         Delete
       </button>
-      <button type="button" class="btn btn-secondary" [routerLink]="['/digital-storage', item.generalName]">
+      <button type="button"
+              class="btn btn-secondary"
+              [routerLink]="['/digital-storage', item.generalName]"
+              [queryParams]="item.alwaysInStock ? {stockType: 'always-in-stock'} : {stockType: 'in-stock'}">
         <i class="bi bi-arrow-left"></i>
         Back
       </button>
