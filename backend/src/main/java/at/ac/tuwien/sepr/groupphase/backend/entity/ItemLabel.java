@@ -5,6 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.util.List;
 
 @Entity
 public class ItemLabel {
@@ -19,6 +24,17 @@ public class ItemLabel {
     @Column
     private String labelColour;
 
+    @ManyToMany
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<ShoppingItem> shoppingItems;
+
+    public List<ShoppingItem> getShoppingItems() {
+        return shoppingItems;
+    }
+
+    public void setShoppingItems(List<ShoppingItem> shoppingItems) {
+        this.shoppingItems = shoppingItems;
+    }
 
     public Long getShopLabelId() {
         return shopLabelId;

@@ -48,10 +48,12 @@ public class ShoppingItem {
     @OneToMany
     private List<ItemStats> itemStats;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ItemLabel> labels;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ShoppingList shoppingList;
 
     public ShoppingList getShoppingList() {
@@ -136,8 +138,9 @@ public class ShoppingItem {
         return Objects.hash(itemId);
     }
 
-    public void setLabels(List<ItemLabel> labels) {
+    public ShoppingItem setLabels(List<ItemLabel> labels) {
         this.labels = labels;
+        return this;
     }
 
     public List<ItemLabel> getLabels() {

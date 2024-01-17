@@ -110,26 +110,6 @@ export class ShoppingListComponent implements OnInit {
     this.router.navigate([this.baseUri, this.shoppingList.id, 'item', 'create']);
   }
 
-  deleteItem(itemId: number) {
-    if (confirm("Are you sure you want to delete this item?")) {
-      this.shoppingListService.deleteItem(itemId).subscribe({
-        next: (deletedItem: ShoppingItemDto) => {
-          this.notification.success(deletedItem.productName + " was successfully deleted", "Success");
-          this.ngOnInit();
-        },
-        error: error => {
-          let firstBracket = error.error.indexOf('[');
-          let lastBracket = error.error.indexOf(']');
-          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-          let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach(message => {
-            this.notification.error(message, errorDescription);
-          });
-        }
-      });
-    }
-  }
-
   deleteList() {
     if (confirm("Are you sure you want to delete this list?")) {
       console.log(this.shopId)
