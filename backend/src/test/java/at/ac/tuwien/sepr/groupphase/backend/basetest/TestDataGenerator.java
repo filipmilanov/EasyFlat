@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.datagenerator.IngredientsDataGenerat
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ItemDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.RecipeDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.SharedFlatDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ShoppingListDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.StorageDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.UnitDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -30,6 +31,8 @@ public class TestDataGenerator {
     private final UnitDataGenerator unitDataGenerator;
     private final ExpenseDataGenerator expenseDataGenerator;
 
+    private final ShoppingListDataGenerator shoppingListDataGenerator;
+
     public TestDataGenerator(StorageDataGenerator digitalStorageDataGenerator,
                              IngredientsDataGenerator ingredientsDataGenerator,
                              ItemDataGenerator itemDataGenerator,
@@ -39,7 +42,7 @@ public class TestDataGenerator {
                              SharedFlatDataGenerator sharedFlatDataGenerator,
                              ExpenseDataGenerator expenseDataGenerator,
                              RecipeDataGenerator recipeDataGenerator,
-                             CookbookDataGenerator cookbookDataGenerator, EventDataGenerator eventDataGenerator) {
+                             CookbookDataGenerator cookbookDataGenerator, EventDataGenerator eventDataGenerator, ShoppingListDataGenerator shoppingListDataGenerator) {
         this.digitalStorageDataGenerator = digitalStorageDataGenerator;
         this.ingredientsDataGenerator = ingredientsDataGenerator;
         this.itemDataGenerator = itemDataGenerator;
@@ -51,6 +54,7 @@ public class TestDataGenerator {
         this.cookbookDataGenerator = cookbookDataGenerator;
         this.eventDataGenerator = eventDataGenerator;
         this.expenseDataGenerator = expenseDataGenerator;
+        this.shoppingListDataGenerator = shoppingListDataGenerator;
     }
 
     public void cleanUp() throws ValidationException, ConflictException {

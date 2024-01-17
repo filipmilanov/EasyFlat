@@ -134,4 +134,12 @@ export class ChorePreferenceComponent implements OnInit {
       }
     });
   }
+
+  navigateToAllChores() {
+    this.router.navigate(['chores','all']);
+  }
+
+  navigateToMyChores() {
+    this.router.navigate(['chores','my']);
+  }
 }

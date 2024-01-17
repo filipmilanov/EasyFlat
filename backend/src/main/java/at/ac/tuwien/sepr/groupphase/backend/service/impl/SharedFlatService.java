@@ -183,25 +183,21 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
             if (flat == null) {
                 throw new BadCredentialsException("You can not delete flat where you do not live");
             }
-            user.setSharedFlat(null);
-            user.setAdmin(false);
-            userRepository.save(user);
-            boolean exist = userRepository.existsBySharedFlat(flat);
-
-            if (!exist) { // are there users
-                Long deletedFlatId = flat.getId();
-                List<Chore> chores = choreRepository.findAllBySharedFlatId(deletedFlatId);
-                if (!chores.isEmpty()) {    //are there chores
-                    choreRepository.deleteAll();
+            Long deletedFlatId = flat.getId();
+            List<ApplicationUser> users = userRepository.findAllByFlatId(deletedFlatId);
+            if (!users.isEmpty()) {
+                for (ApplicationUser us : users) {
+                    us.setSharedFlat(null);
+                    us.setAdmin(false);
+                    userRepository.save(us);
                 }
-                sharedFlatRepository.deleteById(deletedFlatId);
-                return sharedFlatMapper.entityToWgDetailDto(flat);
-            } else {
-                user.setSharedFlat(flat);
-                user.setAdmin(true);
-                userRepository.save(user);
-                throw new BadCredentialsException("Flat is not empty");
             }
+            List<Chore> chores = choreRepository.findAllBySharedFlatId(deletedFlatId);
+            if (!chores.isEmpty()) {    //are there chores
+                choreRepository.deleteAll(chores);
+            }
+            sharedFlatRepository.deleteById(deletedFlatId);
+            return sharedFlatMapper.entityToWgDetailDto(flat);
         }
 
     }

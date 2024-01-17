@@ -49,7 +49,7 @@ public class ShoppingItem {
     @OneToMany
     private List<ItemStats> itemStats;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<ItemLabel> labels;
 
     @ManyToOne

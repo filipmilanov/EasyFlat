@@ -71,8 +71,7 @@
             <div class="form-group">
               <div>
                 <label for="name">Flat name</label>
-                <input type="text"  name="name" formControlName="flatName" class="form-control" id="name" readonly>
-              </div>
+                <div class="flat-name-display">{{ user.flatName }}</div>              </div>
             </div>
             <button style="margin-right: 10px; margin-top: 20px" type="button" data-bs-toggle="modal"  data-bs-toggle="modal" [attr.data-bs-target]="'#sign-out-modal' + getIdFormatForDeleteModal(user)" class="btn btn-danger float-right">Sign Out</button>
             <button *ngIf="user.admin" style="margin-right: 10px; margin-top: 20px" type="button" (click)="deleteFlat()" class="btn btn-danger float-right">Delete Flat</button>

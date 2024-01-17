@@ -140,7 +140,6 @@ export class ShoppingItemCreateEditComponent implements OnInit {
 
 
   public onSubmit(form: NgForm): void {
-    console.log('is form valid?', form.valid, this.item);
 
     if (form.valid) {
       let observable: Observable<ShoppingItemDto>;

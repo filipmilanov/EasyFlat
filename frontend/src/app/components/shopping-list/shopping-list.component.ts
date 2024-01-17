@@ -111,7 +111,13 @@ export class ShoppingListComponent implements OnInit {
         },
         error: error => {
           console.error(error.message, error);
-          this.notification.error("List was not deleted");
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
         }
       });
     }
