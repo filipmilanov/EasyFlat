@@ -270,10 +270,7 @@ public class ItemServiceImpl implements ItemService {
             .filter(item -> {
                 Unit itemUnit = item.getItemCache().getUnit();
                 return itemUnit != null
-                    &&
-                    (itemUnit.getName().equals(unit.getName())
-                        ||
-                        unitService.getMinUnit(itemUnit).equals(unitService.getMinUnit(unit)));
+                    && unitService.areUnitsComparable(itemUnit, unit);
             })
             .collect(Collectors.toList());
     }
