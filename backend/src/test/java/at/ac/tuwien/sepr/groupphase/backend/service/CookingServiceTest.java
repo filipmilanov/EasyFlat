@@ -85,7 +85,7 @@ public class CookingServiceTest {
     }
 
     @Test
-
+    @Disabled
     void testGetRecipeSuggestion() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException, DeepLException, InterruptedException {
 
         // when

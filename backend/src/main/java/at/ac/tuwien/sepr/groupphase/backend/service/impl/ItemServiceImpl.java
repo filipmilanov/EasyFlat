@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AlternativeNameDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlternativeName;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
@@ -33,10 +34,12 @@ import org.springframework.stereotype.Service;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemServiceImpl implements ItemService {
@@ -221,10 +224,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<DigitalStorageItem> findByName(String name) {
+    public List<DigitalStorageItem> findByName(String name, String unitName) {
         ApplicationUser user = authService.getUserFromToken();
         List<DigitalStorageItem> items = itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_ProductNameStartingWith(user.getSharedFlat().getDigitalStorage().getStorageId(), name);
-        return items;
+
+        return filterItemsByUnits(items, unitName);
     }
 
     private List<AlternativeName> getAlternativeNamesForUpdate(ItemDto itemDto) {
@@ -253,5 +257,24 @@ public class ItemServiceImpl implements ItemService {
             }
         }
         return alternativeNames;
+    }
+
+    private List<DigitalStorageItem> filterItemsByUnits(List<DigitalStorageItem> items, String unitName) {
+        Unit unit = unitService.findByName(unitName);
+
+        if (unit == null) {
+            return Collections.emptyList();
+        }
+
+        return items.stream()
+            .filter(item -> {
+                Unit itemUnit = item.getItemCache().getUnit();
+                return itemUnit != null
+                    &&
+                    (itemUnit.getName().equals(unit.getName())
+                        ||
+                        unitService.getMinUnit(itemUnit).equals(unitService.getMinUnit(unit)));
+            })
+            .collect(Collectors.toList());
     }
 }
