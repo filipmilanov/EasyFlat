@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventLabelDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -30,6 +31,7 @@ public class EventValidator {
         LOGGER.trace("validateForCreate({})", event);
 
         autoCheck(event);
+        validateLabels(event.labels());
 
     }
 
@@ -55,6 +57,17 @@ public class EventValidator {
         }
         if (!errors.isEmpty()) {
             throw new ValidationException("Data is not valid", errors);
+        }
+    }
+
+    public void validateLabels(List<EventLabelDto> labels) throws ValidationException {
+        LOGGER.trace("validateLabels({})", labels);
+
+        for (EventLabelDto label : labels) {
+            Set<ConstraintViolation<EventLabelDto>> validationViolations = validator.validate(label);
+            if (!validationViolations.isEmpty()) {
+                throw new ValidationException("Ingredient data is not valid: ", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+            }
         }
     }
 
