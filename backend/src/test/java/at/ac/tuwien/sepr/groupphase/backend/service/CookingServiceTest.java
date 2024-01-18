@@ -1,10 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
@@ -30,7 +33,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.RestTemplate;
 
 
 import java.util.ArrayList;
@@ -49,6 +57,8 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -67,6 +77,8 @@ public class CookingServiceTest {
 
     @MockBean
     private JwtTokenizer jwtTokenizer;
+    @MockBean
+    private RestTemplate restTemplate;
 
     @MockBean
     private AuthService authService;
@@ -88,12 +100,36 @@ public class CookingServiceTest {
     @Disabled
     void testGetRecipeSuggestion() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException, DeepLException, InterruptedException {
 
+
+        List<RecipeDto> mockedRecipesDtos = getRecipeDtos();
+      RecipeSuggestionDto mockedRecipeSuggestionDto = getMockedRecipeSuggestionDto();
+
+
+        ParameterizedTypeReference<List<RecipeDto>> ref = new ParameterizedTypeReference<List<RecipeDto>>(){};
+        ParameterizedTypeReference<RecipeSuggestionDto> ref2 = new ParameterizedTypeReference<RecipeSuggestionDto>(){};
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ref)))
+            .thenReturn(ResponseEntity.ok(mockedRecipesDtos));
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ref2)))
+            .thenReturn(ResponseEntity.ok(mockedRecipeSuggestionDto));
+
         // when
         List<RecipeSuggestionDto> result = cookingService.getRecipeSuggestion(null);
 
-        // then
-        assertThat(result).isNotEmpty();
 
+        // then
+
+        RecipeSuggestionDto actualRecipeSuggestionDto = result.get(0); // Assuming we are expecting a single result
+        RecipeSuggestionDto expectedRecipeDto = getExpectedRecipeSuggestionDto();
+
+
+        assertAll(
+            () -> assertThat(actualRecipeSuggestionDto.id()).isEqualTo(expectedRecipeDto.id()),
+            () -> assertThat(actualRecipeSuggestionDto.title()).isEqualTo(expectedRecipeDto.title()),
+            () -> assertThat(actualRecipeSuggestionDto.servings()).isEqualTo(expectedRecipeDto.servings()),
+            () -> assertThat(actualRecipeSuggestionDto.readyInMinutes()).isEqualTo(expectedRecipeDto.readyInMinutes()),
+            () -> assertThat(actualRecipeSuggestionDto.summary()).isEqualTo(expectedRecipeDto.summary()),
+            () -> assertThat(actualRecipeSuggestionDto.extendedIngredients()).isEqualTo(expectedRecipeDto.extendedIngredients())
+        );
 
     }
 
@@ -332,4 +368,261 @@ public class CookingServiceTest {
         assertThrows(NotFoundException.class, () -> cookingService.deleteCookbookRecipe(1000L));
     }
 
+    private List<RecipeSuggestionDto> getRecipeSuggestionDtos(){
+        RecipeSuggestionDto recipeDto2 = RecipeSuggestionDtoBuilder.builder()
+            .id(2L)
+            .title("Pasta Carbonara")
+            .servings(4)
+            .readyInMinutes(25)
+            .summary("Classic Italian pasta dish with eggs, cheese, pancetta, and black pepper.")
+            .extendedIngredients(List.of(
+            RecipeIngredientDtoBuilder.builder()
+                    .id(4L)
+                    .name("Spaghetti")
+                    .unit("g")
+                    .amount(400.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Spaghetti")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(5L)
+                    .name("Pancetta")
+                    .unit("g")
+                    .amount(150.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Pancetta")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(6L)
+                    .name("Eggs")
+                    .unit("unit")
+                    .amount(3.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Eggs")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(7L)
+                    .name("Parmesan cheese")
+                    .unit("g")
+                    .amount(100.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Parmesan cheese")
+                    .matchedItem(null)
+                    .build()
+            ))
+            .build();
+
+
+        RecipeSuggestionDto recipeDto3 = RecipeSuggestionDtoBuilder.builder()
+            .id(3L)
+            .title("Chicken Alfredo Pasta")
+            .servings(4)
+            .readyInMinutes(30)
+            .summary("Creamy Alfredo sauce with grilled chicken served over pasta.")
+            .extendedIngredients(List.of(
+                RecipeIngredientDtoBuilder.builder()
+                    .id(8L)
+                    .name("Fettuccine")
+                    .unit("g")
+                    .amount(300.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Fettuccine")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(9L)
+                    .name("Chicken breast")
+                    .unit("g")
+                    .amount(400.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Chicken breast")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(10L)
+                    .name("Heavy cream")
+                    .unit("ml")
+                    .amount(200.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Heavy cream")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(11L)
+                    .name("Parmesan cheese")
+                    .unit("g")
+                    .amount(150.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Parmesan cheese")
+                    .matchedItem(null)
+                    .build()
+            ))
+            .build();
+
+        List<RecipeSuggestionDto> toReturn = new LinkedList<>();
+        toReturn.add(recipeDto2);
+        toReturn.add(recipeDto3);
+        return toReturn;
+    }
+
+    private RecipeSuggestionDto getMockedRecipeSuggestionDto(){
+        RecipeSuggestionDto recipeDto2 = RecipeSuggestionDtoBuilder.builder()
+            .id(1L)
+            .title("Pasta Carbonara")
+            .servings(4)
+            .readyInMinutes(25)
+            .summary("Classic Italian pasta dish with eggs, cheese, pancetta, and black pepper.")
+            .extendedIngredients(List.of(
+                RecipeIngredientDtoBuilder.builder()
+                    .id(4L)
+                    .name("Spaghetti")
+                    .unit("g")
+                    .amount(400.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Spaghetti")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(5L)
+                    .name("Pancetta")
+                    .unit("g")
+                    .amount(150.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Pancetta")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(6L)
+                    .name("Eggs")
+                    .unit("unit")
+                    .amount(3.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Eggs")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(7L)
+                    .name("Parmesan cheese")
+                    .unit("g")
+                    .amount(100.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Parmesan cheese")
+                    .matchedItem(null)
+                    .build()
+            ))
+            .build();
+
+
+
+
+        return recipeDto2;
+    }
+    private RecipeSuggestionDto getExpectedRecipeSuggestionDto(){
+        UnitDto gUnit = UnitDtoBuilder.builder()
+            .name("g")
+            .subUnit(new HashSet<>())
+            .build();
+
+        UnitDto pcsUnit = UnitDtoBuilder.builder()
+            .name("pcs")
+            .subUnit(new HashSet<>())
+            .build();
+
+
+        RecipeSuggestionDto recipeDto2 = RecipeSuggestionDtoBuilder.builder()
+            .id(1L)
+            .title("Pasta Carbonara")
+            .servings(4)
+            .readyInMinutes(25)
+            .summary("Classic Italian pasta dish with eggs, cheese, pancetta, and black pepper.")
+            .extendedIngredients(List.of(
+                RecipeIngredientDtoBuilder.builder()
+                    .id(4L)
+                    .name("Spaghetti")
+                    .unit("g")
+                    .amount(400.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Spaghetti")
+                    .matchedItem(null)
+                    .unitEnum(gUnit)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(5L)
+                    .name("Pancetta")
+                    .unit("g")
+                    .amount(150.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Pancetta")
+                    .matchedItem(null)
+                    .unitEnum(gUnit)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(6L)
+                    .name("Eggs")
+                    .unit("pcs")
+                    .amount(3.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Eggs")
+                    .matchedItem(null)
+                    .unitEnum(pcsUnit)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(7L)
+                    .name("Parmesan cheese")
+                    .unit("g")
+                    .amount(100.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Parmesan cheese")
+                    .matchedItem(null)
+                    .unitEnum(gUnit)
+                    .build()
+            ))
+            .build();
+
+        return recipeDto2;
+    }
+
+    private List<RecipeDto> getRecipeDtos(){
+        RecipeDto mockedRecipe1 = RecipeDtoBuilder.builder()
+            .id(1L)
+            .title("Pasta Carbonara")
+            .description("Classic Italian pasta dish with eggs, cheese, pancetta, and black pepper.")
+            .image("image1.jpg")
+            .missedIngredients(List.of(
+                RecipeIngredientDtoBuilder.builder()
+                    .id(1L)
+                    .name("Ingredient 1")
+                    .unit("unit1")
+                    .unitEnum(null)
+                    .amount(100.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Real Ingredient 1")
+                    .matchedItem(null)
+                    .build()
+            ))
+            .build();
+        List<RecipeDto> toReturn = new LinkedList<>();
+        toReturn.add(mockedRecipe1);
+        return toReturn;
+    }
 }
