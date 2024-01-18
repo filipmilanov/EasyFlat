@@ -3,6 +3,7 @@ import {RecipeSuggestion} from "../../../dtos/cookingDtos/recipeSuggestion";
 import {CookingService} from "../../../services/cooking.service";
 import {UserDetail} from "../../../dtos/auth-request";
 import {Router} from "@angular/router";
+import {ItemDto} from "../../../dtos/item";
 
 @Component({
   selector: 'app-cookbook-card',
@@ -75,5 +76,9 @@ export class CookbookCardComponent {
 
   detail() {
     this.detailsClicked.emit(this.recipe);
+  }
+
+  getIdFormatForDeleteModal(recipe:RecipeSuggestion): string {
+    return `${recipe.title}${recipe.id}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 }

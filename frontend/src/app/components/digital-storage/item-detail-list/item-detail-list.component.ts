@@ -18,7 +18,8 @@ export enum QuantityChange {
 })
 export class ItemDetailListComponent implements OnInit {
   itemGeneralName: string;
-  items: ItemDto[];
+  filteredItems: ItemDto[];
+  stockType: string = null;
   quantityInputs: { [itemId: number]: number } = {};
 
   constructor(private storageService: StorageService,
@@ -30,6 +31,19 @@ export class ItemDetailListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParamMap.subscribe({
+      next: queryParamMap => {
+        this.stockType = queryParamMap.get('stockType');
+        if(!this.stockType){
+          this.router.navigate(['/digital-storage/']);
+          this.notification.error(`Stock type was not recognized and could not be loaded.`, "Error");
+        }
+      },
+      error: () => {
+        this.router.navigate(['/digital-storage/']);
+        this.notification.error(`Stock type was not recognized and could not be loaded.`, "Error");
+      }
+    })
     this.route.paramMap.subscribe({
       next: paramMap => {
         const generalName = paramMap.get('name');
@@ -40,7 +54,11 @@ export class ItemDetailListComponent implements OnInit {
               this.router.navigate(['/digital-storage/']);
               this.notification.error(`Items of type ${generalName} could not be loaded`, "Error");
             } else {
-              this.items = res;
+              if(this.stockType === 'in-stock'){
+                this.filteredItems = res.filter(item => !item.alwaysInStock);
+              } else {
+                this.filteredItems = res.filter(item => item.alwaysInStock);
+              }
             }
           },
           error: error => {
@@ -108,9 +126,8 @@ export class ItemDetailListComponent implements OnInit {
         item.quantityCurrent = previousCurrentQuantity;
         item.quantityTotal = previousTotalQuantity;
         this.quantityInputs[item.itemId] = null;
-        console.error(`Item could not be deleted: ${error}`);
+        console.error(`Item could not be updated: ${error}`);
         this.notification.error(`Item ${item.productName} could not be ${mode} by ${quantityInput}`, "Error");
-
       }
     });
   }
@@ -128,14 +145,20 @@ export class ItemDetailListComponent implements OnInit {
     });
   }
 
+  getIdFormatForDeleteModal(item:ItemDto): string {
+    return `${item.productName}${item.itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
+  }
+
   public showExpiryStatus(expireDate: Date): string {
+    let daysForWarningSymbol: number = 3;
+    let daysForDangerSymbol: number = 0;
     let today: Date = new Date();
     let expiry: Date = new Date(expireDate);
-    let differenceInDays: number = (expiry.getTime() - today.getTime()) / (1000 * 3600 * 24);
+    let differenceInDays: number = Math.floor((Date.UTC(expiry.getFullYear(), expiry.getMonth(), expiry.getDate()) - Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) ) /(1000 * 3600 * 24));
 
-    if (differenceInDays < 0) {
+    if (differenceInDays < daysForDangerSymbol) {
       return 'bi bi-x-circle-fill text-danger'; // Has already expired
-    } else if (differenceInDays < 3) {
+    } else if (differenceInDays <= daysForWarningSymbol) {
       return 'bi bi-exclamation-triangle-fill text-warning'; // Expiring soon
     }
     return '';
@@ -173,8 +196,4 @@ export class ItemDetailListComponent implements OnInit {
   }
 
   protected readonly QuantityChange = QuantityChange;
-
-  getIdFormatForDeleteModal(item:ItemDto): string {
-    return `${item.productName}${item.itemId.toString()}`.replace(/\s/g, '');
-  }
 }

@@ -4,7 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PreRemove;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Objects;
 
@@ -24,6 +28,7 @@ public class RecipeIngredient {
     private RecipeSuggestion recipeSuggestion;
 
     @ManyToOne
+    @JoinColumn(name = "unitEnum_id", nullable = true)
     private Unit unitEnum;
 
 
@@ -91,4 +96,6 @@ public class RecipeIngredient {
     public int hashCode() {
         return Objects.hash(name, unit, amount);
     }
+
+
 }

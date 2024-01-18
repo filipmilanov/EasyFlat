@@ -1,3 +1,4 @@
+
 export class ShoppingLabelDto {
   labelId?: number;
   labelValue?: string;

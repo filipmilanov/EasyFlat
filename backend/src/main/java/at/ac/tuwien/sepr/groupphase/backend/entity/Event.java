@@ -10,6 +10,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotEmpty;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -32,6 +34,7 @@ public class Event {
     @Column
     private LocalTime endTime;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private SharedFlat sharedFlat;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<EventLabel> labels;

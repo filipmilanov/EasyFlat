@@ -2,7 +2,6 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
-
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HeaderComponent} from './components/header/header.component';
@@ -77,9 +76,6 @@ import { MyChoreCardComponent } from './components/haushalt-plan/my-chore-card/m
 import {
   ChoreConfirmationModalComponent
 } from "./components/haushalt-plan/my-chores/chore-confirmation-modal/chore-confirmation-modal.component";
-
-
-
 import {UserDropdownComponent} from './components/utils/user-dropdown/user-dropdown.component';
 import {DebitsComponent} from './components/finance/debits/debits.component';
 import {ConfirmPayedPackComponent} from './components/utils/confirm-payed-pack/confirm-payed-pack.component';

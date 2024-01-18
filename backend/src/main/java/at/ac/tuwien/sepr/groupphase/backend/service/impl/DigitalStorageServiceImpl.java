@@ -117,7 +117,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
     }
 
     @Override
-    public List<ItemListDto> searchItems(ItemSearchDto searchItem) throws AuthorizationException, ValidationException {
+    public List<ItemListDto> searchItems(ItemSearchDto searchItem) throws ValidationException {
         LOGGER.trace("searchItems({})", searchItem);
 
         ApplicationUser applicationUser = authService.getUserFromToken();

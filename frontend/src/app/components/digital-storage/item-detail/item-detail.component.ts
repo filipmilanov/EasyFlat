@@ -42,7 +42,6 @@ export class ItemDetailComponent implements OnInit {
         this.service.getById(itemId).subscribe({
           next: res => {
             this.item = res;
-            console.log(this.item)
           },
           error: error => {
             console.error(`Item could not be retrieved from the backend: ${error.error.message}`);
@@ -74,6 +73,10 @@ export class ItemDetailComponent implements OnInit {
         this.notification.error(`Item ${this.item.productName} could not be deleted`, "Error");
       }
     });
+  }
+
+  getIdFormatForDeleteModal(item:ItemDto): string {
+    return `${item.productName}${item.itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 
 }

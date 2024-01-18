@@ -11,9 +11,12 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PreRemove;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 import java.util.Objects;
@@ -36,17 +39,17 @@ public class RecipeSuggestion {
 
     @Version
     Integer version;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<RecipeIngredient> extendedIngredients;
 
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<RecipeIngredient> missingIngredients;
     @Column(columnDefinition = "TEXT")
     private String summary;
 
     @ManyToOne
     //@NotNull(message = "A Item need to be linked to a cookbook")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Cookbook cookbook;
 
     public void setId(Long id) {
@@ -145,4 +148,5 @@ public class RecipeSuggestion {
     public int hashCode() {
         return Objects.hash(title, servings, readyInMinutes, extendedIngredients, summary, cookbook);
     }
+
 }

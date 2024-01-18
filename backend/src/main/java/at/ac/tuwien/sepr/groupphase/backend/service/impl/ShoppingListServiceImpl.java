@@ -203,7 +203,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             if (!toDelete.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
                 throw new AuthenticationException("Authentication wrong", List.of("User can not delete this item"));
             }
-            shoppingItemRepository.deleteById(itemId);
+            //toDelete.setLabels(null);
+            //shoppingItemRepository.save(toDelete);
+            //shoppingItemRepository.deleteById(itemId);
+            shoppingItemRepository.delete(toDelete);
             return toDelete;
         } else {
             throw new NoSuchElementException("Item with this id does not exist!");
@@ -228,6 +231,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         Optional<ShoppingList> deletedListOptional = shoppingListRepository.findById(shopId);
         if (deletedListOptional.isPresent()) {
             ShoppingList deletedList = deletedListOptional.get();
+            for (int i = 0; i < deletedList.getItems().size(); i++) {
+                this.deleteItem(deletedList.getItems().get(i).getItemId());
+            }
             shoppingListRepository.deleteById(shopId);
             return deletedList;
         } else {

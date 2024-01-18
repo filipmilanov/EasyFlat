@@ -173,7 +173,6 @@ export class ExpenseCreateEditComponent implements OnInit {
       let observable: Observable<ExpenseDto>;
       switch (this.mode) {
         case ExpenseCreateEditMode.create:
-          console.log("trata", this.expense);
           observable = this.financeService.createExpense(this.expense);
           break;
         case ExpenseCreateEditMode.edit:

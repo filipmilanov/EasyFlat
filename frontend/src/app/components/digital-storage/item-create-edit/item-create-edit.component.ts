@@ -88,7 +88,6 @@ export class ItemCreateEditComponent implements OnInit {
     this.unitServ.findAll().subscribe({
       next: res => {
         this.availableUnits = res;
-        console.log(this.availableUnits)
         this.item.unit = this.availableUnits[0];
       },
       error: () => {
@@ -140,7 +139,6 @@ export class ItemCreateEditComponent implements OnInit {
     if (this.item.ean == '') {
       this.item.ean = null;
     }
-    console.log('is form valid?', form.valid, this.item);
 
     if (form.valid) {
       let observable: Observable<ItemDto>;
@@ -238,7 +236,6 @@ export class ItemCreateEditComponent implements OnInit {
   }
 
   updateItemUnit(unit: Unit): void {
-    console.log(unit.name + "fdafsd");
     this.item.unit = unit;
   }
 
@@ -259,7 +256,6 @@ export class ItemCreateEditComponent implements OnInit {
     o.subscribe({
       next: data => {
         this.notification.success("EAN data successfully retrieved.", "Success");
-        console.log("Loaded EAN number:", data)
         if (data != null) {
           this.item = {
             ...this.item,
@@ -273,14 +269,12 @@ export class ItemCreateEditComponent implements OnInit {
           };
         } else {
           this.notification.warning("No data found for EAN number.", "No Data");
-          console.log("No data found for EAN number:", ean)
         }
       },
       error: error => {
         if (wasFromScanner) {
           this.notification.error("An error occurred while fetching EAN data.", "Error");
         }
-        console.log("Failed at loading EAN number:", error);
       }
     })
   }
@@ -304,6 +298,10 @@ export class ItemCreateEditComponent implements OnInit {
         this.notification.error(`Item ${this.item.productName} could not be deleted`, "Error");
       }
     });
+  }
+
+  getIdFormatForDeleteModal(item:ItemDto): string {
+    return `${item.productName}${item.itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 
   public compareUnitObjects(itemUnit: Unit, availableUnit: Unit): boolean {
