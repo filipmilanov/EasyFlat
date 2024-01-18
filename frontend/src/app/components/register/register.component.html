@@ -16,9 +16,7 @@
               <input data-cy="first-name-input" type="text" name="firstName" formControlName="firstName" class="form-control" id="firstName"
                      aria-describedby="firstNameHelp" placeholder="Enter First name">
               <div *ngIf="submitted && registerForm.controls.firstName.errors" class="error">
-                <small data-cy="error-first-name" class="form-text text-warning" *ngIf="registerForm.controls.firstName.errors?.required">Your first name is
-                  required!
-                </small>
+
               </div>
             </div>
 
@@ -27,9 +25,7 @@
               <input data-cy="last-name-input" type="text" name="lastName" formControlName="lastName" class="form-control" id="lastName"
                      aria-describedby="lastNameHelp" placeholder="Enter Last name">
               <div *ngIf="submitted && registerForm.controls.lastName.errors" class="error">
-                <small data-cy="error-last-name" class="form-text text-warning" *ngIf="registerForm.controls.lastName.errors?.required">Your last name is
-                  required!
-                </small>
+
               </div>
             </div>
 
@@ -38,9 +34,7 @@
               <input data-cy="email-input" type="text" name="email" formControlName="email" class="form-control" id="inputEmail"
                      aria-describedby="emailHelp" placeholder="Enter Email">
               <div *ngIf="submitted && registerForm.controls.email.errors" class="error">
-                <small data-cy="error-email" class="form-text text-warning" *ngIf="registerForm.controls.email.errors?.required">Your Email is
-                  required!
-                </small>
+
               </div>
             </div>
 
@@ -48,27 +42,13 @@
               <label for="password">Password</label>
               <input data-cy="password-input" type="password" name="password" formControlName="password" class="form-control" id="password"
                      placeholder="Password">
-              <div *ngIf="submitted && registerForm.controls.password.errors" class="error">
-                <small data-cy="error-password" class="form-text text-warning" *ngIf="registerForm.controls.password.errors?.required">Your password
-                  is
-                  required!
-                </small>
-                <small data-cy="error-password-invalid" class="form-text text-warning" *ngIf="registerForm.controls.password.errors?.minlength">Your password
-                  must be at least 8 characters long!
-                </small>
-              </div>
+              <div *ngIf="submitted && registerForm.controls.password.errors" class="error"></div>
 
               <label for="password2">Repeat password</label>
               <input type="password" name="password2" formControlName="password2" class="form-control" id="password2"
                      placeholder="Repeat password">
               <div *ngIf="submitted && registerForm.controls.password.errors" class="error">
-                <small class="form-text text-warning" *ngIf="registerForm.controls.password.errors?.required">Repeating your password
-                  is
-                  required!
-                </small>
-                <small class="form-text text-warning" *ngIf="registerForm.controls.password.errors?.minlength">Your password
-                  must be at least 8 characters long!
-                </small>
+
               </div>
             </div>
 

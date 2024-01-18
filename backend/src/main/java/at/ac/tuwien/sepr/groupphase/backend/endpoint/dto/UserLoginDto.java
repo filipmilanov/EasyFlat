@@ -10,7 +10,7 @@ import java.util.Objects;
 public class UserLoginDto {
 
     @NotBlank(message = "Email cannot be empty")
-    @Email
+    @Email(message = "Email is not in a valid form")
     private String email;
 
     @NotBlank(message = "Password cannot be empty")

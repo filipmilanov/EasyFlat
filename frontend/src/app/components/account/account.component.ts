@@ -135,17 +135,12 @@ export class AccountComponent implements OnInit {
   update(): void {
     this.submitted = true;
     const formValue = this.accountForm.value;
-    const password = formValue.password;
 
-    if (password === '' || this.accountForm.get('password').untouched) {
-      delete formValue.password;
-    }
-      const userDetail: UserDetail = new UserDetail(this.user.id,this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,  this.accountForm.controls.email.value, null , this.accountForm.controls.password.value,this.accountForm.controls.admin.value, this.user.points);
+      const userDetail: UserDetail = new UserDetail(this.user.id,this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,  this.accountForm.controls.email.value, null , this.user.password,this.accountForm.controls.admin.value, this.user.points);
       console.log(userDetail)
       this.authService.update(userDetail).subscribe({
         next: () => {
-          console.log('Successfully updated user: ' + userDetail.email);
-          this.notification.success('Successfully updated user: ' + userDetail.email)
+          this.notification.success('Successfully updated user: ' + this.user.firstName + ' ' + this.user.lastName)
         },
         error: error => {
           console.log('Could not update due to:');
