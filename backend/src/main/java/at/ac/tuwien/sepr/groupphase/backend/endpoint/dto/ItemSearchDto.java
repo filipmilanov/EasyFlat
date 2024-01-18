@@ -10,7 +10,7 @@ public record ItemSearchDto(
     Boolean alwaysInStock,
     String productName,
     String fillLevel,
-    ItemOrderType orderType
-
+    ItemOrderType orderType,
+    Boolean desc
 ) {
 }

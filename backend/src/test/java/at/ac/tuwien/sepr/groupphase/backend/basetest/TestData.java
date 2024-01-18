@@ -99,4 +99,42 @@ public interface TestData {
         .digitalStorage(validDigitalStorageDto)
         .build();
 
+    ItemDto validInStockItemDto2 = ItemDtoBuilder.builder()
+        .ean("1234567890124")
+        .generalName("MilkForTest2")
+        .productName("Soja Milk2")
+        .alwaysInStock(false)
+        .quantityCurrent(101.0)
+        .quantityTotal(101.0)
+        .unit(ml)
+        .description("Soja Milk of a super brand")
+        .brand("Super Brand")
+        .digitalStorage(validDigitalStorageDto)
+        .build();
+
+    ItemDto validInStockItemDto3 = ItemDtoBuilder.builder()
+        .ean("1234567890125")
+        .generalName("Bred")
+        .productName("Bred from Stroek")
+        .alwaysInStock(false)
+        .quantityCurrent(500.0)
+        .quantityTotal(500.0)
+        .unit(g)
+        .description("Bred")
+        .brand("Stroek")
+        .digitalStorage(validDigitalStorageDto)
+        .build();
+
+    ItemDto validInStockItemDto4 = ItemDtoBuilder.builder()
+        .ean("1234567890126")
+        .generalName("Bred2")
+        .productName("Bred from Stroek")
+        .alwaysInStock(false)
+        .quantityCurrent(1.0)
+        .quantityTotal(1.0)
+        .unit(kg)
+        .description("Bred")
+        .brand("Stroek")
+        .digitalStorage(validDigitalStorageDto)
+        .build();
 }
