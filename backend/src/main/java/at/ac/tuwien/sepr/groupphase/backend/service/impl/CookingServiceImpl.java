@@ -260,6 +260,7 @@ public class CookingServiceImpl implements CookingService {
             toAdd = toAdd.withExtendedIngredients(matchedIngr);
             recipesDto.add(toAdd);
         }
+
         return recipesDto;
     }
 
