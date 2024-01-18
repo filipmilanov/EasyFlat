@@ -146,8 +146,8 @@ public class CustomUserDetailService implements UserService {
     @Transactional
     public UserDetailDto update(UserDetailDto userDetailDto) throws ValidationException, ConflictException {
         userValidator.validateForUpdate(userDetailDto);
-        if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
-            ApplicationUser user = userRepository.findUserByEmail(userDetailDto.getEmail());
+        ApplicationUser user = userRepository.findApplicationUserById(userDetailDto.getId());
+        if (user != null) {
             user.setFirstName(userDetailDto.getFirstName());
             user.setLastName(userDetailDto.getLastName());
             user.setEmail(userDetailDto.getEmail());
