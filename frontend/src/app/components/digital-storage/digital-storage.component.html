@@ -47,14 +47,13 @@
              [(ngModel)]="searchParameters.orderBy" [value]="OrderType.QUANTITY_CURRENT"
              (change)="loadStorage()">
       <label class="btn btn-outline-primary" for="orderQuantity">Quantity</label>
+
+      <app-sort-button class="btn btn-outline-primary"
+                       [(isDescending)]="this.searchParameters.desc"
+                       (isDescendingChange)="loadStorage()">
+      </app-sort-button>
     </div>
-    <div>
-      <div>
-        <app-sort-button [(isDescending)]="this.searchParameters.desc"
-                         (isDescendingChange)="loadStorage()">
-        </app-sort-button>
-      </div>
-    </div>
+
   </div>
 </form>
 
