@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Random;
 
 @Profile({"generateData", "test"})
 @Component("ApplicationUserDataGenerator")
@@ -31,7 +32,8 @@ public class ApplicationUserDataGenerator {
 
     @PostConstruct
     public void generateApplicationUsers() {
-        Faker faker = new Faker();
+        Faker faker = new Faker(new Random(24012024));
+
 
         LOGGER.debug("generating {} User Entities", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
