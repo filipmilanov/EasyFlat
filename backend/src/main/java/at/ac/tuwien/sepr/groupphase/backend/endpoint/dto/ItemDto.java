@@ -40,8 +40,8 @@ public record ItemDto(
     LocalDate expireDate,
     @Size(max = 200, message = "The description cannot have more than 200 characters")
     String description,
-    @Min(value = 0, message = "The price must be at least €0.00")
-    @Max(value = 1000000, message = "The price cannot be more than €10000")
+    @Min(value = 1, message = "The price must be at least €0.01")
+    @Max(value = 1_000_000_00, message = "The price cannot be more than €1.000.000")
     Long priceInCent,
     Boolean alwaysInStock,
     @Min(value = 0, message = "The minimum quantity must be at least 0")
