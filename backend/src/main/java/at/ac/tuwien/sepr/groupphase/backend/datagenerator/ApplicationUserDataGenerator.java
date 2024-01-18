@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import com.github.javafaker.Faker;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,14 +31,16 @@ public class ApplicationUserDataGenerator {
 
     @PostConstruct
     public void generateApplicationUsers() {
+        Faker faker = new Faker();
+
         LOGGER.debug("generating {} User Entities", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             ApplicationUser user = new ApplicationUser();
-            user.setFirstName("First" + (i + 1));
-            user.setLastName("Last" + (i + 1));
-            user.setEmail("user" + (i + 1) + "@email.at");
+            user.setFirstName(faker.name().firstName());
+            user.setLastName(faker.name().lastName());
+            user.setEmail(faker.internet().emailAddress());
             user.setPassword(passwordEncoder.encode("12341234"));
-            user.setAdmin(false);
+            user.setAdmin(i % 5 == 0);
 
             SharedFlat sharedFlat = new SharedFlat();
             sharedFlat.setId((long) (i % 5 + 1));
