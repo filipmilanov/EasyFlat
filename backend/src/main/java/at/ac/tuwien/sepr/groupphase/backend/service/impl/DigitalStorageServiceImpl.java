@@ -141,31 +141,9 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         );
 
         List<ItemListDto> groupedItems = prepareListItemsForStorage(allDigitalStorageItems);
-        return groupedItems.stream().sorted((g1, g2) -> {
-            if (searchItem.orderType() == null) {
-                return 0;
-            }
-            if (searchItem.orderType() == ItemOrderType.QUANTITY_CURRENT) {
-                if (g1.quantityCurrent() == null) {
-                    return -1;
-                }
-                if (g2.quantityCurrent() == null) {
-                    return 1;
-                }
-                return g1.quantityCurrent().compareTo(g2.quantityCurrent());
-            } else if (searchItem.orderType() == ItemOrderType.PRODUCT_NAME) {
-                if (g1.generalName() == null) {
-                    return 1;
-                }
-                if (g2.generalName() == null) {
-                    return -1;
-                }
-                return g1.generalName().compareTo(g2.generalName());
-            } else {
-                return 0;
-            }
-        }).toList();
+        return groupedItems.stream().sorted((g1, g2) -> sortItems(searchItem, g1, g2)).toList();
     }
+
 
     /**
      * The create method is only used for creating storages used in digital storage tests.
@@ -228,5 +206,30 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             toRet.add(new ItemListDto(item.getKey(), item.getValue()[0], item.getValue()[2], item.getValue()[1].longValue(), UnitDtoBuilder.builder().name(itemUnits.get(item.getKey()).getName()).build()));
         }
         return toRet;
+    }
+
+    private static int sortItems(ItemSearchDto searchItem, ItemListDto g1, ItemListDto g2) {
+        if (searchItem.orderType() == null) {
+            return 0;
+        }
+        if (searchItem.orderType() == ItemOrderType.QUANTITY_CURRENT) {
+            if (g1.quantityCurrent() == null) {
+                return -1;
+            }
+            if (g2.quantityCurrent() == null) {
+                return 1;
+            }
+            return g1.quantityCurrent().compareTo(g2.quantityCurrent());
+        } else if (searchItem.orderType() == ItemOrderType.PRODUCT_NAME) {
+            if (g1.generalName() == null) {
+                return 1;
+            }
+            if (g2.generalName() == null) {
+                return -1;
+            }
+            return g1.generalName().compareTo(g2.generalName());
+        } else {
+            return 0;
+        }
     }
 }
