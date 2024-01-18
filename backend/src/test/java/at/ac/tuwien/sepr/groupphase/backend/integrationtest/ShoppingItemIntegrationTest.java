@@ -112,7 +112,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
             "Store",
             new DigitalStorageDto(1L, "Storage", null),
             null,
-            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000", null))), // Labels
+            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
             new ShoppingListDto(1L, "Default", 0));
 
     }
@@ -201,7 +201,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
             "Store",
             new DigitalStorageDto(1L, "Storage", null),
             null,
-            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000", null))), // Labels
+            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
             new ShoppingListDto(1L, "Default", 0));
         MvcResult mvcResult = mockMvc.perform(put(this.baseUri + "/" + updated.itemId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -239,7 +239,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
             "Store",
             new DigitalStorageDto(1L, "Storage", null),
             null,
-            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000", null))), // Labels
+            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
             new ShoppingListDto(1L, "Default", 0));
         MvcResult mvcResult = mockMvc.perform(put(this.baseUri + "/" + updated.itemId())
                 .contentType(MediaType.APPLICATION_JSON)

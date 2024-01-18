@@ -149,7 +149,6 @@ export class ShoppingItemCreateEditComponent implements OnInit {
           if (this.item.generalName == null) {
             this.item.generalName = this.item.productName;
           }
-          console.log(this.item)
           observable = this.shoppingService.createItem(this.item);
           break;
         case ItemCreateEditMode.edit:

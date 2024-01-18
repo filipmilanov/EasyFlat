@@ -364,7 +364,6 @@ public class ChoreServiceImpl implements ChoreService {
         return userRepository.save(existingUser);
     }
 
-    @Transactional
     public byte[] generatePdf() throws IOException, AuthenticationException {
         String htmlContent = this.createChoreListHtml();
 
@@ -424,22 +423,21 @@ public class ChoreServiceImpl implements ChoreService {
     public void deleteAllUserPreference() {
         ApplicationUser user = authService.getUserFromToken();
         List<ApplicationUser> users = userRepository.findAllBySharedFlat(user.getSharedFlat());
-        for (int i = 0; i < users.size(); i++) {
-            users.get(i).setPreference(null);
-            userRepository.save(users.get(i));
+        for (ApplicationUser applicationUser : users) {
+            applicationUser.setPreference(null);
+            userRepository.save(applicationUser);
         }
         List<Preference> preferences = preferenceRepository.findAllByUserSharedFlatIs(user.getSharedFlat());
-        for (int i = 0; i < preferences.size(); i++) {
-            preferences.get(i).setUserId(null);
-            preferenceRepository.save(preferences.get(i));
-            preferenceRepository.deleteById(preferences.get(i).getId());
+        for (Preference preference : preferences) {
+            preference.setUserId(null);
+            preferenceRepository.save(preference);
+            preferenceRepository.deleteById(preference.getId());
         }
     }
 
-    @Transactional
     private String createChoreListHtml() throws AuthenticationException {
         List<Chore> chores = this.getChores(new ChoreSearchDto(null, null));
-        if (chores.size() == 0) {
+        if (chores.isEmpty()) {
             throw new NotFoundException("No chores found to export!");
         }
         chores.sort(Comparator.comparing(Chore::getEndDate));

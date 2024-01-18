@@ -6,7 +6,6 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ItemLabelValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ShoppingItemValidator;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -27,11 +26,8 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
 
     private final Validator validator;
 
-    private final ItemLabelValidator itemLabelValidator;
-
-    public ShoppingItemValidatorImpl(Validator validator, ItemLabelValidator itemLabelValidator) {
+    public ShoppingItemValidatorImpl(Validator validator) {
         this.validator = validator;
-        this.itemLabelValidator = itemLabelValidator;
     }
 
     @Override
