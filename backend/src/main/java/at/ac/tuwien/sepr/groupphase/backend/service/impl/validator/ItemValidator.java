@@ -148,7 +148,8 @@ public class ItemValidator {
             boolean isSuperUnit = generalNameUnitList.stream()
                 .anyMatch(unit -> isUnitSubUnitOf(unit.getName(), persistedUnit.get()));
             if (!isSubUnit && !isSuperUnit) {
-                errors.add("The given unit does not match the general name");
+                Optional<Unit> storedUnit = generalNameUnitList.stream().findAny();
+                errors.add("The given unit is not compatible with the unit ( " + storedUnit.get().getName() + " ) specified for this product category");
             }
         }
 
