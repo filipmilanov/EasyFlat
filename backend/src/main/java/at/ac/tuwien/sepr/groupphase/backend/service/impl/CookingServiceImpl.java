@@ -51,8 +51,6 @@ import com.deepl.api.Translator;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -68,7 +66,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class CookingServiceImpl implements CookingService {
@@ -276,7 +273,7 @@ public class CookingServiceImpl implements CookingService {
                 }
             }
 
-            recipe = recipe.withId(null).withSummary(summary);
+            recipe = recipe.withId(null).withSummaryAndWithoutMissingIngredients(summary);
 
         }
         recipeValidator.validateForCreate(recipe);
