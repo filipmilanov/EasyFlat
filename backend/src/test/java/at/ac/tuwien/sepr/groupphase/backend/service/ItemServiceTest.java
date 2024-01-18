@@ -19,8 +19,8 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,8 +32,11 @@ import java.util.List;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.g;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validInStockItemDto;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataConverter.convertToAlwaysInStockItemDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -715,6 +718,25 @@ class ItemServiceTest {
             () -> assertThat(result).isNotEmpty(),
             () -> assertThat(result).isNotNull(),
             () -> assertEquals(result.size(), 1)
+        );
+    }
+
+    @Test
+    @DisplayName("Move Item from InStock to AlwaysInStock, and then the same Item back to Instock - Refs: #339")
+    public void moveItemsBetweenInSockAndAlwaysInStock() throws ValidationException, AuthorizationException, ConflictException {
+        // given
+        DigitalStorageItem item = service.create(validInStockItemDto);
+
+        // when + then
+        ItemDto toAlwaysInStockItemDto = convertToAlwaysInStockItemDto(
+            validInStockItemDto.withId(item.getItemId()),
+            10L
+        );
+
+        assertDoesNotThrow(() -> {
+                DigitalStorageItem updatedItem = service.update(toAlwaysInStockItemDto);
+                service.update(validInStockItemDto.withId(updatedItem.getItemId()));
+            }
         );
     }
 }

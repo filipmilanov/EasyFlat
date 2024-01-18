@@ -1,16 +1,15 @@
 package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -87,5 +86,20 @@ public interface TestData {
         null);
 
     ApplicationUser testUser = new ApplicationUser(null, "", "", "user@email.com", "password", Boolean.FALSE, null);
+
+    DigitalStorageDto validDigitalStorageDto = new DigitalStorageDto(1L, "Storage", null);
+    ItemDto validInStockItemDto = ItemDtoBuilder.builder()
+        .ean("1234567890123")
+        .generalName("Milk")
+        .productName("Soja Milk")
+        .alwaysInStock(false)
+        .quantityCurrent(100.0)
+        .quantityTotal(100.0)
+        .unit(ml)
+        .description("Soja Milk of a super brand")
+        .brand("Super Brand")
+        .digitalStorage(validDigitalStorageDto)
+        .build();
+
 
 }
