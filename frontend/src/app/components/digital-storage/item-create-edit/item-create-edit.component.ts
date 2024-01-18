@@ -11,6 +11,11 @@ import {Unit} from "../../../dtos/unit";
 import {UnitService} from "../../../services/unit.service";
 import {NgxScannerQrcodeComponent, ScannerQRCodeResult} from "ngx-scanner-qrcode";
 import {OpenFoodFactService} from "../../../services/open-food-fact.service";
+import {FinanceService} from "../../../services/finance.service";
+import {DebitDto, ExpenseDto, ExpenseSearchDto, SplitBy} from "../../../dtos/expenseDto";
+import {AuthService} from "../../../services/auth.service";
+import {UserListDto} from "../../../dtos/user";
+import {UserService} from "../../../services/user.service";
 
 export enum ItemCreateEditMode {
   create,
@@ -43,7 +48,10 @@ export class ItemCreateEditComponent implements OnInit {
     private route: ActivatedRoute,
     private notification: ToastrService,
     private unitServ: UnitService,
-    private openFoodFactService: OpenFoodFactService
+    private openFoodFactService: OpenFoodFactService,
+    private financeService: FinanceService,
+    private authService: AuthService,
+    private userService: UserService,
   ) {
   }
 
@@ -156,6 +164,8 @@ export class ItemCreateEditComponent implements OnInit {
       }
       observable.subscribe({
         next: () => {
+          this.createExpenseFromItemDto();
+
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
           this.router.navigate(['/digital-storage']);
         },
@@ -173,6 +183,56 @@ export class ItemCreateEditComponent implements OnInit {
       });
     }
   }
+
+  private createExpenseFromItemDto() {
+    this.authService.getUser(this.authService.getToken()).subscribe({
+      next: activeUser => {
+        this.userService.findFlatmates().subscribe({
+          next: (users) => {
+            let debitUsers: DebitDto[] = users.map(user => {
+              return {
+                user: user,
+                splitBy: SplitBy.EQUAL,
+                value: this.priceInEuro * 100 / users.length
+              }
+            });
+            let expenseToCreate: ExpenseDto = {
+              title: 'Bought ' + this.item.productName,
+              description: 'Bought ' + this.item.quantityTotal + ' ' + this.item.unit.name + ' of ' + this.item.productName + ' for ' + this.priceInEuro + ' €.',
+              amountInCents: this.item.priceInCent,
+              createdAt: new Date(),
+              paidBy: {
+                id: Number(activeUser.id),
+                firstName: activeUser.firstName,
+                lastName: activeUser.lastName,
+              },
+              debitUsers: debitUsers,
+              items: [this.item],
+              isRepeating: false,
+              periodInDays: null,
+              repeatingExpenseType: null
+            };
+            this.financeService.createExpense(expenseToCreate).subscribe({
+              next: () => {
+                this.notification.success(`Item ${this.item.productName} successfully added to finance.`, "Success");
+              },
+              error: error => {
+                console.error(`Item ${this.item.productName} could not be added to finance: ${error}`);
+              }
+            });
+          },
+          error: error => {
+            this.notification.error('Cannot find other flatmates, cannot add expense', "Error");
+          }
+        });
+
+      },
+      error: error => {
+        this.notification.error('Failed to load User, cannot add expense', "Error");
+      }
+    });
+  }
+
 
   addIngredient(ingredient: string): void {
     if (ingredient == undefined || ingredient.length == 0) {
@@ -300,7 +360,7 @@ export class ItemCreateEditComponent implements OnInit {
     });
   }
 
-  getIdFormatForDeleteModal(item:ItemDto): string {
+  getIdFormatForDeleteModal(item: ItemDto): string {
     return `${item.productName}${item.itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 
