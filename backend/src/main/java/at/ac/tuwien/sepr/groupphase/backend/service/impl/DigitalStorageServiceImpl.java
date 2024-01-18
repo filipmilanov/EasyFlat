@@ -213,11 +213,9 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             return 0;
         }
         if (searchItem.orderType() == ItemOrderType.QUANTITY_CURRENT) {
-            if (g1.quantityCurrent() == null) {
-                return -1;
-            }
-            if (g2.quantityCurrent() == null) {
-                return 1;
+            int compareUnitNames = g1.unit().name().compareTo(g2.unit().name());
+            if (compareUnitNames != 0) {
+                return compareUnitNames;
             }
             return g1.quantityCurrent().compareTo(g2.quantityCurrent());
         } else if (searchItem.orderType() == ItemOrderType.GENERAL_NAME) {
