@@ -90,7 +90,7 @@ public interface TestData {
     DigitalStorageDto validDigitalStorageDto = new DigitalStorageDto(1L, "Storage", null);
     ItemDto validInStockItemDto = ItemDtoBuilder.builder()
         .ean("1234567890123")
-        .generalName("Milk")
+        .generalName("MilkForTest")
         .productName("Soja Milk")
         .alwaysInStock(false)
         .quantityCurrent(100.0)
@@ -100,6 +100,5 @@ public interface TestData {
         .brand("Super Brand")
         .digitalStorage(validDigitalStorageDto)
         .build();
-
 
 }

@@ -34,6 +34,8 @@ import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.g;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validInStockItemDto;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataConverter.convertToAlwaysInStockItemDto;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataConverter.updateProductName;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataConverter.updateUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -738,5 +740,43 @@ class ItemServiceTest {
                 service.update(validInStockItemDto.withId(updatedItem.getItemId()));
             }
         );
+    }
+
+    @Test
+    @DisplayName("Create two itemes with same general name and different units - Refs: #253")
+    public void createTwoItemsWithSameGeneralNameAndDifferentUnits() throws ValidationException, AuthorizationException, ConflictException {
+        // given
+        ItemDto itemDtoWithDifferentUnit = updateUnit(
+            validInStockItemDto,
+            UnitDtoBuilder.builder().name("g").build()
+        );
+        DigitalStorageItem createdDigitalStorageItem = service.create(validInStockItemDto);
+
+        // when + then
+        String errorMessage = assertThrows(ConflictException.class, () ->
+            service.create(itemDtoWithDifferentUnit)
+        ).getMessage();
+
+        assertThat(errorMessage).containsSubsequence("unit");
+    }
+
+    @Test
+    @DisplayName("Update Item within same general name to different unit - Refs: #253")
+    public void updateItemWithSameGeneralNameToDifferentUnit() throws ValidationException, AuthorizationException, ConflictException {
+        // given
+        DigitalStorageItem createdDigitalStorageItem = service.create(validInStockItemDto);
+        DigitalStorageItem createdDigitalStorageItem2 = service.create(updateProductName(validInStockItemDto, "Test2"));
+
+        ItemDto itemDtoWithDifferentUnit = updateUnit(
+            validInStockItemDto.withId(createdDigitalStorageItem.getItemId()),
+            UnitDtoBuilder.builder().name("g").build()
+        );
+
+        // when + then
+        String errorMessage = assertThrows(ConflictException.class, () ->
+            service.update(itemDtoWithDifferentUnit)
+        ).getMessage();
+
+        assertThat(errorMessage).containsSubsequence("unit");
     }
 }
