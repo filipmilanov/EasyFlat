@@ -35,11 +35,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -141,7 +143,14 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         );
 
         List<ItemListDto> groupedItems = prepareListItemsForStorage(allDigitalStorageItems);
-        return groupedItems.stream().sorted((g1, g2) -> sortItems(searchItem, g1, g2)).toList();
+        List<ItemListDto> orderedGroups = groupedItems.stream()
+            .sorted((g1, g2) ->
+                sortItems(searchItem, g1, g2)
+            ).collect(Collectors.toList());
+        if (searchItem.desc() == null || searchItem.desc()) {
+            Collections.reverse(orderedGroups);
+        }
+        return orderedGroups;
     }
 
 
@@ -219,12 +228,6 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             }
             return g1.quantityCurrent().compareTo(g2.quantityCurrent());
         } else if (searchItem.orderType() == ItemOrderType.GENERAL_NAME) {
-            if (g1.generalName() == null) {
-                return 1;
-            }
-            if (g2.generalName() == null) {
-                return -1;
-            }
             return g1.generalName().compareTo(g2.generalName());
         } else {
             return 0;
