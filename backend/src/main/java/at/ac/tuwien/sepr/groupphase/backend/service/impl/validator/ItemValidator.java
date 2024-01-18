@@ -2,12 +2,12 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
-import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -16,6 +16,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -31,11 +32,12 @@ public class ItemValidator {
 
     public void validateForCreate(ItemDto itemDto,
                                   List<DigitalStorage> digitalStorageList,
-                                  List<Unit> unitList) throws ConflictException, ValidationException {
+                                  List<Unit> unitList,
+                                  List<DigitalStorageItem> digitalStorageItemList) throws ConflictException, ValidationException {
         LOGGER.trace("validateForCreate({})", itemDto);
 
         checkValidationForCreate(itemDto);
-        checkConflictForCreate(itemDto, digitalStorageList, unitList);
+        checkConflictForCreate(itemDto, digitalStorageList, unitList, digitalStorageItemList);
     }
 
     private void checkValidationForCreate(ItemDto itemDto) throws ValidationException {
@@ -49,7 +51,8 @@ public class ItemValidator {
 
     private void checkConflictForCreate(ItemDto itemDto,
                                         List<DigitalStorage> digitalStorageList,
-                                        List<Unit> unitList) throws ConflictException {
+                                        List<Unit> unitList,
+                                        List<DigitalStorageItem> digitalStorageItemList) throws ConflictException {
         LOGGER.trace("checkItemForCreate({}, {})", itemDto, digitalStorageList);
 
         List<String> errors = new ArrayList<>();
@@ -79,18 +82,56 @@ public class ItemValidator {
             errors.add("The given Unit does not exists");
         }
 
+        List<Unit> generalNameUnitList = digitalStorageItemList.stream()
+            .filter(digitalStorageItem ->
+                Objects.equals(digitalStorageItem.getItemCache().getGeneralName(), itemDto.generalName())
+            ).map(item ->
+                item.getItemCache().getUnit()
+            ).toList();
+
+        Optional<Unit> persistedUnit = unitList.stream()
+            .filter(unit1 -> unit1.getName().equals(itemDto.unit().name()))
+            .findFirst();
+
+        if (persistedUnit.isPresent() && !generalNameUnitList.isEmpty()) {
+            boolean isSubUnit = generalNameUnitList.stream()
+                .anyMatch(unit -> isUnitSubUnitOf(itemDto.unit().name(), unit));
+            boolean isSuperUnit = generalNameUnitList.stream()
+                .anyMatch(unit -> isUnitSubUnitOf(unit.getName(), persistedUnit.get()));
+            if (!isSubUnit && !isSuperUnit) {
+                errors.add("The given unit does not match the general name");
+            }
+        }
+
         if (!errors.isEmpty()) {
             throw new ConflictException("There is a conflict with persisted data", errors);
         }
     }
 
+    private boolean isUnitSubUnitOf(String unitName, Unit parentUnit) {
+        if (unitName.equals(parentUnit.getName())) {
+            return true;
+        }
+        if (parentUnit.getSubUnit().isEmpty()) {
+            return false;
+        }
+
+        for (Unit childUnit : parentUnit.getSubUnit()) {
+            if (isUnitSubUnitOf(unitName, childUnit)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void validateForUpdate(ItemDto itemDto,
                                   List<DigitalStorage> digitalStorageList,
-                                  List<Unit> unitList) throws ConflictException, ValidationException {
+                                  List<Unit> unitList,
+                                  List<DigitalStorageItem> digitalStorageItemList) throws ConflictException, ValidationException {
         LOGGER.trace("validateForUpdate({})", itemDto);
 
         checkValidationForUpdate(itemDto);
-        checkConflictForUpdate(itemDto, digitalStorageList, unitList);
+        checkConflictForUpdate(itemDto, digitalStorageList, unitList, digitalStorageItemList);
     }
 
     private void checkValidationForUpdate(ItemDto itemDto) throws ValidationException {
@@ -104,7 +145,8 @@ public class ItemValidator {
 
     public void checkConflictForUpdate(ItemDto itemDto,
                                        List<DigitalStorage> digitalStorageList,
-                                       List<Unit> unitList) throws ConflictException {
+                                       List<Unit> unitList,
+                                       List<DigitalStorageItem> digitalStorageItemList) throws ConflictException {
         LOGGER.trace("checkConflictForUpdate({}, {})", itemDto, digitalStorageList);
 
         List<String> errors = new ArrayList<>();
@@ -132,6 +174,27 @@ public class ItemValidator {
 
         if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
             errors.add("The given Unit does not exists");
+        }
+
+        List<Unit> generalNameUnitList = digitalStorageItemList.stream()
+            .filter(digitalStorageItem ->
+                Objects.equals(digitalStorageItem.getItemCache().getGeneralName(), itemDto.generalName())
+            ).map(item ->
+                item.getItemCache().getUnit()
+            ).toList();
+
+        Optional<Unit> persistedUnit = unitList.stream()
+            .filter(unit1 -> unit1.getName().equals(itemDto.unit().name()))
+            .findFirst();
+
+        if (persistedUnit.isPresent() && !generalNameUnitList.isEmpty()) {
+            boolean isSubUnit = generalNameUnitList.stream()
+                .anyMatch(unit -> isUnitSubUnitOf(itemDto.unit().name(), unit));
+            boolean isSuperUnit = generalNameUnitList.stream()
+                .anyMatch(unit -> isUnitSubUnitOf(unit.getName(), persistedUnit.get()));
+            if (!isSubUnit && !isSuperUnit) {
+                errors.add("The given unit does not match the general name");
+            }
         }
 
         if (!errors.isEmpty()) {

@@ -136,7 +136,10 @@ public class ItemServiceImpl implements ItemService {
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         List<Unit> unitList = unitService.findAll();
-        itemValidator.validateForCreate(itemDto, digitalStorageList, unitList);
+        List<DigitalStorageItem> digitalStorageItemList = itemRepository.findAllByDigitalStorage_StorageId(
+            applicationUser.getSharedFlat().getDigitalStorage().getStorageId()
+        );
+        itemValidator.validateForCreate(itemDto, digitalStorageList, unitList, digitalStorageItemList);
 
         if (!(Objects.equals(applicationUser.getSharedFlat().getDigitalStorage().getStorageId(), itemDto.digitalStorage().storageId()))) {
             throw new AuthorizationException("The given digital storage does not belong to the user", List.of());
@@ -176,7 +179,10 @@ public class ItemServiceImpl implements ItemService {
 
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         List<Unit> unitList = unitService.findAll();
-        itemValidator.validateForUpdate(itemDto, digitalStorageList, unitList);
+        List<DigitalStorageItem> digitalStorageItemList = itemRepository.findAllByDigitalStorage_StorageId(
+            applicationUser.getSharedFlat().getDigitalStorage().getStorageId()
+        );
+        itemValidator.validateForUpdate(itemDto, digitalStorageList, unitList, digitalStorageItemList);
 
         if (!(Objects.equals(applicationUser.getSharedFlat().getDigitalStorage().getStorageId(), itemDto.digitalStorage().storageId()))) {
             throw new AuthorizationException("The given digital storage does not belong to the user", List.of());
