@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -56,7 +57,7 @@ public interface ChoreService {
      * @param choreIds List of chore IDs to be deleted.
      * @return List of remaining chores after deletion.
      */
-    List<Chore> deleteChores(List<Long> choreIds);
+    List<Chore> deleteChores(List<Long> choreIds) throws AuthorizationException;
 
     /**
      * Retrieves a list of all users.
@@ -91,7 +92,7 @@ public interface ChoreService {
      * @param newDate The new date for the repeated chore.
      * @return The repeated ChoreDto.
      */
-    ChoreDto repeatChore(Long choreId, Date newDate);
+    ChoreDto repeatChore(Long choreId, Date newDate) throws AuthorizationException;
 
     /**
      * Retrieves a list of unassigned chores.
