@@ -105,7 +105,7 @@ public class CookingServiceTest {
 
     @Test
     void testGetRecipeSuggestionFromAPI() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException, DeepLException, InterruptedException {
-
+        when(itemRepository.findAllByDigitalStorage_StorageId(any())).thenReturn(getMockedItemsWithoutMatching());
         mockAPIResponse();
 
         // when
@@ -117,15 +117,18 @@ public class CookingServiceTest {
         RecipeSuggestionDto actualRecipeSuggestionDto = result.get(0); // Assuming we are expecting a single result
         RecipeSuggestionDto expectedRecipeDto = getExpectedRecipeSuggestionDtoWithUnits();
 
-
         assertAll(
             () -> assertThat(actualRecipeSuggestionDto.id()).isEqualTo(expectedRecipeDto.id()),
             () -> assertThat(actualRecipeSuggestionDto.title()).isEqualTo(expectedRecipeDto.title()),
             () -> assertThat(actualRecipeSuggestionDto.servings()).isEqualTo(expectedRecipeDto.servings()),
             () -> assertThat(actualRecipeSuggestionDto.readyInMinutes()).isEqualTo(expectedRecipeDto.readyInMinutes()),
             () -> assertThat(actualRecipeSuggestionDto.summary()).isEqualTo(expectedRecipeDto.summary()),
-            () -> assertThat(actualRecipeSuggestionDto.extendedIngredients()).isEqualTo(expectedRecipeDto.extendedIngredients())
+            () -> assertThat(actualRecipeSuggestionDto.extendedIngredients())
+                .usingRecursiveComparison()
+                .ignoringFields("matchedItem")
+                .isEqualTo(expectedRecipeDto.extendedIngredients())
         );
+
 
     }
 
@@ -640,6 +643,31 @@ public class CookingServiceTest {
 
         ItemCache itemCache = new ItemCache();
         itemCache.setAlternativeNames(alternativeNames);
+        itemCache.setUnit(unit);
+        itemCache.setProductName("digitalStorageItem");
+
+        DigitalStorageItem item = new DigitalStorageItem();
+        item.setItemCache(itemCache);
+        item.setQuantityCurrent(1000d);
+        List<DigitalStorageItem> items = new ArrayList<>();
+        items.add(item);
+        return items;
+    }
+
+    private List<DigitalStorageItem> getMockedItemsWithoutMatching() {
+
+
+
+        Unit subUnit = new Unit();
+        subUnit.setName("g");
+
+        Unit unit = new Unit();
+        unit.setName("kg");
+        unit.setSubUnit(Set.of(subUnit));
+        unit.setConvertFactor(1000L);
+
+        ItemCache itemCache = new ItemCache();
+        itemCache.setAlternativeNames(new ArrayList<>());
         itemCache.setUnit(unit);
         itemCache.setProductName("digitalStorageItem");
 
