@@ -79,6 +79,7 @@ export class CookbookCardComponent {
   }
 
   getIdFormatForDeleteModal(recipe:RecipeSuggestion): string {
+    console.log(`${recipe.title}${recipe.id}`.replace(/[^a-zA-Z0-9]+/g, '') + "FROM COOKBOOK")
     return `${recipe.title}${recipe.id}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 }

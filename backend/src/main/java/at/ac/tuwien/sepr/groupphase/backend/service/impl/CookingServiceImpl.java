@@ -49,6 +49,7 @@ import com.deepl.api.DeepLException;
 import com.deepl.api.TextResult;
 import com.deepl.api.Translator;
 import jakarta.transaction.Transactional;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -267,11 +268,14 @@ public class CookingServiceImpl implements CookingService {
         if (recipe.id() != null) {
             RecipeDetailDto recipeWithSteps = getRecipeDetails(recipe.id());
             String summary = recipe.summary();
+            //Remove HTML tags
+            summary = Jsoup.parse(summary).text();
             if (recipeWithSteps.steps() != null) {
                 for (Step step : recipeWithSteps.steps().steps()) {
-                    summary += "<br>" + "<strong>Step " + step.number() + "</strong> : " + step.step();
+                    summary += "\r\n" + "Step " + step.number() + ": " + step.step();
                 }
             }
+
 
             recipe = recipe.withId(null).withSummaryAndWithoutMissingIngredients(summary);
 
