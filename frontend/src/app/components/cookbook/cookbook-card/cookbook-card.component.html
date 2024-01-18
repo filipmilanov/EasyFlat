@@ -1,6 +1,7 @@
 <app-confirm-delete-dialog
   deleteInfo="recipe"
   [deleteName]="getTruncated(recipe.title, 23)"
+  [deleteId]="recipe.id.toString()"
   (confirm)="delete()">
 </app-confirm-delete-dialog>
 <div class="card  mt-3 h-100" style="width: 20em; height: 16em">
@@ -12,11 +13,11 @@
   <!--  </div>-->
   <div class="card-body">
     <div style="height: 6rem">
-      <p [innerHTML]= " getTruncatedSummary()">
+      <p [innerHTML]=" getTruncatedSummary()">
 
       </p>
     </div>
-    <div class = "row" style="height: 2rem">
+    <div class="row" style="height: 2rem">
       <div class="col-6  ">
         <b>Servings: {{recipe.servings}}</b>
       </div>
@@ -28,7 +29,9 @@
     <div class="row justify-content-center h-100 ">
       <div class="col-3 mb-2 ">
         <button class="btn btn-outline-danger " data-bs-toggle="modal"
-                data-bs-target="#confirm-delete-modal" aria-label="Delete recipe">Delete</button>
+                [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModal(recipe)"
+                aria-label="Delete recipe">Delete
+        </button>
       </div>
       <div class="col-3 mb-2 ">
         <button class="btn btn-outline-info" (click)="detail()">Details</button>

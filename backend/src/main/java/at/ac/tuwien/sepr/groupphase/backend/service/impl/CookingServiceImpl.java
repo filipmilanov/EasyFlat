@@ -286,6 +286,7 @@ public class CookingServiceImpl implements CookingService {
         recipeEntity.setCookbook(cookbook);
         RecipeSuggestion createdRecipe = repository.save(recipeEntity);
         createdRecipe.setExtendedIngredients(ingredientList);
+
         return createdRecipe;
     }
 
@@ -322,14 +323,18 @@ public class CookingServiceImpl implements CookingService {
 
         RecipeSuggestion updatedRecipe = repository.save(oldRecipe);
         updatedRecipe.setExtendedIngredients(ingredientList);
+
         return updatedRecipe;
     }
 
     @Override
+    @Transactional
     public RecipeSuggestion deleteCookbookRecipe(Long id) throws AuthorizationException {
         RecipeSuggestionDto deletedRecipe = this.getCookbookRecipe(id);
         this.getCookbookIdForUser();
-        repository.delete(recipeMapper.dtoToEntity(deletedRecipe, recipeIngredientMapper.dtoListToEntityList(deletedRecipe.extendedIngredients())));
+        RecipeSuggestion toDelete = recipeMapper.dtoToEntity(deletedRecipe, recipeIngredientMapper.dtoListToEntityList(deletedRecipe.extendedIngredients()));
+        repository.deleteById(toDelete.getId());
+
         return recipeMapper.dtoToEntity(deletedRecipe, recipeIngredientMapper.dtoListToEntityList(deletedRecipe.extendedIngredients()));
     }
 

@@ -11,6 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -23,11 +25,11 @@ public class Cookbook {
 
     @Column
     private String title;
-
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private SharedFlat sharedFlat;
 
-    @OneToMany(mappedBy = "cookbook", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cookbook", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JsonIgnore
     List<RecipeSuggestion> recipes;
 
