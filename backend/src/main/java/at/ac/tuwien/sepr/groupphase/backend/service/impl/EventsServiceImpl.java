@@ -113,7 +113,7 @@ public class EventsServiceImpl implements EventsService {
             ApplicationUser user = authService.getUserFromToken();
 
             if (user.getSharedFlat().equals(existingEvent.getSharedFlat())) {
-                eventsRepository.delete(existingEvent);
+                eventsRepository.deleteById(existingEvent.getId());
 
                 return eventMapper.entityToDto(existingEvent, sharedFlatMapper.entityToWgDetailDto(existingEvent.getSharedFlat()));
             } else {
