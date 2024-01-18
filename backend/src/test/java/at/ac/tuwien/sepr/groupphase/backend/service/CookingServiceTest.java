@@ -5,12 +5,17 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookingSteps;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookingStepsBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.StepBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlternativeName;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
@@ -99,7 +104,7 @@ public class CookingServiceTest {
     }
 
     @Test
-    void testGetRecipeSuggestion() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException, DeepLException, InterruptedException {
+    void testGetRecipeSuggestionFromAPI() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException, DeepLException, InterruptedException {
 
         mockAPIResponse();
 
@@ -122,6 +127,26 @@ public class CookingServiceTest {
             () -> assertThat(actualRecipeSuggestionDto.extendedIngredients()).isEqualTo(expectedRecipeDto.extendedIngredients())
         );
 
+    }
+
+    @Test
+    void testGetRecipeDetailsFromAPI() {
+        mockAPIResponseForDetails();
+
+        // when
+        RecipeDetailDto actualRecipeDetailDto = cookingService.getRecipeDetails(1L);
+        RecipeDetailDto expectedRecipeDetailDto = getExpectedRecipeDetailDtoWithUnitsAndSteps();
+
+        // then
+        assertAll(
+            () -> assertThat(actualRecipeDetailDto.id()).isEqualTo(expectedRecipeDetailDto.id()),
+            () -> assertThat(actualRecipeDetailDto.title()).isEqualTo(expectedRecipeDetailDto.title()),
+            () -> assertThat(actualRecipeDetailDto.servings()).isEqualTo(expectedRecipeDetailDto.servings()),
+            () -> assertThat(actualRecipeDetailDto.readyInMinutes()).isEqualTo(expectedRecipeDetailDto.readyInMinutes()),
+            () -> assertThat(actualRecipeDetailDto.summary()).isEqualTo(expectedRecipeDetailDto.summary()),
+            () -> assertThat(actualRecipeDetailDto.extendedIngredients()).isEqualTo(expectedRecipeDetailDto.extendedIngredients()),
+            () -> assertThat(actualRecipeDetailDto.steps()).isEqualTo(expectedRecipeDetailDto.steps())
+        );
     }
 
     @Test
@@ -395,7 +420,25 @@ public class CookingServiceTest {
 
     }
 
+    @Test
+    void matchIngredientThanTheIngredientShouldBeMatchedInRecipeDetailDto(){
+        when(itemRepository.findAllByDigitalStorage_StorageId(any())).thenReturn(getMockedItems());
+        DigitalStorageItem digitalStorageItem = getMockedItems().get(0);
 
+        mockAPIResponseForDetails();
+        //when
+        RecipeDetailDto actualRecipeDetailDto = cookingService.getRecipeDetails(1L);
+
+        //then
+        RecipeIngredientDto matchedIngredient = actualRecipeDetailDto.extendedIngredients().get(3);
+        assertAll(
+            () -> assertThat(matchedIngredient.name()).isEqualTo("digitalStorageItem"),
+            () -> assertThat(matchedIngredient.matched()).isEqualTo(true),
+            () -> assertThat(matchedIngredient.matchedItem().productName()).isEqualTo(digitalStorageItem.getItemCache().getProductName()),
+            () -> assertThat(matchedIngredient.amount()).isEqualTo(100),
+            () -> assertThat(matchedIngredient.realName()).isEqualTo("Parmesan cheese")
+        );
+    }
 
     private void mockAPIResponse() {
         List<RecipeDto> mockedRecipesDtos = getRecipeDtos();
@@ -410,6 +453,21 @@ public class CookingServiceTest {
             .thenReturn(ResponseEntity.ok(mockedRecipesDtos));
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ref2)))
             .thenReturn(ResponseEntity.ok(mockedRecipeSuggestionDto));
+
+    }
+
+    private void mockAPIResponseForDetails() {
+        RecipeDetailDto mockedRecipeDetailDto = getRecipeDetailDtoWithoutUnitsAndSteps();
+        List<CookingSteps> mockedSteps = getCookingStepsDto();
+
+        ParameterizedTypeReference<RecipeDetailDto> ref = new ParameterizedTypeReference<RecipeDetailDto>() {
+        };
+        ParameterizedTypeReference<List<CookingSteps>> ref2 = new ParameterizedTypeReference<List<CookingSteps>>() {
+        };
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ref)))
+            .thenReturn(ResponseEntity.ok(mockedRecipeDetailDto));
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ref2)))
+            .thenReturn(ResponseEntity.ok(mockedSteps));
 
     }
 
@@ -444,7 +502,7 @@ public class CookingServiceTest {
                 RecipeIngredientDtoBuilder.builder()
                     .id(6L)
                     .name("Eggs")
-                    .unit("unit")
+                    .unit("pcs")
                     .amount(3.0)
                     .matched(true)
                     .autoMatched(false)
@@ -592,4 +650,160 @@ public class CookingServiceTest {
         items.add(item);
         return items;
     }
+
+    private RecipeDetailDto getRecipeDetailDtoWithoutUnitsAndSteps() {
+        RecipeDetailDto recipeDetailDto = RecipeDetailDtoBuilder.builder()
+            .id(1L)
+            .title("Pasta Carbonara")
+            .servings(4)
+            .readyInMinutes(25)
+            .summary("Classic Italian pasta dish with eggs, cheese, pancetta, and black pepper.")
+            .extendedIngredients(List.of(
+                RecipeIngredientDtoBuilder.builder()
+                    .id(4L)
+                    .name("Spaghetti")
+                    .unit("g")
+                    .unitEnum(UnitDtoBuilder.builder().name("g").build())
+                    .amount(400.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Spaghetti")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(5L)
+                    .name("Pancetta")
+                    .unit("g")
+                    .unitEnum(UnitDtoBuilder.builder().name("g").build())
+                    .amount(150.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Pancetta")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(6L)
+                    .name("Eggs")
+                    .unit("pcs")
+                    .unitEnum(UnitDtoBuilder.builder().name("unit").build())
+                    .amount(3.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Eggs")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(7L)
+                    .name("Parmesan cheese")
+                    .unit("g")
+                    .unitEnum(UnitDtoBuilder.builder().name("g").build())
+                    .amount(100.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Parmesan cheese")
+                    .matchedItem(null)
+                    .build()
+            ))
+            .build();
+        return recipeDetailDto;
+    }
+
+    private List<CookingSteps> getCookingStepsDto() {
+        List<CookingSteps> steps = new LinkedList<>();
+        CookingSteps cookingSteps = CookingStepsBuilder.builder()
+            .steps(List.of(
+                StepBuilder.builder().number(1).step("Step 1: Boil water and cook spaghetti.").build(),
+                StepBuilder.builder().number(2).step("Step 2: Fry pancetta until crispy.").build(),
+                StepBuilder.builder().number(3).step("Step 3: Beat eggs and mix with Parmesan cheese.").build(),
+                StepBuilder.builder().number(4).step("Step 4: Combine everything and serve.").build()
+            ))
+            .build();
+        steps.add(cookingSteps);
+        return steps;
+    }
+
+    private RecipeDetailDto getExpectedRecipeDetailDtoWithUnitsAndSteps(){
+
+
+        UnitDto gUnit = UnitDtoBuilder.builder()
+            .name("g")
+            .subUnit(new HashSet<>())
+            .build();
+
+
+        UnitDto pcsUnit = UnitDtoBuilder.builder()
+            .name("pcs")
+            .subUnit(new HashSet<>())
+            .build();
+
+
+        RecipeDetailDto recipeDetailDto = RecipeDetailDtoBuilder.builder()
+            .id(1L)
+            .title("Pasta Carbonara")
+            .servings(4)
+            .readyInMinutes(25)
+            .summary("Classic Italian pasta dish with eggs, cheese, pancetta, and black pepper.")
+            .extendedIngredients(List.of(
+                RecipeIngredientDtoBuilder.builder()
+                    .id(4L)
+                    .name("Spaghetti")
+                    .unit("g")
+                    .unitEnum(UnitDtoBuilder.builder().name("g").build())
+                    .amount(400.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Spaghetti")
+                    .matchedItem(null)
+                    .unitEnum(gUnit)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(5L)
+                    .name("Pancetta")
+                    .unit("g")
+                    .unitEnum(UnitDtoBuilder.builder().name("g").build())
+                    .amount(150.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Pancetta")
+                    .matchedItem(null)
+                    .unitEnum(gUnit)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(6L)
+                    .name("Eggs")
+                    .unit("pcs")
+                    .unitEnum(UnitDtoBuilder.builder().name("unit").build())
+                    .amount(3.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Eggs")
+                    .matchedItem(null)
+                    .unitEnum(pcsUnit)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(7L)
+                    .name("Parmesan cheese")
+                    .unit("g")
+                    .unitEnum(UnitDtoBuilder.builder().name("g").build())
+                    .amount(100.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Parmesan cheese")
+                    .matchedItem(null)
+                    .unitEnum(gUnit)
+                    .build()
+            ))
+            .steps(CookingStepsBuilder.builder()
+                .steps(List.of(
+                    StepBuilder.builder().number(1).step("Step 1: Boil water and cook spaghetti.").build(),
+                    StepBuilder.builder().number(2).step("Step 2: Fry pancetta until crispy.").build(),
+                    StepBuilder.builder().number(3).step("Step 3: Beat eggs and mix with Parmesan cheese.").build(),
+                    StepBuilder.builder().number(4).step("Step 4: Combine everything and serve.").build()
+                ))
+                .build())
+            .build();
+
+        return recipeDetailDto;
+    }
+
 }

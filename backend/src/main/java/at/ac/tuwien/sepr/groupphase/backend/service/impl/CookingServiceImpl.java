@@ -150,7 +150,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
-        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
+        throws  ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
 
 
         ApplicationUser user = authService.getUserFromToken();
