@@ -60,7 +60,7 @@ export class MyChoresComponent {
     this.choreService.getChoresByUser(this.searchParams).subscribe({
       next: res => {
         if (res.length == 0) {
-          this.message = 'Good Job!'
+          this.message = 'Good Job! You have completed all of your chores.'
         } else {
           this.chores = res.sort((a: ChoresDto, b: ChoresDto) => {
             return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
@@ -99,7 +99,7 @@ export class MyChoresComponent {
       return this.choreService.deleteChores(this.completedChores).subscribe({
         next: res => {
           if (res.length == 0) {
-            this.message = 'Good Job!';
+            this.message = 'Good Job! You have completed all of your chores.';
           } else {
             for (let i = 0; i < res.length; i++) {
               this.chores = this.chores.filter(chore => chore.id !== res[i].id);
