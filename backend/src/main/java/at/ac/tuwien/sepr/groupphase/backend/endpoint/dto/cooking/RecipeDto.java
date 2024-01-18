@@ -13,7 +13,6 @@ public record RecipeDto(
     @NotEmpty(message = "The title cannot be empty")
     String title,
     String description,
-
     String image,
     List<RecipeIngredientDto> missedIngredients
 ) {

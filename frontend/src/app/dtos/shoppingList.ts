@@ -4,7 +4,7 @@ export class ShoppingListDto{
   constructor(
     public id: number,
     public name: string,
-    public items: ShoppingItemDto[]
+    public itemsCount: number
   ) {}
 }
 

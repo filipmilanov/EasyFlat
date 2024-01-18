@@ -10,7 +10,6 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockDigitalStorageIt
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import org.mapstruct.Context;
@@ -33,7 +32,6 @@ public abstract class ItemMapper {
     @Mapping(target = "itemCache.alternativeNames", expression = "java( alternativeNames )")
     public abstract DigitalStorageItem dtoToEntity(ItemDto itemDto,
                                                    @Context List<Ingredient> ingredientList,
-                                                   @Context List<ItemStats> itemStats,
                                                    @Context List<AlternativeName> alternativeNames);
 
     @Mapping(target = "itemCache.ean", source = "ean")
@@ -47,7 +45,6 @@ public abstract class ItemMapper {
     @Mapping(target = "itemCache.alternativeNames", expression = "java( alternativeNames )")
     public abstract AlwaysInStockDigitalStorageItem dtoToAlwaysInStock(ItemDto itemDto,
                                                                        @Context List<Ingredient> ingredientList,
-                                                                       @Context List<ItemStats> itemStats,
                                                                        @Context List<AlternativeName> alternativeNames);
 
 

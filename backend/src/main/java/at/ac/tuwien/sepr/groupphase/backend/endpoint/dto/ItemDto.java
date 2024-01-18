@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -53,8 +52,6 @@ public record ItemDto(
     @NotNull(message = "An item needs to be linked to a storage")
     DigitalStorageDto digitalStorage,
     List<IngredientDto> ingredients,
-    List<ItemStats> itemStats,
-
     List<AlternativeNameDto> alternativeNames
 
 ) {
@@ -136,7 +133,6 @@ public record ItemDto(
             boughtAt,
             digitalStorage,
             ingredients,
-            itemStats,
             alternativeNames
         );
     }
@@ -159,7 +155,6 @@ public record ItemDto(
             boughtAt,
             digitalStorage,
             ingredients,
-            itemStats,
             alternativeNames
         );
     }
@@ -204,7 +199,6 @@ public record ItemDto(
             boughtAt,
             digitalStorage,
             ingredients,
-            itemStats,
             alternativeNames
         );
     }

@@ -38,6 +38,7 @@ export class LoginFlatComponent implements OnInit{
       this.sharedFlatService.loginWG(sharedFlat, this.authService.getToken()).subscribe(
         () => {
           console.log('You have successfully logged in!');
+          this.changeEventToTrue();
           this.router.navigate(['/account']);
           this.notification.success("You have successfully logged in shared flat: " + sharedFlat.name , "Success");
         },

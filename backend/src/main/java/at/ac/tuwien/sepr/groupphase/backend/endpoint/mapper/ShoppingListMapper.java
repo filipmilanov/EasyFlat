@@ -16,6 +16,7 @@ import java.util.List;
 @Mapper(uses = {UnitMapper.class, IngredientMapper.class, DigitalStorageMapper.class})
 public abstract class ShoppingListMapper {
 
+    @Mapping(target = "itemsCount", expression = "java( shoppingList.getItemsCount() )")
     public abstract ShoppingListDto entityToDto(ShoppingList shoppingList);
 
     public abstract ShoppingList dtoToEntity(ShoppingListDto shoppingListDto);

@@ -478,7 +478,7 @@ public class CookingServiceImpl implements CookingService {
         DigitalStorageDto storageDto = digitalStorageMapper.entityToDto(storage);
         for (RecipeIngredientDto ingredient : recipeToCook.missedIngredients()) {
             ShoppingItemDto newShoppingItem = new ShoppingItemDto(null, null, ingredient.name(), ingredient.name(), ingredient.name(), ingredient.amount(), ingredient.amount(),
-                ingredient.unitEnum(), null, null, false, ingredient.amount(), null, storageDto, null, null, null, shoppingListDto);
+                ingredient.unitEnum(), null, null, false, ingredient.amount(), null, storageDto, null, null, shoppingListDto);
             shoppingListService.create(newShoppingItem, jwt);
         }
         return recipeToCook;

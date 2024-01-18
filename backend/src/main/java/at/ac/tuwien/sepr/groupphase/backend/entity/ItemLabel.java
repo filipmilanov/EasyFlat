@@ -24,17 +24,7 @@ public class ItemLabel {
     @Column
     private String labelColour;
 
-    @ManyToMany
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<ShoppingItem> shoppingItems;
 
-    public List<ShoppingItem> getShoppingItems() {
-        return shoppingItems;
-    }
-
-    public void setShoppingItems(List<ShoppingItem> shoppingItems) {
-        this.shoppingItems = shoppingItems;
-    }
 
     public Long getShopLabelId() {
         return shopLabelId;

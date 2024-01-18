@@ -18,7 +18,7 @@ export class ShoppingListComponent implements OnInit {
   shoppingList: ShoppingListDto = {
     id: 0,
     name: '',
-    items: []
+    itemsCount: 0
   };
   items: ShoppingItemDto[] = [];
   shopId: string;
@@ -116,7 +116,7 @@ export class ShoppingListComponent implements OnInit {
       this.shoppingListService.deleteList(this.shopId).subscribe({
         next: (deletedList: ShoppingListDto) => {
           this.router.navigate(['shopping-lists']);
-          this.notification.success(deletedList.name + " was successfully deleted from the list", "Success");
+          this.notification.success(deletedList.name + " was successfully deleted.", "Success");
         },
         error: error => {
           let firstBracket = error.error.indexOf('[');

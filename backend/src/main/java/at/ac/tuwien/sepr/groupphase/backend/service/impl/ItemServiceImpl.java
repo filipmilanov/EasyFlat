@@ -9,14 +9,12 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ItemStatsRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.AlternativeNameService;
 import at.ac.tuwien.sepr.groupphase.backend.service.DigitalStorageService;
@@ -31,8 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +45,6 @@ public class ItemServiceImpl implements ItemService {
     private final IngredientService ingredientService;
     private final ItemMapper itemMapper;
     private final ItemValidator itemValidator;
-    private final ItemStatsRepository itemStatsRepository;
     private final AuthService authService;
     private final Authorization authorization;
     private final UnitService unitService;
@@ -61,7 +56,6 @@ public class ItemServiceImpl implements ItemService {
                            IngredientService ingredientService,
                            ItemMapper itemMapper,
                            ItemValidator itemValidator,
-                           ItemStatsRepository itemStatsRepository,
                            AuthService authService,
                            Authorization authorization,
                            UnitService unitService,
@@ -71,7 +65,6 @@ public class ItemServiceImpl implements ItemService {
         this.ingredientService = ingredientService;
         this.itemMapper = itemMapper;
         this.itemValidator = itemValidator;
-        this.itemStatsRepository = itemStatsRepository;
         this.authService = authService;
         this.authorization = authorization;
         this.unitService = unitService;
@@ -147,19 +140,12 @@ public class ItemServiceImpl implements ItemService {
 
         List<Ingredient> ingredientList = ingredientService.findIngredientsAndCreateMissing(itemDto.ingredients());
 
-        ItemStats curr = new ItemStats();
-        curr.setDateOfPurchase(LocalDate.now());
-        curr.setAmountSpendOn(itemDto.priceInCent());
-        curr.setItemStatId(itemDto.itemId());
-        List<ItemStats> itemStats = new ArrayList<>();
-        itemStats.add(curr);
-        itemStatsRepository.save(curr);
         List<AlternativeName> alternativeNames = new LinkedList<>();
         DigitalStorageItem digitalStorageItem;
         if (itemDto.alwaysInStock()) {
-            digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null, alternativeNames);
+            digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, alternativeNames);
         } else {
-            digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null, alternativeNames);
+            digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, alternativeNames);
         }
         DigitalStorageItem createdDigitalStorageItem = itemRepository.save(digitalStorageItem);
         createdDigitalStorageItem.setIngredientList(ingredientList);
@@ -193,9 +179,9 @@ public class ItemServiceImpl implements ItemService {
         DigitalStorageItem digitalStorageItem;
 
         if (itemDto.alwaysInStock()) {
-            digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, null, itemMapper.alternativeNamesDtoToEntityList(itemDto.alternativeNames()));
+            digitalStorageItem = itemMapper.dtoToAlwaysInStock(itemDto, ingredientList, itemMapper.alternativeNamesDtoToEntityList(itemDto.alternativeNames()));
         } else {
-            digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, null, itemMapper.alternativeNamesDtoToEntityList(itemDto.alternativeNames()));
+            digitalStorageItem = itemMapper.dtoToEntity(itemDto, ingredientList, itemMapper.alternativeNamesDtoToEntityList(itemDto.alternativeNames()));
         }
 
         DigitalStorageItem presistedDigitalStorageItem = this.findById(itemDto.itemId());

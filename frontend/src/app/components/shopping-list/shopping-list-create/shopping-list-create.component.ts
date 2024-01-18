@@ -20,7 +20,7 @@ export class ShoppingListCreateComponent {
   list: ShoppingListDto = {
     id: 0,
     name: '',
-    items: []
+    itemsCount: 0
   };
   constructor(
     private itemService: ItemService,

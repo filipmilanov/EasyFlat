@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.ItemStats;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -30,7 +29,6 @@ public record ShoppingItemDto(
     String boughtAt,
     DigitalStorageDto digitalStorage,
     List<IngredientDto> ingredients,
-    List<ItemStats> itemStats,
     List<ItemLabelDto> labels,
     ShoppingListDto shoppingList
 ) {
@@ -52,7 +50,6 @@ public record ShoppingItemDto(
             boughtAt,
             digitalStorage,
             ingredients,
-            itemStats,
             labels,
             shoppingList
         );
