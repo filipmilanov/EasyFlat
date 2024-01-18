@@ -36,7 +36,6 @@ export class LoginComponent implements OnInit {
   loginUser() {
     this.submitted = true;
     if (this.loginForm.valid) {
-      this.sharedFlatService.changeEvent();
       const authRequest: AuthRequest = new AuthRequest(this.loginForm.controls.username.value, this.loginForm.controls.password.value);
       this.authenticateUser(authRequest);
     } else {

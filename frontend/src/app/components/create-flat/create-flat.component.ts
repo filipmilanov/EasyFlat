@@ -32,6 +32,7 @@ export class CreateFlatComponent implements OnInit{
       console.log(sharedFlat);
       this.sharedFlatService.createWG(sharedFlat, this.authService.getToken()).subscribe({
         next: () => {
+          this.changeEventToTrue();
           this.router.navigate(['/account']);
           this.notification.success('Successfully created shared flat: ' + sharedFlat.name, "Success");
         },
