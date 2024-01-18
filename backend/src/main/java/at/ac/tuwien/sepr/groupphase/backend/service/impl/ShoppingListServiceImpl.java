@@ -203,9 +203,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             if (!toDelete.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
                 throw new AuthenticationException("Authentication wrong", List.of("User can not delete this item"));
             }
-            //toDelete.setLabels(null);
-            //shoppingItemRepository.save(toDelete);
-            //shoppingItemRepository.deleteById(itemId);
+            toDelete.setLabels(null);
+            shoppingItemRepository.save(toDelete);
             shoppingItemRepository.delete(toDelete);
             return toDelete;
         } else {

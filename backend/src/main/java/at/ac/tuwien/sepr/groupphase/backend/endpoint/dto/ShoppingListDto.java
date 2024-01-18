@@ -7,7 +7,7 @@ import java.util.List;
 public record ShoppingListDto(
     Long id,
     @NotEmpty(message = "The name cannot be empty")String name,
-    List<ShoppingItemDto> items
+    Integer itemsCount
 
 ) {
 

@@ -70,4 +70,8 @@ public class ShoppingList {
         this.sharedFlat = sharedFlat;
     }
 
+    public int getItemsCount() {
+        return this.items != null ? items.size() : 0;
+    }
+
 }
