@@ -64,6 +64,15 @@
         </span>
       </div>
     </div>
+    <div *ngIf="expense.repeatingExpenseType !== null"
+         class="row border-bottom p-2 align-items-center odd-detail">
+      <label class="col-form-label col-md-2 col-lg-2">Repeating</label>
+      <div class="col-md-8 col-lg-5 d-flex align-items-center">
+        <span class="badge me-2 bg-success">
+          {{ formatRepeatingExpenseType(expense.repeatingExpenseType) }}
+        </span>
+      </div>
+    </div>
 
     <div class="row border-bottom p-2 align-items-center">
       <label class="col-form-label col-md-2 col-lg-2">Paid By</label>
