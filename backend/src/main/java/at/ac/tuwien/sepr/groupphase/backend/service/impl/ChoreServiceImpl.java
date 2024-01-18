@@ -278,7 +278,7 @@ public class ChoreServiceImpl implements ChoreService {
         }
         ApplicationUser user = authService.getUserFromToken();
         for (Chore chore : toDelete) {
-            if (user.getSharedFlat().equals(chore.getSharedFlat())) {
+            if (!user.getSharedFlat().equals(chore.getSharedFlat()) && !user.equals(chore.getUser())) {
                 throw new AuthorizationException("Authorization error", List.of("User has no access to chore: " + chore.getName()));
             }
         }
