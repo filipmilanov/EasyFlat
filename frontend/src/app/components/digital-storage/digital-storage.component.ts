@@ -37,6 +37,7 @@ export class DigitalStorageComponent implements OnInit {
 
         next: res => {
           this.items = res;
+          console.log(res);
         },
         error: err => {
           console.error("Error loading storage:", err);

@@ -222,13 +222,13 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
             return 0;
         }
         if (searchItem.orderType() == ItemOrderType.QUANTITY_CURRENT) {
-            int compareUnitNames = g1.unit().name().compareTo(g2.unit().name());
+            int compareUnitNames = g1.unit().name().toLowerCase().compareTo(g2.unit().name().toLowerCase());
             if (compareUnitNames != 0) {
                 return compareUnitNames;
             }
             return g1.quantityCurrent().compareTo(g2.quantityCurrent());
         } else if (searchItem.orderType() == ItemOrderType.GENERAL_NAME) {
-            return g1.generalName().compareTo(g2.generalName());
+            return g1.generalName().toLowerCase().compareTo(g2.generalName().toLowerCase());
         } else {
             return 0;
         }
