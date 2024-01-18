@@ -14,7 +14,7 @@ import {ToastrService} from "ngx-toastr";
 export class DigitalStorageComponent implements OnInit {
   items: StorageItemListDto[] = [];
   itemsAIS: StorageItemListDto[] = [];
-  searchParameters: ItemSearchDto = {alwaysInStock: false, orderBy: OrderType.PRODUCT_NAME, fillLevel: ''};
+  searchParameters: ItemSearchDto = {alwaysInStock: false, orderBy: OrderType.GENERAL_NAME, fillLevel: ''};
 
 
   constructor(private storageService: StorageService,

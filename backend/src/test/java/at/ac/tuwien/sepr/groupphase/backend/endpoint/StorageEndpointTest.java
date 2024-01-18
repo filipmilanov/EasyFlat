@@ -117,7 +117,7 @@ class StorageEndpointTest {
 
         ItemSearchDto itemSearchDto = ItemSearchDtoBuilder.builder()
             .alwaysInStock(false)
-            .orderType(ItemOrderType.PRODUCT_NAME)
+            .orderType(ItemOrderType.GENERAL_NAME)
             .build();
 
         MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)

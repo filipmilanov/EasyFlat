@@ -220,7 +220,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
                 return 1;
             }
             return g1.quantityCurrent().compareTo(g2.quantityCurrent());
-        } else if (searchItem.orderType() == ItemOrderType.PRODUCT_NAME) {
+        } else if (searchItem.orderType() == ItemOrderType.GENERAL_NAME) {
             if (g1.generalName() == null) {
                 return 1;
             }

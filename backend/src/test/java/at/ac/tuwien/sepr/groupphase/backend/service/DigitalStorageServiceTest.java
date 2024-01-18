@@ -200,7 +200,7 @@ class DigitalStorageServiceTest {
 
         return Stream.of(
             Arguments.of(
-                ItemOrderType.PRODUCT_NAME,
+                ItemOrderType.GENERAL_NAME,
                 false,
                 List.of(
                     TestData.validInStockItemDto3.generalName(),
@@ -210,7 +210,7 @@ class DigitalStorageServiceTest {
                 )
             ),
             Arguments.of(
-                ItemOrderType.PRODUCT_NAME,
+                ItemOrderType.GENERAL_NAME,
                 true,
                 List.of(
                     TestData.validInStockItemDto2.generalName(),
