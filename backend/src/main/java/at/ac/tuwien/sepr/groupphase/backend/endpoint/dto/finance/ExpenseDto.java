@@ -54,7 +54,7 @@ public record ExpenseDto(
     public boolean isSumOfDebitUsersAmountEqualToTotalAmount() {
         return debitUsers == null
             || List.of(SplitBy.PROPORTIONAL, SplitBy.PERCENTAGE).contains(debitUsers.get(0).splitBy())
-            || Math.abs(debitUsers.stream().mapToDouble(DebitDto::value).sum() - amountInCents) < 0.1;
+            || Math.abs(debitUsers.stream().mapToDouble(DebitDto::value).sum() - amountInCents) < 5;
     }
 
 
