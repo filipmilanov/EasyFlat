@@ -7,9 +7,11 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.SplitBy;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,10 +24,13 @@ import java.util.List;
 public record ExpenseDto(
     Long id,
     @NotBlank(message = "Title cannot be empty")
+    @Size(max = 255, message = "Title cannot be longer than 255 characters")
     String title,
+    @Size(max = 255, message = "Description cannot be longer than 255 characters")
     String description,
     @NotNull(message = "Amount cannot be empty")
     @Min(value = 1, message = "Amount must be greater than 1")
+    @Max(value = 1_000_000, message = "Amount must be less than 1.000.000")
     Double amountInCents,
     @NotNull(message = "A finance entry must have a creation date")
     LocalDateTime createdAt,
