@@ -54,9 +54,6 @@ public class DigitalStorageItem {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Ingredient> ingredientList;
 
-    @OneToMany
-    private List<ItemStats> itemStats;
-
     public Long getItemId() {
         return itemId;
     }

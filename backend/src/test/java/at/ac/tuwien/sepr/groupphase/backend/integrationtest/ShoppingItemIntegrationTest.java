@@ -88,7 +88,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
     private ShoppingListMapper shoppingListMapper;
 
     private final String baseUri = "/api/v1/shopping";
-    private final ShoppingListDto shoppingListDto = new ShoppingListDto(1L, "Default", new ArrayList<>());
+    private final ShoppingListDto shoppingListDto = new ShoppingListDto(1L, "Default", 0);
     private final ApplicationUser testUser = new ApplicationUser(null, "", "", "user@email.com", "password", Boolean.FALSE, null);
 
     private ShoppingListService shoppingListServiceMock;
@@ -112,9 +112,8 @@ public class ShoppingItemIntegrationTest implements TestData  {
             "Store",
             new DigitalStorageDto(1L, "Storage", null),
             null,
-            null,
             new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000", null))), // Labels
-            new ShoppingListDto(1L, "Default", new ArrayList<>()));
+            new ShoppingListDto(1L, "Default", 0));
 
     }
 
@@ -202,9 +201,8 @@ public class ShoppingItemIntegrationTest implements TestData  {
             "Store",
             new DigitalStorageDto(1L, "Storage", null),
             null,
-            null,
             new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000", null))), // Labels
-            new ShoppingListDto(1L, "Default", new ArrayList<>()));
+            new ShoppingListDto(1L, "Default", 0));
         MvcResult mvcResult = mockMvc.perform(put(this.baseUri + "/" + updated.itemId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updated))
@@ -241,9 +239,8 @@ public class ShoppingItemIntegrationTest implements TestData  {
             "Store",
             new DigitalStorageDto(1L, "Storage", null),
             null,
-            null,
             new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000", null))), // Labels
-            new ShoppingListDto(1L, "Default", new ArrayList<>()));
+            new ShoppingListDto(1L, "Default", 0));
         MvcResult mvcResult = mockMvc.perform(put(this.baseUri + "/" + updated.itemId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updated))

@@ -63,8 +63,7 @@ public interface TestData {
         new DigitalStorageDto(1L, "Storage", null),
         null,
         null,
-        null, // Labels
-        new ShoppingListDto(1L, "Default", new ArrayList<>()));
+        new ShoppingListDto(1L, "Default", 0));
 
     ShoppingItemDto invalidShoppingItemDto = new ShoppingItemDto(
         null,
@@ -81,7 +80,6 @@ public interface TestData {
         5.0,
         "Store",
         new DigitalStorageDto(1L, "Storage", null),
-        null,
         null,
         null,
         null);
