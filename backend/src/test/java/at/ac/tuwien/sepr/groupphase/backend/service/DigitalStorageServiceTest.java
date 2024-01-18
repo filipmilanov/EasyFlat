@@ -174,7 +174,7 @@ class DigitalStorageServiceTest {
             .quantityCurrent(1.0)
             .quantityTotal(1.0)
             .storageId(1L)
-            .unit(UnitDtoBuilder.builder().name("kg").build())
+            .unit(UnitDtoBuilder.builder().name("pcs").build())
             .build();
 
         // when
