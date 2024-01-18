@@ -70,12 +70,18 @@ public class ChoreServiceImpl implements ChoreService {
     @Transactional
     public ChoreDto createChore(ChoreDto choreDto) throws AuthenticationException, ValidationException, ConflictException {
         LOGGER.trace("createChore({})", choreDto);
-        this.choreValidator.validateForCreate(choreDto);
+        ChoreDto newChore;
+        if (choreDto.description() != null) {
+            newChore = choreDto.trimmed(choreDto.name().trim(), choreDto.description().trim());
+        } else {
+            newChore = choreDto.trimmedName(choreDto.name().trim());
+        }
+        this.choreValidator.validateForCreate(newChore);
         ApplicationUser applicationUser = authService.getUserFromToken();
         if (applicationUser == null) {
             throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
         }
-        Chore chore = choreMapper.choreDtoToEntity(choreDto);
+        Chore chore = choreMapper.choreDtoToEntity(newChore);
         chore.setSharedFlat(applicationUser.getSharedFlat());
         Chore savedChore = choreRepository.save(chore);
         return choreMapper.entityToChoreDto(savedChore);

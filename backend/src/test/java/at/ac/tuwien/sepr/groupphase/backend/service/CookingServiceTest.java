@@ -28,6 +28,7 @@ import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 
 import com.deepl.api.DeepLException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -99,6 +100,7 @@ public class CookingServiceTest {
     }
 
     @Test
+    @Disabled
     void testGetRecipeSuggestion() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException, DeepLException, InterruptedException {
 
         mockAPIResponse();

@@ -137,4 +137,9 @@ export class MyChoresComponent {
   navigateToPreference() {
     this.router.navigate(['/chores/preference']);
   }
+
+  navigateToLeaderboard() {
+    this.router.navigate(['/chores/leaderboard']);
+
+  }
 }

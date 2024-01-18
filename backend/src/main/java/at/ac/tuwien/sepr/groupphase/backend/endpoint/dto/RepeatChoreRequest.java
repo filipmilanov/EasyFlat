@@ -14,5 +14,4 @@ public class RepeatChoreRequest {
         return date;
     }
 
-    // getters and setters
 }
