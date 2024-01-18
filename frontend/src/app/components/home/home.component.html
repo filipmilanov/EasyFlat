@@ -1,4 +1,4 @@
-<div class="jumbotron mt-5 text-center">
+<div class="jumbotron mt-5 text-center" xmlns="http://www.w3.org/1999/html">
   <h1 class="display-4">Welcome to EasyFlat!</h1>
   <hr class="my-4">
 
@@ -41,9 +41,65 @@
     </div>
   </div>
   <div *ngIf="authService.isLoggedIn()&&isLoggedWg()">
-    <h2>Welcome to our beloved flat {{user.flatName}}</h2>
+    <h2>Discover the joy of living together at {{user.flatName}}!</h2>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-2">
+      <div class="mb-3" >
+        <a style="text-decoration: none" routerLink="/account" aria-label="Go to account">
+          <div class="card mt-3 h-100 custom-card" >
+            <div class="card-body"> <span class="bi bi-person-circle ml-2"></span> <strong> Account</strong>  </div>
+          </div>
+        </a>
+      </div>
+        <div class="mb-3" >
+        <a style="text-decoration: none" routerLink="/digital-storage" aria-label="Go to account">
+          <div class="card mt-3 h-100 custom-card" >
+            <div class="card-body"><span class="bi bi-archive ml-2"></span> <strong> Digital Storage</strong> </div>
+          </div>
+        </a>
+        </div>
+        <div class="mb-3" >
+        <a style="text-decoration: none" routerLink="/shopping-lists" aria-label="Go to account">
+          <div class="card mt-3 h-100 custom-card" >
+            <div class="card-body"><span class="bi bi-cart3 ml-2"></span><strong> Shopping Lists</strong> </div>
+          </div>
+        </a>
+        </div>
+        <div class="mb-3" >
+        <a style="text-decoration: none" routerLink="/cooking" aria-label="Go to account">
+          <div class="card mt-3 h-100 custom-card" >
+            <div class="card-body"><span class="bi bi-search-heart ml-2"></span><strong> Cooking Suggestions </strong> </div>
+          </div>
+        </a>
+        </div>
+        <div class="mb-3" >
+        <a style="text-decoration: none" routerLink="/cookbook" aria-label="Go to account">
+          <div class="card mt-3 h-100 custom-card" >
+            <div class="card-body"><span class="bi bi-book ml-2"></span><strong>  Cookbook </strong></div>
+          </div>
+        </a>
+        </div>
+        <div class="mb-3" >
+        <a style="text-decoration: none" routerLink="/chores/all" aria-label="Go to account">
+          <div class="card mt-3 h-100 custom-card" >
+            <div class="card-body"><span class="bi bi-award ml-2"></span> <strong> Chores </strong> </div>
+          </div>
+        </a>
+        </div>
+        <div class="mb-3" >
+        <a style="text-decoration: none" routerLink="/events" aria-label="Go to account">
+          <div class="card mt-3 h-100 custom-card" >
+            <div class="card-body"><span class="bi bi-calendar3 ml-2"></span> <strong> Events </strong> </div>
+          </div>
+        </a>
+        </div>
+        <div class="mb-3" >
+        <a style="text-decoration: none" routerLink="/finance" aria-label="Go to account">
+          <div class="card mt-3 h-100 custom-card" >
+            <div class="card-body"><span class="bi bi-cash-stack ml-2"></span> <strong> Finance </strong> </div>
+          </div>
+        </a>
+        </div>
+    </div>
   </div>
-
-
 </div>
 
