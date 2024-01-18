@@ -22,7 +22,7 @@ public interface ShoppingListService {
      * @return an object of type {@link ShoppingItem} which is persisted and has an ID
      * @throws AuthenticationException If authentication fails or the user does not exist
      */
-    ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException, AuthorizationException;
+    ShoppingItem createShoppingItem(ShoppingItemDto itemDto) throws AuthenticationException, ValidationException, ConflictException, AuthorizationException;
 
     /**
      * Search for a shopping item in the database with given ID.
@@ -39,7 +39,7 @@ public interface ShoppingListService {
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
      * @throws AuthenticationException If authentication fails or the user does not exist
      */
-    Optional<ShoppingList> getShoppingListByName(String name, String jwt) throws AuthenticationException;
+    Optional<ShoppingList> getShoppingListByName(String name) throws AuthenticationException;
 
     /**
      * Search for a shopping list in the database with given ID.
@@ -48,7 +48,7 @@ public interface ShoppingListService {
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
      * @throws AuthenticationException If authentication fails or the user does not exist
      */
-    Optional<ShoppingList> getShoppingListById(Long id, String jwt) throws AuthenticationException;
+    Optional<ShoppingList> getShoppingListById(Long id) throws AuthenticationException;
 
 
     /**
@@ -59,7 +59,7 @@ public interface ShoppingListService {
      * @return if the id exists in the DB, a List of a persisted ShoppingItems with the given ID, an empty Optional otherwise
      * @throws AuthenticationException If authentication fails or the user does not exist
      */
-    List<ShoppingItem> getItemsById(Long id, ShoppingItemSearchDto itemSearchDto, String jwt) throws AuthenticationException;
+    List<ShoppingItem> getItemsById(Long id, ShoppingItemSearchDto itemSearchDto) throws AuthenticationException;
 
     /**
      * Create a new ShoppingList in the db.
@@ -92,7 +92,7 @@ public interface ShoppingListService {
      * @return a List of all persisted ShoppingLists
      * @throws AuthenticationException If authentication fails or the user does not exist
      */
-    List<ShoppingList> getShoppingLists(String searchParams, String jwt) throws AuthenticationException;
+    List<ShoppingList> getShoppingLists(String searchParams) throws AuthenticationException;
 
     /**
      * Transfer ShoppingItems to the server.
@@ -111,7 +111,7 @@ public interface ShoppingListService {
      * @throws ConflictException if there is a conflict with the persisted data
      * @throws ValidationException if the data in shoppingItemDto is not valid
      */
-    ShoppingItem update(ShoppingItemDto shoppingItemDto, String jwt)
+    ShoppingItem update(ShoppingItemDto shoppingItemDto)
         throws ConflictException, AuthenticationException, ValidationException, AuthorizationException;
 }
 

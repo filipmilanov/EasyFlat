@@ -471,7 +471,7 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt)
         throws AuthenticationException, ValidationException, ConflictException, AuthorizationException {
-        ShoppingList shoppingList = shoppingListService.getShoppingListByName("Shopping List (Default)", jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        ShoppingList shoppingList = shoppingListService.getShoppingListByName("Shopping List (Default)").orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         ShoppingListDto shoppingListDto = shoppingListMapper.entityToDto(shoppingList);
         Long storageId = this.getStorageIdForUser();
         DigitalStorage storage = digitalStorageService.findById(storageId);
@@ -479,7 +479,7 @@ public class CookingServiceImpl implements CookingService {
         for (RecipeIngredientDto ingredient : recipeToCook.missedIngredients()) {
             ShoppingItemDto newShoppingItem = new ShoppingItemDto(null, null, ingredient.name(), ingredient.name(), ingredient.name(), ingredient.amount(), ingredient.amount(),
                 ingredient.unitEnum(), null, null, false, ingredient.amount(), null, storageDto, null, null, shoppingListDto);
-            shoppingListService.create(newShoppingItem, jwt);
+            shoppingListService.createShoppingItem(newShoppingItem);
         }
         return recipeToCook;
     }

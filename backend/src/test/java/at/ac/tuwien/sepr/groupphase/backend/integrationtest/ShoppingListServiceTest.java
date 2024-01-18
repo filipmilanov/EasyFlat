@@ -81,11 +81,10 @@ public class ShoppingListServiceTest implements TestData {
     @Disabled
     public void testCreate() throws AuthenticationException, ValidationException, ConflictException, AuthorizationException {
 
-        String jwt = "mockedJWT";
 
         // Mock the necessary method calls
-        when(customUserDetailService.getUser(jwt)).thenReturn(testUser);
-        when(shoppingListService.getShoppingLists("", jwt)).thenReturn(List.of(new ShoppingList().setId(1L).setName("Default")));
+        when(authService.getUserFromToken()).thenReturn(testUser);
+        when(shoppingListService.getShoppingLists("")).thenReturn(List.of(new ShoppingList().setId(1L).setName("Default")));
         when(digitalStorageService.findAll(new DigitalStorageSearchDto(null, null))).thenReturn(Collections.emptyList());
         when(unitService.findAll()).thenReturn(Collections.emptyList());
 
@@ -99,9 +98,9 @@ public class ShoppingListServiceTest implements TestData {
         );
 
         // Act
-        shoppingListService.create(validShoppingItemDto, jwt);
+        shoppingListService.createShoppingItem(validShoppingItemDto);
         when(authService.getUserFromToken()).thenReturn(testUser);
-        List<ShoppingItem> result = shoppingListService.getItemsById(validShoppingItemDto.shoppingList().id(), new ShoppingItemSearchDto(null, null, null), jwt);
+        List<ShoppingItem> result = shoppingListService.getItemsById(validShoppingItemDto.shoppingList().id(), new ShoppingItemSearchDto(null, null, null));
 
         // Assert
         assertAll(
