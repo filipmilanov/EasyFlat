@@ -58,4 +58,18 @@ export class LeaderboardComponent {
 
         return Array.from(userGroupsMap.entries()).map(([points, users]) => ({ points, users }));
     }
+
+  navigateToAllChores() {
+    this.router.navigate(['chores', 'all']);
+  }
+
+  navigateToMyChores() {
+    this.router.navigate(['chores', 'my']);
+
+  }
+
+  navigateToPreference() {
+    this.router.navigate(['chores', 'preference']);
+
+  }
 }
