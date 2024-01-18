@@ -155,6 +155,8 @@ public class CustomUserDetailService implements UserService {
             user.setPoints(user.getPoints());
             if (userDetailDto.getPassword().length() >= 8) {
                 user.setPassword(passwordEncoder.encode(userDetailDto.getPassword()));
+            } else {
+                throw new ConflictException("Password must be at least 8 characters");
             }
             ApplicationUser returnUser = userRepository.save(user);
             return userMapper.entityToUserDetailDto(returnUser);

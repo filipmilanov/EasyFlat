@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -31,6 +32,9 @@ public class UserServiceTest implements TestData {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Test
     @DisplayName("Positive test for registering a valid user")
@@ -81,10 +85,12 @@ public class UserServiceTest implements TestData {
         userDetailDto.setPassword("password");
         userService.register(userDetailDto);
 
-        userDetailDto.setFirstName("UpdatedFirstName");
-        userDetailDto.setLastName("UpdatedLastName");
-        userDetailDto.setPassword("newpassword123");
-        userService.update(userDetailDto);
+        ApplicationUser fetchedUser1 = userRepository.findUserByEmail("john@example.com");
+
+        fetchedUser1.setFirstName("UpdatedFirstName");
+        fetchedUser1.setLastName("UpdatedLastName");
+        fetchedUser1.setPassword("newpassword123");
+        userService.update(userMapper.entityToUserDetailDto(fetchedUser1));
 
         ApplicationUser fetchedUser = userRepository.findUserByEmail("john@example.com");
         assertNotNull(fetchedUser);

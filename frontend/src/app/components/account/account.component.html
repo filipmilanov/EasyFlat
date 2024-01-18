@@ -70,7 +70,7 @@
           <form class="form" [formGroup]="accountForm" >
             <div class="form-group">
               <div>
-                <label for="name">Flat name</label>
+                <label>Flat name</label>
                 <div class="flat-name-display">{{ user.flatName }}</div>              </div>
             </div>
             <button style="margin-right: 10px; margin-top: 20px" type="button" data-bs-toggle="modal"  data-bs-toggle="modal" [attr.data-bs-target]="'#sign-out-modal' + getIdFormatForDeleteModal(user)" class="btn btn-danger float-right">Sign Out</button>
@@ -104,17 +104,11 @@
           <input type="password" name="newPassword" formControlName="newPassword" class="form-control" id="newPassword"
                  placeholder="New password">
           <div *ngIf="submittedPassword && passwordForm.controls.newPassword.errors" class="error">
-            <small class="form-text text-warning" *ngIf="passwordForm.controls.newPassword.errors?.minlength">Your password
-              must be at least 8 characters long!
-            </small>
           </div>
           <label for="repeatPassword">Repeat new password</label>
           <input type="password" name="repeatPassword" formControlName="repeatPassword" class="form-control" id="repeatPassword"
                  placeholder="Repeat new password">
           <div *ngIf="submittedPassword && passwordForm.controls.repeatPassword.errors" class="error">
-            <small class="form-text text-warning" *ngIf="passwordForm.controls.repeatPassword.errors?.minlength">Your password
-              must be at least 8 characters long!
-            </small>
           </div>
           <button style="margin-right: 10px; margin-top: 20px" type="submit" class="btn btn-success float-right">Save Password</button>
         </div>

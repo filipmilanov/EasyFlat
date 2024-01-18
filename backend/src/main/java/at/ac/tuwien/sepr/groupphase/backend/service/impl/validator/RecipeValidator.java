@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeIngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
@@ -46,6 +47,7 @@ public class RecipeValidator {
 
         checkForDataValidation(recipeSuggestionDto);
         checkCookbookForCreate(recipeSuggestionDto);
+        validateIngredients(recipeSuggestionDto.extendedIngredients());
 
         Set<ConstraintViolation<RecipeSuggestionDto>> validationViolations = validator.validate(recipeSuggestionDto);
         if (!validationViolations.isEmpty()) {
@@ -56,6 +58,8 @@ public class RecipeValidator {
 
     public void validateForUpdate(RecipeSuggestionDto recipeSuggestionDto) throws ValidationException {
         LOGGER.trace("checkValidationForUpdate({})", recipeSuggestionDto);
+
+        validateIngredients(recipeSuggestionDto.extendedIngredients());
 
         Set<ConstraintViolation<RecipeSuggestionDto>> validationViolations = validator.validate(recipeSuggestionDto);
         if (!validationViolations.isEmpty()) {
@@ -94,5 +98,17 @@ public class RecipeValidator {
             throw new ConflictException("Conflict with other data", errors);
         }
     }
+
+    public void validateIngredients(List<RecipeIngredientDto> ingredients) throws ValidationException {
+        LOGGER.trace("validateIngredients({})", ingredients);
+
+        for (RecipeIngredientDto ingredient : ingredients) {
+            Set<ConstraintViolation<RecipeIngredientDto>> validationViolations = validator.validate(ingredient);
+            if (!validationViolations.isEmpty()) {
+                throw new ValidationException("Ingredient data is not valid: ", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+            }
+        }
+    }
+
 
 }

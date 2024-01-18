@@ -140,9 +140,6 @@ export class AccountComponent implements OnInit {
     if (password === '' || this.accountForm.get('password').untouched) {
       delete formValue.password;
     }
-    console.log(this.accountForm.valid)
-
-    if (this.accountForm.valid) {
       const userDetail: UserDetail = new UserDetail(this.user.id,this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,  this.accountForm.controls.email.value, null , this.accountForm.controls.password.value,this.accountForm.controls.admin.value, this.user.points);
       console.log(userDetail)
       this.authService.update(userDetail).subscribe({
@@ -163,10 +160,6 @@ export class AccountComponent implements OnInit {
           });
         }
       });
-    } else {
-      console.log('Invalid input');
-    }
-
     console.log(formValue)
   }
 
@@ -235,11 +228,9 @@ export class AccountComponent implements OnInit {
       console.log(this.user);
       this.authService.update(this.user).subscribe({
         next: () => {
-          console.log('Successfully updated password for user: ' + this.user.email);
-          this.notification.success('Successfully updated password for user: ' + this.user.email)
+          this.notification.success('Successfully updated password for user: ' + this.user.firstName + ' ' + this.user.lastName)
         },
         error: error => {
-          console.log('Could not update due to:');
           let firstBracket = error.error.indexOf('[');
           let lastBracket = error.error.indexOf(']');
           let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');

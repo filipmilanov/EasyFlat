@@ -1,7 +1,11 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
 
@@ -9,19 +13,20 @@ public class UserDetailDto {
 
     private Long id;
 
-    @NotNull(message = "First name must not be null")
+    @NotBlank(message = "First name cannot be empty")
     private String firstName;
 
-    @NotNull(message = "Last name must not be null")
+    @NotBlank(message = "Last name cannot be empty")
     private String lastName;
 
-    @NotNull(message = "Email must not be null")
+    @NotBlank(message = "Email cannot be empty")
     @Email
     private String email;
 
     private String flatName;
 
-    @NotNull(message = "Password must not be null")
+    @NotBlank(message = "Password cannot be empty")
+    @Size(min = 8, message = "The password must be at least 8 characters")
     private String password;
 
     private boolean admin;
