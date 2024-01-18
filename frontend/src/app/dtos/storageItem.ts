@@ -21,6 +21,7 @@ export class ItemSearchDto {
   productName?:string;
   fillLevel?:string;
   orderBy: OrderType;
+  desc: boolean;
 }
 
 export class StorageItemListDto {

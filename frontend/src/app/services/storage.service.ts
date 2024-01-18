@@ -32,6 +32,8 @@ export class StorageService {
       'Authorization': this.authService.getToken()
     });
     params = params.append('orderType', searchParameters.orderBy);
+    console.log("desc", searchParameters.desc);
+    params = params.append('desc', searchParameters.desc);
     return this.httpClient.get<StorageItemListDto[]>(this.storageBaseUri + '/items' , {params,headers});
   }
 

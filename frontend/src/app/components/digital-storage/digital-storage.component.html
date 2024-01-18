@@ -48,6 +48,13 @@
              (change)="loadStorage()">
       <label class="btn btn-outline-primary" for="orderQuantity">Quantity</label>
     </div>
+    <div>
+      <div>
+        <app-sort-button [(isDescending)]="this.searchParameters.desc"
+                         (isDescendingChange)="loadStorage()">
+        </app-sort-button>
+      </div>
+    </div>
   </div>
 </form>
 

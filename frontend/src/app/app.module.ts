@@ -28,11 +28,15 @@ import {ItemDetailListComponent} from './components/digital-storage/item-detail-
 import {RegisterComponent} from './components/register/register.component';
 import {AccountComponent} from './components/account/account.component';
 import {LoginFlatComponent} from "./components/login-flat/login-flat.component";
-import { CreateFlatComponent } from './components/create-flat/create-flat.component';
-import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
-import {ShoppingItemCreateEditComponent} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
+import {CreateFlatComponent} from './components/create-flat/create-flat.component';
+import {ShoppingListComponent} from './components/shopping-list/shopping-list.component';
+import {
+  ShoppingItemCreateEditComponent
+} from "./components/shopping-list/shopping-item-create-edit/shopping-item-create-edit.component";
 import {ColorPickerModule} from "ngx-color-picker";
-import { ShoppingListCreateComponent } from './components/shopping-list/shopping-list-create/shopping-list-create.component';
+import {
+  ShoppingListCreateComponent
+} from './components/shopping-list/shopping-list-create/shopping-list-create.component';
 import {CookingComponent} from './components/cooking/cooking.component';
 import {RecipeCardComponent} from './components/cooking/recipe-card/recipe-card.component';
 import {JsonPipe, NgOptimizedImage} from "@angular/common";
@@ -54,7 +58,7 @@ import {EventsCreateComponent} from "./components/events/events-create/events-cr
 import {EventCardComponent} from "./components/events/event-card/event-card.component";
 import {MatchingModalComponent} from "./components/cooking/matching-modal/matching-modal.component";
 import {
-    MatchingModalCookbookComponent
+  MatchingModalCookbookComponent
 } from "./components/cookbook/matching-modal-cookbook/matching-modal-cookbook.component";
 import {FinanceComponent} from './components/finance/finance.component';
 import {ExpenseCreateEditComponent} from './components/finance/expense-create-edit/expense-create-edit.component';
@@ -62,17 +66,19 @@ import {
   RadioButtonsComponentComponent
 } from './components/utils/radio-buttons-component/radio-buttons-component.component';
 import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expense/show-user-for-expense.component';
-import { HaushaltPlanComponent } from './components/haushalt-plan/haushalt-plan.component';
-import { ChorePreferenceComponent } from './components/haushalt-plan/chore-preference/chore-preference.component';
-import { AllChoreComponent } from './components/haushalt-plan/all-chore/all-chore.component';
-import { MyChoresComponent } from './components/haushalt-plan/my-chores/my-chores.component';
-import { NewChoreComponent } from './components/haushalt-plan/new-chore/new-chore.component';
-import { ChoreCardComponent } from './components/haushalt-plan/chore-card/chore-card.component';
-import { LeaderboardComponent } from './components/haushalt-plan/leaderboard/leaderboard.component';
-import { MatListModule } from '@angular/material/list';
-import { MatCardModule } from '@angular/material/card';
-import { ChorePreferenceCardComponent } from './components/haushalt-plan/chore-preference-card/chore-preference-card.component';
-import { MyChoreCardComponent } from './components/haushalt-plan/my-chore-card/my-chore-card.component';
+import {HaushaltPlanComponent} from './components/haushalt-plan/haushalt-plan.component';
+import {ChorePreferenceComponent} from './components/haushalt-plan/chore-preference/chore-preference.component';
+import {AllChoreComponent} from './components/haushalt-plan/all-chore/all-chore.component';
+import {MyChoresComponent} from './components/haushalt-plan/my-chores/my-chores.component';
+import {NewChoreComponent} from './components/haushalt-plan/new-chore/new-chore.component';
+import {ChoreCardComponent} from './components/haushalt-plan/chore-card/chore-card.component';
+import {LeaderboardComponent} from './components/haushalt-plan/leaderboard/leaderboard.component';
+import {MatListModule} from '@angular/material/list';
+import {MatCardModule} from '@angular/material/card';
+import {
+  ChorePreferenceCardComponent
+} from './components/haushalt-plan/chore-preference-card/chore-preference-card.component';
+import {MyChoreCardComponent} from './components/haushalt-plan/my-chore-card/my-chore-card.component';
 import {
   ChoreConfirmationModalComponent
 } from "./components/haushalt-plan/my-chores/chore-confirmation-modal/chore-confirmation-modal.component";
@@ -83,7 +89,8 @@ import {BarchartVerticalComponent} from './components/finance/graphs/barchart-na
 import {NgxEchartsModule} from "ngx-echarts";
 import {RadarComponent} from './components/finance/graphs/radar/radar.component';
 import {ExpenseDetailComponent} from './components/finance/expense-detail/expense-detail.component';
-import { ExpenseOverviewComponent } from './components/finance/expense-overview/expense-overview.component';
+import {ExpenseOverviewComponent} from './components/finance/expense-overview/expense-overview.component';
+import {SortButtonComponent} from './components/utils/sort-button/sort-button.component';
 
 LOAD_WASM().subscribe();
 
@@ -150,6 +157,7 @@ LOAD_WASM().subscribe();
         ChorePreferenceCardComponent,
         MyChoreCardComponent,
         ChoreConfirmationModalComponent,
+      SortButtonComponent,
     ],
     imports: [
         BrowserModule,

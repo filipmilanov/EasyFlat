@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {StorageService} from "../../services/storage.service";
-import {ItemSearchDto, StorageItem, StorageItemListDto} from "../../dtos/storageItem";
+import {ItemSearchDto, StorageItemListDto} from "../../dtos/storageItem";
 import {OrderType} from "../../dtos/orderType";
 import {ToastrService} from "ngx-toastr";
 
@@ -14,7 +14,12 @@ import {ToastrService} from "ngx-toastr";
 export class DigitalStorageComponent implements OnInit {
   items: StorageItemListDto[] = [];
   itemsAIS: StorageItemListDto[] = [];
-  searchParameters: ItemSearchDto = {alwaysInStock: false, orderBy: OrderType.GENERAL_NAME, fillLevel: ''};
+  searchParameters: ItemSearchDto = {
+    alwaysInStock: false,
+    orderBy: OrderType.GENERAL_NAME,
+    fillLevel: '',
+    desc: false,
+  };
 
 
   constructor(private storageService: StorageService,
