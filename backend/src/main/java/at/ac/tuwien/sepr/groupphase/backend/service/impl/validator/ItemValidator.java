@@ -72,6 +72,55 @@ public class ItemValidator {
             errors.add("The given Digital Storage does not exists");
         }
 
+        checkGeneralConflictViolations(itemDto, unitList, digitalStorageItemList, errors);
+    }
+
+    public void validateForUpdate(ItemDto itemDto,
+                                  List<DigitalStorage> digitalStorageList,
+                                  List<Unit> unitList,
+                                  List<DigitalStorageItem> digitalStorageItemList) throws ConflictException, ValidationException {
+        LOGGER.trace("validateForUpdate({})", itemDto);
+
+        checkValidationForUpdate(itemDto);
+        checkConflictForUpdate(itemDto, digitalStorageList, unitList, digitalStorageItemList);
+    }
+
+    private void checkValidationForUpdate(ItemDto itemDto) throws ValidationException {
+        LOGGER.trace("checkValidationForUpdate({})", itemDto);
+
+        Set<ConstraintViolation<ItemDto>> validationViolations = validator.validate(itemDto);
+        if (!validationViolations.isEmpty()) {
+            throw new ValidationException("The data is not valid", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+        }
+    }
+
+    public void checkConflictForUpdate(ItemDto itemDto,
+                                       List<DigitalStorage> digitalStorageList,
+                                       List<Unit> unitList,
+                                       List<DigitalStorageItem> digitalStorageItemList) throws ConflictException {
+        LOGGER.trace("checkConflictForUpdate({}, {})", itemDto, digitalStorageList);
+
+        List<String> errors = new ArrayList<>();
+        if (itemDto.itemId() == null) {
+            errors.add("The item id can't be null");
+        }
+
+        if (itemDto.digitalStorage() == null || itemDto.digitalStorage().storageId() == null) {
+            errors.add("There is no Digital Storage defined");
+        } else if (digitalStorageList == null
+            || digitalStorageList.stream()
+            .map(DigitalStorage::getStorageId)
+            .noneMatch(id ->
+                Objects.equals(id, itemDto.digitalStorage().storageId())
+            )
+        ) {
+            errors.add("The given Digital Storage does not exist");
+        }
+
+        checkGeneralConflictViolations(itemDto, unitList, digitalStorageItemList, errors);
+    }
+
+    private void checkGeneralConflictViolations(ItemDto itemDto, List<Unit> unitList, List<DigitalStorageItem> digitalStorageItemList, List<String> errors) throws ConflictException {
         if (itemDto.alwaysInStock() == null) {
             errors.add("There is no AlwaysInStock defined");
         } else if (itemDto.alwaysInStock() && itemDto.minimumQuantity() == null) {
@@ -122,83 +171,5 @@ public class ItemValidator {
             }
         }
         return false;
-    }
-
-    public void validateForUpdate(ItemDto itemDto,
-                                  List<DigitalStorage> digitalStorageList,
-                                  List<Unit> unitList,
-                                  List<DigitalStorageItem> digitalStorageItemList) throws ConflictException, ValidationException {
-        LOGGER.trace("validateForUpdate({})", itemDto);
-
-        checkValidationForUpdate(itemDto);
-        checkConflictForUpdate(itemDto, digitalStorageList, unitList, digitalStorageItemList);
-    }
-
-    private void checkValidationForUpdate(ItemDto itemDto) throws ValidationException {
-        LOGGER.trace("checkValidationForUpdate({})", itemDto);
-
-        Set<ConstraintViolation<ItemDto>> validationViolations = validator.validate(itemDto);
-        if (!validationViolations.isEmpty()) {
-            throw new ValidationException("The data is not valid", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
-        }
-    }
-
-    public void checkConflictForUpdate(ItemDto itemDto,
-                                       List<DigitalStorage> digitalStorageList,
-                                       List<Unit> unitList,
-                                       List<DigitalStorageItem> digitalStorageItemList) throws ConflictException {
-        LOGGER.trace("checkConflictForUpdate({}, {})", itemDto, digitalStorageList);
-
-        List<String> errors = new ArrayList<>();
-        if (itemDto.itemId() == null) {
-            errors.add("The item id can't be null");
-        }
-
-        if (itemDto.digitalStorage() == null || itemDto.digitalStorage().storageId() == null) {
-            errors.add("There is no Digital Storage defined");
-        } else if (digitalStorageList == null
-            || digitalStorageList.stream()
-            .map(DigitalStorage::getStorageId)
-            .noneMatch(id ->
-                Objects.equals(id, itemDto.digitalStorage().storageId())
-            )
-        ) {
-            errors.add("The given Digital Storage does not exist");
-        }
-
-        if (itemDto.alwaysInStock() == null) {
-            errors.add("There is no AlwaysInStock defined");
-        } else if (itemDto.alwaysInStock() && itemDto.minimumQuantity() == null) {
-            errors.add("There is no MinimumQuantity defined");
-        }
-
-        if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
-            errors.add("The given Unit does not exists");
-        }
-
-        List<Unit> generalNameUnitList = digitalStorageItemList.stream()
-            .filter(digitalStorageItem ->
-                Objects.equals(digitalStorageItem.getItemCache().getGeneralName(), itemDto.generalName())
-            ).map(item ->
-                item.getItemCache().getUnit()
-            ).toList();
-
-        Optional<Unit> persistedUnit = unitList.stream()
-            .filter(unit1 -> unit1.getName().equals(itemDto.unit().name()))
-            .findFirst();
-
-        if (persistedUnit.isPresent() && !generalNameUnitList.isEmpty()) {
-            boolean isSubUnit = generalNameUnitList.stream()
-                .anyMatch(unit -> isUnitSubUnitOf(itemDto.unit().name(), unit));
-            boolean isSuperUnit = generalNameUnitList.stream()
-                .anyMatch(unit -> isUnitSubUnitOf(unit.getName(), persistedUnit.get()));
-            if (!isSubUnit && !isSuperUnit) {
-                errors.add("The given unit does not match the general name");
-            }
-        }
-
-        if (!errors.isEmpty()) {
-            throw new ConflictException("There is a conflict with persisted data", errors);
-        }
     }
 }
