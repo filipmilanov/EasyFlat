@@ -39,7 +39,6 @@ public class UnitServiceImpl implements UnitService {
         return unitRepository.findByName(name).orElseThrow(() -> new NotFoundException("Unit not found"));
     }
 
-
     @Override
     public List<Unit> findAll() {
         LOGGER.info("findAll()");

@@ -16,9 +16,6 @@
               <input type="text" name="username" formControlName="username" class="form-control" id="inputUsername"
                      aria-describedby="usernameHelp" placeholder="Enter username">
               <div *ngIf="submitted && loginForm.controls.username.errors" class="error">
-                <small class="form-text text-warning" *ngIf="loginForm.controls.username.errors.required">Your username is
-                  required!
-                </small>
               </div>
             </div>
 
@@ -27,13 +24,7 @@
               <input type="password" name="password" formControlName="password" class="form-control" id="password"
                      placeholder="Password">
               <div *ngIf="submitted && loginForm.controls.password.errors" class="error">
-                <small class="form-text text-warning" *ngIf="loginForm.controls.password.errors.required">Your password
-                  is
-                  required!
-                </small>
-                <small class="form-text text-warning" *ngIf="loginForm.controls.password.errors.minlength">Your password
-                  must be at least 8 characters long!
-                </small>
+
               </div>
             </div>
 

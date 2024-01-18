@@ -156,7 +156,6 @@ export class CookbookCreateComponent implements OnInit{
   public onSubmit(form: NgForm): void {
     console.log('is form valid?', form.valid, this.recipe);
 
-    if (form.valid) {
       let observable: Observable<RecipeSuggestion>;
       switch (this.mode) {
         case CookbookMode.create:
@@ -186,7 +185,6 @@ export class CookbookCreateComponent implements OnInit{
           });
         }
       });
-    }
   }
 
   formatUnitName(unit: Unit | null): string {

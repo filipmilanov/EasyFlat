@@ -49,10 +49,9 @@ import com.deepl.api.DeepLException;
 import com.deepl.api.TextResult;
 import com.deepl.api.Translator;
 import jakarta.transaction.Transactional;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -68,7 +67,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class CookingServiceImpl implements CookingService {
@@ -150,7 +148,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
-        throws ValidationException, ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
+        throws  ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
 
 
         ApplicationUser user = authService.getUserFromToken();
@@ -270,13 +268,16 @@ public class CookingServiceImpl implements CookingService {
         if (recipe.id() != null) {
             RecipeDetailDto recipeWithSteps = getRecipeDetails(recipe.id());
             String summary = recipe.summary();
+            //Remove HTML tags
+            summary = Jsoup.parse(summary).text();
             if (recipeWithSteps.steps() != null) {
                 for (Step step : recipeWithSteps.steps().steps()) {
-                    summary += "<br>" + "<strong>Step " + step.number() + "</strong> : " + step.step();
+                    summary += "\r\n" + "Step " + step.number() + ": " + step.step();
                 }
             }
 
-            recipe = recipe.withId(null).withSummary(summary);
+
+            recipe = recipe.withId(null).withSummaryAndWithoutMissingIngredients(summary);
 
         }
         recipeValidator.validateForCreate(recipe);

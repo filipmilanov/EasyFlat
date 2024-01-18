@@ -18,6 +18,7 @@ export class ConfirmDeleteDialogComponent {
   }
 
   getIdFormatForDeleteModal(): string {
+    console.log(`${this.deleteName}${this.deleteId}`.replace(/[^a-zA-Z0-9]+/g, '') + "FROM DELETE-MODAL")
     return `${this.deleteName}${this.deleteId}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 

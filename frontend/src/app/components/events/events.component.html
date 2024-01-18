@@ -8,9 +8,14 @@
       </label>
       <input type="text" id="searchTitle" name="searchTitle" class="form-control" [(ngModel)]="label" (input)="findEventsByLabel()">
     </div>
-    <button *ngIf="events.length > 0" type="button" class="btn btn-secondary bi-save" style="margin-left: 10px;" (click)="exportAll()">
-      Export all events
-    </button>
+    <div >
+      <button *ngIf="events.length > 0" type="button" class="btn btn-secondary bi-save"  (click)="exportAll()">
+        Export all events
+      </button>
+      <button type="button" class="btn btn-primary" style="margin-left: 10px" [routerLink]="['create']">
+        Add Event
+      </button>
+    </div>
   </div>
   <div class="row row-cols-4">
     <div class="col" *ngFor="let event of events" style="margin-right: 2rem">
@@ -20,11 +25,6 @@
   </div>
 </div>
 
-<button type="button"
-        class="btn btn-primary float-end m-3"
-        [routerLink]="['create']"
->
-  Add Event
-</button>
+
 
 

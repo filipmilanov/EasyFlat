@@ -6,6 +6,8 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.soabase.recordbuilder.core.RecordBuilder;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.Objects;
 
@@ -13,10 +15,11 @@ import java.util.Objects;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record RecipeIngredientDto(
     Long id,
+    @NotBlank(message = "The ingredient name cannot be empty")
     String name,
     String unit,
     UnitDto unitEnum,
-
+    @Min(value = 1, message = "The ingredient amount must be positive")
     double amount,
     boolean matched,
     boolean autoMatched,
