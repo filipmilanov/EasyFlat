@@ -43,17 +43,6 @@ public class ShoppingListValidatorImpl implements ShoppingListValidator {
     private void checkConflictForCreate(ShoppingList shoppingList) throws ConflictException {
         LOGGER.trace("checkConflictForCreate({})", shoppingList);
         List<String> errors = new ArrayList<>();
-
-        if (shoppingList.getName() == null) {
-            errors.add("No name given");
-        } else {
-            if (shoppingList.getName().isBlank()) {
-                errors.add("Shopping List name can not be blank");
-            }
-            if (shoppingList.getName().length() > 200) {
-                errors.add("Shopping List name is too long");
-            }
-        }
         if (shoppingList.getId() != null) {
             errors.add("The Id must be null");
         }
@@ -62,7 +51,7 @@ public class ShoppingListValidatorImpl implements ShoppingListValidator {
         }
 
         if (!errors.isEmpty()) {
-            throw new ConflictException("There is a conflict with persisted data", errors);
+            throw new ConflictException("Your input is not valid", errors);
         }
     }
 

@@ -12,9 +12,15 @@ import {ToastrService} from "ngx-toastr";
 export class ShoppingListsComponent implements OnInit{
   lists: ShoppingListDto[];
   searchParams: string;
+  showInput: boolean = false;
 
   constructor(private shoppingService: ShoppingListService,
               private notification: ToastrService) {
+  }
+
+
+  openInput() {
+    this.showInput = true;
   }
 
   ngOnInit() {

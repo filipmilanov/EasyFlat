@@ -165,11 +165,14 @@ export class ShoppingItemCreateEditComponent implements OnInit {
           this.router.navigate(['shopping-lists', 'list', this.item.shoppingList.id]);
         },
         error: error => {
-          console.error(`Error item was not ${this.modeActionFinished}`);
-          this.notification.error(`Item could not be ${this.modeActionFinished}.`)
-          if (this.modeIsEdit && this.item.alwaysInStock) {
-            this.notification.error("Check if you set minimum quantity");
-          }
+          console.log(error)
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
         }
       });
     }

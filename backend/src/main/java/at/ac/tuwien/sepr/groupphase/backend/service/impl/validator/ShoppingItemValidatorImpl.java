@@ -2,11 +2,12 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ItemLabelValidator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ShoppingItemValidator;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.slf4j.Logger;
@@ -26,8 +27,11 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
 
     private final Validator validator;
 
-    public ShoppingItemValidatorImpl(Validator validator) {
+    private final ItemLabelValidator itemLabelValidator;
+
+    public ShoppingItemValidatorImpl(Validator validator, ItemLabelValidator itemLabelValidator) {
         this.validator = validator;
+        this.itemLabelValidator = itemLabelValidator;
     }
 
     @Override
@@ -51,26 +55,15 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
     }
 
     private void checkConflictForCreate(ShoppingItemDto itemDto, List<ShoppingList> shoppingLists, List<DigitalStorage> digitalStorageList, List<Unit> unitList) throws ConflictException {
-        LOGGER.trace("checkItemForCreate({}, {}, {})", itemDto, digitalStorageList, unitList);
+        LOGGER.trace("checkConflictForCreate({}, {}, {})", itemDto, digitalStorageList, unitList);
 
         List<String> errors = new ArrayList<>();
-
-        if (itemDto.generalName() == null) {
-            errors.add("No name given");
-        } else {
-            if (itemDto.generalName().isBlank()) {
-                errors.add("The given name can not be blank");
-            }
-            if (itemDto.generalName().length() > 120) {
-                errors.add("The name is too long");
-            }
-        }
         if (itemDto.itemId() != null) {
             errors.add("The Id must be null");
         }
 
         if (itemDto.shoppingList() == null) {
-            errors.add("The item is not linked to a Shopping List");
+            errors.add("The item is not linked to a shopping list");
         } else {
             if (shoppingLists.stream()
                 .map(ShoppingList::getId)
@@ -78,7 +71,7 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
                     Objects.equals(id, itemDto.shoppingList().id())
                 )
             ) {
-                errors.add("The given Shopping List does not exists");
+                errors.add("The given shopping list does not exists");
             }
         }
 
@@ -91,7 +84,7 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
         }
 
         if (!errors.isEmpty()) {
-            throw new ConflictException("There is a conflict with persisted data", errors);
+            throw new ConflictException("The data is not valid", errors);
         }
     }
 
@@ -119,16 +112,6 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
         LOGGER.trace("checkItemForUpdate({}, {}, {})", itemDto, digitalStorageList, unitList);
 
         List<String> errors = new ArrayList<>();
-        if (itemDto.generalName() == null) {
-            errors.add("No name given");
-        } else {
-            if (itemDto.generalName().isBlank()) {
-                errors.add("The given name can not be blank");
-            }
-            if (itemDto.generalName().length() > 120) {
-                errors.add("The name is too long");
-            }
-        }
         if (itemDto.itemId() == null) {
             errors.add("The Id can not be null");
         }
@@ -142,7 +125,7 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
                     Objects.equals(id, itemDto.shoppingList().id())
                 )
             ) {
-                errors.add("The given Shopping List does not exists");
+                errors.add("The given shopping list does not exists");
             }
         }
 
@@ -155,11 +138,11 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
         }
 
         if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
-            errors.add("The given Unit does not exists");
+            errors.add("The given unit does not exists");
         }
 
         if (!errors.isEmpty()) {
-            throw new ConflictException("There is a conflict with persisted data", errors);
+            throw new ConflictException("The data is not valid", errors);
         }
     }
 

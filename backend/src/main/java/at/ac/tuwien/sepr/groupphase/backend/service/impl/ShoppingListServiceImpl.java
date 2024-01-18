@@ -28,12 +28,12 @@ import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingItemValidator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ItemLabelValidator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ShoppingItemValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListValidatorImpl;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -59,14 +59,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final DigitalStorageRepository digitalStorageRepository;
     private final ShoppingItemValidator shoppingItemValidator;
     private final UnitService unitService;
-    private final ShoppingListValidatorImpl validator;
+    private final ShoppingListValidatorImpl shoppingListValidator;
     private final AuthService authService;
+    private final ItemLabelValidator itemLabelValidator;
 
     public ShoppingListServiceImpl(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
                                    IngredientService ingredientService, CustomUserDetailService customUserDetailService, DigitalStorageRepository digitalStorageRepository,
-                                   ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidatorImpl validator, AuthService authService) {
+                                   ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidatorImpl shoppingListValidator, AuthService authService, ItemLabelValidator itemLabelValidator) {
         this.shoppingItemRepository = shoppingItemRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -80,8 +81,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.digitalStorageRepository = digitalStorageRepository;
         this.shoppingItemValidator = shoppingItemValidator;
         this.unitService = unitService;
-        this.validator = validator;
+        this.shoppingListValidator = shoppingListValidator;
         this.authService = authService;
+        this.itemLabelValidator = itemLabelValidator;
     }
 
     @Override
@@ -177,10 +179,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setName(listName);
         shoppingList.setSharedFlat(applicationUser.getSharedFlat());
-        if (shoppingListRepository.findByNameAndSharedFlatIs(listName, applicationUser.getSharedFlat()) != null) {
-            throw new ValidationException("Validation error", List.of("List name already exists"));
-        }
-        validator.validateForCreate(shoppingList);
+        shoppingListValidator.validateForCreate(shoppingList);
         return shoppingListRepository.save(shoppingList);
     }
 
@@ -303,11 +302,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
 
-    private List<ItemLabel> findLabelsAndCreateMissing(List<ItemLabelDto> labels) {
+    private List<ItemLabel> findLabelsAndCreateMissing(List<ItemLabelDto> labels) throws ValidationException, ConflictException {
         LOGGER.trace("findLabelsAndCreateMissing({})", labels);
         if (labels == null) {
             return List.of();
         }
+        for (ItemLabelDto itemLabelDto : labels) {
+            itemLabelValidator.validate(itemLabelDto);
+        }
+
         List<String> values = labels.stream()
             .map(ItemLabelDto::labelValue)
             .toList();
