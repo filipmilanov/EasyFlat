@@ -158,7 +158,18 @@ export class ItemCreateEditComponent implements OnInit {
       }
       observable.subscribe({
         next: () => {
-          this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
+          if(this.modeIsCreate){
+            this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
+          } else {
+            this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished}.`, "Success");
+          }
+          if( !this.modeIsCreate && this.item.alwaysInStock && this.item.quantityCurrent < this.item.minimumQuantity){
+            this.notification.success(`The item was automatically added to the shopping list.`, "Success");
+          }
+          if( !this.modeIsCreate && !this.item.alwaysInStock && this.item.quantityCurrent <= 0 ){
+            this.notification.success(`Item ${this.item.productName} has no stock and was successfully deleted.`, "Success");
+          }
+
           this.router.navigate(['/digital-storage']);
         },
         error: error => {
@@ -172,6 +183,7 @@ export class ItemCreateEditComponent implements OnInit {
             errorMessages.forEach((message: string) => {
               this.notification.error(message, errorDescription);
             });
+            this.notification.error(`The item could not be ${this.modeActionFinished}.`, "Error");
           }
         }
       });

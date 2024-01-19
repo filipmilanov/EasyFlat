@@ -31,6 +31,10 @@ export class ItemDetailListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.reloadData();
+  }
+
+  reloadData(): void {
     this.route.queryParamMap.subscribe({
       next: queryParamMap => {
         this.stockType = queryParamMap.get('stockType');
@@ -119,6 +123,17 @@ export class ItemDetailListComponent implements OnInit {
     this.itemService.updateItem(item).subscribe({
       next: () => {
         this.notification.success(`Item ${item.productName} was successfully ${mode} by ${quantityInput}.`, "Success");
+        if( item.alwaysInStock && item.quantityCurrent < item.minimumQuantity){
+          this.notification.success(`The item was automatically added to the shopping list.`, "Success");
+        }
+        if( !item.alwaysInStock && item.quantityCurrent <= 0 ){
+          this.notification.success(`Item ${item.productName} has no stock and was successfully deleted.`, "Success");
+          if(this.filteredItems.length <= 0){
+            this.router.navigate(['/digital-storage/']);
+          } else {
+            this.reloadData();
+          }
+        }
       },
       error: () => {
         item.quantityCurrent = previousCurrentQuantity;
