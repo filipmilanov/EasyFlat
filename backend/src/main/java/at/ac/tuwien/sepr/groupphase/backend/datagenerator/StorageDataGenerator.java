@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
-@Profile({"generateData", "test"})
+@Profile({"generateData", "test", "unitTest"})
 @Component("StorageDataGenerator")
 @DependsOn({"CleanDatabase", "SharedFlatDataGenerator"})
 public class StorageDataGenerator {

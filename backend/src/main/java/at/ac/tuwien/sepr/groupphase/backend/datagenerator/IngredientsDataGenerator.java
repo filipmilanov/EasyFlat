@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
-@Profile({"generateData", "test"})
+@Profile({"generateData", "test", "unitTest"})
 @Component("IngredientsDataGenerator")
 @DependsOn("CleanDatabase")
 public class IngredientsDataGenerator {

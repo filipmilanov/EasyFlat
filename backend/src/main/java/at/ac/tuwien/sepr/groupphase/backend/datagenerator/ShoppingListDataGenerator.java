@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
-@Profile({"generateData", "test"})
+@Profile({"generateData", "test", "unitTest"})
 @Component("ShoppingListDataGenerator")
 @DependsOn({"CleanDatabase"})
 public class ShoppingListDataGenerator {
@@ -28,6 +27,7 @@ public class ShoppingListDataGenerator {
 
     @PostConstruct
     public void generateShoppingLists() {
+        LOGGER.debug("generating {} ShoppingLists", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             ShoppingList shoppingList = new ShoppingList();
             ShoppingList second = new ShoppingList();
