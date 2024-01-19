@@ -71,6 +71,8 @@ class StorageEndpointTest {
     private JwtTokenizer jwtTokenizer;
 
     private final String BASE_URI = "/api/v1/storage";
+    private final String ITEM_ENDPOINT_URI = BASE_URI + "/items";
+
     private ApplicationUser applicationUser;
 
     @BeforeEach
@@ -86,12 +88,11 @@ class StorageEndpointTest {
     public void givenStorageIdAndSearchParametersWhenGetItemsThenItemsRetrieved() throws Exception {
         // Given
 
-        String endpointUrl = BASE_URI + "/items";
 
         // when
         ItemSearchDto itemSearchDto = new ItemSearchDto(false, null, null, null, null);
 
-        MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
+        MvcResult mvcResult = this.mockMvc.perform(get(ITEM_ENDPOINT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES))
                 .param("alwaysInStock", String.valueOf(itemSearchDto.alwaysInStock()))
@@ -110,16 +111,12 @@ class StorageEndpointTest {
     @DisplayName("Given storageId when getStorageById then storage returned")
     public void givenStorageIdAndOrderTypeNameWhenGetItemsThenItemsRetrievedInCorrectOrder() throws Exception {
         // Given
-
-        String endpointUrl = BASE_URI + "/items";
-
-
         ItemSearchDto itemSearchDto = ItemSearchDtoBuilder.builder()
             .alwaysInStock(false)
             .orderType(ItemOrderType.GENERAL_NAME)
             .build();
 
-        MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
+        MvcResult mvcResult = this.mockMvc.perform(get(ITEM_ENDPOINT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES))
                 .param("alwaysInStock", String.valueOf(itemSearchDto.alwaysInStock()))

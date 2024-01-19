@@ -2,13 +2,8 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -33,12 +28,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
-import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemDto;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.itemDtoWithInvalidDigitalStorage;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validItemDto;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,39 +79,11 @@ class ItemEndpointTest {
     }
 
     @Test
-    @DisplayName("Given item when create then item is created")
+    @DisplayName("Given valid item when create then item is created")
     public void givenItemWhenCreateThenItemIsCreated() throws Exception {
         // given
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test")
-            .storageId(1L)
-            .build();
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 2")
-                .build()
-        );
 
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("Test")
-            .productName("MyTest")
-            .brand("Hofer")
-            .quantityCurrent(100.0)
-            .quantityTotal(200.0)
-            .unit(ml)
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .boughtAt("Hofer")
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .build();
-
-        String body = objectMapper.writeValueAsString(itemDto);
+        String body = objectMapper.writeValueAsString(validItemDto);
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(post(BASE_URI)
@@ -151,25 +117,25 @@ class ItemEndpointTest {
                 ItemDto::boughtAt
             )
             .containsExactly(
-                itemDto.ean(),
-                itemDto.generalName(),
-                itemDto.productName(),
-                itemDto.brand(),
-                itemDto.quantityCurrent(),
-                itemDto.quantityTotal(),
-                itemDto.unit(),
-                itemDto.expireDate(),
-                itemDto.description(),
-                itemDto.priceInCent(),
-                itemDto.digitalStorage(),
-                itemDto.boughtAt()
+                validItemDto.ean(),
+                validItemDto.generalName(),
+                validItemDto.productName(),
+                validItemDto.brand(),
+                validItemDto.quantityCurrent(),
+                validItemDto.quantityTotal(),
+                validItemDto.unit(),
+                validItemDto.expireDate(),
+                validItemDto.description(),
+                validItemDto.priceInCent(),
+                validItemDto.digitalStorage(),
+                validItemDto.boughtAt()
             );
         assertThat(
             item.ingredients().stream()
                 .map(IngredientDto::name)
                 .toList()
         ).isEqualTo(
-            itemDto.ingredients().stream()
+            validItemDto.ingredients().stream()
                 .map(IngredientDto::name)
                 .toList()
         );
@@ -180,35 +146,8 @@ class ItemEndpointTest {
     public void givenInvalidStorageWhenCreateThenValidationException() throws Exception {
         // given
 
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test")
-            .storageId(1L)
-            .build();
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 2")
-                .build()
-        );
 
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("2314")
-            .generalName("")
-            .productName(null)
-            .brand("")
-            .quantityCurrent(100.0)
-            .quantityTotal(-200.0)
-            .unit(UnitDtoBuilder.builder().build())
-            .description("")
-            .priceInCent(-1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .boughtAt("Hofer")
-            .build();
-
-        String body = objectMapper.writeValueAsString(itemDto);
+        String body = objectMapper.writeValueAsString(invalidItemDto);
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(post(BASE_URI)
@@ -234,36 +173,7 @@ class ItemEndpointTest {
     @DisplayName("Given item when create then item is created with alternative names")
     public void givenInvalidStorageWhenCreateThenAuthenticationException() throws Exception {
         // given
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test")
-            .storageId(-909L)
-            .build();
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 2")
-                .build()
-        );
-
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("Test")
-            .productName("MyTest")
-            .brand("Hofer")
-            .quantityCurrent(100.0)
-            .quantityTotal(200.0)
-            .unit(ml)
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .boughtAt("Hofer")
-            .build();
-
-        String body = objectMapper.writeValueAsString(itemDto);
+        String body = objectMapper.writeValueAsString(itemDtoWithInvalidDigitalStorage);
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(post(BASE_URI)
