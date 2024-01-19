@@ -201,24 +201,24 @@ export class ItemCreateEditComponent implements OnInit {
     ? of([])
     : this.storageService.findAll(input, 5);
 
-  formatGeneralName(item: ItemDto | null): string {
-    return item ? item as any as string : '';
+  formatGeneralName(generalName: string | null): string {
+    return generalName != null ? generalName : '';
   }
 
   generalNameSuggestions = (input: string) => (input === '')
     ? of([])
     : this.itemService.findByGeneralName(input);
 
-  formatBrand(item: ItemDto | null): string {
-    return item ? item.brand as any as string : '';
+  formatBrand(brand: string | null): string {
+    return brand ? brand : '';
   }
 
   brandSuggestions = (input: string) => (input === '')
     ? of([])
     : this.itemService.findByBrand(input);
 
-  formatBoughtAt(item: ItemDto | null): string {
-    return item != null && item.boughtAt != null ? item.boughtAt : '';
+  formatBoughtAt(boughtAt: string | null): string {
+    return boughtAt != null ? boughtAt : '';
   }
 
   boughtAtSuggestions = (input: string) => (input === '')
