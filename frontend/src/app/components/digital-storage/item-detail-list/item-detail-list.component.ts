@@ -147,7 +147,11 @@ export class ItemDetailListComponent implements OnInit {
   public delete(item: ItemDto): void {
     this.itemService.deleteItem(item.itemId).subscribe({
       next: () => {
-        this.router.navigate(['/digital-storage/']);
+        if(this.filteredItems.length === 1){
+          this.router.navigate(['/digital-storage/']);
+        } else {
+          this.reloadData();
+        }
         this.notification.success(`Item ${item.productName} was successfully deleted.`, "Success");
       },
       error: () => {
