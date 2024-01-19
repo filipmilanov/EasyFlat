@@ -20,17 +20,18 @@ public interface ShoppingListService {
      *
      * @param itemDto a shopping item without ID
      * @return an object of type {@link ShoppingItem} which is persisted and has an ID
-     * @throws AuthenticationException If authentication fails or the user does not exist
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    ShoppingItem createShoppingItem(ShoppingItemDto itemDto) throws AuthenticationException, ValidationException, ConflictException, AuthorizationException;
+    ShoppingItem createShoppingItem(ShoppingItemDto itemDto) throws ValidationException, ConflictException, AuthorizationException;
 
     /**
      * Search for a shopping item in the database with given ID.
      *
      * @param itemId a valid ID
      * @return if the id exists in the DB, an Optional of a persisted ShoppingItem with given ID, an empty Optional otherwise
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    Optional<ShoppingItem> getById(Long itemId) throws AuthenticationException;
+    Optional<ShoppingItem> getShoppingItemById(Long itemId) throws AuthorizationException;
 
     /**
      * Search for a shopping list in the database with given ID.
@@ -57,9 +58,9 @@ public interface ShoppingListService {
      * @param id a valid ID of a ShoppingList
      * @param itemSearchDto search parameters consisting of the product's name and its label's value
      * @return if the id exists in the DB, a List of a persisted ShoppingItems with the given ID, an empty Optional otherwise
-     * @throws AuthenticationException If authentication fails or the user does not exist
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    List<ShoppingItem> getItemsById(Long id, ShoppingItemSearchDto itemSearchDto) throws AuthenticationException;
+    List<ShoppingItem> getItemsByShoppingListId(Long id, ShoppingItemSearchDto itemSearchDto) throws AuthorizationException;
 
     /**
      * Create a new ShoppingList in the db.
@@ -74,8 +75,9 @@ public interface ShoppingListService {
      *
      * @param itemId a valid ID of a ShoppingItem
      * @return the deleted ShoppingItem
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    ShoppingItem deleteItem(Long itemId) throws AuthenticationException;
+    ShoppingItem deleteItem(Long itemId) throws AuthorizationException;
 
     /**
      * Delete a ShoppingList from the db based on its ID.
@@ -90,9 +92,9 @@ public interface ShoppingListService {
      *
      * @param searchParams name of the list, through which we search for it. Can also be null
      * @return a List of all persisted ShoppingLists
-     * @throws AuthenticationException If authentication fails or the user does not exist
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    List<ShoppingList> getShoppingLists(String searchParams) throws AuthenticationException;
+    List<ShoppingList> getShoppingLists(String searchParams) throws AuthorizationException;
 
     /**
      * Transfer ShoppingItems to the server.
@@ -107,11 +109,11 @@ public interface ShoppingListService {
      *
      * @param shoppingItemDto a DTO of type shopping item with existing ID
      * @return an object of type {@link ShoppingItem} which is updated
-     * @throws AuthenticationException If authentication fails or the user does not exist
+     * @throws AuthorizationException if the user is not authorized to access a resource
      * @throws ConflictException if there is a conflict with the persisted data
      * @throws ValidationException if the data in shoppingItemDto is not valid
      */
-    ShoppingItem update(ShoppingItemDto shoppingItemDto)
-        throws ConflictException, AuthenticationException, ValidationException, AuthorizationException;
+    ShoppingItem updateShoppingItem(ShoppingItemDto shoppingItemDto)
+        throws ConflictException, ValidationException, AuthorizationException;
 }
 

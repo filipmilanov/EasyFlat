@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
+@RecordBuilder
 public record ShoppingItemDto(
     Long itemId,
     @Pattern(regexp = "^\\d{13}$")

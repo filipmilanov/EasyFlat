@@ -69,6 +69,7 @@ public abstract class ItemMapper {
     @Mapping(target = "itemCache.quantityTotal", source = "quantityTotal")
     @Mapping(target = "itemCache.unit", source = "unit")
     @Mapping(target = "itemCache.description", source = "description")
+    @Mapping(target = "itemCache.ingredientList", source = "ingredients")
     public abstract ShoppingItem dtoToShopping(ShoppingItemDto itemDto,
                                                @Context List<ItemLabel> labels);
 
