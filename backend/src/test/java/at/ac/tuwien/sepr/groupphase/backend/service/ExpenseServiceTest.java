@@ -20,6 +20,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ExpenseRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
@@ -41,6 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidExpenseId;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validExpenseId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -68,6 +71,9 @@ class ExpenseServiceTest {
     @MockBean
     private AuthService authService;
 
+    @Autowired
+    private ExpenseRepository expenseRepository;
+
     private ApplicationUser applicationUser;
 
     @BeforeEach
@@ -82,15 +88,13 @@ class ExpenseServiceTest {
     @DisplayName("Can an existing expense be found by id?")
     void givenValidIdWhenFindByIdThenExpenseWithCorrectIdIsReturned() throws AuthorizationException {
         // given
-        long id = 5L;
-
         // when
-        Expense actual = service.findById(id);
+        Expense actual = service.findById(validExpenseId);
 
         // then
         assertAll(
             () -> assertThat(actual).isNotNull(),
-            () -> assertThat(actual).extracting(Expense::getId).isEqualTo(id)
+            () -> assertThat(actual).extracting(Expense::getId).isEqualTo(validExpenseId)
         );
     }
 
@@ -98,11 +102,9 @@ class ExpenseServiceTest {
     @DisplayName("Can an non-existing expense be found by id?")
     void givenInvalidIdWhenFindByIdThenNotFoundExceptionIsThrown() {
         // given
-        long id = 999L;
-
         // when + then
         assertThrows(NotFoundException.class, () ->
-            service.findById(id)
+            service.findById(invalidExpenseId)
         );
     }
 
@@ -113,7 +115,7 @@ class ExpenseServiceTest {
         List<Expense> actual = service.findAll(new ExpenseSearchDto(null, null, null, null));
 
         // then
-        assertThat(actual).hasSize(20);
+        assertThat(actual).hasSize(expenseRepository.findAll().size());
     }
 
     @Test
