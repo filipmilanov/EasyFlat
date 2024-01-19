@@ -33,8 +33,8 @@
              name="orderType"
              id="orderName"
              autocomplete="off"
-             [checked]="searchParameters.orderBy === OrderType.PRODUCT_NAME"
-             [(ngModel)]="searchParameters.orderBy" [value]="OrderType.PRODUCT_NAME"
+             [checked]="searchParameters.orderBy === OrderType.GENERAL_NAME"
+             [(ngModel)]="searchParameters.orderBy" [value]="OrderType.GENERAL_NAME"
              (change)="loadStorage()">
       <label class="btn btn-outline-primary" for="orderName">Name</label>
 
@@ -47,7 +47,13 @@
              [(ngModel)]="searchParameters.orderBy" [value]="OrderType.QUANTITY_CURRENT"
              (change)="loadStorage()">
       <label class="btn btn-outline-primary" for="orderQuantity">Quantity</label>
+
+      <app-sort-button class="btn btn-outline-primary"
+                       [(isDescending)]="this.searchParameters.desc"
+                       (isDescendingChange)="loadStorage()">
+      </app-sort-button>
     </div>
+
   </div>
 </form>
 

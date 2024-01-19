@@ -146,8 +146,8 @@ public class CustomUserDetailService implements UserService {
     @Transactional
     public UserDetailDto update(UserDetailDto userDetailDto) throws ValidationException, ConflictException {
         userValidator.validateForUpdate(userDetailDto);
-        if (userRepository.findUserByEmail(userDetailDto.getEmail()) != null) {
-            ApplicationUser user = userRepository.findUserByEmail(userDetailDto.getEmail());
+        ApplicationUser user = userRepository.findApplicationUserById(userDetailDto.getId());
+        if (user != null) {
             user.setFirstName(userDetailDto.getFirstName());
             user.setLastName(userDetailDto.getLastName());
             user.setEmail(userDetailDto.getEmail());
@@ -155,6 +155,8 @@ public class CustomUserDetailService implements UserService {
             user.setPoints(user.getPoints());
             if (userDetailDto.getPassword().length() >= 8) {
                 user.setPassword(passwordEncoder.encode(userDetailDto.getPassword()));
+            } else {
+                throw new ConflictException("Password must be at least 8 characters");
             }
             ApplicationUser returnUser = userRepository.save(user);
             return userMapper.entityToUserDetailDto(returnUser);

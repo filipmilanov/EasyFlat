@@ -1,17 +1,20 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
 
 public class UserLoginDto {
 
-    @NotNull(message = "Email must not be null")
-    @Email
+    @NotBlank(message = "Email cannot be empty")
+    @Email(message = "Email is not in a valid form")
     private String email;
 
-    @NotNull(message = "Password must not be null")
+    @NotBlank(message = "Password cannot be empty")
+    @Size(min = 8, message = "The password must be at least 8 characters")
     private String password;
 
     public String getEmail() {

@@ -28,7 +28,7 @@ export class ShowUserForExpenseComponent implements OnChanges {
       this.initializeSelectedUsersArray();
       this.users.forEach(user => {
         if (this.splitBy == SplitBy.EQUAL || this.splitBy == SplitBy.UNEQUAL) {
-          user.value = user.value / 100;
+          user.value = this.roundToTwoDecimals(user.value / 100);
         }
       })
       this.isInitialDataLoaded++;
@@ -56,7 +56,7 @@ export class ShowUserForExpenseComponent implements OnChanges {
     if (this.splitBy === SplitBy.EQUAL) {
       this.users.forEach(user => {
         if (this.selectedUsers[this.users.indexOf(user)]) {
-          user.value = (this.amountInEuro ? this.amountInEuro : 0) / this.sizeOfSelectedUsers();
+          user.value = this.roundToTwoDecimals((this.amountInEuro ? this.amountInEuro : 0) / this.sizeOfSelectedUsers());
         } else {
           user.value = 0;
         }
@@ -64,7 +64,7 @@ export class ShowUserForExpenseComponent implements OnChanges {
     } else if (this.splitBy === SplitBy.PERCENTAGE) {
       this.users.forEach(user => {
         if (this.selectedUsers[this.users.indexOf(user)]) {
-          user.value = 100 / this.sizeOfSelectedUsers();
+          user.value = this.roundToTwoDecimals((100 / this.sizeOfSelectedUsers()));
         } else {
           user.value = 0;
         }
@@ -89,6 +89,10 @@ export class ShowUserForExpenseComponent implements OnChanges {
     this.users.forEach((value, index) => {
       this.selectedUsers[index] = this.selectedUsers[index] !== false;
     });
+  }
+
+  private roundToTwoDecimals(value: number): number {
+    return Math.round(value * 100) / 100;
   }
 
   protected readonly SplitBy = SplitBy;

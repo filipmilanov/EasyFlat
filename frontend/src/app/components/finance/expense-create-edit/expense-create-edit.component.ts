@@ -236,7 +236,7 @@ export class ExpenseCreateEditComponent implements OnInit {
       this.expenseTime.hour + 1,
       this.expenseTime.minute,
     );
-    this.expense.amountInCents = this.amountInEuro * 100;
+    this.expense.amountInCents = this.roundToTwoDecimals(this.amountInEuro) * 100;
     if (this.selectedRepeatingOption != RepeatingExpenseOptions.REPEAT_AT) {
       this.expense.repeatingExpenseType = null;
     }
@@ -263,6 +263,10 @@ export class ExpenseCreateEditComponent implements OnInit {
 
   onRepeatingChange() {
     this.expense.isRepeating = this.selectedRepeatingOption != RepeatingExpenseOptions.NO_REPEAT;
+  }
+
+  private roundToTwoDecimals(value: number): number {
+    return Math.round(value * 100) / 100;
   }
 
   protected readonly RepeatingExpenseOptions = RepeatingExpenseOptions;

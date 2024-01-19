@@ -44,8 +44,9 @@ public class ItemDataGenerator {
     @PostConstruct
     public void generateItems() {
         LOGGER.debug("generating Items");
-        Unit kg = unitRepository.findByName("kg").orElseThrow();
-        Unit g = unitRepository.findByName("kg").orElseThrow();
+        Unit pcs = unitRepository.findByName("pcs").orElseThrow();
+        Unit g = unitRepository.findByName("g").orElseThrow();
+        Unit ml = unitRepository.findByName("ml").orElseThrow();
         DigitalStorage storage = new DigitalStorage();
         storage.setStorageId(1L);
 
@@ -56,7 +57,7 @@ public class ItemDataGenerator {
             "Granny Smith",
             1.0,
             1.0,
-            kg,
+            pcs,
             LocalDate.now().plusDays(1),
             "Granny Smith Apples",
             "Billa",
@@ -192,7 +193,7 @@ public class ItemDataGenerator {
             "Spar",
             200.0,
             1000.0,
-            g,
+            ml,
             LocalDate.now().plusMonths(3),
             "",
             "Billa",
@@ -209,7 +210,7 @@ public class ItemDataGenerator {
             "alpro",
             1000.0,
             1000.0,
-            g,
+            ml,
             LocalDate.now().plusMonths(3),
             "",
             "Spar",

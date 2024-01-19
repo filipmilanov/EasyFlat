@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FinanceService} from "../../../services/finance.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
-import {DebitDto, ExpenseDto, SplitBy} from "../../../dtos/expenseDto";
+import {DebitDto, ExpenseDto, RepeatingExpenseType, SplitBy} from "../../../dtos/expenseDto";
 
 @Component({
   selector: 'app-expense-detail',
@@ -95,5 +95,17 @@ export class ExpenseDetailComponent implements OnInit {
     return amount.toFixed(2);
   }
 
+  formatRepeatingExpenseType(repeatingExpenseType: RepeatingExpenseType): string {
+    switch (repeatingExpenseType) {
+      case RepeatingExpenseType.FIRST_OF_MONTH:
+        return "First of Month";
+      case RepeatingExpenseType.FIRST_OF_QUARTER:
+        return "First of Quarter";
+      case RepeatingExpenseType.FIRST_OF_YEAR:
+        return "First of Year";
+    }
+  }
+
   protected readonly SplitBy = SplitBy;
+
 }

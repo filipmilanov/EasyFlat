@@ -117,7 +117,7 @@ export class EventsCreateComponent implements OnInit {
       this.event.endTime =  '23:59:00';
     }
 
-    if (form.valid) {
+
       let observable: Observable<EventDto>;
       switch (this.mode) {
         case EventsMode.create:
@@ -146,7 +146,7 @@ export class EventsCreateComponent implements OnInit {
           });
         }
       });
-    }
+
 
   }
 
