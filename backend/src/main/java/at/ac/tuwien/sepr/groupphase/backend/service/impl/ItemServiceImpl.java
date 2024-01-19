@@ -196,6 +196,10 @@ public class ItemServiceImpl implements ItemService {
             this.delete(itemDto.itemId());
         }
 
+        if (itemDto.alwaysInStock() && itemDto.quantityCurrent() < itemDto.minimumQuantity()) {
+            digitalStorageService.addItemToShopping(itemDto);
+        }
+
         DigitalStorageItem updatedDigitalStorageItem = itemRepository.save(digitalStorageItem);
         updatedDigitalStorageItem.setIngredientList(ingredientList);
 
