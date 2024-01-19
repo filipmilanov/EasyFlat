@@ -119,6 +119,9 @@ export class ItemDetailListComponent implements OnInit {
     this.itemService.updateItem(item).subscribe({
       next: () => {
         this.notification.success(`Item ${item.productName} was successfully ${mode} by ${quantityInput}.`, "Success");
+        if(item.quantityCurrent < item.minimumQuantity){
+          this.notification.success(`The item was automatically added to the shopping list.`, "Success");
+        }
       },
       error: () => {
         item.quantityCurrent = previousCurrentQuantity;
