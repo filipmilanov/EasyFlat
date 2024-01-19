@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -26,27 +27,28 @@ public class ShoppingListValidatorImpl implements ShoppingListValidator {
         this.validator = validator;
     }
 
-    public void validateForCreate(ShoppingList shoppingList) throws ConflictException, ValidationException {
+    public void validateForCreate(ShoppingListDto shoppingList) throws ConflictException, ValidationException {
         LOGGER.trace("validateForCreate({})", shoppingList);
         checkValidationForCreate(shoppingList);
         checkConflictForCreate(shoppingList);
     }
 
-    private void checkValidationForCreate(ShoppingList shoppingList) throws ValidationException {
+    private void checkValidationForCreate(ShoppingListDto shoppingList) throws ValidationException {
         LOGGER.trace("checkValidationForCreate({})", shoppingList);
-        Set<ConstraintViolation<ShoppingList>> validationViolations = validator.validate(shoppingList);
+        Set<ConstraintViolation<ShoppingListDto>> validationViolations = validator.validate(shoppingList);
         if (!validationViolations.isEmpty()) {
             throw new ValidationException("The data is not valid", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
         }
     }
 
-    private void checkConflictForCreate(ShoppingList shoppingList) throws ConflictException {
+    private void checkConflictForCreate(ShoppingListDto shoppingList) throws ConflictException {
         LOGGER.trace("checkConflictForCreate({})", shoppingList);
         List<String> errors = new ArrayList<>();
-        if (shoppingList.getId() != null) {
+        if (shoppingList.id() != null) {
             errors.add("The Id must be null");
         }
-        if (shoppingList.getItems() != null) {
+
+        if (shoppingList.itemsCount() > 0) {
             errors.add("The shopping list must not have items");
         }
 

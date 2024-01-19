@@ -114,9 +114,9 @@ public class ShoppingListEndpoint {
 
     @Secured("ROLE_USER")
     @PostMapping("/list-create")
-    public ShoppingListDto createList(@RequestBody String listName) throws ValidationException, AuthenticationException, ConflictException {
-        LOGGER.info("createList({})", listName);
-        ShoppingList shoppingList = shoppingService.createList(listName);
+    public ShoppingListDto createList(@RequestBody ShoppingListDto listDto) throws ValidationException, AuthenticationException, ConflictException {
+        LOGGER.info("createList({})", listDto);
+        ShoppingList shoppingList = shoppingService.createList(listDto);
         return shoppingListMapper.entityToDto(shoppingList);
     }
 

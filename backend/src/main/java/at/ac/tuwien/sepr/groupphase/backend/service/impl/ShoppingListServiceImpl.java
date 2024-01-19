@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
@@ -161,13 +162,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     @Transactional
-    public ShoppingList createList(String listName) throws ValidationException, AuthenticationException, ConflictException {
-        LOGGER.trace("createList({})", listName);
+    public ShoppingList createList(ShoppingListDto shoppingListDto) throws ValidationException, AuthenticationException, ConflictException {
+        LOGGER.trace("createList({})", shoppingListDto);
+        shoppingListValidator.validateForCreate(shoppingListDto);
         ApplicationUser applicationUser = authService.getUserFromToken();
         ShoppingList shoppingList = new ShoppingList();
-        shoppingList.setName(listName);
+        shoppingList.setName(shoppingListDto.name());
         shoppingList.setSharedFlat(applicationUser.getSharedFlat());
-        shoppingListValidator.validateForCreate(shoppingList);
         return shoppingListRepository.save(shoppingList);
     }
 
@@ -176,10 +177,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingItem deleteItem(Long itemId) throws AuthorizationException {
         LOGGER.trace("deleteItem({})", itemId);
         ApplicationUser applicationUser = authService.getUserFromToken();
-        // Input validation
-        if (itemId == null || itemId <= 0) {
-            throw new IllegalArgumentException("Invalid itemId");
-        }
+
         Optional<ShoppingItem> toDeleteOptional = shoppingItemRepository.findById(itemId);
         if (toDeleteOptional.isPresent()) {
             ShoppingItem toDelete = toDeleteOptional.get();
@@ -192,7 +190,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             shoppingItemRepository.delete(toDelete);
             return toDelete;
         } else {
-            throw new NoSuchElementException("Item with this id does not exist!");
+            throw new NotFoundException("Item with this id does not exist!");
         }
     }
 

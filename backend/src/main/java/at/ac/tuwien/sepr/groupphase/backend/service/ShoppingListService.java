@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
@@ -65,10 +66,10 @@ public interface ShoppingListService {
     /**
      * Create a new ShoppingList in the db.
      *
-     * @param listName a valid name for the new ShoppingList
+     * @param shoppingListDto a DTO of type shopping list ID null
      * @return an object of type {@link ShoppingList} which is persisted and has an ID
      */
-    ShoppingList createList(String listName) throws ValidationException, AuthenticationException, ConflictException;
+    ShoppingList createList(ShoppingListDto shoppingListDto) throws ValidationException, AuthenticationException, ConflictException;
 
     /**
      * Delete a ShoppingItem from the db based on its ID.

@@ -75,8 +75,8 @@ export class ShoppingListService {
     return this.http.get<ShoppingListDto>(this.baseUri + '/listId/' + shoppingListId);
   }
 
-  createList(listName: string): Observable<ShoppingListDto> {
-    return this.http.post<ShoppingListDto>(this.baseUri + "/list-create", listName);
+  createList(list: ShoppingListDto): Observable<ShoppingListDto> {
+    return this.http.post<ShoppingListDto>(this.baseUri + "/list-create", list);
   }
 
   deleteItem(itemId: number): Observable<ShoppingItemDto> {
