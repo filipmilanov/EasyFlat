@@ -12,9 +12,8 @@ import {UnitService} from "../../../services/unit.service";
 import {NgxScannerQrcodeComponent, ScannerQRCodeResult} from "ngx-scanner-qrcode";
 import {OpenFoodFactService} from "../../../services/open-food-fact.service";
 import {FinanceService} from "../../../services/finance.service";
-import {DebitDto, ExpenseDto, ExpenseSearchDto, SplitBy} from "../../../dtos/expenseDto";
+import {DebitDto, ExpenseDto, SplitBy} from "../../../dtos/expenseDto";
 import {AuthService} from "../../../services/auth.service";
-import {UserListDto} from "../../../dtos/user";
 import {UserService} from "../../../services/user.service";
 
 export enum ItemCreateEditMode {
@@ -217,7 +216,7 @@ export class ItemCreateEditComponent implements OnInit {
                 this.notification.success(`Item ${this.item.productName} successfully added to finance.`, "Success");
               },
               error: error => {
-                console.error(`Item ${this.item.productName} could not be added to finance: ${error}`);
+                this.notification.error(`Item ${this.item.productName} could not be added to finance: ${error}`);
               }
             });
           },
