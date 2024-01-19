@@ -12,10 +12,11 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -49,6 +50,7 @@ public class DigitalStorageItem {
 
     @ManyToOne
     @NotNull(message = "A DigitalStorageItem need to be linked to a storage")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private DigitalStorage digitalStorage;
 
     @ManyToMany(fetch = FetchType.EAGER)

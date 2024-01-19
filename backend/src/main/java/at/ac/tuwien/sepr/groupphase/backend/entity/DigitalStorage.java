@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,7 +32,7 @@ public class DigitalStorage {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private SharedFlat sharedFlat;
 
-    @OneToMany(mappedBy = "digitalStorage", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "digitalStorage", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<DigitalStorageItem> digitalStorageItemList = new ArrayList<>();
 
