@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ChoreDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
@@ -49,6 +50,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @SpringBootTest
 @ActiveProfiles("unitTest")
 public class ChoreServiceTest {
+    @Autowired
+    private ChoreDataGenerator choreDataGenerator;
     @MockBean
     private ChoreValidator choreValidator;
 
@@ -86,6 +89,7 @@ public class ChoreServiceTest {
     @BeforeEach
     public void cleanUp() throws ValidationException, ConflictException {
         cleanDatabase.truncateAllTablesAndRestartIds();
+        choreDataGenerator.generateChores();
         sharedFlat = sharedFlatRepository.save(new SharedFlat());
         testUser.setPoints(0);
         testUser.setSharedFlat(sharedFlat);

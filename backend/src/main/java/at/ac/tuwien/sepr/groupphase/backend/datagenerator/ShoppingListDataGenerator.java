@@ -30,14 +30,13 @@ public class ShoppingListDataGenerator {
     public void generateShoppingLists() {
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             ShoppingList shoppingList = new ShoppingList();
+            ShoppingList second = new ShoppingList();
             shoppingList.setName("Shopping List (Default)");
-
-            shoppingList.setName("Second" + (i + 1));
+            second.setName("Second" + (i + 1));
 
             SharedFlat sharedFlat = new SharedFlat();
             sharedFlat.setId((long) (i + 1));
             shoppingList.setSharedFlat(sharedFlat);
-            ShoppingList second = new ShoppingList();
             second.setSharedFlat(sharedFlat);
 
             shoppingListRepository.save(shoppingList);
