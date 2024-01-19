@@ -69,8 +69,8 @@ class ItemServiceTest {
         when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
 
-
     @Test
+    @DisplayName("Finding item with valid ID should return the item if it belongs to the current user")
     void givenItemIdWhenFindByIdThenItemIsReturned() throws AuthorizationException {
         // given
         Long id = 1L;
@@ -83,6 +83,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("Finding item with invalid ID should return a not found exception")
     void givenInvalidItemIdWhenFindByIdThenNoItem() {
         // given
         Long id = -1L;
@@ -92,6 +93,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("Find all items with a given general name")
     void givenGeneralNameWhenFindByFieldsThenItemWithGeneralNameIsReturned() {
         // given
         ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
@@ -109,6 +111,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("Searching for item brand should return all items that have this brand")
     void givenBrandWhenFindByFieldsThenItemWithBrandIsReturned() {
         // given
         ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
@@ -126,6 +129,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("Searching for item store should return all items that were bought at this store")
     void givenBoughtAtWhenFindByFieldsThenItemWithBoughtAtIsReturned() {
         // given
         ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
@@ -142,8 +146,8 @@ class ItemServiceTest {
         );
     }
 
-
     @Test
+    @DisplayName("It is possible to create an in-stock item using valid values")
     void givenValidItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, AuthorizationException {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
@@ -214,6 +218,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is possible to create an always-in-stock item using valid values")
     void givenValidAlwaysInStockItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, AuthorizationException {
         // given
 
@@ -294,6 +299,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is not possible to create an in-stock item using invalid values")
     void givenInvalidItemWhenCreateThenValidationExceptionIsThrown() {
         // given
 
@@ -340,6 +346,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is not possible to create an always-in-stock item using invalid values")
     void givenInvalidAlwaysInStockItemWhenCreateThenValidationExceptionIsThrown() {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
@@ -381,6 +388,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is not possible to create an item for an invalid storage")
     void givenItemWithInvalidStorageWhenCreateThenConflictExceptionIsThrown() {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
@@ -422,6 +430,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is possible to update an item using a valid value")
     void givenValidItemWhenUpdateSingleAttributeThenItemIsUpdated() throws ValidationException, ConflictException, AuthorizationException {
         // given:
         String updatedGeneralName = "General Name Updated";
@@ -484,6 +493,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is not possible to update an item using an invalid value")
     void givenInvalidItemWhenUpdateSingleAttributeThenValidationExceptionIsThrown() throws ValidationException, ConflictException, AuthorizationException {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
@@ -543,6 +553,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is possible to update multiple fields of an item using valid values")
     void givenValidItemWhenUpdateMultipleAttributesThenItemIsUpdated() throws ValidationException, ConflictException, AuthorizationException {
         // given:
         String updatedGeneralName = "General Name Updated";
@@ -608,6 +619,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is not possible to update multiple fields of an item using invalid values")
     void givenInvalidItemWhenUpdateMultipleAttributesThenValidationExceptionIsThrown() throws ValidationException, ConflictException, AuthorizationException {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
@@ -666,6 +678,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is possible to delete an item")
     void givenValidItemWhenDeleteThenItemIsDeleted() throws ValidationException, ConflictException, AuthorizationException {
         // given:
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
@@ -707,6 +720,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("Items should be retrievable using their general name")
     void givenValidSearchParamsWhenGetItemsWithGeneralNameThenReturnList() {
         // given
         String itemName = "apples";

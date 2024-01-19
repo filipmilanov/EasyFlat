@@ -80,6 +80,7 @@ class DigitalStorageServiceTest {
 
 
     @Test
+    @DisplayName("If a storage exists it should be returned when searching storages by ID")
     void givenDigitalStorageIdWhenFindByIdThenDigitalStorageIsReturned() throws AuthorizationException {
         // given
         Long id = 1L;
@@ -95,6 +96,7 @@ class DigitalStorageServiceTest {
     }
 
     @Test
+    @DisplayName("If a storage does not exist then a not found exception should be thrown")
     void givenInvalidDigitalStorageIdWhenFindByIdThenNothingIsReturned() {
         // given
         Long id = -1L;
@@ -104,6 +106,7 @@ class DigitalStorageServiceTest {
     }
 
     @Test
+    @DisplayName("Using find all should return all storages of the currently active user")
     void givenNothingWhenFindAllThenAllDigitalStoragesOfActiveUserAreReturned() throws AuthorizationException {
         // when
         List<DigitalStorage> actual = service.findAll(null);
@@ -117,6 +120,7 @@ class DigitalStorageServiceTest {
     @Disabled("Test does not work, because it tries to create second digital storage for a WG, " +
         "but one WG can have only one DS. It is still here, because of the opportunity to extend " +
         "the functionality of the app. ")
+    @DisplayName("It should be possible to create a second storage")
     void givenValidStorageWhenCreateThenStorageIsPersistedAndHasId() throws Exception {
         // given
         when(jwtTokenizer.getEmailFromToken(any(String.class))).thenReturn(applicationUser.getEmail());
@@ -144,6 +148,7 @@ class DigitalStorageServiceTest {
     }
 
     @Test
+    @DisplayName("Creating an invalid storage should throw an exception")
     void givenInvalidStorageWhenCreateThenValidationExceptionIsThrown() {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
@@ -156,6 +161,7 @@ class DigitalStorageServiceTest {
 
     @Test
     @Disabled
+    @DisplayName("When searching a non-existent storage a exception should be thrown")
     void givenInvalidStorageWhenSearchItemsThenValidationExceptionIsThrown() {
         // given
         Long iD = -1111L;
@@ -166,6 +172,7 @@ class DigitalStorageServiceTest {
     }
 
     @Test
+    @DisplayName("When using valid search parameters the appropriate item should be returned")
     void givenValidSearchParamsWhenSearchItemsThenReturnList() throws ValidationException, AuthorizationException {
         // given
         ItemSearchDto searchParams = new ItemSearchDto(false, null, null, null, null);
@@ -188,6 +195,7 @@ class DigitalStorageServiceTest {
     }
 
     @Test
+    @DisplayName("When using invalid search parameters then we should get a validation exception")
     void givenInvalidSearchParamsWhenSearchItemsThenThrowValidationException() {
         // given
         ItemSearchDto invalidSearchParams = new ItemSearchDto(null, null, null, null, null);
