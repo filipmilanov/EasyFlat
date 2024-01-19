@@ -295,6 +295,9 @@ public class ExpenseServiceImpl implements ExpenseService {
             default ->
                 throw new ValidationException("Unexpected value: " + splitBy, List.of("Unexpected value: " + splitBy));
         }
+
+        adaptValueIfPaidAmountIsNotTotalAmount(debitList, expense.amountInCents());
+
         return debitList;
     }
 
@@ -326,12 +329,27 @@ public class ExpenseServiceImpl implements ExpenseService {
         return debitListResult;
     }
 
+    private void adaptValueIfPaidAmountIsNotTotalAmount(List<Debit> debitList, double totalAmount) {
+        LOGGER.trace("adaptIfPaidAmountIsNotTotalAmount({},{})", debitList, totalAmount);
+
+        double difference = Math.round(differenceBetweenTotalAmountAndPaidPerUser(debitList, totalAmount));
+        double oneCentInPercent = 1 / totalAmount * 100.0;
+        double d = difference;
+        for (int i = 0; d > 0; i++, d--) {
+            debitList.get(i).setPercent(debitList.get(i).getPercent() + oneCentInPercent);
+        }
+        d = difference;
+        for (int i = 0; d < 0; i++, d++) {
+            debitList.get(i).setPercent(debitList.get(i).getPercent() - oneCentInPercent);
+        }
+    }
+
     private double differenceBetweenTotalAmountAndPaidPerUser(List<Debit> debitList, double totalAmount) {
         LOGGER.trace("differenceBetweenTotalAmountAndPaidPerUser()");
 
         return totalAmount - debitList.stream()
             .mapToDouble(debit ->
-                Math.floor(debit.getPercent() / 100.0 * totalAmount)
+                Math.round(debit.getPercent() / 100.0 * totalAmount)
             ).sum();
     }
 
