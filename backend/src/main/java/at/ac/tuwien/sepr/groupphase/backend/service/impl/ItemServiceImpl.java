@@ -203,6 +203,10 @@ public class ItemServiceImpl implements ItemService {
         DigitalStorageItem updatedDigitalStorageItem = itemRepository.save(digitalStorageItem);
         updatedDigitalStorageItem.setIngredientList(ingredientList);
 
+        if (!itemDto.alwaysInStock() && itemDto.quantityCurrent() <= 0) {
+            delete(itemDto.itemId());
+        }
+
         return updatedDigitalStorageItem;
     }
 

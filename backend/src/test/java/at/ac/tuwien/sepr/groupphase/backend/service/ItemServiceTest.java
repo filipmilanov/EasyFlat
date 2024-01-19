@@ -34,6 +34,7 @@ import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidAlwa
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemDto;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemId;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.itemDtoWithInvalidDigitalStorage;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validAlwaysInStockItem;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validInStockItemDto;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validItemDto;
@@ -504,5 +505,73 @@ class ItemServiceTest {
         ).getMessage();
 
         assertThat(errorMessage).containsSubsequence("unit");
+    }
+
+    @Test
+    @DisplayName("If an in-stock item quantity is updated to zero the item should be deleted")
+    public void givenValidItemWhenUpdateItemToZeroThenItemIsDeleted() throws ValidationException, AuthorizationException, ConflictException {
+        // given
+        Double updatedCurrentAmount = 0.0;
+
+        DigitalStorageItem inStockItem = service.create(validItemDto);
+
+        ItemDto updatedItemDto = ItemDtoBuilder.builder()
+            .itemId(inStockItem.getItemId())
+            .ean("0123456789123")
+            .generalName("Test")
+            .productName("MyTest")
+            .brand("Hofer")
+            .quantityCurrent(updatedCurrentAmount)
+            .quantityTotal(200.0)
+            .unit(ml)
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .boughtAt("Hofer")
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .build();
+
+        // when
+        service.update(updatedItemDto);
+
+        // then
+        assertThrows(NotFoundException.class, () -> service.findById(inStockItem.getItemId()));
+    }
+
+    @Test
+    @DisplayName("If an always-in-stock item quantity is updated to zero the item should not be deleted")
+    public void givenValidAlwaysInStockItemWhenUpdateItemToZeroThenItemIsNotDeleted() throws ValidationException, AuthorizationException, ConflictException {
+        // given
+        Double updatedCurrentAmount = 0.0;
+
+        DigitalStorageItem alwaysInStockItem = service.create(validAlwaysInStockItem);
+
+        ItemDto updatedItemDto = ItemDtoBuilder.builder()
+            .itemId(alwaysInStockItem.getItemId())
+            .ean("0123456789123")
+            .generalName("Test")
+            .productName("MyTest")
+            .brand("Hofer")
+            .quantityCurrent(updatedCurrentAmount)
+            .quantityTotal(200.0)
+            .unit(ml)
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .alwaysInStock(true)
+            .minimumQuantity(100L)
+            .boughtAt("Hofer")
+            .build();
+
+        // when
+        service.update(updatedItemDto);
+
+        // then
+        assertDoesNotThrow(
+            () -> service.findById(alwaysInStockItem.getItemId())
+        );
     }
 }
