@@ -61,20 +61,21 @@ public class CustomUserDetailService implements UserService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         LOGGER.debug("Load all user by email");
-        try {
-            ApplicationUser applicationUser = findApplicationUserByEmail(email);
+        ApplicationUser applicationUser = userRepository.findUserByEmail(email);
 
-            List<GrantedAuthority> grantedAuthorities;
-            if (applicationUser.getAdmin()) {
-                grantedAuthorities = AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER");
-            } else {
-                grantedAuthorities = AuthorityUtils.createAuthorityList("ROLE_USER");
-            }
-
-            return new User(applicationUser.getEmail(), applicationUser.getPassword(), grantedAuthorities);
-        } catch (NotFoundException e) {
-            throw new UsernameNotFoundException(e.getMessage(), e);
+        if (applicationUser == null) {
+            return null;
         }
+
+        List<GrantedAuthority> grantedAuthorities;
+        if (applicationUser.getAdmin()) {
+            grantedAuthorities = AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER");
+        } else {
+            grantedAuthorities = AuthorityUtils.createAuthorityList("ROLE_USER");
+        }
+
+        return new User(applicationUser.getEmail(), applicationUser.getPassword(), grantedAuthorities);
+
     }
 
     @Override
