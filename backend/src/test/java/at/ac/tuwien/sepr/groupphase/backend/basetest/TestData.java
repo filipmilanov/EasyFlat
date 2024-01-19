@@ -195,14 +195,6 @@ public interface TestData {
         .title("Test")
         .storageId(-909L)
         .build();
-    List<IngredientDto> ingredientDtoList = List.of(
-        IngredientDtoBuilder.builder()
-            .name("Ingredient 1")
-            .build(),
-        IngredientDtoBuilder.builder()
-            .name("Ingredient 2")
-            .build()
-    );
 
     ItemDto itemDtoWithInvalidDigitalStorage = ItemDtoBuilder.builder()
         .ean("0123456789123")
