@@ -200,7 +200,14 @@ export class ItemCreateEditComponent implements OnInit {
             });
             let expenseToCreate: ExpenseDto = {
               title: 'Bought ' + this.item.productName,
-              description: 'Bought ' + this.item.quantityTotal + ' ' + this.item.unit.name + ' of ' + this.item.productName + ' for ' + this.priceInEuro + ' €.',
+              description: 'Bought ' + this.item.quantityCurrent
+                + ' ' + this.item.unit.name
+                + ' of ' + this.item.productName
+                + ' for ' + this.priceInEuro
+                + ' €'
+                + (this.item.boughtAt != null
+                  ? ' at ' + this.item.boughtAt
+                  : ''),
               amountInCents: this.item.priceInCent,
               createdAt: new Date(),
               paidBy: {
@@ -212,7 +219,8 @@ export class ItemCreateEditComponent implements OnInit {
               items: [this.item],
               isRepeating: false,
               periodInDays: null,
-              repeatingExpenseType: null
+              repeatingExpenseType: null,
+              addedViaStorage: true
             };
             this.financeService.createExpense(expenseToCreate).subscribe({
               next: () => {

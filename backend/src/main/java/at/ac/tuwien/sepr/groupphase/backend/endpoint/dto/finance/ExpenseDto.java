@@ -42,7 +42,8 @@ public record ExpenseDto(
     Boolean isRepeating,
     @Min(value = 1, message = "The days until repeat must be greater then 1")
     Integer periodInDays,
-    RepeatingExpenseType repeatingExpenseType
+    RepeatingExpenseType repeatingExpenseType,
+    Boolean addedViaStorage
 ) {
 
     @AssertTrue(message = "Period of days or repeating type must be present if the finance entry is set to repeating")
@@ -83,7 +84,8 @@ public record ExpenseDto(
             items,
             isRepeating,
             periodInDays,
-            repeatingExpenseType
+            repeatingExpenseType,
+            addedViaStorage
         );
     }
 }
