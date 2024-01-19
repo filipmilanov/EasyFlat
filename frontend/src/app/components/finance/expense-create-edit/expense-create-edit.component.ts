@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ExpenseDto, RepeatingExpenseOptions, RepeatingExpenseType, SplitBy} from "../../../dtos/expenseDto";
 import {NgForm} from "@angular/forms";
 import {FinanceService} from "../../../services/finance.service";
-import {ActivatedRoute, Router, UrlTree} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {UserService} from "../../../services/user.service";
 import {UserListDto} from "../../../dtos/user";
@@ -41,7 +41,7 @@ export class ExpenseCreateEditComponent implements OnInit {
   expenseDate: NgbDateStruct;
   expenseTime: NgbTimeStruct = {hour: 13, minute: 30, second: 0};
   selectedRepeatingOption: RepeatingExpenseOptions = RepeatingExpenseOptions.NO_REPEAT
-  previousUrl: UrlTree;
+  previousUrl: string;
 
   constructor(
     private userService: UserService,
@@ -53,7 +53,7 @@ export class ExpenseCreateEditComponent implements OnInit {
     config: NgbTimepickerConfig
   ) {
     config.spinners = false;
-    this.previousUrl = this.router.getCurrentNavigation().previousNavigation.finalUrl;
+    this.previousUrl = (this.router.getCurrentNavigation().previousNavigation == null ? '/finance' : this.router.getCurrentNavigation().previousNavigation.finalUrl.toString());
   }
 
   public get heading(): string {
@@ -195,7 +195,7 @@ export class ExpenseCreateEditComponent implements OnInit {
       observable.subscribe({
         next: () => {
           this.notification.success(`Expense ${this.expense.title} successfully ${this.modeActionFinished}.`, "Success");
-          this.router.navigate(['/finance']);
+          this.router.navigate([this.previousUrl]);
         },
         error: (error) => {
           console.error(`Error expense was not ${this.modeActionFinished}: ${error}`);
@@ -221,7 +221,7 @@ export class ExpenseCreateEditComponent implements OnInit {
   delete(): void {
     this.financeService.deleteExpense(this.expense.id).subscribe({
       next: (): void => {
-        this.router.navigate(['/finance/']);
+        this.router.navigate([this.previousUrl]);
         this.notification.success(`Expense ${this.expense.title} was successfully deleted`, "Success");
       },
       error: error => {
