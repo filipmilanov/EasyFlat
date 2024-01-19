@@ -280,5 +280,5 @@ export class ExpenseCreateEditComponent implements OnInit {
   }
 
   protected readonly RepeatingExpenseOptions = RepeatingExpenseOptions;
-  protected readonly RepeatingExpenseTyp = RepeatingExpenseType;
+  protected readonly RepeatingExpenseType = RepeatingExpenseType;
 }
