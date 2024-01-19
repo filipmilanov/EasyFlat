@@ -13,6 +13,7 @@ export class ExpenseDetailComponent implements OnInit {
 
 
   expense: ExpenseDto;
+  previousUrl: string;
 
   constructor(
     private financeService: FinanceService,
@@ -20,6 +21,7 @@ export class ExpenseDetailComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private notification: ToastrService,
   ) {
+    this.previousUrl = '/expense';
   }
 
   ngOnInit(): void {
@@ -31,7 +33,7 @@ export class ExpenseDetailComponent implements OnInit {
           },
           error: error => {
             console.error("Error finding expense:", error);
-            this.router.navigate(['/expense']);
+            this.router.navigate([this.previousUrl]);
             let firstBracket = error.error.indexOf('[');
             let lastBracket = error.error.indexOf(']');
             let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
@@ -44,7 +46,7 @@ export class ExpenseDetailComponent implements OnInit {
       },
       error: error => {
         console.error("Error fetching parameters:", error);
-        this.router.navigate(['/expense']);
+        this.router.navigate([this.previousUrl]);
         let firstBracket = error.error.indexOf('[');
         let lastBracket = error.error.indexOf(']');
         let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
@@ -59,7 +61,7 @@ export class ExpenseDetailComponent implements OnInit {
   delete(): void {
     this.financeService.deleteExpense(this.expense.id).subscribe({
           next: (): void => {
-            this.router.navigate(['/finance/']);
+            this.router.navigate([this.previousUrl]);
             this.notification.success(`Expense ${this.expense.title} was successfully deleted`, "Success");
           },
           error: error => {
