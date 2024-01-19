@@ -163,13 +163,14 @@ export class ItemCreateEditComponent implements OnInit {
           } else {
             this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished}.`, "Success");
           }
-          if( !this.modeIsCreate && this.item.quantityCurrent < this.item.minimumQuantity){
+          if( !this.modeIsCreate && this.item.alwaysInStock && this.item.quantityCurrent < this.item.minimumQuantity){
             this.notification.success(`The item was automatically added to the shopping list.`, "Success");
           }
-          this.router.navigate(['/digital-storage']);
-          if( !this.modeIsCreate && this.item.quantityCurrent <= 0 ){
-            this.notification.success(`Item ${this.item.productName}has no stock and was successfully deleted.`, "Success");
+          if( !this.modeIsCreate && !this.item.alwaysInStock && this.item.quantityCurrent <= 0 ){
+            this.notification.success(`Item ${this.item.productName} has no stock and was successfully deleted.`, "Success");
           }
+
+          this.router.navigate(['/digital-storage']);
         },
         error: error => {
           if (error.status === 500) {
