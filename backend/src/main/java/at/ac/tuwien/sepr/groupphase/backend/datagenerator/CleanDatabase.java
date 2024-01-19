@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-@Profile({"generateData", "test"})
+@Profile({"generateData", "test", "unitTest"})
 @Component("CleanDatabase")
 public class CleanDatabase {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

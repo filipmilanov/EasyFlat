@@ -20,11 +20,10 @@ public interface ChoreService {
      *
      * @param chore The ChoreDto containing chore details.
      * @return The created ChoreDto.
-     * @throws AuthenticationException If the user is not authenticated.
      * @throws ValidationException     If the provided chore data is invalid.
      * @throws ConflictException       If there is a conflict during chore creation.
      */
-    ChoreDto createChore(ChoreDto chore) throws AuthenticationException, ValidationException, ConflictException;
+    ChoreDto createChore(ChoreDto chore) throws ValidationException, ConflictException;
 
     /**
      * Retrieves a list of chores based on the specified search parameters.

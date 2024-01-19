@@ -69,7 +69,7 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     @Transactional
-    public ChoreDto createChore(ChoreDto choreDto) throws AuthenticationException, ValidationException, ConflictException {
+    public ChoreDto createChore(ChoreDto choreDto) throws ValidationException, ConflictException {
         LOGGER.trace("createChore({})", choreDto);
         ChoreDto newChore;
         if (choreDto.description() != null) {

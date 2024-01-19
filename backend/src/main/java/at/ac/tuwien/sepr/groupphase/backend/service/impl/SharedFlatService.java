@@ -181,7 +181,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         } else {
             SharedFlat flat = user.getSharedFlat();
             if (flat == null) {
-                throw new BadCredentialsException("You can not delete flat where you do not live");
+                throw new NotFoundException("Flat doesn't exist");
             }
             Long deletedFlatId = flat.getId();
             List<ApplicationUser> users = userRepository.findAllByFlatId(deletedFlatId);

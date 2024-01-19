@@ -1,8 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ChoreRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -16,32 +16,19 @@ import java.lang.invoke.MethodHandles;
 @Profile({"generateData", "test"})
 @Component("ShoppingListDataGenerator")
 @DependsOn({"CleanDatabase"})
-public class ShoppingListDataGenerator {
+public class ChoreDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 5;
+    private final ChoreRepository choreRepository;
 
-    private final ShoppingListRepository shoppingListRepository;
-
-    public ShoppingListDataGenerator(ShoppingListRepository shoppingListRepository) {
-        this.shoppingListRepository = shoppingListRepository;
+    public ChoreDataGenerator(ChoreRepository choreRepository) {
+        this.choreRepository = choreRepository;
     }
 
     @PostConstruct
-    public void generateShoppingLists() {
+    public void generateChores() {
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
-            ShoppingList shoppingList = new ShoppingList();
-            shoppingList.setName("Shopping List (Default)");
 
-            shoppingList.setName("Second" + (i + 1));
-
-            SharedFlat sharedFlat = new SharedFlat();
-            sharedFlat.setId((long) (i + 1));
-            shoppingList.setSharedFlat(sharedFlat);
-            ShoppingList second = new ShoppingList();
-            second.setSharedFlat(sharedFlat);
-
-            shoppingListRepository.save(shoppingList);
-            shoppingListRepository.save(second);
         }
     }
 }

@@ -52,7 +52,7 @@ public class ChoreValidatorImpl implements ChoreValidator {
                 errors.add("The given name can not be blank");
             }
         }
-        if (chore.endDate().getDay() < (new Date().getDay())) {
+        if (chore.endDate().isBefore(LocalDate.now())) {
             errors.add("You can not create a chore with expired date");
         }
         if (chore.description() != null && !chore.description().trim().isEmpty()) {

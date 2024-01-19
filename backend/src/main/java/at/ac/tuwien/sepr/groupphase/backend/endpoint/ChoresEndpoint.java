@@ -63,7 +63,7 @@ public class ChoresEndpoint {
 
     @PostMapping
     @Secured("ROLE_USER")
-    public ChoreDto createChore(@RequestBody ChoreDto chore) throws AuthenticationException, ValidationException, ConflictException {
+    public ChoreDto createChore(@RequestBody ChoreDto chore) throws ValidationException, ConflictException {
         LOGGER.trace("createChore({})", chore);
         return choreService.createChore(chore);
     }
