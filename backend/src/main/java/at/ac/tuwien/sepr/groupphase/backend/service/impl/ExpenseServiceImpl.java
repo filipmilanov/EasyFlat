@@ -263,6 +263,10 @@ public class ExpenseServiceImpl implements ExpenseService {
     private List<Debit> defineDebitPerUserBySplitBy(ExpenseDto expense, SplitBy splitBy) throws ValidationException {
         LOGGER.trace("defineDebitPerUserBySplitBy({})", expense);
 
+        if (expense.amountInCents() < expense.debitUsers().size() && splitBy == SplitBy.EQUAL) {
+            return amountIsNotSplittable(expense, expense.amountInCents());
+        }
+
         List<Debit> debitList = new ArrayList<>();
         switch (splitBy) {
             case EQUAL, UNEQUAL -> expense.debitUsers().forEach(debitDto -> {
@@ -273,7 +277,8 @@ public class ExpenseServiceImpl implements ExpenseService {
                     .build();
                 debitList.add(debitMapper.debitDtoToEntity(debit, expense));
             });
-            case PERCENTAGE -> expense.debitUsers().forEach(debitDto -> debitList.add(debitMapper.debitDtoToEntity(debitDto, expense)));
+            case PERCENTAGE ->
+                expense.debitUsers().forEach(debitDto -> debitList.add(debitMapper.debitDtoToEntity(debitDto, expense)));
             case PROPORTIONAL -> {
                 double proportions = expense.debitUsers().stream().mapToDouble(DebitDto::value).sum();
                 double baseAmount = expense.amountInCents() / proportions;
@@ -287,9 +292,47 @@ public class ExpenseServiceImpl implements ExpenseService {
                     debitList.add(debitMapper.debitDtoToEntity(debit, expense));
                 });
             }
-            default -> throw new ValidationException("Unexpected value: " + splitBy, List.of("Unexpected value: " + splitBy));
+            default ->
+                throw new ValidationException("Unexpected value: " + splitBy, List.of("Unexpected value: " + splitBy));
         }
         return debitList;
+    }
+
+    private List<Debit> amountIsNotSplittable(ExpenseDto expenseDto, double totalAmount) {
+        LOGGER.trace("adaptIfPaidAmountIsNotTotalAmount({},{})", expenseDto, totalAmount);
+
+        List<Double> amountPerUser = new ArrayList<>();
+        expenseDto.debitUsers().forEach(debit -> amountPerUser.add(0.0));
+
+        int idx = 0;
+        double remaining = totalAmount;
+        while (remaining > 0) {
+            amountPerUser.set(idx, amountPerUser.get(idx) + 1);
+            idx = ++idx % expenseDto.debitUsers().size();
+            remaining--;
+        }
+
+        List<DebitDto> debitDtoList = expenseDto.debitUsers();
+        List<Debit> debitListResult = new ArrayList<>();
+        for (int i = 0; i < expenseDto.debitUsers().size(); i++) {
+            DebitDto toSaveDebit = DebitDtoBuilder.builder()
+                .splitBy(debitDtoList.get(i).splitBy())
+                .user(debitDtoList.get(i).user())
+                .value(amountPerUser.get(i) / totalAmount * 100.0)
+                .build();
+            debitListResult.add(debitMapper.debitDtoToEntity(toSaveDebit, expenseDto));
+        }
+
+        return debitListResult;
+    }
+
+    private double differenceBetweenTotalAmountAndPaidPerUser(List<Debit> debitList, double totalAmount) {
+        LOGGER.trace("differenceBetweenTotalAmountAndPaidPerUser()");
+
+        return totalAmount - debitList.stream()
+            .mapToDouble(debit ->
+                Math.floor(debit.getPercent() / 100.0 * totalAmount)
+            ).sum();
     }
 
     private void addDebitToList(Pair debtor, Pair creditor, double toPay, List<BalanceDebitDto> balanceDebitDtos) {
