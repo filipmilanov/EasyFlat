@@ -263,5 +263,26 @@ public class EventEndpointTest {
         );
     }
 
+    @Test
+    @DisplayName("Positive test for all events with status 200")
+    public void exportShouldReturnStatus200() throws Exception {
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(EXPORT_BASE_URI)
+                .header("Authorization", "Bearer " + jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+
+        String retrievedExport = response.getContentAsString();
+
+        assertAll(
+            () -> assertNotNull(retrievedExport)
+        );
+    }
+
 
 }

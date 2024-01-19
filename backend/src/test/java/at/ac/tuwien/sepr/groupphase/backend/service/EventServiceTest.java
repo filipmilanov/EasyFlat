@@ -366,4 +366,13 @@ public class EventServiceTest {
 
 
     }
+
+    @Test
+    void givenLabelNameReturnListWithAllEventsWithThisLabel() throws AuthorizationException {
+        String labelName = "party";
+
+        List<EventDto> events = eventsService.findEventsByLabel(labelName);
+
+        assertThat(events.size()).isEqualTo(2);
+    }
 }

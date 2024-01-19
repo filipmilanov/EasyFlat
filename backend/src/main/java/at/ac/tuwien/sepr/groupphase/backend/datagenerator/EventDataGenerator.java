@@ -1,7 +1,9 @@
 package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
+import at.ac.tuwien.sepr.groupphase.backend.entity.EventLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.repository.EventLabelRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Component;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Profile({"generateData", "test"})
 @Component("EventDataGenerator")
@@ -19,15 +23,23 @@ import java.time.LocalTime;
 public class EventDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final EventsRepository eventsRepository;
+    private final EventLabelRepository labelRepository;
 
-    public EventDataGenerator(EventsRepository eventsRepository) {
+    public EventDataGenerator(EventsRepository eventsRepository, EventLabelRepository labelRepository) {
         this.eventsRepository = eventsRepository;
+        this.labelRepository = labelRepository;
     }
 
     public void generateEvents() {
 
         SharedFlat sharedFlat = new SharedFlat();
         sharedFlat.setId(1L);
+
+        EventLabel label = new EventLabel();
+        label.setLabelName("party");
+        labelRepository.save(label);
+        List<EventLabel> labels = new ArrayList<>();
+        labels.add(label);
 
         Event test1 = new Event();
         test1.setTitle("House Meeting");
@@ -54,8 +66,28 @@ public class EventDataGenerator {
         test3.setEndTime(LocalTime.of(17, 0));
         test3.setDate(LocalDate.now().plusDays(21)); // Set a date three weeks from now
 
+        Event test4 = new Event();
+        test4.setTitle("Game Night");
+        test4.setDescription("An evening filled with games and fun in the shared space.");
+        test4.setSharedFlat(sharedFlat);
+        test4.setStartTime(LocalTime.of(18, 0));
+        test4.setEndTime(LocalTime.of(22, 0));
+        test4.setDate(LocalDate.now().plusDays(45)); // Set a date 1.5 months from now
+        test4.setLabels(labels);
+
+        Event test5 = new Event();
+        test5.setTitle("Karaoke Night");
+        test5.setDescription("Singing and dancing to favorite tunes in the common area.");
+        test5.setSharedFlat(sharedFlat);
+        test5.setStartTime(LocalTime.of(19, 0));
+        test5.setEndTime(LocalTime.of(22, 0));
+        test5.setDate(LocalDate.now().plusDays(60)); // Set a date two months from now
+        test5.setLabels(labels);
+
         eventsRepository.save(test1);
         eventsRepository.save(test2);
         eventsRepository.save(test3);
+        eventsRepository.save(test4);
+        eventsRepository.save(test5);
     }
 }
