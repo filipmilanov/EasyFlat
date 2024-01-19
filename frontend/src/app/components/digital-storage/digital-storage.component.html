@@ -1,3 +1,5 @@
+<h1 class="display-4">Digital Storage</h1>
+<div class="custom-header-border"></div>
 <form class="d-flex flex-row align-items-end w-auto mb-3">
   <button type="submit" hidden="hidden">submit</button>
   <div class="flex-grow-1">
@@ -56,9 +58,7 @@
   </div>
 </form>
 
-<div class="custom-header-border"></div>
-
-<div class="mt-3 text-end">
+<div class="text-end">
   <button type="button"
           class="btn btn-primary"
           [routerLink]="['/item/create']">
@@ -70,7 +70,7 @@
 <div *ngIf="items.length > 0">
   <div class="row">
     <div class="col col-7 col-sm-8 col-md-10">
-      <h1 class="display-4">In Stock Items</h1>
+      <h1 class="display-5">In Stock Items</h1>
     </div>
   </div>
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5">
@@ -90,7 +90,7 @@
 <div *ngIf="itemsAIS.length > 0">
   <div class="row mt-4">
     <div class="col col-7 col-sm-8 col-md-10">
-      <h1 class="display-4">Always in Stock Items</h1>
+      <h1 class="display-5">Always in Stock Items</h1>
     </div>
   </div>
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5">
