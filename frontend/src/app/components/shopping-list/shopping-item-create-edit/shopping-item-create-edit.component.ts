@@ -90,7 +90,9 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   ngOnInit(): void {
     this.unitService.findAll().subscribe({
       next: res => {
-        this.availableUnits = res;
+        this.availableUnits = res.filter((unit) => {
+          return unit.name === "g" || unit.name === "kg" || unit.name === "ml" || unit.name === "l" || unit.name === "pcs" || unit.name === "pound" || unit.name === "gallon";
+        });
         this.item.unit = this.availableUnits[0];
       },
       error: err => {

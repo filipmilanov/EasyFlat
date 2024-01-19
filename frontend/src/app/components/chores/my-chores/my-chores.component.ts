@@ -125,7 +125,7 @@ export class MyChoresComponent {
         next: () => {
         },
         error: err => {
-          console.error("Application users could not be update", err);
+          console.error("Application users could not be updated", err);
         }
       });
     }
