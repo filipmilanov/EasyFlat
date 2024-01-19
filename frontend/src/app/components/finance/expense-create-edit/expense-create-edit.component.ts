@@ -23,7 +23,17 @@ export enum ExpenseCreateEditMode {
 export class ExpenseCreateEditComponent implements OnInit {
 
   mode: ExpenseCreateEditMode = ExpenseCreateEditMode.create;
-  expense: ExpenseDto = new ExpenseDto();
+  expense: ExpenseDto = {
+    title: '',
+    description: '',
+    amountInCents: 0,
+    debitUsers: [],
+    paidBy: null,
+    createdAt: null,
+    isRepeating: false,
+    repeatingExpenseType: null,
+    periodInDays: 1,
+  };
   amountInEuro: number;
   splitByOptions = Object.keys(SplitBy).map(key => ({value: key, label: SplitBy[key]}));
   selectedSplitBy: SplitBy = SplitBy.EQUAL;
