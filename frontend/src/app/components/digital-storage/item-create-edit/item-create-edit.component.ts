@@ -35,9 +35,9 @@ export class ItemCreateEditComponent implements OnInit {
   item: ItemDto = {
     alwaysInStock: false,
     addToFiance: false,
-    priceInCent: 1,
+    priceInCent: null,
   }
-  priceInEuro: number = 0.00;
+  priceInEuro: number = 1.00;
   availableUnits: Unit[] = [];
 
 
@@ -143,7 +143,7 @@ export class ItemCreateEditComponent implements OnInit {
   }
 
   public onSubmit(form: NgForm): void {
-    this.item.priceInCent = this.priceInEuro * 100;
+    this.item.priceInCent = this.item.addToFiance ? this.priceInEuro * 100 : null;
     if (this.item.ean == '') {
       this.item.ean = null;
     }

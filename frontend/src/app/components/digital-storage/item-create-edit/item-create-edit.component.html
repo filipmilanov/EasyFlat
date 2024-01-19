@@ -259,7 +259,8 @@
                  role="switch"
                  id="addToFinance"
                  name="addToFinance"
-                 [(ngModel)]="item.addToFiance">
+                 [(ngModel)]="item.addToFiance"
+                 (click)="this.item.priceInCent = 1">
         </div>
         <input type="number"
                class="form-control"
