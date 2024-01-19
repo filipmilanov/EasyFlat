@@ -24,9 +24,9 @@ import java.util.List;
 public record ExpenseDto(
     Long id,
     @NotBlank(message = "Title cannot be empty")
-    @Size(max = 255, message = "Title cannot be longer than 255 characters")
+    @Size(max = 150, message = "Title cannot be longer than 150 signs")
     String title,
-    @Size(max = 255, message = "Description cannot be longer than 255 characters")
+    @Size(max = 255, message = "Description cannot be longer than 255 signs")
     String description,
     @NotNull(message = "Amount cannot be empty")
     @Min(value = 1, message = "Amount must be greater than 1")
