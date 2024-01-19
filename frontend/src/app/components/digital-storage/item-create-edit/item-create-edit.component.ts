@@ -193,16 +193,6 @@ export class ItemCreateEditComponent implements OnInit {
     this.item.ingredients.splice(i, 1);
   }
 
-  validatePriceInput(event: any): void {
-    let inputValue = event.target.value.replace(/[^0-9.]/g, '');
-    event.target.value = this.formatPriceInEuroInput(inputValue);
-    this.priceInEuro = parseFloat(inputValue);
-  }
-
-  formatPriceInEuroInput(value: string): string {
-    return value ? `${value} € ` : '';
-  }
-
   formatStorageName(storage: DigitalStorageDto | null): string {
     return storage ? storage.title : '';
   }
@@ -237,10 +227,6 @@ export class ItemCreateEditComponent implements OnInit {
 
   formatUnitName(unit: Unit | null): string {
     return unit ? unit.name : '';
-  }
-
-  updateItemUnit(unit: Unit): void {
-    this.item.unit = unit;
   }
 
   toggleScanning() {
