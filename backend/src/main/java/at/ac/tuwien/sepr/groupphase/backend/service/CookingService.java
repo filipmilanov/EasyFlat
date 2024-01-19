@@ -36,14 +36,6 @@ public interface CookingService {
     RecipeDetailDto getRecipeDetails(Long recipeId);
 
     /**
-     * Create a cookbook for a given shared flat.
-     *
-     * @param cookbook the cookbook that needs to be created
-     * @return the created cookbook
-     */
-    Cookbook createCookbook(CookbookDto cookbook) throws ValidationException, ConflictException, AuthorizationException, AuthenticationException;
-
-    /**
      *  * Get the list of all existing cookbooks.
      *
      * @return the cookbooks

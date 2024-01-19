@@ -111,7 +111,7 @@ public class CookingEndPoint {
     }
 
     @Secured("ROLE_USER")
-    @PutMapping("/unmatchitems/aa/aa/a")
+    @PutMapping("/unmatchitems")
     public RecipeIngredientDto unMatchIngredient(@RequestBody String ingredientName) {
         return cookingService.unMatchIngredient(ingredientName);
     }

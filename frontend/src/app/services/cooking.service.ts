@@ -106,7 +106,7 @@ export class CookingService {
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });
-    return this.httpClient.put<RecipeIngredient>(this.baseUri + '/unmatchitems/aa/aa/a', ingredientName, {headers})
+    return this.httpClient.put<RecipeIngredient>(this.baseUri + '/unmatchitems', ingredientName, {headers})
   }
 
 }

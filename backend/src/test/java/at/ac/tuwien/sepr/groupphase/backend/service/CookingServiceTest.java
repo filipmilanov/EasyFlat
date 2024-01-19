@@ -56,6 +56,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -88,6 +89,9 @@ public class CookingServiceTest {
     private UserRepository userRepository;
 
     private ApplicationUser applicationUser;
+
+    @Autowired
+    private ShoppingListService shoppingListService;
 
 
     @BeforeEach
@@ -436,6 +440,33 @@ public class CookingServiceTest {
             () -> assertThat(matchedIngredient.amount()).isEqualTo(100),
             () -> assertThat(matchedIngredient.realName()).isEqualTo("Parmesan cheese")
         );
+    }
+
+    @Test
+    void getMissingIngredientsShouldReturnRecipeWithMissingIngredients() throws ValidationException, AuthorizationException, ConflictException {
+
+        RecipeSuggestionDto recipeWithoutMissing = cookingService.getCookbookRecipe(1L);
+
+        RecipeSuggestionDto recipeWithMissing = cookingService.getMissingIngredients(recipeWithoutMissing.id());
+
+        RecipeSuggestionDto recipe = cookingService.getCookbookRecipe(recipeWithoutMissing.id());
+
+        assertAll(
+            () -> assertThat(recipeWithMissing.title()).isEqualTo(recipe.title()),
+            () -> assertThat(recipeWithMissing.summary()).isEqualTo(recipe.summary()),
+            () -> assertThat(recipeWithMissing.readyInMinutes()).isEqualTo(recipe.readyInMinutes()),
+            () -> assertThat(recipeWithMissing.servings()).isEqualTo(recipe.servings()),
+            () -> assertThat(recipeWithMissing.extendedIngredients()).isEqualTo(recipe.extendedIngredients()),
+            () -> assertThat(recipeWithoutMissing.missedIngredients()).isNull(),
+            () -> assertThat(recipeWithMissing.missedIngredients()).isNotNull()
+        );
+    }
+
+    @Test
+    void getAllRecipesFromCookbook() throws ValidationException, AuthorizationException, AuthenticationException {
+        List<RecipeSuggestionDto> recipes = cookingService.getCookbook();
+
+        assertThat(recipes.size()).isEqualTo(5);
     }
 
     private void mockAPIResponse() {

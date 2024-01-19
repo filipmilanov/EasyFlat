@@ -222,26 +222,6 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public Cookbook createCookbook(CookbookDto cookbookDto) throws ValidationException, ConflictException, AuthorizationException {
-
-        cookbookValidator.validateForCreate(cookbookDto);
-
-        ApplicationUser user = this.authService.getUserFromToken();
-
-        List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
-            .map(ApplicationUser::getId)
-            .toList();
-        authorization.authorizeUser(
-            allowedUsers,
-            "The given cookbook does not belong to the user's shared flat!"
-        );
-
-        Cookbook cookbook = cookbookMapper.dtoToEntity(cookbookDto);
-
-        return cookbookRepository.save(cookbook);
-    }
-
-    @Override
     public List<Cookbook> findAllCookbooks() {
         ApplicationUser applicationUser = this.authService.getUserFromToken();
 
