@@ -18,7 +18,7 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
     @Query("SELECT i FROM DigitalStorageItem i WHERE i.digitalStorage.storageId = :storageId AND "
         + "(:title IS NULL OR LOWER(i.itemCache.generalName) LIKE LOWER(CONCAT('%', :title, '%'))) AND "
         + "(:fillLevel IS NULL OR "
-        + "(:fillLevel = 'full' AND ((cast(i.quantityCurrent as float ))/(cast(i.itemCache.quantityTotal as float ))) > 0.4) OR "
+        + "(:fillLevel = 'full' AND ((cast(i.quantityCurrent as float ))/(cast(i.itemCache.quantityTotal as float ))) >= 0.4) OR "
         + "(:fillLevel = 'nearly_empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.itemCache.quantityTotal as float ))) > 0.2 AND ((cast(i.quantityCurrent as float ))/(cast(i.itemCache.quantityTotal as float ))) < 0.4) OR "
         + "(:fillLevel = 'empty' AND ((cast(i.quantityCurrent as float ))/(cast(i.itemCache.quantityTotal as float ))) < 0.2)) AND "
         + "(:alwaysInStock IS NULL OR TYPE(i) = :alwaysInStock) ")
