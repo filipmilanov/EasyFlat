@@ -163,7 +163,9 @@ export class ItemCreateEditComponent implements OnInit {
       }
       observable.subscribe({
         next: () => {
-          this.createExpenseFromItemDto();
+          if (this.item.addToFiance) {
+            this.createExpenseFromItemDto();
+          }
 
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
           this.router.navigate(['/digital-storage']);
