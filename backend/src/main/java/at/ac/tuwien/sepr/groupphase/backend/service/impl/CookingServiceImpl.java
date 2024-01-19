@@ -19,6 +19,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlternativeName;
+import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockDigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -30,6 +31,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.FatalException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
@@ -783,10 +785,18 @@ public class CookingServiceImpl implements CookingService {
 
         for (DigitalStorageItem digitalStorageItem : digitalStorageItems) {
             Unit minUnit = getMinUnit(digitalStorageItem.getItemCache().getUnit());
+
+            DigitalStorageItem minimizedDigitalStorageItem = null;
+
+            if (digitalStorageItem.getClass().equals(DigitalStorageItem.class)) {
+                minimizedDigitalStorageItem = new DigitalStorageItem();
+            } else if (digitalStorageItem.getClass().equals(AlwaysInStockDigitalStorageItem.class)) {
+                minimizedDigitalStorageItem = new AlwaysInStockDigitalStorageItem();
+                minimizedDigitalStorageItem.setMinimumQuantity(digitalStorageItem.getMinimumQuantity());
+            } else {
+                throw new FatalException("minimizedDigitalStorageItemsFatal");
+            }
             double convertedQuantity = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), minUnit, digitalStorageItem.getQuantityCurrent());
-
-            DigitalStorageItem minimizedDigitalStorageItem = new DigitalStorageItem();
-
             minimizedDigitalStorageItem.setItemId(digitalStorageItem.getItemId());
             minimizedDigitalStorageItem.getItemCache().setUnit(minUnit);
             minimizedDigitalStorageItem.setQuantityCurrent(convertedQuantity);
@@ -803,7 +813,10 @@ public class CookingServiceImpl implements CookingService {
             minimizedDigitalStorageItem.setIngredientList(digitalStorageItem.getIngredientList());
             minimizedDigitalStorageItem.getItemCache().setAlternativeNames(digitalStorageItem.getItemCache().getAlternativeNames());
 
+
             minimizedDigitalStorageItems.add(minimizedDigitalStorageItem);
+
+
         }
 
         return minimizedDigitalStorageItems;
