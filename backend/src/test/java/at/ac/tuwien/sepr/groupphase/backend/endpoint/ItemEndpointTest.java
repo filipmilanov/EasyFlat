@@ -18,6 +18,7 @@ import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +85,7 @@ class ItemEndpointTest {
     }
 
     @Test
-//    @Disabled("This test is not working because of it depends on previous tests")
+    @DisplayName("Given item when create then item is created")
     public void givenItemWhenCreateThenItemIsCreated() throws Exception {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
@@ -175,6 +176,7 @@ class ItemEndpointTest {
     }
 
     @Test
+    @DisplayName("Given item when create then item is created with alternative names")
     public void givenInvalidStorageWhenCreateThenValidationException() throws Exception {
         // given
 
@@ -229,6 +231,7 @@ class ItemEndpointTest {
     }
 
     @Test
+    @DisplayName("Given item when create then item is created with alternative names")
     public void givenInvalidStorageWhenCreateThenAuthenticationException() throws Exception {
         // given
         DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()

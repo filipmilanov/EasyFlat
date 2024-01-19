@@ -14,6 +14,7 @@ import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +82,7 @@ class StorageEndpointTest {
     }
 
     @Test
-
+    @DisplayName("Given storageId when getStorageById then storage returned")
     public void givenStorageIdAndSearchParametersWhenGetItemsThenItemsRetrieved() throws Exception {
         // Given
 
@@ -106,6 +107,7 @@ class StorageEndpointTest {
     }
 
     @Test
+    @DisplayName("Given storageId when getStorageById then storage returned")
     public void givenStorageIdAndOrderTypeNameWhenGetItemsThenItemsRetrievedInCorrectOrder() throws Exception {
         // Given
 

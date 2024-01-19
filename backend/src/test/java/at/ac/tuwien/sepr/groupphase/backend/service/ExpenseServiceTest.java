@@ -79,6 +79,7 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can an existing expense be found by id?")
     void givenValidIdWhenFindByIdThenExpenseWithCorrectIdIsReturned() throws AuthorizationException {
         // given
         long id = 5L;
@@ -94,6 +95,7 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can an non-existing expense be found by id?")
     void givenInvalidIdWhenFindByIdThenNotFoundExceptionIsThrown() {
         // given
         long id = 999L;
@@ -105,6 +107,7 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can all expenses be found?")
     void givenNothingWhenFindAllThenAllExpensesAreReturned() {
         // when
         List<Expense> actual = service.findAll(new ExpenseSearchDto(null, null, null, null));
@@ -177,6 +180,7 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can all expenses be found by title?")
     void givenValidExpenseWhenCreateThenExpenseIsPersistedWithId() throws ValidationException, ConflictException, AuthorizationException {
         // given
         double totalAmount = 100;
@@ -345,6 +349,7 @@ class ExpenseServiceTest {
     }
 
     @ParameterizedTest
+    @DisplayName("Can an expense be created with different split strategies?")
     @MethodSource("data")
     void givenExpenseWithCertainSplitByWhenCreateThenAmountIsSplitCorrectly(List<DebitDto> debitDtos,
                                                                             List<Double> expected) throws ValidationException, ConflictException, AuthorizationException {
@@ -384,6 +389,7 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can an expense be created with a repeating expense type?")
     void givenInvalidExpenseWhenCreateThenValidationExceptionIsThrown() {
         // given
         ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
@@ -399,6 +405,7 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can an expense be created with a repeating expense type?")
     void givenExpenseWithDifferentSplitStrategiesWhenCreateThenConflictExceptionIsThrown() {
         // given
         UserListDto userDetailDto1 = UserListDtoBuilder.builder()
@@ -460,6 +467,7 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can an expense be created with a repeating expense type?")
     void givenExpenseWithInvalidReferencesWhenCreateThenConflictExceptionIsThrown() {
         // given
         UserListDto userDetailDto1 = UserListDtoBuilder.builder()
