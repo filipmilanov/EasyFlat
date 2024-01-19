@@ -244,10 +244,10 @@
           name="boughtAt"
           textInputClass="form-control"
           valueNeedsToMatchSuggestion="false"
+          placeholder="Store name"
           [(ngModel)]="item.boughtAt"
           [formatModel]="formatBoughtAt"
-          [suggestions]="boughtAtSuggestions"
-          placeholder="Bought At">
+          [suggestions]="boughtAtSuggestions">
         </app-autocomplete>
       </div>
       <div class="col-md-6 mt-2 mt-md-0 mt-lg-0" *ngIf="modeIsCreate">
@@ -294,6 +294,7 @@
           name="brand"
           textInputClass="form-control"
           valueNeedsToMatchSuggestion="false"
+          placeholder="Brand"
           [(ngModel)]="item.brand"
           [formatModel]="formatBrand"
           [suggestions]="brandSuggestions"
