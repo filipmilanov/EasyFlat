@@ -35,6 +35,7 @@ export class ItemCreateEditComponent implements OnInit {
   item: ItemDto = {
     alwaysInStock: false,
     addToFiance: false,
+    priceInCent: 1,
   }
   priceInEuro: number = 0.00;
   availableUnits: Unit[] = [];
