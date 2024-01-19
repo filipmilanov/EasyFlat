@@ -95,7 +95,7 @@ export class ItemCreateEditComponent implements OnInit {
         this.item.unit = this.availableUnits[0];
       },
       error: () => {
-        this.notification.error('Failed to load Units', "Error");
+        this.notification.error('Failed to load units.', "Error");
       }
     });
 
@@ -111,17 +111,15 @@ export class ItemCreateEditComponent implements OnInit {
             next: res => {
               this.item = res;
             },
-            error: error => {
-              console.error(`Item could not be retrieved from the backend: ${error}`);
+            error: () => {
               this.router.navigate(['/digital-storage/']);
-              this.notification.error('Item could not be retrieved', "Error");
+              this.notification.error('Item could not be retrieved from the server.', "Error");
             }
           })
         },
-        error: error => {
-          console.error(`Item could not be retrieved using the ID from the URL: ${error}`);
+        error: () => {
           this.router.navigate(['/digital-storage/']);
-          this.notification.error('No item provided for editing', "Error");
+          this.notification.error('Item could not be loaded for editing.', "Error");
         }
       })
     }
@@ -132,7 +130,7 @@ export class ItemCreateEditComponent implements OnInit {
           this.item.digitalStorage = res[0];
         },
         error: () => {
-          this.notification.error('Failed to load Storages', "Error");
+          this.notification.error('Failed to load the storage.', "Error");
         }
       });
     }
@@ -164,15 +162,17 @@ export class ItemCreateEditComponent implements OnInit {
           this.router.navigate(['/digital-storage']);
         },
         error: error => {
-          console.error(`Error item was not ${this.modeActionFinished}: ${error}`);
-          console.error(error);
-          let firstBracket = error.error.indexOf('[');
-          let lastBracket = error.error.indexOf(']');
-          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-          let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach((message: string) => {
-            this.notification.error(message, errorDescription);
-          });
+          if (error.status === 500) {
+            this.notification.error(`The item could not be ${this.modeActionFinished} due to an issue with the server.`, "Error");
+          } else {
+            let firstBracket = error.error.indexOf('[');
+            let lastBracket = error.error.indexOf(']');
+            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+            let errorDescription = error.error.substring(0, firstBracket);
+            errorMessages.forEach((message: string) => {
+              this.notification.error(message, errorDescription);
+            });
+          }
         }
       });
     }
@@ -261,9 +261,11 @@ export class ItemCreateEditComponent implements OnInit {
           this.notification.warning("No data found for EAN number.", "No Data");
         }
       },
-      error: error => {
+      error: () => {
         if (wasFromScanner) {
           this.notification.error("An error occurred while fetching EAN data.", "Error");
+        } else {
+          this.notification.error("An error occurred while searching for EAN data.", "Error");
         }
       }
     })
@@ -281,16 +283,15 @@ export class ItemCreateEditComponent implements OnInit {
     this.itemService.deleteItem(this.item.itemId).subscribe({
       next: () => {
         this.router.navigate(['/digital-storage/']);
-        this.notification.success(`Item ${this.item.productName} was successfully deleted`, "Success");
+        this.notification.success(`Item ${this.item.productName} was successfully deleted.`, "Success");
       },
-      error: error => {
-        console.error(`Item could not be deleted: ${error}`);
-        this.notification.error(`Item ${this.item.productName} could not be deleted`, "Error");
+      error: () => {
+        this.notification.error(`Item ${this.item.productName} could not be deleted.`, "Error");
       }
     });
   }
 
-  getIdFormatForDeleteModal(item:ItemDto): string {
+  getIdFormatForDeleteModal(item: ItemDto): string {
     return `${item.productName}${item.itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 

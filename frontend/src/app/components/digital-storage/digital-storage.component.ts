@@ -34,27 +34,21 @@ export class DigitalStorageComponent implements OnInit {
   public loadStorage() {
     this.searchParameters.alwaysInStock = false;
     this.storageService.getItems(this.searchParameters).subscribe({
-
         next: res => {
           this.items = res;
-          console.log(res);
         },
-        error: err => {
-          console.error("Error loading storage:", err);
-          this.notification.error("Error loading storage");
+        error: () => {
+          this.notification.error("An error occurred while loading in stock items from the storage storage.", "Error");
         }
       }
     )
     this.searchParameters.alwaysInStock = true;
     this.storageService.getItems(this.searchParameters).subscribe({
-
         next: res => {
-
           this.itemsAIS = res;
         },
-        error: err => {
-          console.error("Error loading storage:", err);
-          this.notification.error("Error loading storage");
+        error: () => {
+          this.notification.error("An error occurred while loading always in stock items from the storage storage.", "Error");
         }
       }
     )

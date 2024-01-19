@@ -43,17 +43,15 @@ export class ItemDetailComponent implements OnInit {
           next: res => {
             this.item = res;
           },
-          error: error => {
-            console.error(`Item could not be retrieved from the backend: ${error.error.message}`);
+          error: () => {
             this.router.navigate(['/digital-storage/']);
-            this.notification.error('Item could not be retrieved', "Error");
+            this.notification.error('Item could not be retrieved from the server.', "Error");
           }
         })
       },
-      error: error => {
-        console.error(`Item could not be retrieved using the ID from the URL: ${error.error.message}`);
+      error: () => {
         this.router.navigate(['/digital-storage/']);
-        this.notification.error('Item could not be retrieved using ID from URL', "Error");
+        this.notification.error('Item could not be retrieved from the URL.', "Error");
       }
     });
   }
@@ -66,11 +64,10 @@ export class ItemDetailComponent implements OnInit {
     this.service.deleteItem(this.item.itemId).subscribe({
       next: () => {
         this.router.navigate(['/digital-storage/']);
-        this.notification.success(`Item ${this.item.productName} was successfully deleted`, "Success");
+        this.notification.success(`Item ${this.item.productName} was successfully deleted.`, "Success");
       },
-      error: error => {
-        console.error(`Item could not be deleted: ${error}`);
-        this.notification.error(`Item ${this.item.productName} could not be deleted`, "Error");
+      error: () => {
+        this.notification.error(`Item ${this.item.productName} could not be deleted.`, "Error");
       }
     });
   }
