@@ -38,6 +38,7 @@
 </div>
 
 <app-confirm-delete-dialog
+  *ngIf="modeIsCreate === false"
   deleteInfo="item"
   [deleteName]="item.productName"
   [deleteId]="item.itemId ? item.itemId.toString() : null"

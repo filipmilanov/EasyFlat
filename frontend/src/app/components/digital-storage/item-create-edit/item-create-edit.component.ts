@@ -31,6 +31,10 @@ export class ItemCreateEditComponent implements OnInit {
   item: ItemDto = {
     alwaysInStock: false,
     addToFiance: false,
+    boughtAt: '',
+    unit: {
+      name: ''
+    }
   }
   priceInEuro: number = 0.00;
   availableUnits: Unit[] = [];
@@ -224,7 +228,7 @@ export class ItemCreateEditComponent implements OnInit {
     : this.itemService.findByBrand(input);
 
   formatBoughtAt(item: ItemDto | null): string {
-    return item ? item.boughtAt : '';
+    return item != null && item.boughtAt != null ? item.boughtAt : '';
   }
 
   boughtAtSuggestions = (input: string) => (input === '')
