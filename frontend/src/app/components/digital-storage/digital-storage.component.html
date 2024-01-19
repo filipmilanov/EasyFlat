@@ -107,5 +107,8 @@
   </div>
 </div>
 <h3 *ngIf="items.length <= 0 && itemsAIS.length <= 0" class="d-flex justify-content-center mt-5">
-  There are no items in the storage.
+  <span *ngIf="searchParameters.fillLevel === ''">There are no items in the storage.</span>
+  <span *ngIf="searchParameters.fillLevel === 'full'">There are no items with a high quantity in the storage.</span>
+  <span *ngIf="searchParameters.fillLevel === 'nearly_empty'">There are no items with a medium quantity in the storage.</span>
+  <span *ngIf="searchParameters.fillLevel === 'empty'">There are no items with a low quantity in the storage.</span>
 </h3>
