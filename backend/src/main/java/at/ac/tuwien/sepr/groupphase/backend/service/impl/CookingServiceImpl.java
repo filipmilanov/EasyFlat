@@ -148,7 +148,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
-        throws  ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
+        throws ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
 
 
         ApplicationUser user = authService.getUserFromToken();
@@ -263,8 +263,8 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws AuthorizationException, ConflictException, ValidationException,
-        AuthenticationException {
+    @Transactional
+    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws AuthorizationException, ConflictException, ValidationException {
         if (recipe.id() != null) {
             RecipeDetailDto recipeWithSteps = getRecipeDetails(recipe.id());
             StringBuilder summary = new StringBuilder(recipe.summary());
@@ -305,6 +305,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
+    @Transactional
     public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException, AuthorizationException {
         recipeValidator.validateForUpdate(recipe);
         RecipeSuggestion oldRecipe = repository.findById(recipe.id()).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
@@ -485,6 +486,11 @@ public class CookingServiceImpl implements CookingService {
         return recipeToCook;
     }
 
+    @Override
+    public RecipeIngredientDto unMatchIngredient(String ingredientName) {
+        return ingredientService.unMatchIngredient(ingredientName);
+    }
+
     private List<RecipeSuggestionDto> filterSuggestions(List<RecipeSuggestionDto> recipeSuggestions, String type) {
         List<String> filterTypes = new ArrayList<>();
         if (type.equals("breakfast")) {
@@ -652,10 +658,12 @@ public class CookingServiceImpl implements CookingService {
 
         for (RecipeIngredientDto recipeIngredient : ingredientDtos) {
             boolean matched = false;
+            //case auto Match
             for (DigitalStorageItem digitalStorageItem : itemsInStorage) {
                 Unit recipeIngredientUnit = unitMapper.unitDtoToEntity(recipeIngredient.unitEnum());
                 Unit digitalStorageItemUnit = digitalStorageItem.getItemCache().getUnit();
-                if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)) {
+                if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)
+                    && recipeIngredient.realName() == null) {
                     RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
                         digitalStorageItem.getItemCache().getProductName(),
                         recipeIngredient.unit(),
@@ -668,7 +676,26 @@ public class CookingServiceImpl implements CookingService {
                     updatedIngredients.add(updatedIngredient);
                     matched = true;
                     continue;
+                }//case Yet Matched
+                else if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)
+                    && !recipeIngredient.name().equals(recipeIngredient.realName())) {
+                    for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
+                        if (alternativeName.getName().equals(recipeIngredient.realName())) {
+                            RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
+                                digitalStorageItem.getItemCache().getProductName(),
+                                recipeIngredient.unit(),
+                                recipeIngredient.unitEnum(),
+                                recipeIngredient.amount(),
+                                true,
+                                false,
+                                recipeIngredient.realName(),
+                                itemMapper.entityToDto(digitalStorageItem));
+                            updatedIngredients.add(updatedIngredient);
+                            matched = true;
+                        }
+                    }
                 }
+                //case Not Matched Yet
                 for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
                     if (alternativeName.getName().equals(recipeIngredient.name())) {
                         RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
@@ -692,7 +719,8 @@ public class CookingServiceImpl implements CookingService {
         return updatedIngredients;
     }
 
-    private String getRequestStringForRecipeSearch(List<ItemDto> items) throws DeepLException, InterruptedException {
+    private String getRequestStringForRecipeSearch(List<ItemDto> items) throws
+        DeepLException, InterruptedException {
         translator = new Translator(translateKey);
         List<String> ingredients = new LinkedList<>();
         for (ItemDto item : items) {
@@ -730,7 +758,9 @@ public class CookingServiceImpl implements CookingService {
         return null;
     }
 
-    private Double getItemQuantityTotalInMinQuantity(List<DigitalStorageItem> digitalStorageItems, RecipeIngredientDto ingredient) throws ValidationException, ConflictException {
+    private Double getItemQuantityTotalInMinQuantity
+        (List<DigitalStorageItem> digitalStorageItems, RecipeIngredientDto ingredient) throws
+        ValidationException, ConflictException {
 
         Double toRet = 0.0;
 

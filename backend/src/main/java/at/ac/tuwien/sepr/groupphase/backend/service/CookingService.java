@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookbookDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
@@ -118,4 +119,7 @@ public interface CookingService {
      */
     RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt)
         throws AuthenticationException, ValidationException, ConflictException, AuthorizationException;
+
+
+    RecipeIngredientDto unMatchIngredient(String ingredientName);
 }

@@ -24,6 +24,8 @@ public class RecipeIngredient {
 
     private double amount;
 
+    private String realName;
+
     @ManyToOne
     private RecipeSuggestion recipeSuggestion;
 
@@ -78,6 +80,14 @@ public class RecipeIngredient {
 
     public void setUnitEnum(Unit unitEnum) {
         this.unitEnum = unitEnum;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public String getRealName() {
+        return realName;
     }
 
     @Override

@@ -10,4 +10,6 @@ public interface RecipeIngredientService {
     List<RecipeIngredient> createAll(List<RecipeIngredientDto> ingredients);
 
     List<RecipeIngredient> findByName(List<String> names);
+
+    RecipeIngredientDto unMatchIngredient(String ingredientName);
 }

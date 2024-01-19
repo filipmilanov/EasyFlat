@@ -40,4 +40,22 @@ public class RecipeIngredientServiceImpl implements RecipeIngredientService {
         LOGGER.trace("findByNames({})", names);
         return ingredientRepository.findAllByNameIsIn(names);
     }
+
+    @Override
+    public RecipeIngredientDto unMatchIngredient(String ingredientName) {
+        List<RecipeIngredient> ingredients = ingredientRepository.findAllByNameIsIn(List.of(ingredientName));
+        for (RecipeIngredient ingredient : ingredients){
+            if(ingredient.getRealName() != null){
+                ingredient.setName(ingredient.getRealName());
+                ingredient.setRealName(null);
+            }
+        }
+        ingredientRepository.saveAll(ingredients);
+        if(!ingredients.isEmpty()) {
+            return ingredientMapper.entityToDto(ingredients.get(0));
+        }
+        else{
+            return null;
+        }
+    }
 }
