@@ -267,17 +267,17 @@ public class CookingServiceImpl implements CookingService {
         AuthenticationException {
         if (recipe.id() != null) {
             RecipeDetailDto recipeWithSteps = getRecipeDetails(recipe.id());
-            String summary = recipe.summary();
+            StringBuilder summary = new StringBuilder(recipe.summary());
             //Remove HTML tags
-            summary = Jsoup.parse(summary).text();
+            summary = new StringBuilder(Jsoup.parse(summary.toString()).text());
             if (recipeWithSteps.steps() != null) {
                 for (Step step : recipeWithSteps.steps().steps()) {
-                    summary += "\r\n" + "Step " + step.number() + ": " + step.step();
+                    summary.append("\r\n" + "Step ").append(step.number()).append(": ").append(step.step());
                 }
             }
 
 
-            recipe = recipe.withId(null).withSummaryAndWithoutMissingIngredients(summary);
+            recipe = recipe.withId(null).withSummaryAndWithoutMissingIngredients(summary.toString());
 
         }
         recipeValidator.validateForCreate(recipe);
