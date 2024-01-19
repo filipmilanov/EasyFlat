@@ -44,17 +44,16 @@ public class RecipeIngredientServiceImpl implements RecipeIngredientService {
     @Override
     public RecipeIngredientDto unMatchIngredient(String ingredientName) {
         List<RecipeIngredient> ingredients = ingredientRepository.findAllByNameIsIn(List.of(ingredientName));
-        for (RecipeIngredient ingredient : ingredients){
-            if(ingredient.getRealName() != null){
+        for (RecipeIngredient ingredient : ingredients) {
+            if (ingredient.getRealName() != null) {
                 ingredient.setName(ingredient.getRealName());
                 ingredient.setRealName(null);
             }
         }
         ingredientRepository.saveAll(ingredients);
-        if(!ingredients.isEmpty()) {
+        if (!ingredients.isEmpty()) {
             return ingredientMapper.entityToDto(ingredients.get(0));
-        }
-        else{
+        } else {
             return null;
         }
     }

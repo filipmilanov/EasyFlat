@@ -676,8 +676,8 @@ public class CookingServiceImpl implements CookingService {
                     updatedIngredients.add(updatedIngredient);
                     matched = true;
                     continue;
-                }//case Yet Matched
-                else if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)
+                } else if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)
+                    //case Yet Matched
                     && !recipeIngredient.name().equals(recipeIngredient.realName())) {
                     for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
                         if (alternativeName.getName().equals(recipeIngredient.realName())) {
@@ -758,8 +758,7 @@ public class CookingServiceImpl implements CookingService {
         return null;
     }
 
-    private Double getItemQuantityTotalInMinQuantity
-        (List<DigitalStorageItem> digitalStorageItems, RecipeIngredientDto ingredient) throws
+    private Double getItemQuantityTotalInMinQuantity(List<DigitalStorageItem> digitalStorageItems, RecipeIngredientDto ingredient) throws
         ValidationException, ConflictException {
 
         Double toRet = 0.0;
