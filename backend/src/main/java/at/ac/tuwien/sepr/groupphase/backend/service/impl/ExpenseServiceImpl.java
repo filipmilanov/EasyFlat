@@ -252,6 +252,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) throws AuthorizationException {
         LOGGER.trace("delete({})", id);
 
