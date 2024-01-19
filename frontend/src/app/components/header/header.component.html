@@ -1,51 +1,62 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
-  <a class="navbar-brand ml-lg-5" href="">EasyFlat<span class="bi bi-house-heart ml-2"></span></a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-5 py-4">
+  <a class="navbar-brand ml-lg-5 p-2" href="">EasyFlat<span class="bi bi-house-heart m-2"></span></a>
   <button class="navbar-toggler ml-5" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/account" routerLinkActive="active">Account</a>
-    </ul>
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/digital-storage" routerLinkActive="active">Storage</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/shopping-lists" routerLinkActive="active">Shop</a>
-      </li>
-    </ul>
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/cooking" routerLinkActive="active">Cooking</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/cookbook" routerLinkActive="active">Cookbook</a>
-      </li>
-      <li class="nav-item" *ngIf="authService.isLoggedIn() && isInWg()" (click)="toggleDropdown($event)">
-        <a class="nav-link">Chores</a>
-        <div class="dropdown-menu" *ngIf="showDropdown" >
-          <button class="dropdown-item big-box-button" (click)="navigateToAllChores()">All Chores</button>
-          <button class="dropdown-item big-box-button" (click)="navigateToMyChores()">My Chores</button>
-          <button class="dropdown-item big-box-button" (click)="navigateToPreference()">Chore Preference</button>
-          <button class="dropdown-item big-box-button" (click)="navigateToNewChore()">New Chores</button>
-          <button class="dropdown-item big-box-button" (click)="navigateToLeaderboard()">Leaderboard</button>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/events" routerLinkActive="active">Events</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/finance" routerLinkActive="active">Finance</a>
-      </li>
+  <div class="collapse navbar-collapse flex-row" id="navbarSupportedContent">
+    <div class="navbar-nav-scroll">
+      <ul class="navbar-nav m-2">
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/digital-storage"
+             routerLinkActive="active">Storage</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/shopping-lists"
+             routerLinkActive="active">Shop</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/cooking"
+             routerLinkActive="active">Cooking</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/cookbook"
+             routerLinkActive="active">Cookbook</a>
+        </li>
+        <li class="nav-item" *ngIf="authService.isLoggedIn() && isInWg()" (click)="toggleDropdown($event)">
+          <a class="nav-link">Chores</a>
+          <div class="dropdown-menu" *ngIf="showDropdown">
+            <button class="dropdown-item big-box-button" (click)="navigateToAllChores()">All Chores</button>
+            <button class="dropdown-item big-box-button" (click)="navigateToMyChores()">My Chores</button>
+            <button class="dropdown-item big-box-button" (click)="navigateToPreference()">Chore Preference</button>
+            <button class="dropdown-item big-box-button" (click)="navigateToNewChore()">New Chores</button>
+            <button class="dropdown-item big-box-button" (click)="navigateToLeaderboard()">Leaderboard</button>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/events"
+             routerLinkActive="active">Events</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="authService.isLoggedIn() && isInWg()" routerLink="/finance"
+             routerLinkActive="active">Finance</a>
+
+      </ul>
+    </div>
+    <span class="flex-fill"></span>
+    <ul class="navbar-nav ">
+      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/account"
+         routerLinkActive="active">Account</a>
+      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/" (click)="logoutUser()">Logout</a>
     </ul>
 
-    <ul class="navbar-nav mr-5">
+
+    <ul class="navbar-nav">
       <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/login" routerLinkActive="active">Login</a>
-      <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/register" routerLinkActive="active">Register</a>
-      <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/" (click)="logoutUser()">Logout</a>
+      <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/register"
+         routerLinkActive="active">Register</a>
+      <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/" (click)="logoutUser()">Logout</a>
     </ul>
   </div>
 </nav>
