@@ -98,7 +98,7 @@ export class CookbookCreateComponent implements OnInit{
       amount: parsedAmount,
       matched:false,
       autoMatched:false,
-      realName: ingredient,
+      realName: null,
       matchedItem:null
     };
 

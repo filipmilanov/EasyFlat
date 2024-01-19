@@ -656,8 +656,10 @@ public class CookingServiceImpl implements CookingService {
 
         List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
 
+        loop2:
         for (RecipeIngredientDto recipeIngredient : ingredientDtos) {
             boolean matched = false;
+            ingredientService.unMatchIngredient(recipeIngredient.name());
             //case auto Match
             for (DigitalStorageItem digitalStorageItem : itemsInStorage) {
                 Unit recipeIngredientUnit = unitMapper.unitDtoToEntity(recipeIngredient.unitEnum());
@@ -674,8 +676,7 @@ public class CookingServiceImpl implements CookingService {
                         recipeIngredient.name(),
                         itemMapper.entityToDto(digitalStorageItem));
                     updatedIngredients.add(updatedIngredient);
-                    matched = true;
-                    continue;
+                    continue loop2;
                 } else if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)
                     //case Yet Matched
                     && !recipeIngredient.name().equals(recipeIngredient.realName())) {
@@ -691,7 +692,7 @@ public class CookingServiceImpl implements CookingService {
                                 recipeIngredient.realName(),
                                 itemMapper.entityToDto(digitalStorageItem));
                             updatedIngredients.add(updatedIngredient);
-                            matched = true;
+                            continue loop2;
                         }
                     }
                 }
@@ -708,13 +709,11 @@ public class CookingServiceImpl implements CookingService {
                             recipeIngredient.name(),
                             itemMapper.entityToDto(digitalStorageItem));
                         updatedIngredients.add(updatedIngredient);
-                        matched = true;
+                        continue loop2;
                     }
                 }
             }
-            if (!matched) {
-                updatedIngredients.add(recipeIngredient);
-            }
+            updatedIngredients.add(recipeIngredient);
         }
         return updatedIngredients;
     }
