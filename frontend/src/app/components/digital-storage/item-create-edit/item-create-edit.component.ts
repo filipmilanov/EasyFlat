@@ -160,6 +160,9 @@ export class ItemCreateEditComponent implements OnInit {
         next: () => {
           this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
           this.router.navigate(['/digital-storage']);
+          if( !this.modeIsCreate && this.item.quantityCurrent <= 0 ){
+            this.notification.success(`Item ${this.item.productName}has no stock and was successfully deleted.`, "Success");
+          }
         },
         error: error => {
           if (error.status === 500) {
