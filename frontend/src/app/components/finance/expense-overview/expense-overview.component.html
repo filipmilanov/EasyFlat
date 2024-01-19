@@ -106,24 +106,29 @@
           <div class="btn-group">
             <button class="btn btn-sm btn-primary"
                     [routerLink]="['/expense', expense.id, 'detail']"
-                    aria-label="Show expense details">
+                    aria-label="Show expense details"
+                    toggel-data="tooltip"
+                    title="Show expense details"
+            >
               <i class="bi bi-info-lg"></i>
-              Details
             </button>
             <button class="btn btn-sm btn-warning"
                     [routerLink]="['/expense', expense.id, 'edit']"
-                    aria-label="Edit expense">
+                    aria-label="Edit expense"
+                    toggel-data="tooltip"
+                    title="Edit expense"
+            >
               <i class="bi bi-pencil"></i>
-              Edit
             </button>
             <button type="button"
                     class="btn btn-sm btn-danger"
                     data-bs-toggle="modal"
                     [attr.data-bs-target]="'#confirm-delete-modal'"
                     aria-label="Delete expense"
+                    toggel-data="tooltip"
+                    title="Delete expense"
             >
               <i class="bi bi-trash"></i>
-              Delete
             </button>
           </div>
         </td>

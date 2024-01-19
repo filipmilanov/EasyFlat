@@ -17,11 +17,12 @@
               data-bs-toggle="modal"
               data-bs-target="#confirm-delete-modal"
               aria-label="Delete item"
+              (click)="delete()"
       >
         <i class="bi bi-trash"></i>
         Delete
       </button>
-      <button type="button" class="btn btn-secondary" [routerLink]="['/expense']">
+      <button type="button" class="btn btn-secondary" [routerLink]="[previousUrl]">
         <i class="bi bi-arrow-left"></i>
         Back
       </button>
