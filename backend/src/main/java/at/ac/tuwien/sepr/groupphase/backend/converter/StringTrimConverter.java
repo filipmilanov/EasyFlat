@@ -1,12 +1,18 @@
 package at.ac.tuwien.sepr.groupphase.backend.converter;
 
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.stereotype.Component;
 
-@Component
-public class StringTrimConverter implements Converter<String, String> {
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+
+@Converter(autoApply = true)
+public class StringTrimConverter implements AttributeConverter<String, String> {
     @Override
-    public String convert(String s) {
-        return s.trim();
+    public String convertToDatabaseColumn(String attribute) {
+        return attribute == null ? null : attribute.trim();
+    }
+
+    @Override
+    public String convertToEntityAttribute(String dbData) {
+        return dbData == null ? null : dbData.trim();
     }
 }
