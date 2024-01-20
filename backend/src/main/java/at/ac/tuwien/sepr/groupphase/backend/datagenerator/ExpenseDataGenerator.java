@@ -44,7 +44,7 @@ public class ExpenseDataGenerator {
             Expense expense = new Expense();
             expense.setTitle(generateRandomExpenseTitle());
             expense.setDescription(generateRandomExpenseDescription());
-            expense.setAmountInCents(random.nextDouble(2000));
+            expense.setAmountInCents(Math.round(random.nextDouble(2000) * 100.0) / 100.0);
             expense.setCreatedAt(LocalDateTime.of(
                 random.nextInt(3) + 2020,
                 random.nextInt(12) + 1,
