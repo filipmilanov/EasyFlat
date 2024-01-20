@@ -168,6 +168,8 @@ public class ChoreServiceImpl implements ChoreService {
                 }
                 if (choresAfterAssign.size() == 0) {
                     break;
+                } else {
+                    notAssignedUsers = new ArrayList<>();
                 }
             }
         }
