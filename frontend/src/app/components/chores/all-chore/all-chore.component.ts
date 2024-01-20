@@ -47,7 +47,7 @@ export class AllChoreComponent {
           this.notification.error(message, errorDescription);
         });
       }
-    })
+    });
   }
 
   assignChores() {
@@ -76,7 +76,7 @@ export class AllChoreComponent {
         document.body.removeChild(downloadLink);
       },
       error => {
-        this.notification.error("PDF could not be exported")
+        this.notification.error("No chores found to export")
       });
   }
 

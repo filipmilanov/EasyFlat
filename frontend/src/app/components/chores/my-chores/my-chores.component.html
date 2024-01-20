@@ -1,9 +1,11 @@
 <h1 class="display-4">My Chores</h1>
-<div class="ms-1">
+<div class="custom-header-border"></div>
+
+
   <label class="col-form-label">
     Actions
   </label>
-  <div>
+  <div style="margin-bottom: 20px">
     <button class="btn btn-primary" style="margin-right: 4px;" (click)="navigateToAllChores()">
       All Chores
     </button>
@@ -13,12 +15,19 @@
     <button class="btn btn-warning" style="margin-right: 4px;" (click)="navigateToLeaderboard()">
       Leaderboard
     </button>
+    <button *ngIf="!completedChoresIsEmpty()"
+            type="button"
+            class="btn btn-primary"
+            (click)="showConfirmationModal()">
+      <i class="bi bi-check-square"></i>
+      Completed
+    </button>
   </div>
 
 
+<div *ngIf="chores.length === 0" style="text-align: center;">
+  <h3>{{message}}</h3>
 </div>
-<hr>
-<h3 *ngIf="chores.length === 0" style="color: #4caf50; text-align: center;">{{message}}</h3>
 
 <div style="width: 100%;margin-top: 20px; height: 100%;"></div>
 <div class="row row-cols-4" style="gap: 20px" *ngIf="chores.length > 0">
@@ -26,17 +35,12 @@
     <a style="text-decoration: none"
        aria-label="Show chore details">
       <app-my-chore-card [choreName]="chore.name"
-                      [description]="chore.description"
-                      [endDate]="chore.endDate"
-                      [points]="chore.points"
-                      [completed]="chore.completed"
-                      (click)="updateChoreComplete(chore)">
+                         [description]="chore.description"
+                         [endDate]="chore.endDate"
+                         [points]="chore.points"
+                         [completed]="chore.completed"
+                         (click)="updateChoreComplete(chore)">
       </app-my-chore-card>
     </a>
   </div>
 </div>
-
-<button *ngIf="!completedChoresIsEmpty()"
-        class="btn btn-primary p-2" style="margin-top: 20px" (click)="showConfirmationModal()" >
-  Completed
-</button>

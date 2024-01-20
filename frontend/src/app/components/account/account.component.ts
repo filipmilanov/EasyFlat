@@ -200,7 +200,8 @@ export class AccountComponent implements OnInit {
         next: (deletedFlat: SharedFlat) => {
           console.log('Shared flat deleted from user :', deletedFlat);
           this.router.navigate(['']);
-          this.notification.success("Flat" + deletedFlat + "is successfully deleted.", "Success");
+          this.sharedFlatService.changeEventToFalse();
+          this.notification.success("Flat " + deletedFlat.name + " is successfully deleted.", "Success");
         },
         error: error => {
           console.error(error.message, error);
