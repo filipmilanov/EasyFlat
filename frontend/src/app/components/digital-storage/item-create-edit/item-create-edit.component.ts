@@ -221,7 +221,7 @@ export class ItemCreateEditComponent implements OnInit {
                 + ' of ' + this.item.productName
                 + ' for ' + this.priceInEuro
                 + ' €'
-                + (this.item.boughtAt != null
+                + (this.item.boughtAt != null && this.item.boughtAt != ''
                   ? ' at ' + this.item.boughtAt
                   : ''),
               amountInCents: this.item.priceInCent,
