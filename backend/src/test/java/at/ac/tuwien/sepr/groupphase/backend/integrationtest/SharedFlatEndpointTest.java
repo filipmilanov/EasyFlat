@@ -30,14 +30,14 @@ public class SharedFlatEndpointTest {
     @Test
     void testCreate() throws Exception {
         String authToken = "someAuthToken";
-        SharedFlat sharedFlat = new SharedFlat();
+        WgDetailDto sharedFlat = new WgDetailDto();
         sharedFlat.setName("name");
         sharedFlat.setPassword("password");
         WgDetailDto wgDetailDto = new WgDetailDto();
         wgDetailDto.setName("name");
         wgDetailDto.setPassword("password");
 
-        when(sharedFlatService.create(any(SharedFlat.class)))
+        when(sharedFlatService.create(any(WgDetailDto.class)))
             .thenReturn(wgDetailDto);
 
         WgDetailDto result = sharedFlatEndpoint.create(sharedFlat);

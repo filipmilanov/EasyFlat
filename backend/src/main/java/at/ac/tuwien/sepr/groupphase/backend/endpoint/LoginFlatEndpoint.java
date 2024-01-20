@@ -39,15 +39,15 @@ public class LoginFlatEndpoint {
 
     @PostMapping
     @Secured("ROLE_USER")
-    public WgDetailDto loginWg(@RequestBody SharedFlat wgDetailDto) {
+    public WgDetailDto loginWg(@RequestBody WgDetailDto wgDetailDto) {
         LOGGER.trace("loginWg({})", wgDetailDto);
         return sharedFlatService.loginWg(wgDetailDto);
     }
 
     @DeleteMapping("/{email}")
-    public WgDetailDto delete(@PathVariable String email) throws AuthorizationException {
+    public WgDetailDto deleteSharedFlat(@PathVariable String email) throws AuthorizationException {
         LOGGER.trace("delete()");
-        return sharedFlatService.delete(email);
+        return sharedFlatService.delete();
     }
 
 

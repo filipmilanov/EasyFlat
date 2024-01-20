@@ -88,33 +88,21 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         this.choreRepository = choreRepository;
     }
 
-    public SharedFlat findById(Long id, String jwt) throws AuthorizationException {
-        LOGGER.trace("findById({}, {})", id, jwt);
-
-        Optional<SharedFlat> sharedFlatOptional = sharedFlatRepository.findById(id);
-        SharedFlat sharedFlat = sharedFlatOptional.orElseThrow(() -> new NotFoundException("Shared flat not found"));
-
-        authorization.authorizeUser(
-            sharedFlat.getUsers().stream().map(ApplicationUser::getId).toList(),
-            "User does not have access to this shared flat"
-        );
-
-        return sharedFlat;
-    }
 
     @Transactional
-    public WgDetailDto create(SharedFlat sharedFlat) throws ConflictException, ValidationException {
-        LOGGER.trace("create({})", sharedFlat);
+    public WgDetailDto create(WgDetailDto wgDetailDto) throws ConflictException, ValidationException {
+        LOGGER.trace("create({})", wgDetailDto);
         LOGGER.debug("Create a new shared flat");
+        validator.validateForCreate(wgDetailDto);
         //validator.validateForCreate(sharedFlat);
-        SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(sharedFlat.getName());
+        SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(wgDetailDto.getName());
         if (existingSharedFlat != null) {
             throw new ConflictException("A flat with this name already exists.");
         }
 
         SharedFlat newSharedFlat = new SharedFlat();
-        newSharedFlat.setName(sharedFlat.getName());
-        newSharedFlat.setPassword(passwordEncoder.encode(sharedFlat.getPassword()));
+        newSharedFlat.setName(wgDetailDto.getName());
+        newSharedFlat.setPassword(passwordEncoder.encode(wgDetailDto.getPassword()));
         ApplicationUser user = authService.getUserFromToken();
         sharedFlatRepository.save(newSharedFlat);
         user.setSharedFlat(newSharedFlat);
@@ -143,7 +131,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     }
 
     @Override
-    public WgDetailDto loginWg(SharedFlat wgDetailDto) {
+    public WgDetailDto loginWg(WgDetailDto wgDetailDto) {
         LOGGER.trace("loginWg({})", wgDetailDto);
         String name = wgDetailDto.getName();
         String rawPassword = wgDetailDto.getPassword();
@@ -173,9 +161,9 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
 
     @Override
     @Transactional
-    public WgDetailDto delete(String email) {
+    public WgDetailDto delete() {
         LOGGER.trace("delete()");
-        ApplicationUser user = customUserDetailService.findApplicationUserByEmail(email);
+        ApplicationUser user = authService.getUserFromToken();
         if (!user.getAdmin()) {
             throw new BadCredentialsException("User is not admin, so he can not delete the flat");
         } else {

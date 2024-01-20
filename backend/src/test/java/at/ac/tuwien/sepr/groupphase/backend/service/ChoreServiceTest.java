@@ -91,8 +91,6 @@ public class ChoreServiceTest {
     private ChoreDto validChoreDto;
     private ChoreDto invalidChoreDto;
 
-    private Faker faker = new Faker(new Random(24012024));
-
     @BeforeEach
     public void cleanUp() throws ValidationException, ConflictException {
         cleanDatabase.truncateAllTablesAndRestartIds();
@@ -197,7 +195,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void assignChoreShouldFail() {
+    public void assignChoreShouldFailWithNotFoundException() {
         //Data
         List<Chore> chores = choreRepository.findAllBySharedFlatId(testUser.getSharedFlat().getId());
         choreRepository.deleteAll(chores);
@@ -266,7 +264,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void secondAssignChoreShouldFail() throws AuthenticationException {
+    public void secondAssignChoreShouldFailWithNotFoundException() throws AuthenticationException {
         //Data
         Preference pref1 = new Preference();
         pref1.setFirst(new Chore().setId(1L));
@@ -522,7 +520,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void deleteChoresShouldFail() {
+    public void deleteChoresShouldFailWithAuthorizationException() {
         //Data
         List<Long> choreIds = new ArrayList<>();
         choreIds.add(1L);
@@ -569,7 +567,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void generatePdfShouldFail() {
+    public void generatePdfShouldFailWithNotFoundException() {
         //Data
         choreRepository.deleteAll(choreRepository.findAllBySharedFlatId(testUser.getSharedFlat().getId()));
         //Test + Results
@@ -579,7 +577,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void repeatChoreShouldFail() {
+    public void repeatChoreShouldFailWithAuthorizationException() {
         //Data
         Date newDate = new Date();
         //Test + Result
