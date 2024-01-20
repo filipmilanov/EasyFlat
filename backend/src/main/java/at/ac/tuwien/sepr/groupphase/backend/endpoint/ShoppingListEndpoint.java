@@ -146,7 +146,7 @@ public class ShoppingListEndpoint {
 
     @Secured("ROLE_USER")
     @PostMapping("/storage")
-    public List<ItemDto> transferToStorage(@RequestBody List<ShoppingItemDto> items) {
+    public List<ItemDto> transferToStorage(@RequestBody List<ShoppingItemDto> items) throws AuthorizationException {
         LOGGER.info("transferToStorage({})", items);
         List<DigitalStorageItem> res = this.shoppingService.transferToServer(items);
         List<ItemDto> toRet = new ArrayList<>();

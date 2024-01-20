@@ -40,9 +40,6 @@ public class ShoppingItem {
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     private ItemCache itemCache = new ItemCache();
 
-    @ManyToOne
-    private DigitalStorage digitalStorage;
-
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ItemLabel> labels;
@@ -82,14 +79,6 @@ public class ShoppingItem {
 
     public void setBoughtAt(String boughtAt) {
         this.boughtAt = boughtAt;
-    }
-
-    public DigitalStorage getDigitalStorage() {
-        return digitalStorage;
-    }
-
-    public void setDigitalStorage(DigitalStorage digitalStorage) {
-        this.digitalStorage = digitalStorage;
     }
 
     public Double getMinimumQuantity() {

@@ -190,7 +190,6 @@ public class ShoppingListServiceTest {
             .priceInCent(210L)
             .alwaysInStock(false)
             .boughtAt("billa")
-            .digitalStorage(storageDto)
             .ingredients(ingredientDtoList)
             .shoppingList(new ShoppingListDto(1L, "Shopping List (Default)", 0))
             .labels(labelMapper.itemLabelListToItemLabelDtoList(labels))
@@ -204,7 +203,6 @@ public class ShoppingListServiceTest {
         validShoppingItemEntity.setQuantityCurrent(3.0);
         DigitalStorage digitalStorage = new DigitalStorage();
         digitalStorage.setStorageId(1L);
-        validShoppingItemEntity.setDigitalStorage(digitalStorage);
         ItemCache itemCache = getItemCache(country);
         validShoppingItemEntity.setItemCache(itemCache);
         ShoppingList shoppingList = new ShoppingList();
@@ -245,7 +243,6 @@ public class ShoppingListServiceTest {
             () -> assertFalse(result.getAlwaysInStock()),
             () -> assertNull(result.getMinimumQuantity()),
             () -> assertEquals(validShoppingItemDto.boughtAt(), result.getBoughtAt()),
-            () -> assertEquals(validShoppingItemDto.digitalStorage().storageId(), result.getDigitalStorage().getStorageId()),
             () -> assertEquals(validShoppingItemDto.ingredients().size(), result.getItemCache().getIngredientList().size()),
             () -> assertEquals(validShoppingItemDto.shoppingList().id(), result.getShoppingList().getId()),
             () -> assertEquals(validShoppingItemDto.labels().size(), result.getLabels().size()),
@@ -441,7 +438,7 @@ public class ShoppingListServiceTest {
     }
 
     @Test
-    void givenExistingShoppingItemAndExistingDigitalStorageTransferToServerShouldSucceed() {
+    void givenExistingShoppingItemAndExistingDigitalStorageTransferToServerShouldSucceed() throws AuthorizationException {
         // link testUser to SharedFlat with Id 1
         ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
         when(authService.getUserFromToken()).thenReturn(testUser);

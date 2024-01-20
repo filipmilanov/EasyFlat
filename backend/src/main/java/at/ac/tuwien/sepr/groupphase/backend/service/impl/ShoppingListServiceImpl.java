@@ -185,6 +185,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             if (!toDelete.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
                 throw new AuthorizationException("Authorization failed", List.of("User has no access to this shopping item and can not delete it!"));
             }
+            //shoppingItemToDelete.getShoppingList().getItems().remove(shoppingItemToDelete);
+            ShoppingList curr = toDelete.getShoppingList();
+            curr.getItems().remove(toDelete);
+            shoppingListRepository.save(curr);
             toDelete.setLabels(null);
             shoppingItemRepository.save(toDelete);
             shoppingItemRepository.delete(toDelete);
@@ -237,7 +241,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     @Transactional
-    public List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) {
+    public List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) throws AuthorizationException {
         LOGGER.trace("transferToServer({})", items);
         ApplicationUser applicationUser = authService.getUserFromToken();
         List<DigitalStorage> storage = digitalStorageRepository.findBySharedFlatIs(applicationUser.getSharedFlat());
@@ -250,7 +254,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 item = shoppingListMapper.shoppingItemDtoToItem(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), storage.get(0));
             }
             itemRepository.save(item);
-            shoppingItemRepository.deleteById(itemDto.itemId());
+            this.deleteItem(itemDto.itemId());
             itemsList.add(item);
         }
         return itemsList;

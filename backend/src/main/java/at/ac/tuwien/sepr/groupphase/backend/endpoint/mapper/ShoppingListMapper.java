@@ -31,6 +31,7 @@ public abstract class ShoppingListMapper {
     public abstract List<ShoppingListDto> entityListToDtoList(List<ShoppingList> shoppingList);
 
 
+    @Mapping(target = "itemId", ignore = true)
     @Mapping(target = "ingredientList", source = "ingredients")
     @Mapping(target = "digitalStorage", expression = "java( digitalStorage )")
     @Mapping(target = "itemCache.ean", source = "ean")
@@ -44,6 +45,7 @@ public abstract class ShoppingListMapper {
                                                              @Context List<Ingredient> ingredients,
                                                              @Context DigitalStorage digitalStorage);
 
+    @Mapping(target = "itemId", ignore = true)
     @Mapping(target = "ingredientList", source = "ingredients")
     @Mapping(target = "digitalStorage", expression = "java( digitalStorage )")
     @Mapping(target = "itemCache.ean", source = "ean")

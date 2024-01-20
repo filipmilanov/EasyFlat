@@ -101,7 +101,7 @@ public interface ShoppingListService {
      * @param items a List of ShoppingItemDto to be transferred
      * @return a List of DigitalStorageItem objects
      */
-    List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items);
+    List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) throws AuthorizationException;
 
     /**
      * Validates and Updates a new {@link ShoppingItem} in the db.

@@ -39,7 +39,6 @@ public record ShoppingItemDto(
     @Max(value = 5000)
     Double minimumQuantity,
     String boughtAt,
-    DigitalStorageDto digitalStorage,
     List<IngredientDto> ingredients,
     List<ItemLabelDto> labels,
     ShoppingListDto shoppingList
@@ -60,7 +59,6 @@ public record ShoppingItemDto(
             alwaysInStock,
             minimumQuantity,
             boughtAt,
-            digitalStorage,
             ingredients,
             labels,
             shoppingList
