@@ -162,9 +162,11 @@ public interface TestData {
 
     List<IngredientDto> ingredientDtoList = List.of(
         IngredientDtoBuilder.builder()
+            .ingredientId(1L)
             .name("Ingredient 1")
             .build(),
         IngredientDtoBuilder.builder()
+            .ingredientId(2L)
             .name("Ingredient 2")
             .build()
     );
