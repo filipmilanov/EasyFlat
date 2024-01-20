@@ -71,10 +71,8 @@ public class ExpenseServiceImpl implements ExpenseService {
         Expense persistedExpense = expenseRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Expense not found"));
 
-        List<ApplicationUser> allowedUsers = persistedExpense.getDebitUsers().stream().map(
-            debit -> debit.getId().getUser()
-        ).collect(Collectors.toList());
-        allowedUsers.add(persistedExpense.getPaidBy());
+        List<ApplicationUser> allowedUsers = persistedExpense.getPaidBy().getSharedFlat().getUsers().stream().toList();
+
         authorization.authorizeUser(
             allowedUsers.stream().map(ApplicationUser::getId).toList(),
             "User does not have access to this expense"
