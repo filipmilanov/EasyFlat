@@ -218,7 +218,7 @@ public class ShoppingListServiceTest {
     }
 
     @Test
-    void createValidShoppingItemShouldSucceed() throws ValidationException, ConflictException, AuthorizationException {
+    void givenValidShoppingItemDtoWhenCreateShoppingItemShouldSucceed() throws ValidationException, ConflictException, AuthorizationException {
         // Mock the necessary method calls
         when(unitService.findAll()).thenReturn(Collections.emptyList());
         doNothing().when(shoppingItemValidator).validateForCreate(
@@ -255,7 +255,7 @@ public class ShoppingListServiceTest {
     }
 
     @Test
-    void updateExistingShoppingItemShouldSucceed() throws ValidationException, ConflictException, AuthorizationException {
+    void givenExistingShoppingItemWhenUpdateShoppingItemShouldSucceed() throws ValidationException, ConflictException, AuthorizationException {
         when(unitService.findAll()).thenReturn(Collections.emptyList());
         when(ingredientService.findIngredientsAndCreateMissing(any())).thenReturn(new ArrayList<>());
         doNothing().when(shoppingItemValidator).validateForUpdate(
@@ -319,7 +319,7 @@ public class ShoppingListServiceTest {
     }
 
     @Test
-    void updateNonExistingShoppingItemShouldThrowNotFoundException() throws ConflictException, ValidationException {
+    void givenNonExistingShoppingItemWhenUpdateShoppingItemShouldThrowNotFoundException() throws ConflictException, ValidationException {
         when(unitService.findAll()).thenReturn(Collections.emptyList());
         when(ingredientService.findIngredientsAndCreateMissing(any())).thenReturn(new ArrayList<>());
         doNothing().when(shoppingItemValidator).validateForUpdate(
@@ -337,7 +337,7 @@ public class ShoppingListServiceTest {
     }
 
     @Test
-    void getItemsOfNonExistingShoppingListShouldThrowNotFoundException() {
+    void givenNonExistingShoppingListWhenGetItemsByShoppingListIdShouldThrowNotFoundException() {
         Long idOfNonExistingShoppingList = -1L;
 
         assertThrows(NotFoundException.class, () -> shoppingListService.getItemsByShoppingListId(idOfNonExistingShoppingList, new ShoppingItemSearchDto(null, null, null)));
@@ -370,7 +370,7 @@ public class ShoppingListServiceTest {
     }
 
     @Test
-    void deleteExistingShoppingItemShouldSucceed() throws AuthorizationException {
+    void givenExistingShoppingItemWhenDeleteItemShouldSucceed() throws AuthorizationException {
         // link testUser to SharedFlat with Id 1
         ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
         when(authService.getUserFromToken()).thenReturn(testUser);
@@ -394,7 +394,7 @@ public class ShoppingListServiceTest {
     }
 
     @Test
-    void getExistingShoppingListsShouldSucceed() throws AuthorizationException {
+    void givenExistingShoppingListsGetShoppingListsShouldSucceed() throws AuthorizationException {
         // save new user linked to SharedFlat with Id 2
         ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
         when(authService.getUserFromToken()).thenReturn(testUser);
@@ -413,7 +413,7 @@ public class ShoppingListServiceTest {
     }
 
     @Test
-    void givenExistingShoppingListDeleteListShouldSucceed() throws ValidationException, AuthenticationException, AuthorizationException {
+    void givenExistingShoppingListDeleteListShouldSucceed() throws ValidationException, AuthorizationException {
         // link testUser to SharedFlat with Id 1
         ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
         when(authService.getUserFromToken()).thenReturn(testUser);
@@ -462,7 +462,7 @@ public class ShoppingListServiceTest {
     }
 
     @Test
-    void getDefaultShoppingListWhenGetShoppingListByNameShouldSucceed() throws AuthenticationException {
+    void findDefaultShoppingListWhenGetShoppingListByNameShouldSucceed() {
         // link testUser to SharedFlat with Id 1
         ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
         when(authService.getUserFromToken()).thenReturn(testUser);

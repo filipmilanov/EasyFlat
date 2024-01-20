@@ -123,7 +123,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public Optional<ShoppingList> getShoppingListByName(String name) throws AuthenticationException {
+    public Optional<ShoppingList> getShoppingListByName(String name) {
         LOGGER.trace("getShoppingListByName({})", name);
         ApplicationUser applicationUser = authService.getUserFromToken();
         if (name == null || name.isBlank()) {
@@ -133,7 +133,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public Optional<ShoppingList> getShoppingListById(Long id) throws AuthenticationException {
+    public Optional<ShoppingList> getShoppingListById(Long id) {
         LOGGER.trace("getShoppingListById({})", id);
         ApplicationUser applicationUser = authService.getUserFromToken();
         if (id == null) {
@@ -162,7 +162,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     @Transactional
-    public ShoppingList createList(ShoppingListDto shoppingListDto) throws ValidationException, AuthenticationException, ConflictException {
+    public ShoppingList createList(ShoppingListDto shoppingListDto) throws ValidationException, ConflictException {
         LOGGER.trace("createList({})", shoppingListDto);
         shoppingListValidator.validateForCreate(shoppingListDto);
         ApplicationUser applicationUser = authService.getUserFromToken();
@@ -196,7 +196,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     @Transactional
-    public ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException, AuthorizationException {
+    public ShoppingList deleteList(Long shopId) throws ValidationException, AuthorizationException {
         LOGGER.trace("deleteList({})", shopId);
 
         // Authentication (check the correct user)

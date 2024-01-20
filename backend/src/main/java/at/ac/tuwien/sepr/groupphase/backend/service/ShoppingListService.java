@@ -39,18 +39,16 @@ public interface ShoppingListService {
      *
      * @param name a valid listName
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
-     * @throws AuthenticationException If authentication fails or the user does not exist
      */
-    Optional<ShoppingList> getShoppingListByName(String name) throws AuthenticationException;
+    Optional<ShoppingList> getShoppingListByName(String name);
 
     /**
      * Search for a shopping list in the database with given ID.
      *
      * @param id a valid ID of a ShoppingList
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
-     * @throws AuthenticationException If authentication fails or the user does not exist
      */
-    Optional<ShoppingList> getShoppingListById(Long id) throws AuthenticationException;
+    Optional<ShoppingList> getShoppingListById(Long id);
 
 
     /**
@@ -69,7 +67,7 @@ public interface ShoppingListService {
      * @param shoppingListDto a DTO of type shopping list ID null
      * @return an object of type {@link ShoppingList} which is persisted and has an ID
      */
-    ShoppingList createList(ShoppingListDto shoppingListDto) throws ValidationException, AuthenticationException, ConflictException;
+    ShoppingList createList(ShoppingListDto shoppingListDto) throws ValidationException, ConflictException;
 
     /**
      * Delete a ShoppingItem from the db based on its ID.
@@ -86,7 +84,7 @@ public interface ShoppingListService {
      * @param shopId a valid ID of a ShoppingList
      * @return the deleted ShoppingList
      */
-    ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException, AuthorizationException;
+    ShoppingList deleteList(Long shopId) throws ValidationException, AuthorizationException;
 
     /**
      * Get all ShoppingLists from the db filtered by search parameters.
@@ -103,7 +101,7 @@ public interface ShoppingListService {
      * @param items a List of ShoppingItemDto to be transferred
      * @return a List of DigitalStorageItem objects
      */
-    List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) throws AuthenticationException;
+    List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items);
 
     /**
      * Validates and Updates a new {@link ShoppingItem} in the db.
