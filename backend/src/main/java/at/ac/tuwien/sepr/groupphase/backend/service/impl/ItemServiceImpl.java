@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,23 +74,17 @@ public class ItemServiceImpl implements ItemService {
     public DigitalStorageItem findById(Long id) throws AuthorizationException {
         LOGGER.trace("findById({})", id);
 
-        if (id == null) {
-            throw new NotFoundException("No item ID given!");
-        }
+        DigitalStorageItem persistedDigitalStorageItem = itemRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Digital storage item not found"));
 
-        Optional<DigitalStorageItem> item = itemRepository.findById(id);
-
-        if (item.isEmpty()) {
-            throw new NotFoundException("The given item ID could not be found in the database!");
-        }
-
-        List<Long> allowedUsers = item.get().getDigitalStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
+        List<Long> allowedUsers = persistedDigitalStorageItem.getDigitalStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
 
         authorization.authorizeUser(
-            allowedUsers
+            allowedUsers,
+            "User does not have access to this item"
         );
 
-        return item.get();
+        return persistedDigitalStorageItem;
     }
 
     @Override
@@ -196,8 +189,16 @@ public class ItemServiceImpl implements ItemService {
             this.delete(itemDto.itemId());
         }
 
+        if (itemDto.alwaysInStock() && itemDto.quantityCurrent() < itemDto.minimumQuantity()) {
+            digitalStorageService.addItemToShopping(itemDto);
+        }
+
         DigitalStorageItem updatedDigitalStorageItem = itemRepository.save(digitalStorageItem);
         updatedDigitalStorageItem.setIngredientList(ingredientList);
+
+        if (!itemDto.alwaysInStock() && itemDto.quantityCurrent() <= 0) {
+            delete(itemDto.itemId());
+        }
 
         return updatedDigitalStorageItem;
     }

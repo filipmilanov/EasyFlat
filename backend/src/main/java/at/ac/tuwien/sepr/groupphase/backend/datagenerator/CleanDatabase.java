@@ -1,8 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 
-import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.IngredientRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +14,9 @@ import java.util.List;
 @Component("CleanDatabase")
 public class CleanDatabase {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private final ItemRepository itemRepository;
-    private final IngredientRepository ingredientRepository;
-    private final DigitalStorageRepository digitalStorageRepository;
     private final JdbcTemplate jdbcTemplate;
 
-    public CleanDatabase(ItemRepository itemRepository, IngredientRepository ingredientRepository, DigitalStorageRepository digitalStorageRepository, JdbcTemplate jdbcTemplate) {
-        this.itemRepository = itemRepository;
-        this.ingredientRepository = ingredientRepository;
-        this.digitalStorageRepository = digitalStorageRepository;
+    public CleanDatabase(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -35,6 +25,7 @@ public class CleanDatabase {
      */
     @PostConstruct
     public void truncateAllTablesAndRestartIds() {
+        LOGGER.info("truncateAllTablesAndRestartIds()");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE ");
         List<String> tableNames = jdbcTemplate.query("SELECT table_name FROM information_schema.tables WHERE table_schema = SCHEMA()",
             (rs, rowNum) -> rs.getString(1));

@@ -1,13 +1,18 @@
 package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,5 +141,114 @@ public interface TestData {
         .description("Bred")
         .brand("Stroek")
         .digitalStorage(validDigitalStorageDto)
+        .build();
+
+    long validExpenseId = 4L;
+    long unauthorizedExpenseId = 1L;
+    long invalidExpenseId = 999L;
+
+    long validItemId = 1L;
+    long invalidItemId = -1L;
+
+    DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
+        .title("Test")
+        .storageId(1L)
+        .build();
+
+    DigitalStorageDto invalidDigitalStorageDto = DigitalStorageDtoBuilder.builder()
+        .title("Test")
+        .storageId(-999L)
+        .build();
+
+    List<IngredientDto> ingredientDtoList = List.of(
+        IngredientDtoBuilder.builder()
+            .name("Ingredient 1")
+            .build(),
+        IngredientDtoBuilder.builder()
+            .name("Ingredient 2")
+            .build()
+    );
+
+
+    ItemDto validItemDto = ItemDtoBuilder.builder()
+        .ean("0123456789123")
+        .generalName("Test")
+        .productName("MyTest")
+        .brand("Hofer")
+        .quantityCurrent(100.0)
+        .quantityTotal(200.0)
+        .unit(ml)
+        .expireDate(LocalDate.now().plusYears(1))
+        .description("This is valid description")
+        .priceInCent(1234L)
+        .boughtAt("Hofer")
+        .digitalStorage(digitalStorageDto)
+        .ingredients(ingredientDtoList)
+        .build();
+
+    ItemDto validAlwaysInStockItem = ItemDtoBuilder.builder()
+        .ean("0123456789123")
+        .generalName("Test")
+        .productName("MyTest")
+        .brand("Hofer")
+        .quantityCurrent(100.0)
+        .quantityTotal(200.0)
+        .unit(ml)
+        .expireDate(LocalDate.now().plusYears(1))
+        .description("This is valid description")
+        .priceInCent(1234L)
+        .digitalStorage(validDigitalStorageDto)
+        .ingredients(ingredientDtoList)
+        .alwaysInStock(true)
+        .minimumQuantity(10L)
+        .boughtAt("Hofer")
+        .build();
+
+    ItemDto invalidAlwaysInStockItem = ItemDtoBuilder.builder()
+        .ean("0123456789123")
+        .generalName("Test")
+        .productName("MyTest")
+        .brand("Hofer")
+        .quantityCurrent(100.0)
+        .quantityTotal(200.0)
+        .unit(ml)
+        .expireDate(LocalDate.now().plusYears(1))
+        .description("This is valid description")
+        .priceInCent(1234L)
+        .digitalStorage(validDigitalStorageDto)
+        .ingredients(ingredientDtoList)
+        .alwaysInStock(true)
+        .boughtAt("Hofer")
+        .build();
+
+    ItemDto invalidItemDto = ItemDtoBuilder.builder()
+        .ean("2314")
+        .generalName("")
+        .productName(null)
+        .brand("")
+        .quantityCurrent(100.0)
+        .quantityTotal(-200.0)
+        .unit(UnitDtoBuilder.builder().build())
+        .description("")
+        .priceInCent(-1234L)
+        .digitalStorage(invalidDigitalStorageDto)
+        .ingredients(ingredientDtoList)
+        .boughtAt("Hofer")
+        .build();
+
+    ItemDto itemDtoWithInvalidDigitalStorage = ItemDtoBuilder.builder()
+        .ean("0123456789123")
+        .generalName("Test")
+        .productName("MyTest")
+        .brand("Hofer")
+        .quantityCurrent(100.0)
+        .quantityTotal(200.0)
+        .unit(ml)
+        .expireDate(LocalDate.now().plusYears(1))
+        .description("This is valid description")
+        .priceInCent(1234L)
+        .digitalStorage(invalidDigitalStorageDto)
+        .ingredients(ingredientDtoList)
+        .boughtAt("Hofer")
         .build();
 }

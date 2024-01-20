@@ -1,10 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
@@ -30,9 +27,18 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDate;
 import java.util.List;
 
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.digitalStorageDto;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.g;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ingredientDtoList;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidAlwaysInStockItem;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemDto;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemId;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.itemDtoWithInvalidDigitalStorage;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validAlwaysInStockItem;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validInStockItemDto;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validItemDto;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validItemId;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataConverter.convertToAlwaysInStockItemDto;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataConverter.updateProductName;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataConverter.updateUnit;
@@ -69,29 +75,27 @@ class ItemServiceTest {
         when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
 
-
     @Test
+    @DisplayName("Finding item with valid ID should return the item if it belongs to the current user")
     void givenItemIdWhenFindByIdThenItemIsReturned() throws AuthorizationException {
         // given
-        Long id = 1L;
-
         // when
-        DigitalStorageItem actual = service.findById(id);
+        DigitalStorageItem actual = service.findById(validItemId);
 
         // then
-        assertThat(actual.getItemId()).isEqualTo(id);
+        assertThat(actual.getItemId()).isEqualTo(validItemId);
     }
 
     @Test
+    @DisplayName("Finding item with invalid ID should return a not found exception")
     void givenInvalidItemIdWhenFindByIdThenNoItem() {
         // given
-        Long id = -1L;
-
         // when + then
-        assertThrows(NotFoundException.class, () -> service.findById(id));
+        assertThrows(NotFoundException.class, () -> service.findById(invalidItemId));
     }
 
     @Test
+    @DisplayName("Find all items with a given general name")
     void givenGeneralNameWhenFindByFieldsThenItemWithGeneralNameIsReturned() {
         // given
         ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
@@ -109,6 +113,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("Searching for item brand should return all items that have this brand")
     void givenBrandWhenFindByFieldsThenItemWithBrandIsReturned() {
         // given
         ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
@@ -126,6 +131,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("Searching for item store should return all items that were bought at this store")
     void givenBoughtAtWhenFindByFieldsThenItemWithBoughtAtIsReturned() {
         // given
         ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
@@ -142,40 +148,13 @@ class ItemServiceTest {
         );
     }
 
-
     @Test
+    @DisplayName("It is possible to create an in-stock item using valid values")
     void givenValidItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, AuthorizationException {
         // given
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test")
-            .storageId(1L)
-            .build();
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 3")
-                .build()
-        );
-
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("Test")
-            .productName("MyTest")
-            .brand("Hofer")
-            .quantityCurrent(100.0)
-            .quantityTotal(200.0)
-            .unit(ml)
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .build();
 
         // when
-        DigitalStorageItem actual = service.create(itemDto);
+        DigitalStorageItem actual = service.create(validItemDto);
 
         // then
         DigitalStorageItem persisted = service.findById(actual.getItemId());
@@ -195,61 +174,30 @@ class ItemServiceTest {
                 DigitalStorageItem::getPriceInCent
             )
             .containsExactly(
-                itemDto.ean(),
-                itemDto.generalName(),
-                itemDto.productName(),
-                itemDto.brand(),
-                itemDto.quantityCurrent(),
-                itemDto.quantityTotal(),
-                itemDto.unit().name(),
-                itemDto.expireDate(),
-                itemDto.description(),
-                itemDto.priceInCent()
+                validItemDto.ean(),
+                validItemDto.generalName(),
+                validItemDto.productName(),
+                validItemDto.brand(),
+                validItemDto.quantityCurrent(),
+                validItemDto.quantityTotal(),
+                validItemDto.unit().name(),
+                validItemDto.expireDate(),
+                validItemDto.description(),
+                validItemDto.priceInCent()
             );
-        assertThat(actual.getDigitalStorage().getStorageId()).isEqualTo(itemDto.digitalStorage().storageId());
+        assertThat(actual.getDigitalStorage().getStorageId()).isEqualTo(validItemDto.digitalStorage().storageId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getTitle)
             .toList()
-        ).isEqualTo(itemDto.ingredients().stream().map(IngredientDto::name).toList());
+        ).isEqualTo(validItemDto.ingredients().stream().map(IngredientDto::name).toList());
     }
 
     @Test
+    @DisplayName("It is possible to create an always-in-stock item using valid values")
     void givenValidAlwaysInStockItemWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, AuthorizationException {
         // given
-
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test")
-            .storageId(1L)
-            .build();
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 3")
-                .build()
-        );
-
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("Test")
-            .productName("MyTest")
-            .brand("Hofer")
-            .quantityCurrent(100.0)
-            .quantityTotal(200.0)
-            .unit(ml)
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .alwaysInStock(true)
-            .minimumQuantity(10L)
-            .boughtAt("Hofer")
-            .build();
-
         // when
-        DigitalStorageItem actual = service.create(itemDto);
+        DigitalStorageItem actual = service.create(validAlwaysInStockItem);
 
         // then
         DigitalStorageItem persisted = service.findById(actual.getItemId());
@@ -272,61 +220,33 @@ class ItemServiceTest {
                 DigitalStorageItem::getBoughtAt
             )
             .containsExactly(
-                itemDto.ean(),
-                itemDto.generalName(),
-                itemDto.productName(),
-                itemDto.brand(),
-                itemDto.quantityCurrent(),
-                itemDto.quantityTotal(),
-                itemDto.unit().name(),
-                itemDto.expireDate(),
-                itemDto.description(),
-                itemDto.priceInCent(),
-                itemDto.alwaysInStock(),
-                itemDto.minimumQuantity(),
-                itemDto.boughtAt()
+                validAlwaysInStockItem.ean(),
+                validAlwaysInStockItem.generalName(),
+                validAlwaysInStockItem.productName(),
+                validAlwaysInStockItem.brand(),
+                validAlwaysInStockItem.quantityCurrent(),
+                validAlwaysInStockItem.quantityTotal(),
+                validAlwaysInStockItem.unit().name(),
+                validAlwaysInStockItem.expireDate(),
+                validAlwaysInStockItem.description(),
+                validAlwaysInStockItem.priceInCent(),
+                validAlwaysInStockItem.alwaysInStock(),
+                validAlwaysInStockItem.minimumQuantity(),
+                validAlwaysInStockItem.boughtAt()
             );
-        assertThat(actual.getDigitalStorage().getStorageId()).isEqualTo(itemDto.digitalStorage().storageId());
+        assertThat(actual.getDigitalStorage().getStorageId()).isEqualTo(validAlwaysInStockItem.digitalStorage().storageId());
         assertThat(actual.getIngredientList().stream()
             .map(Ingredient::getTitle)
             .toList()
-        ).isEqualTo(itemDto.ingredients().stream().map(IngredientDto::name).toList());
+        ).isEqualTo(validAlwaysInStockItem.ingredients().stream().map(IngredientDto::name).toList());
     }
 
     @Test
+    @DisplayName("It is not possible to create an in-stock item using invalid values")
     void givenInvalidItemWhenCreateThenValidationExceptionIsThrown() {
         // given
-
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test")
-            .storageId(1L)
-            .build();
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 3")
-                .build()
-        );
-
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("2314")
-            .generalName("")
-            .productName(null)
-            .brand("")
-            .quantityCurrent(100.0)
-            .quantityTotal(-200.0)
-            .unit(UnitDtoBuilder.builder().build())
-            .description("")
-            .priceInCent(-1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .boughtAt("Hofer")
-            .build();
-
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.create(itemDto)).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.create(invalidItemDto)).getMessage();
         assertThat(message)
             .contains(
                 "quantity",
@@ -340,40 +260,11 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is not possible to create an always-in-stock item using invalid values")
     void givenInvalidAlwaysInStockItemWhenCreateThenValidationExceptionIsThrown() {
         // given
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test")
-            .storageId(1L)
-            .build();
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 3")
-                .build()
-        );
-
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("Test")
-            .productName("MyTest")
-            .brand("Hofer")
-            .quantityCurrent(100.0)
-            .quantityTotal(200.0)
-            .unit(ml)
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .alwaysInStock(true)
-            .boughtAt("Hofer")
-            .build();
-
         // when + then
-        String message = assertThrows(ValidationException.class, () -> service.create(itemDto)).getMessage();
+        String message = assertThrows(ValidationException.class, () -> service.create(invalidAlwaysInStockItem)).getMessage();
         assertThat(message)
             .contains(
                 "minimum quantity"
@@ -381,38 +272,11 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is not possible to create an item for an invalid storage")
     void givenItemWithInvalidStorageWhenCreateThenConflictExceptionIsThrown() {
         // given
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test")
-            .storageId(-999L)
-            .build();
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Ingredient 3")
-                .build()
-        );
-
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("Test")
-            .productName("MyTest")
-            .brand("Hofer")
-            .quantityCurrent(100.0)
-            .quantityTotal(200.0)
-            .unit(ml)
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .build();
-
         // when + then
-        String message = assertThrows(ConflictException.class, () -> service.create(itemDto)).getMessage();
+        String message = assertThrows(ConflictException.class, () -> service.create(itemDtoWithInvalidDigitalStorage)).getMessage();
         assertThat(message).isNotEmpty();
         assertThat(message)
             .contains(
@@ -422,40 +286,12 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is possible to update an item using a valid value")
     void givenValidItemWhenUpdateSingleAttributeThenItemIsUpdated() throws ValidationException, ConflictException, AuthorizationException {
         // given:
         String updatedGeneralName = "General Name Updated";
 
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test Storage")
-            .storageId(1L)
-            .build();
-
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Test Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Test Ingredient 2")
-                .build()
-        );
-
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("TestGeneral")
-            .productName("TestProduct")
-            .brand("TestBrand")
-            .quantityCurrent(100.0)
-            .quantityTotal(200.0)
-            .unit(g)
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .build();
-
-        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto);
+        DigitalStorageItem createdDigitalStorageItem = service.create(validItemDto);
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
             .itemId(createdDigitalStorageItem.getItemId())
@@ -484,38 +320,11 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is not possible to update an item using an invalid value")
     void givenInvalidItemWhenUpdateSingleAttributeThenValidationExceptionIsThrown() throws ValidationException, ConflictException, AuthorizationException {
         // given:
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test Storage")
-            .storageId(1L)
-            .build();
 
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Test Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Test Ingredient 2")
-                .build()
-        );
-
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("TestGeneral")
-            .productName("TestProduct")
-            .brand("TestBrand")
-            .quantityCurrent(100.0)
-            .quantityTotal(200.0)
-            .unit(g)
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .build();
-
-        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto);
+        DigitalStorageItem createdDigitalStorageItem = service.create(validItemDto);
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
             .itemId(createdDigitalStorageItem.getItemId())
@@ -543,41 +352,13 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is possible to update multiple fields of an item using valid values")
     void givenValidItemWhenUpdateMultipleAttributesThenItemIsUpdated() throws ValidationException, ConflictException, AuthorizationException {
         // given:
         String updatedGeneralName = "General Name Updated";
         Double updatedCurrentAmount = 150.0;
 
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test Storage")
-            .storageId(1L)
-            .build();
-
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Test Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Test Ingredient 2")
-                .build()
-        );
-
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("TestGeneral")
-            .productName("TestProduct")
-            .brand("TestBrand")
-            .quantityCurrent(100.0)
-            .quantityTotal(200.0)
-            .unit(g)
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .build();
-
-        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto);
+        DigitalStorageItem createdDigitalStorageItem = service.create(validItemDto);
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
             .itemId(createdDigitalStorageItem.getItemId())
@@ -608,38 +389,10 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is not possible to update multiple fields of an item using invalid values")
     void givenInvalidItemWhenUpdateMultipleAttributesThenValidationExceptionIsThrown() throws ValidationException, ConflictException, AuthorizationException {
         // given:
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test Storage")
-            .storageId(1L)
-            .build();
-
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Test Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Test Ingredient 2")
-                .build()
-        );
-
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("TestGeneral")
-            .productName("TestProduct")
-            .brand("TestBrand")
-            .quantityCurrent(100.0)
-            .quantityTotal(200.0)
-            .unit(g)
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .build();
-
-        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto);
+        DigitalStorageItem createdDigitalStorageItem = service.create(validItemDto);
 
         ItemDto updatedItemDto = ItemDtoBuilder.builder()
             .itemId(createdDigitalStorageItem.getItemId())
@@ -666,38 +419,11 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("It is possible to delete an item")
     void givenValidItemWhenDeleteThenItemIsDeleted() throws ValidationException, ConflictException, AuthorizationException {
         // given:
-        DigitalStorageDto digitalStorageDto = DigitalStorageDtoBuilder.builder()
-            .title("Test Storage")
-            .storageId(1L)
-            .build();
 
-        List<IngredientDto> ingredientDtoList = List.of(
-            IngredientDtoBuilder.builder()
-                .name("Test Ingredient 1")
-                .build(),
-            IngredientDtoBuilder.builder()
-                .name("Test Ingredient 2")
-                .build()
-        );
-
-        ItemDto itemDto = ItemDtoBuilder.builder()
-            .ean("0123456789123")
-            .generalName("TestGeneral")
-            .productName("TestProduct")
-            .brand("TestBrand")
-            .quantityCurrent(100.0)
-            .quantityTotal(200.0)
-            .unit(g)
-            .expireDate(LocalDate.now().plusYears(1))
-            .description("This is valid description")
-            .priceInCent(1234L)
-            .digitalStorage(digitalStorageDto)
-            .ingredients(ingredientDtoList)
-            .build();
-
-        DigitalStorageItem createdDigitalStorageItem = service.create(itemDto);
+        DigitalStorageItem createdDigitalStorageItem = service.create(validItemDto);
 
         // when:
         service.delete(createdDigitalStorageItem.getItemId());
@@ -707,6 +433,7 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("Items should be retrievable using their general name")
     void givenValidSearchParamsWhenGetItemsWithGeneralNameThenReturnList() {
         // given
         String itemName = "apples";
@@ -778,5 +505,73 @@ class ItemServiceTest {
         ).getMessage();
 
         assertThat(errorMessage).containsSubsequence("unit");
+    }
+
+    @Test
+    @DisplayName("If an in-stock item quantity is updated to zero the item should be deleted")
+    public void givenValidItemWhenUpdateItemToZeroThenItemIsDeleted() throws ValidationException, AuthorizationException, ConflictException {
+        // given
+        Double updatedCurrentAmount = 0.0;
+
+        DigitalStorageItem inStockItem = service.create(validItemDto);
+
+        ItemDto updatedItemDto = ItemDtoBuilder.builder()
+            .itemId(inStockItem.getItemId())
+            .ean("0123456789123")
+            .generalName("Test")
+            .productName("MyTest")
+            .brand("Hofer")
+            .quantityCurrent(updatedCurrentAmount)
+            .quantityTotal(200.0)
+            .unit(ml)
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .boughtAt("Hofer")
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .build();
+
+        // when
+        service.update(updatedItemDto);
+
+        // then
+        assertThrows(NotFoundException.class, () -> service.findById(inStockItem.getItemId()));
+    }
+
+    @Test
+    @DisplayName("If an always-in-stock item quantity is updated to zero the item should not be deleted")
+    public void givenValidAlwaysInStockItemWhenUpdateItemToZeroThenItemIsNotDeleted() throws ValidationException, AuthorizationException, ConflictException {
+        // given
+        Double updatedCurrentAmount = 0.0;
+
+        DigitalStorageItem alwaysInStockItem = service.create(validAlwaysInStockItem);
+
+        ItemDto updatedItemDto = ItemDtoBuilder.builder()
+            .itemId(alwaysInStockItem.getItemId())
+            .ean("0123456789123")
+            .generalName("Test")
+            .productName("MyTest")
+            .brand("Hofer")
+            .quantityCurrent(updatedCurrentAmount)
+            .quantityTotal(200.0)
+            .unit(ml)
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .alwaysInStock(true)
+            .minimumQuantity(100L)
+            .boughtAt("Hofer")
+            .build();
+
+        // when
+        service.update(updatedItemDto);
+
+        // then
+        assertDoesNotThrow(
+            () -> service.findById(alwaysInStockItem.getItemId())
+        );
     }
 }

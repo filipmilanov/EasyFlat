@@ -1,3 +1,5 @@
+<h1 class="display-4">Digital Storage</h1>
+<div class="custom-header-border"></div>
 <form class="d-flex flex-row align-items-end w-auto mb-3">
   <button type="submit" hidden="hidden">submit</button>
   <div class="flex-grow-1">
@@ -53,50 +55,60 @@
                        (isDescendingChange)="loadStorage()">
       </app-sort-button>
     </div>
-
   </div>
 </form>
 
-<div class="row">
-  <div class="col col-7 col-sm-8 col-md-10">
-    <h1 class="display-4">In Stock Items</h1>
-  </div>
-  <div class="col col-5 col-sm-4 col-md-2 mt-4 text-end">
-    <button type="button"
-            class="btn btn-primary"
-            [routerLink]="['/item/create']">
-      <i class="bi bi-plus-lg"></i>
-      Add Item
-    </button>
-  </div>
+<div class="text-end">
+  <button type="button"
+          class="btn btn-primary"
+          [routerLink]="['/item/create']">
+    <i class="bi bi-plus-lg"></i>
+    Add Item
+  </button>
 </div>
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5">
-  <div class="mb-3" *ngFor="let item of items">
-    <a style="text-decoration: none"
-       [routerLink]="[item.generalName]"
-       [queryParams]="{stockType: 'in-stock'}"
-       aria-label="Show item details">
-      <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent" [quantityTotal]="item.quantityTotal"
-                     [unit]="item.unit.name"
-      ></app-item-card>
-    </a>
+
+<div *ngIf="items.length > 0">
+  <div class="row">
+    <div class="col col-7 col-sm-8 col-md-10">
+      <h1 class="display-5">In Stock Items</h1>
+    </div>
+  </div>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5">
+    <div class="mb-3" *ngFor="let item of items">
+      <a style="text-decoration: none"
+         [routerLink]="[item.generalName]"
+         [queryParams]="{stockType: 'in-stock'}"
+         aria-label="Show item details">
+        <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent" [quantityTotal]="item.quantityTotal"
+                       [unit]="item.unit.name"
+        ></app-item-card>
+      </a>
+    </div>
   </div>
 </div>
 
-<div class="row mt-4">
-  <div class="col col-7 col-sm-8 col-md-10">
-    <h1 class="display-4">Always in Stock Items</h1>
+<div *ngIf="itemsAIS.length > 0">
+  <div class="row mt-4">
+    <div class="col col-7 col-sm-8 col-md-10">
+      <h1 class="display-5">Always in Stock Items</h1>
+    </div>
+  </div>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5">
+    <div class="mb-3" *ngFor="let item of itemsAIS">
+      <a style="text-decoration: none"
+         [routerLink]="[item.generalName]"
+         [queryParams]="{stockType: 'always-in-stock'}"
+         aria-label="Show item details">
+        <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent" [quantityTotal]="item.quantityTotal"
+                       [unit]="item.unit.name"
+        ></app-item-card>
+      </a>
+    </div>
   </div>
 </div>
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5">
-  <div class="mb-3" *ngFor="let item of itemsAIS">
-    <a style="text-decoration: none"
-       [routerLink]="[item.generalName]"
-       [queryParams]="{stockType: 'always-in-stock'}"
-       aria-label="Show item details">
-      <app-item-card [title]="item.generalName" [quantity]="item.quantityCurrent" [quantityTotal]="item.quantityTotal"
-                     [unit]="item.unit.name"
-      ></app-item-card>
-    </a>
-  </div>
-</div>
+<h3 *ngIf="items.length <= 0 && itemsAIS.length <= 0" class="d-flex justify-content-center mt-5">
+  <span *ngIf="searchParameters.fillLevel === ''">There are no items in the storage.</span>
+  <span *ngIf="searchParameters.fillLevel === 'full'">There are no items with a high quantity in the storage.</span>
+  <span *ngIf="searchParameters.fillLevel === 'nearly_empty'">There are no items with a medium quantity in the storage.</span>
+  <span *ngIf="searchParameters.fillLevel === 'empty'">There are no items with a low quantity in the storage.</span>
+</h3>

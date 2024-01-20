@@ -24,12 +24,12 @@ import java.util.List;
 public record ExpenseDto(
     Long id,
     @NotBlank(message = "Title cannot be empty")
-    @Size(max = 255, message = "Title cannot be longer than 255 characters")
+    @Size(max = 150, message = "Title cannot be longer than 150 characters")
     String title,
     @Size(max = 255, message = "Description cannot be longer than 255 characters")
     String description,
     @NotNull(message = "Amount cannot be empty")
-    @Min(value = 1, message = "Amount must be greater than 1")
+    @Min(value = 1, message = "Amount must be greater than 1 cent")
     @Max(value = 1_000_000, message = "Amount must be less than 1.000.000")
     Double amountInCents,
     @NotNull(message = "A finance entry must have a creation date")
@@ -40,7 +40,7 @@ public record ExpenseDto(
     List<DebitDto> debitUsers,
     List<ItemDto> items,
     Boolean isRepeating,
-    @Min(value = 1, message = "The days until repeat must be greater then 1")
+    @Min(value = 1, message = "The days until repeated must be at least 1 day")
     Integer periodInDays,
     RepeatingExpenseType repeatingExpenseType
 ) {

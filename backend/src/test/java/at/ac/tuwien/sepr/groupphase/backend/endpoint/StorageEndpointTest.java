@@ -14,6 +14,7 @@ import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,8 @@ class StorageEndpointTest {
     private JwtTokenizer jwtTokenizer;
 
     private final String BASE_URI = "/api/v1/storage";
+    private final String ITEM_ENDPOINT_URI = BASE_URI + "/items";
+
     private ApplicationUser applicationUser;
 
     @BeforeEach
@@ -81,16 +84,15 @@ class StorageEndpointTest {
     }
 
     @Test
-
+    @DisplayName("Given storageId when getStorageById then storage returned")
     public void givenStorageIdAndSearchParametersWhenGetItemsThenItemsRetrieved() throws Exception {
         // Given
 
-        String endpointUrl = BASE_URI + "/items";
 
         // when
         ItemSearchDto itemSearchDto = new ItemSearchDto(false, null, null, null, null);
 
-        MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
+        MvcResult mvcResult = this.mockMvc.perform(get(ITEM_ENDPOINT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES))
                 .param("alwaysInStock", String.valueOf(itemSearchDto.alwaysInStock()))
@@ -106,18 +108,15 @@ class StorageEndpointTest {
     }
 
     @Test
+    @DisplayName("Given storageId when getStorageById then storage returned")
     public void givenStorageIdAndOrderTypeNameWhenGetItemsThenItemsRetrievedInCorrectOrder() throws Exception {
         // Given
-
-        String endpointUrl = BASE_URI + "/items";
-
-
         ItemSearchDto itemSearchDto = ItemSearchDtoBuilder.builder()
             .alwaysInStock(false)
             .orderType(ItemOrderType.GENERAL_NAME)
             .build();
 
-        MvcResult mvcResult = this.mockMvc.perform(get(endpointUrl)
+        MvcResult mvcResult = this.mockMvc.perform(get(ITEM_ENDPOINT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES))
                 .param("alwaysInStock", String.valueOf(itemSearchDto.alwaysInStock()))

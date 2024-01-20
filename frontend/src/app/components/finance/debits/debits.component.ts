@@ -53,7 +53,6 @@ export class DebitsComponent {
                 this.reloadData.emit();
             },
             error: (error) => {
-                console.log(error);
                 let firstBracket = error.error.indexOf('[');
                 let lastBracket = error.error.indexOf(']');
                 let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');

@@ -1,11 +1,11 @@
 <div class="container">
-  <div class="row">
+  <div class="row mb-2 mb-md-0">
     <div class="col col-8">
       <h1 class="display-4">Product Details</h1>
     </div>
     <div class="col mt-4">
       <button type="button"
-              class="btn btn-primary me-2"
+              class="btn btn-primary me-2 mb-1 mb-md-0"
               [routerLink]="['../edit']"
               aria-label="Edit item"
       >
@@ -13,7 +13,7 @@
         Edit
       </button>
       <button type="button"
-              class="btn btn-danger me-2"
+              class="btn btn-danger me-2 mb-1 mb-md-0"
               data-bs-toggle="modal"
               [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModal(item)"
               aria-label="Delete item"
@@ -30,6 +30,8 @@
       </button>
     </div>
   </div>
+
+  <div class="custom-header-border mb-2"></div>
 
   <app-confirm-delete-dialog
     deleteInfo="item"

@@ -45,6 +45,8 @@ import java.util.stream.Collectors;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.unauthorizedExpenseId;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validExpenseId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -104,13 +106,11 @@ class ExpenseEndpointTest {
     @DisplayName("Endpoint test for findById with matching ID")
     void findById() throws Exception {
         // given
-        long expenseId = 4L;
-
-        Expense expected = expenseRepository.findById(expenseId).orElseThrow();
+        Expense expected = expenseRepository.findById(validExpenseId).orElseThrow();
         List<DebitDto> expectedDebitDtoList = debitMapper.entityListToDebitDtoList(expected);
 
         // when
-        MvcResult mvcResult = mockMvc.perform(get(BASE_URI + "/" + expenseId)
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URI + "/" + validExpenseId)
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();
@@ -131,7 +131,7 @@ class ExpenseEndpointTest {
                 ExpenseDto::isRepeating,
                 expenseDto1 -> expenseDto1.paidBy().id()
             ).contains(
-                expenseId,
+                validExpenseId,
                 expected.getTitle(),
                 expected.getDescription(),
                 expected.getAmountInCents(),
@@ -147,10 +147,8 @@ class ExpenseEndpointTest {
     @DisplayName("Endpoint test for findById of not allowed ID")
     void findByIdNotAuthorized() throws Exception {
         // given
-        long expenseId = 1L;
-
         // when
-        MvcResult mvcResult = mockMvc.perform(get(BASE_URI + "/" + expenseId)
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URI + "/" + unauthorizedExpenseId)
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();

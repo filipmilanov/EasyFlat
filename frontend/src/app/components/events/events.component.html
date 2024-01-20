@@ -17,7 +17,10 @@
       </button>
     </div>
   </div>
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 ">
+  <div *ngIf="events.length === 0" style="text-align: center;">
+    <h3>No events found!</h3>
+  </div>
+  <div class="row row-cols-4">
     <div class="col" *ngFor="let event of events" style="margin-right: 2rem">
       <app-event-card [event]="event" (eventDeleted)="loadEvents()">
       </app-event-card>

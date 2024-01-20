@@ -31,6 +31,10 @@ export class ItemCreateEditComponent implements OnInit {
   item: ItemDto = {
     alwaysInStock: false,
     addToFiance: false,
+    boughtAt: '',
+    unit: {
+      name: ''
+    }
   }
   priceInEuro: number = 0.00;
   availableUnits: Unit[] = [];
@@ -91,7 +95,7 @@ export class ItemCreateEditComponent implements OnInit {
         this.item.unit = this.availableUnits[0];
       },
       error: () => {
-        this.notification.error('Failed to load Units', "Error");
+        this.notification.error('Failed to load units.', "Error");
       }
     });
 
@@ -107,17 +111,15 @@ export class ItemCreateEditComponent implements OnInit {
             next: res => {
               this.item = res;
             },
-            error: error => {
-              console.error(`Item could not be retrieved from the backend: ${error}`);
+            error: () => {
               this.router.navigate(['/digital-storage/']);
-              this.notification.error('Item could not be retrieved', "Error");
+              this.notification.error('Item could not be retrieved from the server.', "Error");
             }
           })
         },
-        error: error => {
-          console.error(`Item could not be retrieved using the ID from the URL: ${error}`);
+        error: () => {
           this.router.navigate(['/digital-storage/']);
-          this.notification.error('No item provided for editing', "Error");
+          this.notification.error('Item could not be loaded for editing.', "Error");
         }
       })
     }
@@ -128,7 +130,7 @@ export class ItemCreateEditComponent implements OnInit {
           this.item.digitalStorage = res[0];
         },
         error: () => {
-          this.notification.error('Failed to load Storages', "Error");
+          this.notification.error('Failed to load the storage.', "Error");
         }
       });
     }
@@ -156,19 +158,33 @@ export class ItemCreateEditComponent implements OnInit {
       }
       observable.subscribe({
         next: () => {
-          this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
+          if(this.modeIsCreate){
+            this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
+          } else {
+            this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished}.`, "Success");
+          }
+          if( !this.modeIsCreate && this.item.alwaysInStock && this.item.quantityCurrent < this.item.minimumQuantity){
+            this.notification.success(`The item was automatically added to the shopping list.`, "Success");
+          }
+          if( !this.modeIsCreate && !this.item.alwaysInStock && this.item.quantityCurrent <= 0 ){
+            this.notification.success(`Item ${this.item.productName} has no stock and was successfully deleted.`, "Success");
+          }
+
           this.router.navigate(['/digital-storage']);
         },
         error: error => {
-          console.error(`Error item was not ${this.modeActionFinished}: ${error}`);
-          console.error(error);
-          let firstBracket = error.error.indexOf('[');
-          let lastBracket = error.error.indexOf(']');
-          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-          let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach((message: string) => {
-            this.notification.error(message, errorDescription);
-          });
+          if (error.status === 500) {
+            this.notification.error(`The item could not be ${this.modeActionFinished} due to an issue with the server.`, "Error");
+          } else {
+            let firstBracket = error.error.indexOf('[');
+            let lastBracket = error.error.indexOf(']');
+            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+            let errorDescription = error.error.substring(0, firstBracket);
+            errorMessages.forEach((message: string) => {
+              this.notification.error(message, errorDescription);
+            });
+            this.notification.error(`The item could not be ${this.modeActionFinished}.`, "Error");
+          }
         }
       });
     }
@@ -189,16 +205,6 @@ export class ItemCreateEditComponent implements OnInit {
     this.item.ingredients.splice(i, 1);
   }
 
-  validatePriceInput(event: any): void {
-    let inputValue = event.target.value.replace(/[^0-9.]/g, '');
-    event.target.value = this.formatPriceInEuroInput(inputValue);
-    this.priceInEuro = parseFloat(inputValue);
-  }
-
-  formatPriceInEuroInput(value: string): string {
-    return value ? `${value} € ` : '';
-  }
-
   formatStorageName(storage: DigitalStorageDto | null): string {
     return storage ? storage.title : '';
   }
@@ -207,24 +213,24 @@ export class ItemCreateEditComponent implements OnInit {
     ? of([])
     : this.storageService.findAll(input, 5);
 
-  formatGeneralName(item: ItemDto | null): string {
-    return item ? item as any as string : '';
+  formatGeneralName(generalName: string | null): string {
+    return generalName != null ? generalName : '';
   }
 
   generalNameSuggestions = (input: string) => (input === '')
     ? of([])
     : this.itemService.findByGeneralName(input);
 
-  formatBrand(item: ItemDto | null): string {
-    return item ? item.brand as any as string : '';
+  formatBrand(brand: string | null): string {
+    return brand ? brand : '';
   }
 
   brandSuggestions = (input: string) => (input === '')
     ? of([])
     : this.itemService.findByBrand(input);
 
-  formatBoughtAt(item: ItemDto | null): string {
-    return item ? item.boughtAt : '';
+  formatBoughtAt(boughtAt: string | null): string {
+    return boughtAt != null ? boughtAt : '';
   }
 
   boughtAtSuggestions = (input: string) => (input === '')
@@ -233,10 +239,6 @@ export class ItemCreateEditComponent implements OnInit {
 
   formatUnitName(unit: Unit | null): string {
     return unit ? unit.name : '';
-  }
-
-  updateItemUnit(unit: Unit): void {
-    this.item.unit = unit;
   }
 
   toggleScanning() {
@@ -271,9 +273,11 @@ export class ItemCreateEditComponent implements OnInit {
           this.notification.warning("No data found for EAN number.", "No Data");
         }
       },
-      error: error => {
+      error: () => {
         if (wasFromScanner) {
           this.notification.error("An error occurred while fetching EAN data.", "Error");
+        } else {
+          this.notification.error("An error occurred while searching for EAN data.", "Error");
         }
       }
     })
@@ -291,16 +295,15 @@ export class ItemCreateEditComponent implements OnInit {
     this.itemService.deleteItem(this.item.itemId).subscribe({
       next: () => {
         this.router.navigate(['/digital-storage/']);
-        this.notification.success(`Item ${this.item.productName} was successfully deleted`, "Success");
+        this.notification.success(`Item ${this.item.productName} was successfully deleted.`, "Success");
       },
-      error: error => {
-        console.error(`Item could not be deleted: ${error}`);
-        this.notification.error(`Item ${this.item.productName} could not be deleted`, "Error");
+      error: () => {
+        this.notification.error(`Item ${this.item.productName} could not be deleted.`, "Error");
       }
     });
   }
 
-  getIdFormatForDeleteModal(item:ItemDto): string {
+  getIdFormatForDeleteModal(item: ItemDto): string {
     return `${item.productName}${item.itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 

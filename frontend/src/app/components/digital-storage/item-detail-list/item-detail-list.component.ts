@@ -31,6 +31,10 @@ export class ItemDetailListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.reloadData();
+  }
+
+  reloadData(): void {
     this.route.queryParamMap.subscribe({
       next: queryParamMap => {
         this.stockType = queryParamMap.get('stockType');
@@ -52,7 +56,7 @@ export class ItemDetailListComponent implements OnInit {
           next: res => {
             if (res.length === 0) {
               this.router.navigate(['/digital-storage/']);
-              this.notification.error(`Items of type ${generalName} could not be loaded`, "Error");
+              this.notification.error(`Items of type ${generalName} could not be loaded.`, "Error");
             } else {
               if(this.stockType === 'in-stock'){
                 this.filteredItems = res.filter(item => !item.alwaysInStock);
@@ -61,17 +65,15 @@ export class ItemDetailListComponent implements OnInit {
               }
             }
           },
-          error: error => {
-            console.error(`Items of type ${generalName} could not be loaded: ${error}`);
+          error: () => {
             this.router.navigate(['/digital-storage/']);
-            this.notification.error(`Items of type ${generalName} could not be loaded`, "Error");
+            this.notification.error(`Items of type ${generalName} could not be loaded.`, "Error");
           }
         })
       },
-      error: error => {
-        console.error(`Item could not be retrieved using the name from the URL: ${error.error.message}`);
+      error: () => {
         this.router.navigate(['/digital-storage/']);
-        this.notification.error(`Items could not be loaded`, "Error");
+        this.notification.error(`Items could not be loaded.`, "Error");
       }
     });
   }
@@ -81,13 +83,13 @@ export class ItemDetailListComponent implements OnInit {
     const previousTotalQuantity: number = item.quantityTotal;
 
     if (quantityInput == null) {
-      this.notification.error("The quantity you provided is not valid!", "Error");
+      this.notification.error("The quantity you provided is not valid.", "Error");
       this.quantityInputs[item.itemId] = 0;
       return;
     }
 
     if (quantityInput < 0.01) {
-      this.notification.error("Only numbers greater than 0 can be entered", "Error");
+      this.notification.error("Only numbers greater than 0 can be entered.", "Error");
       this.quantityInputs[item.itemId] = null;
       return;
     }
@@ -114,20 +116,30 @@ export class ItemDetailListComponent implements OnInit {
     }
 
     if (!isQuantityUpdated) {
-      this.notification.info("The quantity is the same as before", "Info");
+      this.notification.info("The quantity is the same as before.", "Info");
       return;
     }
 
     this.itemService.updateItem(item).subscribe({
       next: () => {
-        this.notification.success(`Item ${item.productName} was successfully ${mode} by ${quantityInput}`, "Success");
+        this.notification.success(`Item ${item.productName} was successfully ${mode} by ${quantityInput}.`, "Success");
+        if( item.alwaysInStock && item.quantityCurrent < item.minimumQuantity){
+          this.notification.success(`The item was automatically added to the shopping list.`, "Success");
+        }
+        if( !item.alwaysInStock && item.quantityCurrent <= 0 ){
+          this.notification.success(`Item ${item.productName} has no stock and was successfully deleted.`, "Success");
+          if(this.filteredItems.length <= 0){
+            this.router.navigate(['/digital-storage/']);
+          } else {
+            this.reloadData();
+          }
+        }
       },
-      error: error => {
+      error: () => {
         item.quantityCurrent = previousCurrentQuantity;
         item.quantityTotal = previousTotalQuantity;
         this.quantityInputs[item.itemId] = null;
-        console.error(`Item could not be updated: ${error}`);
-        this.notification.error(`Item ${item.productName} could not be ${mode} by ${quantityInput}`, "Error");
+        this.notification.error(`Item ${item.productName} could not be ${mode} by ${quantityInput}.`, "Error");
       }
     });
   }
@@ -135,12 +147,15 @@ export class ItemDetailListComponent implements OnInit {
   public delete(item: ItemDto): void {
     this.itemService.deleteItem(item.itemId).subscribe({
       next: () => {
-        this.router.navigate(['/digital-storage/']);
-        this.notification.success(`Item ${item.productName} was successfully deleted`, "Success");
+        if(this.filteredItems.length === 1){
+          this.router.navigate(['/digital-storage/']);
+        } else {
+          this.reloadData();
+        }
+        this.notification.success(`Item ${item.productName} was successfully deleted.`, "Success");
       },
-      error: error => {
-        console.error(`Item could not be deleted: ${error}`);
-        this.notification.error(`Item ${item.productName} could not be deleted`, "Error");
+      error: () => {
+        this.notification.error(`Item ${item.productName} could not be deleted.`, "Error");
       }
     });
   }
@@ -174,9 +189,8 @@ export class ItemDetailListComponent implements OnInit {
           }
         })
       },
-      error: error => {
-        console.error(`Item could not be added to the shopping list: ${error}`);
-        this.notification.error(`Item ${item.productName} could not be added to the shopping list`, "Error");
+      error: () => {
+        this.notification.error(`Item ${item.productName} could not be added to the shopping list.`, "Error");
       }
     });
   }
@@ -187,7 +201,7 @@ export class ItemDetailListComponent implements OnInit {
 
     // check if number has at most 2 decimal places
     if (decimalIndex !== -1 && numberInputAsString.length - decimalIndex - 1 > 2) {
-      this.notification.error("Only numbers with at most 2 decimal places can be entered", "Error");
+      this.notification.error("Only numbers with at most 2 decimal places can be entered.", "Error");
       this.quantityInputs[item.itemId] = null;
       return false;
     }

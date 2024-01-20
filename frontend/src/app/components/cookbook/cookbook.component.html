@@ -11,6 +11,9 @@
     </div>
 
   </div>
+  <div *ngIf="recipes.length === 0" style="text-align: center;">
+    <h3>No recipes found!</h3>
+  </div>
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 ">
       <div class="col" *ngFor="let recipe of recipes" style="margin-right: 2.5rem; margin-bottom: 2.5rem;">

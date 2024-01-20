@@ -6,20 +6,14 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
-import org.junit.BeforeClass;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.event.annotation.BeforeTestExecution;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
@@ -39,6 +33,7 @@ public class ServiceTestForUnits {
 
 
     @Test
+    @DisplayName("Given valid unit when create then unit is created")
     public void testCreateUnit() throws ValidationException, ConflictException {
         // Given
         UnitDto unitDto = UnitDtoBuilder.builder().name("NewUnit").convertFactor(200L).subUnit(null).build();
@@ -55,6 +50,7 @@ public class ServiceTestForUnits {
     }
 
     @Test
+    @DisplayName("Given valid unit when create then unit is created")
     public void testConvertUnitsSmallToBig() {
 
         // when
@@ -79,6 +75,7 @@ public class ServiceTestForUnits {
     }
 
     @Test
+    @DisplayName("Given valid unit when create then unit is created")
     public void testConvertUnitsBigToSmall() {
 
         // when
@@ -117,6 +114,7 @@ public class ServiceTestForUnits {
     }
 
     @Test
+    @DisplayName("Given valid unit when create then unit is created")
     public void testConvertUnitsSameUnit() {
         // when
         Double convertedValue = unitService.convertUnits(
@@ -130,6 +128,7 @@ public class ServiceTestForUnits {
     }
 
     @Test
+    @DisplayName("Given valid unit when create then unit is created")
     public void testGetMinUnit() {
         // Given
 
@@ -166,6 +165,7 @@ public class ServiceTestForUnits {
     }
 
     @Test
+    @DisplayName("Given valid unit when create then unit is created")
     public void testAreUnitsComparable() {
         // Given
         Unit gUnit = unitService.findByName("g");

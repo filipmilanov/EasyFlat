@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.IngredientRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,6 +55,7 @@ class IngredientServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given valid ingredient when create then ingredient is created")
     void givenValidIngredientWhenCreateAllThenIngredientIsCreated() throws ConflictException {
         // given
         IngredientDto ingredient1 = IngredientDtoBuilder.builder()
@@ -84,6 +86,7 @@ class IngredientServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given valid ingredient when create then ingredient is created")
     void givenTitleWhenFindByTitleThenAllItemsWithMatchingTitleAreReturned() {
         // given
         List<String> title = List.of("Ingredient 1", "Ingredient 2");
@@ -98,6 +101,7 @@ class IngredientServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given valid ingredient when create then ingredient is created")
     void givenTitleWhichDoesNotExistsWhenFindByTitleThenAllItemsWithMatchingTitleAreReturned() {
         // given
         List<String> title = List.of("Ingredient 1", "DoesNotExists");

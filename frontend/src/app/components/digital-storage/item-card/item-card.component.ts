@@ -27,4 +27,9 @@ export class ItemCardComponent {
     const percentage = (this.quantity / this.quantityTotal) * 100;
     return `${Math.max(0, Math.min(100, percentage))}%`; // Ensure percentage is between 0 and 100
   }
+
+  truncateCategoryTitle(title: string): string {
+    const maxCharLength: number = 15;
+    return title.length > maxCharLength ? title.substring(0, maxCharLength) + '...' : title;
+  }
 }

@@ -1,4 +1,3 @@
-<div class="container">
   <form #form="ngForm" (submit)="onSubmit(form)">
     <div class="row">
       <div class="col-md-8 col-lg-7">
@@ -6,16 +5,16 @@
       </div>
       <div class="col-md-4 mt-4 col-lg-5 text-end">
         <button type="submit"
-                class="btn btn-primary me-2"
+                class="btn btn-primary me-2 mb-1 md-md-0"
                 [disabled]="!form.valid"
         >
           <i class="bi" [class.bi-plus-square]="true"></i>
           {{ submitButtonText }}
         </button>
         <button type="button"
-                class="btn btn-danger me-2"
+                class="btn btn-danger me-2 mb-1 md-md-0"
                 data-bs-toggle="modal"
-                data-bs-target="#confirm-delete-modal"
+                [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModal(expense)"
                 aria-label="Delete expense"
                 *ngIf="!modeIsCreate"
         >
@@ -23,18 +22,20 @@
           Delete
         </button>
         <button type="button"
-                class="btn btn-secondary"
-                [routerLink]="[previousUrl.toString()]">
-          <i class="bi" [class.bi-arrow-left]="true"></i>
-          Back
+                class="btn btn-secondary mb-1 md-md-0"
+                [routerLink]="[previousUrl]">
+          <i class="bi" [class.bi-arrow-left]="modeIsCreate" [class.bi-ban]="!modeIsCreate"></i>
+          {{ modeIsCreate ? 'Back' : 'Cancel' }}
         </button>
       </div>
     </div>
-    <div style="width: 100%; height: 100%; border: 1px black solid"></div>
+
+    <div class="custom-header-border mt-2 mb-2"></div>
 
     <app-confirm-delete-dialog
       deleteInfo="expense"
       [deleteName]="expense.title"
+      [deleteId]="expense.id ? expense.id.toString() : null"
       (confirm)="delete()">
     </app-confirm-delete-dialog>
 
@@ -43,14 +44,14 @@
         <label for="title"
                class="col-form-label text-muted col-3"
         >
-          Title*
+          Title<span style="color: red">*</span>
         </label>
         <div class="col-md-10 col-lg-8">
           <input type="text"
                  class="form-control"
                  id="title"
                  name="title"
-                 placeholder="title"
+                 placeholder="Title"
                  required
                  [(ngModel)]="expense.title">
         </div>
@@ -76,7 +77,7 @@
         <label for="amountInCents"
                class="col-form-label text-muted col-3"
         >
-          Amount*
+          Amount<span style="color: red">*</span>
         </label>
         <div class="col-md-10 col-lg-8">
           <input type="number"
@@ -93,7 +94,7 @@
         <label for="createdAtDate"
                class="col-form-label text-muted col-3"
         >
-          Timestamp*
+          Timestamp<span style="color: red">*</span>
         </label>
         <div class="col-4">
           <input
@@ -118,7 +119,6 @@
                           name="createdAtTime"
                           [(ngModel)]="expenseTime"/>
         </div>
-
       </div>
 
       <div class="row p-2">
@@ -152,30 +152,29 @@
         </div>
         <div *ngIf="selectedRepeatingOption === RepeatingExpenseOptions.REPEAT_AT "
              class="col-4">
-          <select class="form-control"
-                  id="repeatingExpenseTyp"
-                  name="repeatingExpenseTyp"
+          <select class="form-select"
+                  id="repeatingExpenseType"
+                  name="repeatingExpenseType"
                   [(ngModel)]="this.expense.repeatingExpenseType">
-            <option value="{{RepeatingExpenseTyp.FIRST_OF_MONTH}}"
-                    [selected]="this.expense.repeatingExpenseType === RepeatingExpenseTyp.FIRST_OF_MONTH">
+            <option value="{{RepeatingExpenseType.FIRST_OF_MONTH}}"
+                    [selected]="this.expense.repeatingExpenseType === RepeatingExpenseType.FIRST_OF_MONTH">
               First of the month
             </option>
-            <option value="{{RepeatingExpenseTyp.FIRST_OF_QUARTER}}">
+            <option value="{{RepeatingExpenseType.FIRST_OF_QUARTER}}">
               First of the quarter
             </option>
-            <option value="{{RepeatingExpenseTyp.FIRST_OF_YEAR}}">
+            <option value="{{RepeatingExpenseType.FIRST_OF_YEAR}}">
               First of the year
             </option>
           </select>
         </div>
-
       </div>
 
       <div class="row p-2">
         <label for="paidBy"
                class="col-form-label text-muted col-3"
         >
-          Payer*
+          Payer<span style="color: red">*</span>
         </label>
         <div class="col-md-10 col-lg-8">
           <app-user-dropdown
@@ -189,7 +188,7 @@
           <label for="splitBy"
                  class="col-form-label text-muted col-4"
           >
-            Split Strategy*
+            Split Strategy<span style="color: red">*</span>
           </label>
           <div class="col-8">
             <app-radio-buttons-component
@@ -202,7 +201,6 @@
           </div>
         </div>
       </div>
-
 
       <div class="row p-2">
         <span class="col-4"></span>
@@ -217,8 +215,5 @@
           ></app-show-user-for-expense>
         </div>
       </div>
-
     </div>
-
   </form>
-</div>

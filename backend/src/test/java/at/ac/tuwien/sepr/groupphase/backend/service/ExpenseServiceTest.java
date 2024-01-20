@@ -20,6 +20,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ExpenseRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
@@ -41,6 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidExpenseId;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validExpenseId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -68,6 +71,9 @@ class ExpenseServiceTest {
     @MockBean
     private AuthService authService;
 
+    @Autowired
+    private ExpenseRepository expenseRepository;
+
     private ApplicationUser applicationUser;
 
     @BeforeEach
@@ -79,38 +85,37 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can an existing expense be found by id?")
     void givenValidIdWhenFindByIdThenExpenseWithCorrectIdIsReturned() throws AuthorizationException {
         // given
-        long id = 5L;
-
         // when
-        Expense actual = service.findById(id);
+        Expense actual = service.findById(validExpenseId);
 
         // then
         assertAll(
             () -> assertThat(actual).isNotNull(),
-            () -> assertThat(actual).extracting(Expense::getId).isEqualTo(id)
+            () -> assertThat(actual).extracting(Expense::getId).isEqualTo(validExpenseId)
         );
     }
 
     @Test
+    @DisplayName("Can an non-existing expense be found by id?")
     void givenInvalidIdWhenFindByIdThenNotFoundExceptionIsThrown() {
         // given
-        long id = 999L;
-
         // when + then
         assertThrows(NotFoundException.class, () ->
-            service.findById(id)
+            service.findById(invalidExpenseId)
         );
     }
 
     @Test
+    @DisplayName("Can all expenses be found?")
     void givenNothingWhenFindAllThenAllExpensesAreReturned() {
         // when
         List<Expense> actual = service.findAll(new ExpenseSearchDto(null, null, null, null));
 
         // then
-        assertThat(actual).hasSize(20);
+        assertThat(actual).hasSize(expenseRepository.findAll().size());
     }
 
     @Test
@@ -177,6 +182,7 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can all expenses be found by title?")
     void givenValidExpenseWhenCreateThenExpenseIsPersistedWithId() throws ValidationException, ConflictException, AuthorizationException {
         // given
         double totalAmount = 100;
@@ -345,6 +351,7 @@ class ExpenseServiceTest {
     }
 
     @ParameterizedTest
+    @DisplayName("Can an expense be created with different split strategies?")
     @MethodSource("data")
     void givenExpenseWithCertainSplitByWhenCreateThenAmountIsSplitCorrectly(List<DebitDto> debitDtos,
                                                                             List<Double> expected) throws ValidationException, ConflictException, AuthorizationException {
@@ -384,6 +391,7 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can an expense be created with a repeating expense type?")
     void givenInvalidExpenseWhenCreateThenValidationExceptionIsThrown() {
         // given
         ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
@@ -399,6 +407,7 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can an expense be created with a repeating expense type?")
     void givenExpenseWithDifferentSplitStrategiesWhenCreateThenConflictExceptionIsThrown() {
         // given
         UserListDto userDetailDto1 = UserListDtoBuilder.builder()
@@ -460,6 +469,7 @@ class ExpenseServiceTest {
     }
 
     @Test
+    @DisplayName("Can an expense be created with a repeating expense type?")
     void givenExpenseWithInvalidReferencesWhenCreateThenConflictExceptionIsThrown() {
         // given
         UserListDto userDetailDto1 = UserListDtoBuilder.builder()

@@ -38,6 +38,7 @@
 </div>
 
 <app-confirm-delete-dialog
+  *ngIf="modeIsCreate === false"
   deleteInfo="item"
   [deleteName]="item.productName"
   [deleteId]="item.itemId ? item.itemId.toString() : null"
@@ -102,6 +103,7 @@
           textInputClass="form-control"
           valueNeedsToMatchSuggestion="false"
           placeholder="e.g. fruit"
+          required
           [(ngModel)]="item.generalName"
           [formatModel]="formatGeneralName"
           [suggestions]="generalNameSuggestions"
@@ -117,6 +119,7 @@
                class="form-control"
                id="productName"
                name="productName"
+               required
                [(ngModel)]="item.productName">
       </div>
     </fieldset>
@@ -137,6 +140,7 @@
                    name="currentQuantityAndUnit"
                    placeholder="Current Quantity"
                    aria-describedby="quantityCurrentHelp"
+                   required
                    [(ngModel)]="item.quantityCurrent">
             <small id="quantityCurrentHelp" class="form-text text-muted">The current quantity.</small>
           </div>
@@ -148,6 +152,7 @@
                    name="totalQuantityAndUnit"
                    placeholder="Total Quantity"
                    aria-describedby="quantityTotalHelp"
+                   required
                    [(ngModel)]="item.quantityTotal">
             <small *ngIf="!modeIsCreate" id="quantityTotalHelp" class="form-text text-muted">The total quantity.</small>
           </div>
@@ -243,10 +248,10 @@
           name="boughtAt"
           textInputClass="form-control"
           valueNeedsToMatchSuggestion="false"
+          placeholder="Store name"
           [(ngModel)]="item.boughtAt"
           [formatModel]="formatBoughtAt"
-          [suggestions]="boughtAtSuggestions"
-          placeholder="Bought At">
+          [suggestions]="boughtAtSuggestions">
         </app-autocomplete>
       </div>
       <div class="col-md-6 mt-2 mt-md-0 mt-lg-0" *ngIf="modeIsCreate">
@@ -293,6 +298,7 @@
           name="brand"
           textInputClass="form-control"
           valueNeedsToMatchSuggestion="false"
+          placeholder="Brand"
           [(ngModel)]="item.brand"
           [formatModel]="formatBrand"
           [suggestions]="brandSuggestions"
