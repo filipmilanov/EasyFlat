@@ -15,9 +15,8 @@
       <button type="button"
               class="btn btn-danger me-2"
               data-bs-toggle="modal"
-              data-bs-target="#confirm-delete-modal"
+              [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModal(expense)"
               aria-label="Delete item"
-              (click)="delete()"
       >
         <i class="bi bi-trash"></i>
         Delete
@@ -32,6 +31,7 @@
   <app-confirm-delete-dialog
     deleteInfo="finance entry"
     [deleteName]="expense.title"
+    [deleteId]="expense.id.toString()"
     (confirm)="delete()">
   </app-confirm-delete-dialog>
 

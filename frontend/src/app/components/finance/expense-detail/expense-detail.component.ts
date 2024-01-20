@@ -61,7 +61,7 @@ export class ExpenseDetailComponent implements OnInit {
   delete(): void {
     this.financeService.deleteExpense(this.expense.id).subscribe({
           next: (): void => {
-            this.router.navigate([this.previousUrl]);
+            this.router.navigate(['/expense']);
             this.notification.success(`Expense ${this.expense.title} was successfully deleted`, "Success");
           },
           error: error => {
@@ -76,6 +76,10 @@ export class ExpenseDetailComponent implements OnInit {
             });
           }
     });
+  }
+
+  getIdFormatForDeleteModal(expense: ExpenseDto): string {
+    return `${expense.title}${expense.id.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 
   determineValueRepresentation(value: DebitDto): string {

@@ -98,6 +98,7 @@
         <app-confirm-delete-dialog
           [deleteInfo]="'expense'"
           [deleteName]="expense.title"
+          [deleteId]="expense.id.toString()"
           (confirm)="delete(expense)">
         </app-confirm-delete-dialog>
         <div class="btn-group">
@@ -120,7 +121,7 @@
           <button type="button"
                   class="btn btn-sm btn-danger"
                   data-bs-toggle="modal"
-                  [attr.data-bs-target]="'#confirm-delete-modal'"
+                  [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModal(expense)"
                   aria-label="Delete expense"
                   toggel-data="tooltip"
                   title="Delete expense"

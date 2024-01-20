@@ -6,6 +6,7 @@ import {Router} from "@angular/router";
 import {debounceTime, Subject} from "rxjs";
 import {UserListDto} from "../../../dtos/user";
 import {UserService} from "../../../services/user.service";
+import {ItemDto} from "../../../dtos/item";
 
 @Component({
   selector: 'app-expense-overview',
@@ -76,6 +77,7 @@ export class ExpenseOverviewComponent implements OnInit {
     this.financeService.deleteExpense(expense.id).subscribe({
       next: (): void => {
         this.notification.success(`Expense ${expense.title} was successfully deleted`, "Success");
+        this.reloadExpenses();
       },
       error: error => {
         console.error(`Expense could not be deleted: ${error}`);
@@ -89,6 +91,10 @@ export class ExpenseOverviewComponent implements OnInit {
         });
       }
     });
+  }
+
+  getIdFormatForDeleteModal(expense: ExpenseDto): string {
+    return `${expense.title}${expense.id.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 
   protected readonly UserListDto = UserListDto;

@@ -14,7 +14,7 @@
         <button type="button"
                 class="btn btn-danger me-2 mb-1 md-md-0"
                 data-bs-toggle="modal"
-                data-bs-target="#confirm-delete-modal"
+                [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModal(expense)"
                 aria-label="Delete expense"
                 *ngIf="!modeIsCreate"
         >
@@ -35,6 +35,7 @@
     <app-confirm-delete-dialog
       deleteInfo="expense"
       [deleteName]="expense.title"
+      [deleteId]="expense.id ? expense.id.toString() : null"
       (confirm)="delete()">
     </app-confirm-delete-dialog>
 
