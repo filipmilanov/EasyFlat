@@ -80,7 +80,8 @@ public class ItemServiceImpl implements ItemService {
         List<Long> allowedUsers = persistedDigitalStorageItem.getDigitalStorage().getSharedFlat().getUsers().stream().map(ApplicationUser::getId).toList();
 
         authorization.authorizeUser(
-            allowedUsers
+            allowedUsers,
+            "User does not have access to this item"
         );
 
         return persistedDigitalStorageItem;
