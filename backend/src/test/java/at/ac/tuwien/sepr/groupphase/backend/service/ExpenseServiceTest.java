@@ -112,7 +112,7 @@ class ExpenseServiceTest {
     @DisplayName("Can all expenses be found?")
     void givenNothingWhenFindAllThenAllExpensesAreReturned() {
         // when
-        List<Expense> actual = service.findAll(new ExpenseSearchDto(null, null, null, null));
+        List<Expense> actual = service.findAll(new ExpenseSearchDto(null, null, null, null, null));
 
         // then
         assertThat(actual).hasSize(expenseRepository.findAll().size());
@@ -122,7 +122,7 @@ class ExpenseServiceTest {
     @DisplayName("Searching with specific parameters returns exactly one correct item")
     void givenValidSearchParametersWhenSearchExpensesThenReturnList() {
         // given
-        ExpenseSearchDto searchParams = new ExpenseSearchDto("Dinner at Restaurant", 1L, 19.0, LocalDate.of(2022, 8, 18));
+        ExpenseSearchDto searchParams = new ExpenseSearchDto("Dinner at Restaurant", 1L, 1900.0, 2000.0, LocalDate.of(2022, 8, 18));
 
         double totalAmount = 100;
         WgDetailDto sharedFlat = new WgDetailDto();
