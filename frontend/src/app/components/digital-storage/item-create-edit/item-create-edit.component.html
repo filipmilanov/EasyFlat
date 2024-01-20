@@ -103,6 +103,7 @@
           textInputClass="form-control"
           valueNeedsToMatchSuggestion="false"
           placeholder="e.g. fruit"
+          required
           [(ngModel)]="item.generalName"
           [formatModel]="formatGeneralName"
           [suggestions]="generalNameSuggestions"
@@ -118,6 +119,7 @@
                class="form-control"
                id="productName"
                name="productName"
+               required
                [(ngModel)]="item.productName">
       </div>
     </fieldset>
@@ -138,6 +140,7 @@
                    name="currentQuantityAndUnit"
                    placeholder="Current Quantity"
                    aria-describedby="quantityCurrentHelp"
+                   required
                    [(ngModel)]="item.quantityCurrent">
             <small id="quantityCurrentHelp" class="form-text text-muted">The current quantity.</small>
           </div>
@@ -149,6 +152,7 @@
                    name="totalQuantityAndUnit"
                    placeholder="Total Quantity"
                    aria-describedby="quantityTotalHelp"
+                   required
                    [(ngModel)]="item.quantityTotal">
             <small *ngIf="!modeIsCreate" id="quantityTotalHelp" class="form-text text-muted">The total quantity.</small>
           </div>
