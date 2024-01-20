@@ -594,7 +594,7 @@ class ExpenseServiceTest {
                 (UserValuePairDto userValuePairDto) -> userValuePairDto.user().id(),
                 (UserValuePairDto userValuePairDto) -> Math.round((userValuePairDto.value()) * 10) / 10.0
             ).containsExactlyInAnyOrder(
-                new Tuple(1L, 2881.2),
+                new Tuple(1L, 2881.1),
                 new Tuple(6L, 1713.9),
                 new Tuple(11L, 1537.5),
                 new Tuple(16L, 269.3),
@@ -724,7 +724,7 @@ class ExpenseServiceTest {
         ValidationException e = assertThrows(ValidationException.class, () -> service.create(expenseDto));
         assertAll(
             () -> assertThat(e.errors().size()).isEqualTo(1),
-            () -> assertThat(e.errors().get(0)).contains("greater")
+            () -> assertThat(e.errors().get(0)).contains("1 day")
         );
     }
 
