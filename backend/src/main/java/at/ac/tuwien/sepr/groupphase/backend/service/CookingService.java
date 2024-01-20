@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.CookbookDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
@@ -33,14 +34,6 @@ public interface CookingService {
      * @return The details of the recipe.
      */
     RecipeDetailDto getRecipeDetails(Long recipeId);
-
-    /**
-     * Create a cookbook for a given shared flat.
-     *
-     * @param cookbook the cookbook that needs to be created
-     * @return the created cookbook
-     */
-    Cookbook createCookbook(CookbookDto cookbook) throws ValidationException, ConflictException, AuthorizationException, AuthenticationException;
 
     /**
      *  * Get the list of all existing cookbooks.
@@ -118,4 +111,7 @@ public interface CookingService {
      */
     RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt)
         throws AuthenticationException, ValidationException, ConflictException, AuthorizationException;
+
+
+    RecipeIngredientDto unMatchIngredient(String ingredientName);
 }

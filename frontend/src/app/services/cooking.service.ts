@@ -5,6 +5,7 @@ import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
 import {RecipeDetailDto, RecipeSuggestion} from "../dtos/cookingDtos/recipeSuggestion";
 import {AuthService} from "./auth.service";
+import {RecipeIngredient} from "../dtos/cookingDtos/recipeIngredient";
 
 @Injectable({
   providedIn: 'root'
@@ -26,14 +27,14 @@ export class CookingService {
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });
-    return this.httpClient.get<RecipeSuggestion[]>(this.baseUri, {params,headers},);
+    return this.httpClient.get<RecipeSuggestion[]>(this.baseUri, {params, headers},);
   }
 
   getCookbook(): Observable<RecipeSuggestion[]> {
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });
-    return this.httpClient.get<RecipeSuggestion[]>(this.cookbookUri,{headers});
+    return this.httpClient.get<RecipeSuggestion[]>(this.cookbookUri, {headers});
   }
 
   createCookbookRecipe(recipe: RecipeSuggestion): Observable<RecipeSuggestion> {
@@ -80,25 +81,32 @@ export class CookingService {
     return this.httpClient.get<RecipeDetailDto>(this.baseUri + '/detail/' + id, {headers});
   }
 
-  getMissingIngredients(id:string): Observable<RecipeSuggestion> {
+  getMissingIngredients(id: string): Observable<RecipeSuggestion> {
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });
     return this.httpClient.get<RecipeSuggestion>(this.cookbookUri + '/missing/' + id, {headers});
   }
 
-  cookRecipe(recipe:RecipeSuggestion):Observable<RecipeSuggestion>{
+  cookRecipe(recipe: RecipeSuggestion): Observable<RecipeSuggestion> {
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });
-    return this.httpClient.put<RecipeSuggestion>(this.baseUri + "/cook",recipe,{headers})
+    return this.httpClient.put<RecipeSuggestion>(this.baseUri + "/cook", recipe, {headers})
   }
 
-  addToShoppingList(recipe:RecipeSuggestion):Observable<RecipeSuggestion>{
+  addToShoppingList(recipe: RecipeSuggestion): Observable<RecipeSuggestion> {
     const headers = new HttpHeaders({
       'Authorization': this.authService.getToken()
     });
     return this.httpClient.post<RecipeSuggestion>(this.baseUri + '/shopping', recipe, {headers});
+  }
+
+  unMatchIngredient(ingredientName: string): Observable<RecipeIngredient> {
+    const headers = new HttpHeaders({
+      'Authorization': this.authService.getToken()
+    });
+    return this.httpClient.put<RecipeIngredient>(this.baseUri + '/unmatchitems', ingredientName, {headers})
   }
 
 }

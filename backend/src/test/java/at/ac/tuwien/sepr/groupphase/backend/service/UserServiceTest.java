@@ -1,17 +1,21 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
+import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -19,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -35,6 +40,22 @@ public class UserServiceTest implements TestData {
 
     @Autowired
     private UserMapper userMapper;
+
+    private ApplicationUser applicationUser;
+
+    @Autowired
+    private TestDataGenerator testDataGenerator;
+
+    @MockBean
+    private AuthService authService;
+
+    @BeforeEach
+    public void cleanUp() throws ValidationException, ConflictException {
+        testDataGenerator.cleanUp();
+
+        applicationUser = userRepository.findById(1L).orElseThrow();
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
+    }
 
     @Test
     @DisplayName("Positive test for registering a valid user")
@@ -59,17 +80,10 @@ public class UserServiceTest implements TestData {
     @Test
     @DisplayName("Negative test for registering a user with an existing email")
     public void registerUserWithExistingEmailShouldThrowException() throws ValidationException, ConflictException {
-        UserDetailDto existingUser = new UserDetailDto();
-        existingUser.setFirstName("Alice");
-        existingUser.setLastName("Smith");
-        existingUser.setEmail("alice@example.com");
-        existingUser.setPassword("password");
-        userService.register(existingUser);
-
         UserDetailDto newUser = new UserDetailDto();
         newUser.setFirstName("Bob");
         newUser.setLastName("Johnson");
-        newUser.setEmail("alice@example.com");
+        newUser.setEmail(applicationUser.getEmail());
         newUser.setPassword("password");
 
         assertThrows(Exception.class, () -> userService.register(newUser));
@@ -78,21 +92,14 @@ public class UserServiceTest implements TestData {
     @Test
     @DisplayName("Positive test for updating an existing user with valid data")
     public void updateExistingUserWithValidData() throws ValidationException, ConflictException {
-        UserDetailDto userDetailDto = new UserDetailDto();
-        userDetailDto.setFirstName("John");
-        userDetailDto.setLastName("Doe");
-        userDetailDto.setEmail("john@example.com");
-        userDetailDto.setPassword("password");
-        userService.register(userDetailDto);
-
-        ApplicationUser fetchedUser1 = userRepository.findUserByEmail("john@example.com");
+        ApplicationUser fetchedUser1 = userRepository.findUserByEmail(applicationUser.getEmail());
 
         fetchedUser1.setFirstName("UpdatedFirstName");
         fetchedUser1.setLastName("UpdatedLastName");
         fetchedUser1.setPassword("newpassword123");
         userService.update(userMapper.entityToUserDetailDto(fetchedUser1));
 
-        ApplicationUser fetchedUser = userRepository.findUserByEmail("john@example.com");
+        ApplicationUser fetchedUser = userRepository.findUserByEmail(applicationUser.getEmail());
         assertNotNull(fetchedUser);
         assertEquals("UpdatedFirstName", fetchedUser.getFirstName());
         assertEquals("UpdatedLastName", fetchedUser.getLastName());
@@ -102,20 +109,12 @@ public class UserServiceTest implements TestData {
     @Test
     @DisplayName("Positive test for deleting an existing user")
     @Disabled
-    public void deleteExistingUserAndEnsureDeletion() throws ValidationException, ConflictException {
-        UserDetailDto userDetailDto = new UserDetailDto();
-        userDetailDto.setFirstName("ToDelete");
-        userDetailDto.setLastName("User");
-        userDetailDto.setEmail("todelete@example.com");
-        userDetailDto.setPassword("password");
-        userService.register(userDetailDto);
+    public void deleteExistingUserAndEnsureDeletion() {
+        ApplicationUser user = userRepository.findUserByEmail(applicationUser.getEmail());
 
-        ApplicationUser user = userRepository.findUserByEmail(userDetailDto.getEmail());
+        userService.delete(applicationUser.getId());
 
-        userService.delete(user.getId());
-
-
-        ApplicationUser deletedUserFromDB = userRepository.findUserByEmail("todelete@example.com");
+        ApplicationUser deletedUserFromDB = userRepository.findUserByEmail(applicationUser.getEmail());
         assertNull(deletedUserFromDB, "Deleted user should not be found");
     }
 

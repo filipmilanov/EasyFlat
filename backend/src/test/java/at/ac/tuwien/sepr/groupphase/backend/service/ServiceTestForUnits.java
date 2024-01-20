@@ -112,6 +112,7 @@ public class ServiceTestForUnits {
 
         );
     }
+
     @Test
     @DisplayName("Given valid unit when create then unit is created")
     public void testConvertUnitsSameUnit() {
@@ -162,6 +163,7 @@ public class ServiceTestForUnits {
             () -> assertThat(minUnitL.getName()).isEqualTo("ml")
         );
     }
+
     @Test
     @DisplayName("Given valid unit when create then unit is created")
     public void testAreUnitsComparable() {
@@ -174,11 +176,13 @@ public class ServiceTestForUnits {
         // When
         boolean comparableGToKG = unitService.areUnitsComparable(gUnit, kgUnit);
         boolean comparableTSPToML = unitService.areUnitsComparable(tspUnit, mlUnit);
+        boolean comparableGtoML = unitService.areUnitsComparable(gUnit, mlUnit);
 
         // Then
         assertAll(
             () -> assertThat(comparableGToKG).isTrue(),
-            () -> assertThat(comparableTSPToML).isTrue()
+            () -> assertThat(comparableTSPToML).isTrue(),
+            () -> assertThat(comparableGtoML).isFalse()
         );
     }
 

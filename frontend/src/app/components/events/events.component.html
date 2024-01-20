@@ -9,10 +9,10 @@
       <input type="text" id="searchTitle" name="searchTitle" class="form-control" [(ngModel)]="label" (input)="findEventsByLabel()">
     </div>
     <div >
-      <button *ngIf="events.length > 0" type="button" class="btn btn-secondary bi-save"  (click)="exportAll()">
-        Export all events
+      <button *ngIf="events.length > 0" type="button" class="btn btn-secondary bi-save"  (click)="exportAll()" style="margin: 0.5rem">
+        Export all
       </button>
-      <button type="button" class="btn btn-primary" style="margin-left: 10px" [routerLink]="['create']">
+      <button type="button" class="btn btn-primary" style="margin: 0.5rem" [routerLink]="['create']" >
         Add Event
       </button>
     </div>

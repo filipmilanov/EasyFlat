@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
@@ -11,9 +12,12 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.CookingService;
 import com.deepl.api.DeepLException;
 import jakarta.annotation.security.PermitAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +35,7 @@ import java.util.Optional;
 public class CookingEndPoint {
     private final CookingService cookingService;
     private final RecipeMapper recipeMapper;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public CookingEndPoint(CookingService cookingService, RecipeMapper recipeMapper) {
         this.cookingService = cookingService;
@@ -102,6 +108,12 @@ public class CookingEndPoint {
     public RecipeSuggestionDto addToShoppingList(@RequestBody RecipeSuggestionDto recipeToCook, @RequestHeader("Authorization") String jwt)
         throws ValidationException, AuthenticationException, ConflictException, AuthorizationException {
         return cookingService.addToShoppingList(recipeToCook, jwt);
+    }
+
+    @Secured("ROLE_USER")
+    @PutMapping("/unmatchitems")
+    public RecipeIngredientDto unMatchIngredient(@RequestBody String ingredientName) {
+        return cookingService.unMatchIngredient(ingredientName);
     }
 
 

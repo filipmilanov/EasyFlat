@@ -19,6 +19,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UnitMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AlternativeName;
+import at.ac.tuwien.sepr.groupphase.backend.entity.AlwaysInStockDigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
@@ -30,6 +31,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.FatalException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
@@ -148,7 +150,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
-        throws  ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
+        throws ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
 
 
         ApplicationUser user = authService.getUserFromToken();
@@ -220,26 +222,6 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public Cookbook createCookbook(CookbookDto cookbookDto) throws ValidationException, ConflictException, AuthorizationException {
-
-        cookbookValidator.validateForCreate(cookbookDto);
-
-        ApplicationUser user = this.authService.getUserFromToken();
-
-        List<Long> allowedUsers = authService.getUserFromToken().getSharedFlat().getUsers().stream()
-            .map(ApplicationUser::getId)
-            .toList();
-        authorization.authorizeUser(
-            allowedUsers,
-            "The given cookbook does not belong to the user's shared flat!"
-        );
-
-        Cookbook cookbook = cookbookMapper.dtoToEntity(cookbookDto);
-
-        return cookbookRepository.save(cookbook);
-    }
-
-    @Override
     public List<Cookbook> findAllCookbooks() {
         ApplicationUser applicationUser = this.authService.getUserFromToken();
 
@@ -263,8 +245,8 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws AuthorizationException, ConflictException, ValidationException,
-        AuthenticationException {
+    @Transactional
+    public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws AuthorizationException, ConflictException, ValidationException {
         if (recipe.id() != null) {
             RecipeDetailDto recipeWithSteps = getRecipeDetails(recipe.id());
             StringBuilder summary = new StringBuilder(recipe.summary());
@@ -305,6 +287,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
+    @Transactional
     public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException, AuthorizationException {
         recipeValidator.validateForUpdate(recipe);
         RecipeSuggestion oldRecipe = repository.findById(recipe.id()).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
@@ -443,25 +426,29 @@ public class CookingServiceImpl implements CookingService {
             List<DigitalStorageItem> itemsWithMinUnits = minimizeUnits(digitalStorageItems);
             for (int i = 0; i < itemsWithMinUnits.size(); i++) {
                 if (digitalStorageItems.get(i).getItemCache().getProductName().equals(recipeIngredientDto.name())) {
-                    DigitalStorageItem digitalStorageItem = itemsWithMinUnits.get(i);
+                    if (unitService.areUnitsComparable(digitalStorageItems.get(i).getItemCache().getUnit(), unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum()))) {
 
-                    if (digitalStorageItem.getQuantityCurrent() >= ingAmountMin) {
-                        if (digitalStorageItem.getItemCache().getUnit().equals(digitalStorageItems.get(i).getItemCache().getUnit())) {
-                            ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity((digitalStorageItem.getQuantityCurrent() - ingAmountMin));
-                            itemService.update(updatedItem);
+                        DigitalStorageItem digitalStorageItem = itemsWithMinUnits.get(i);
+
+                        if (digitalStorageItem.getQuantityCurrent() >= ingAmountMin) {
+                            if (digitalStorageItem.getItemCache().getUnit().equals(digitalStorageItems.get(i).getItemCache().getUnit())) {
+                                ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(truncateToDecimalPlaces(digitalStorageItem.getQuantityCurrent() - ingAmountMin, 2));
+                                itemService.update(updatedItem);
+                            } else {
+                                Double updatedQuantity = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), digitalStorageItems.get(i).getItemCache().getUnit(), digitalStorageItem.getQuantityCurrent() - ingAmountMin);
+                                updatedQuantity = truncateToDecimalPlaces(updatedQuantity, 2);
+                                digitalStorageItem.getItemCache().setUnit(digitalStorageItems.get(i).getItemCache().getUnit());
+                                ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(updatedQuantity);
+                                itemService.update(updatedItem);
+                            }
+                            break;
                         } else {
-                            Double updatedQuantity = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), digitalStorageItems.get(i).getItemCache().getUnit(), digitalStorageItem.getQuantityCurrent() - ingAmountMin);
+                            ingAmountMin -= digitalStorageItem.getQuantityCurrent();
                             digitalStorageItem.getItemCache().setUnit(digitalStorageItems.get(i).getItemCache().getUnit());
-                            ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(updatedQuantity);
+                            ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(0.0);
                             itemService.update(updatedItem);
-                        }
-                        break;
-                    } else {
-                        ingAmountMin -= digitalStorageItem.getQuantityCurrent();
-                        digitalStorageItem.getItemCache().setUnit(digitalStorageItems.get(i).getItemCache().getUnit());
-                        ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(0.0);
-                        itemService.update(updatedItem);
 
+                        }
                     }
                 }
             }
@@ -483,6 +470,11 @@ public class CookingServiceImpl implements CookingService {
             shoppingListService.create(newShoppingItem, jwt);
         }
         return recipeToCook;
+    }
+
+    @Override
+    public RecipeIngredientDto unMatchIngredient(String ingredientName) {
+        return ingredientService.unMatchIngredient(ingredientName);
     }
 
     private List<RecipeSuggestionDto> filterSuggestions(List<RecipeSuggestionDto> recipeSuggestions, String type) {
@@ -650,12 +642,16 @@ public class CookingServiceImpl implements CookingService {
 
         List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
 
+        loop2:
         for (RecipeIngredientDto recipeIngredient : ingredientDtos) {
             boolean matched = false;
+            ingredientService.unMatchIngredient(recipeIngredient.name());
+            //case auto Match
             for (DigitalStorageItem digitalStorageItem : itemsInStorage) {
                 Unit recipeIngredientUnit = unitMapper.unitDtoToEntity(recipeIngredient.unitEnum());
                 Unit digitalStorageItemUnit = digitalStorageItem.getItemCache().getUnit();
-                if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)) {
+                if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)
+                    && recipeIngredient.realName() == null) {
                     RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
                         digitalStorageItem.getItemCache().getProductName(),
                         recipeIngredient.unit(),
@@ -666,9 +662,27 @@ public class CookingServiceImpl implements CookingService {
                         recipeIngredient.name(),
                         itemMapper.entityToDto(digitalStorageItem));
                     updatedIngredients.add(updatedIngredient);
-                    matched = true;
-                    continue;
+                    continue loop2;
+                } else if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)
+                    //case Yet Matched
+                    && !recipeIngredient.name().equals(recipeIngredient.realName())) {
+                    for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
+                        if (alternativeName.getName().equals(recipeIngredient.realName())) {
+                            RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
+                                digitalStorageItem.getItemCache().getProductName(),
+                                recipeIngredient.unit(),
+                                recipeIngredient.unitEnum(),
+                                recipeIngredient.amount(),
+                                true,
+                                false,
+                                recipeIngredient.realName(),
+                                itemMapper.entityToDto(digitalStorageItem));
+                            updatedIngredients.add(updatedIngredient);
+                            continue loop2;
+                        }
+                    }
                 }
+                //case Not Matched Yet
                 for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
                     if (alternativeName.getName().equals(recipeIngredient.name())) {
                         RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
@@ -681,18 +695,17 @@ public class CookingServiceImpl implements CookingService {
                             recipeIngredient.name(),
                             itemMapper.entityToDto(digitalStorageItem));
                         updatedIngredients.add(updatedIngredient);
-                        matched = true;
+                        continue loop2;
                     }
                 }
             }
-            if (!matched) {
-                updatedIngredients.add(recipeIngredient);
-            }
+            updatedIngredients.add(recipeIngredient);
         }
         return updatedIngredients;
     }
 
-    private String getRequestStringForRecipeSearch(List<ItemDto> items) throws DeepLException, InterruptedException {
+    private String getRequestStringForRecipeSearch(List<ItemDto> items) throws
+        DeepLException, InterruptedException {
         translator = new Translator(translateKey);
         List<String> ingredients = new LinkedList<>();
         for (ItemDto item : items) {
@@ -730,7 +743,8 @@ public class CookingServiceImpl implements CookingService {
         return null;
     }
 
-    private Double getItemQuantityTotalInMinQuantity(List<DigitalStorageItem> digitalStorageItems, RecipeIngredientDto ingredient) throws ValidationException, ConflictException {
+    private Double getItemQuantityTotalInMinQuantity(List<DigitalStorageItem> digitalStorageItems, RecipeIngredientDto ingredient) throws
+        ValidationException, ConflictException {
 
         Double toRet = 0.0;
 
@@ -755,10 +769,18 @@ public class CookingServiceImpl implements CookingService {
 
         for (DigitalStorageItem digitalStorageItem : digitalStorageItems) {
             Unit minUnit = getMinUnit(digitalStorageItem.getItemCache().getUnit());
+
+            DigitalStorageItem minimizedDigitalStorageItem = null;
+
+            if (digitalStorageItem.getClass().equals(DigitalStorageItem.class)) {
+                minimizedDigitalStorageItem = new DigitalStorageItem();
+            } else if (digitalStorageItem.getClass().equals(AlwaysInStockDigitalStorageItem.class)) {
+                minimizedDigitalStorageItem = new AlwaysInStockDigitalStorageItem();
+                minimizedDigitalStorageItem.setMinimumQuantity(digitalStorageItem.getMinimumQuantity());
+            } else {
+                throw new FatalException("minimizedDigitalStorageItemsFatal");
+            }
             double convertedQuantity = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), minUnit, digitalStorageItem.getQuantityCurrent());
-
-            DigitalStorageItem minimizedDigitalStorageItem = new DigitalStorageItem();
-
             minimizedDigitalStorageItem.setItemId(digitalStorageItem.getItemId());
             minimizedDigitalStorageItem.getItemCache().setUnit(minUnit);
             minimizedDigitalStorageItem.setQuantityCurrent(convertedQuantity);
@@ -775,7 +797,10 @@ public class CookingServiceImpl implements CookingService {
             minimizedDigitalStorageItem.setIngredientList(digitalStorageItem.getIngredientList());
             minimizedDigitalStorageItem.getItemCache().setAlternativeNames(digitalStorageItem.getItemCache().getAlternativeNames());
 
+
             minimizedDigitalStorageItems.add(minimizedDigitalStorageItem);
+
+
         }
 
         return minimizedDigitalStorageItems;

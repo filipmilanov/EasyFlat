@@ -40,11 +40,11 @@ export class RecipeCardComponent implements OnInit {
   }
 
   addToCookBook() {
-
+    this.isSaveButtonDisabled = true;
     console.log(this.recipeID)
     this.cookingService.createCookbookRecipe(this.recipe).subscribe({
       next: data => {
-        this.isSaveButtonDisabled = true;
+
         this.recipeAddedToCookbook.emit(this.recipe.title);
         console.log(this.recipeID)
       },
