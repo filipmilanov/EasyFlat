@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import io.soabase.recordbuilder.core.RecordBuilder;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
@@ -52,7 +51,6 @@ public record ItemDto(
     String boughtAt,
     @NotNull(message = "An item needs to be linked to a storage")
     DigitalStorageDto digitalStorage,
-    @Valid
     List<IngredientDto> ingredients,
     List<AlternativeNameDto> alternativeNames
 
