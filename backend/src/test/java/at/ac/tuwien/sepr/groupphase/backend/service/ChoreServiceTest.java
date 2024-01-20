@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Preference;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -31,7 +32,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -198,7 +202,9 @@ public class ChoreServiceTest {
         List<Chore> chores = choreRepository.findAllBySharedFlatId(testUser.getSharedFlat().getId());
         choreRepository.deleteAll(chores);
         //Result + Test
-        assertThrows(NotFoundException.class, () -> choreService.assignChores());
+        assertAll(
+            () -> assertThrows(NotFoundException.class, () -> choreService.assignChores())
+        );
     }
 
     @Test
@@ -287,7 +293,9 @@ public class ChoreServiceTest {
 
         choreService.assignChores();
         //Result + Test
-        assertThrows(NotFoundException.class, () -> choreService.assignChores());
+        assertAll(
+            () -> assertThrows(NotFoundException.class, () -> choreService.assignChores())
+        );
     }
 
     @Test
@@ -370,7 +378,7 @@ public class ChoreServiceTest {
             () -> assertNotNull(choreRepository.findAllByUser(testUser3)),
             () -> assertNotNull(choreRepository.findAllByUser(testUser4)),
             //this user is the last in Leaderboard, so he has one chore more
-            () -> assertEquals(2,choreRepository.findAllByUser(testUser5).size())
+            () -> assertEquals(2, choreRepository.findAllByUser(testUser5).size())
         );
 
     }
@@ -479,9 +487,171 @@ public class ChoreServiceTest {
             () -> assertEquals(new Chore().setId(5L), choreRepository.findAllByUser(testUser4).get(0)),
             () -> assertEquals(new Chore().setId(3L), choreRepository.findAllByUser(testUser5).get(0)),
             //this user is the last in Leaderboard, so he has one chore more
-            () -> assertEquals(2,choreRepository.findAllByUser(testUser5).size())
+            () -> assertEquals(2, choreRepository.findAllByUser(testUser5).size())
         );
 
+    }
+
+    @Test
+    public void getChoresByUserShouldSucceed() throws AuthenticationException {
+        //Data
+        choreService.assignChores();
+        //Test
+        assertAll(
+            () -> assertNotNull(choreRepository.findAllByUser(testUser)),
+            () -> assertEquals(choreRepository.findAllByUser(testUser).size(), choreService.getChoresByUser().size())
+        );
+    }
+
+    @Test
+    public void deleteChoresShouldSucceed() throws AuthorizationException {
+        //Data
+        List<Long> choreIds = new ArrayList<>();
+        choreIds.add(1L);
+        choreIds.add(2L);
+        choreIds.add(3L);
+        choreIds.add(4L);
+        choreIds.add(5L);
+        //Test
+        choreService.deleteChores(choreIds);
+        //Results
+        assertAll(
+            () -> assertEquals(0, choreRepository.findAllBySharedFlatId(testUser.getSharedFlat().getId()).size())
+        );
+    }
+
+    @Test
+    public void deleteChoresShouldFail() {
+        //Data
+        List<Long> choreIds = new ArrayList<>();
+        choreIds.add(1L);
+        choreIds.add(2L);
+        choreIds.add(3L);
+        choreIds.add(4L);
+        //This chore is in another Shared Flat
+        choreIds.add(6L);
+        //Test + Results
+        assertThrows(AuthorizationException.class, () -> choreService.deleteChores(choreIds));
+    }
+
+    @Test
+    public void getUserShouldSucceed() throws AuthenticationException {
+        //Data
+        ApplicationUser testUser4 = new ApplicationUser(5L, "FirstName4", "LastName4", "user4@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L));
+        testUser4.setPoints(0);
+        userRepository.save(testUser4);
+        //Test
+        choreService.getUsers();
+        //Results
+        assertAll(
+            () -> assertEquals(userRepository.findAllBySharedFlat(testUser4.getSharedFlat()).size(), choreService.getUsers().size()),
+            () -> assertTrue(choreService.getUsers().contains(testUser4)),
+            () -> assertTrue(choreService.getUsers().contains(testUser))
+        );
+    }
+
+    @Test
+    public void updatePointsShouldSucceed() {
+        //Data
+        ApplicationUser testUser1 = new ApplicationUser(2L, "FirstName1", "LastName1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L));
+        testUser1.setPoints(9);
+        userRepository.save(testUser1);
+        //newPoints already contain the new added points and the points that the user had
+        Integer newPoints = 5;
+        //Test
+        choreService.updatePoints(1L, newPoints);
+        //Results
+        assertAll(
+            () -> assertEquals(newPoints, choreService.updatePoints(testUser.getId(), newPoints).getPoints()),
+            () -> assertEquals(newPoints, choreService.updatePoints(testUser1.getId(), newPoints).getPoints())
+        );
+    }
+
+    @Test
+    public void generatePdfShouldFail() {
+        //Data
+        choreRepository.deleteAll(choreRepository.findAllBySharedFlatId(testUser.getSharedFlat().getId()));
+        //Test + Results
+        assertAll(
+            () -> assertThrows(NotFoundException.class, () -> choreService.generatePdf())
+        );
+    }
+
+    @Test
+    public void repeatChoreShouldFail() {
+        //Data
+        Date newDate = new Date();
+        //Test + Result
+        assertAll(
+            () -> assertThrows(AuthorizationException.class, () -> choreService.repeatChore(6L, newDate))
+        );
+    }
+
+    @Test
+    public void repeatChoreShouldSucceed() throws AuthorizationException, AuthenticationException {
+        //Data
+        Date newDate = new Date();
+        choreService.assignChores();
+        //Test
+        choreService.repeatChore(5L, newDate);
+
+        assertAll(
+            () -> assertEquals(1, choreRepository.findAllBySharedFlatIdWhereUserIsNull(testUser.getSharedFlat().getId()).size()),
+            () -> assertEquals(5L, choreRepository.findAllBySharedFlatIdWhereUserIsNull(testUser.getSharedFlat().getId()).get(0).getId())
+        );
+    }
+
+    @Test
+    void getUnassignedChoresShouldSucceed() throws AuthenticationException, AuthorizationException {
+        //Data
+        Date newDate = new Date();
+        choreService.assignChores();
+        choreService.repeatChore(5L, newDate);
+
+        //Test
+        assertAll(
+            () -> assertEquals(choreRepository.findAllBySharedFlatIdWhereUserIsNull(testUser.getSharedFlat().getId()), choreService.getUnassignedChores())
+        );
+    }
+
+    @Test
+    void deleteAllUserPreferenceShouldSucceed() {
+        //Data
+        Preference pref = new Preference();
+        pref.setFirst(new Chore().setId(1L));
+        pref.setSecond(new Chore().setId(2L));
+        pref.setThird(new Chore().setId(3L));
+        pref.setFourth(new Chore().setId(4L));
+        pref.setUserId(testUser);
+        preferenceRepository.save(pref);
+        testUser.setPreference(pref);
+        testUser.setPoints(10);
+        testUser.setSharedFlat(new SharedFlat().setId(1L));
+        userRepository.save(testUser);
+
+
+        ApplicationUser testUser1 = new ApplicationUser(2L, "FirstName1", "LastName1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L));
+        userRepository.save(testUser1);
+        Preference pref1 = new Preference();
+        pref1.setFirst(new Chore().setId(1L));
+        pref1.setSecond(new Chore().setId(2L));
+        pref1.setThird(new Chore().setId(3L));
+        pref1.setFourth(new Chore().setId(4L));
+        pref1.setUserId(testUser1);
+        preferenceRepository.save(pref1);
+        testUser1.setPreference(pref1);
+        testUser1.setPoints(9);
+        userRepository.save(testUser1);
+
+        //Test
+        choreService.deleteAllUserPreference();
+
+        //Results
+        assertAll(
+            () -> assertNull(preferenceRepository.findByUserId(testUser)),
+            () -> assertNull(preferenceRepository.findByUserId(testUser1)),
+            () -> assertEquals(0, preferenceRepository.findAllByUserSharedFlatIs(testUser.getSharedFlat()).size())
+        );
     }
 
 }
