@@ -426,14 +426,17 @@ public class CookingServiceImpl implements CookingService {
             List<DigitalStorageItem> itemsWithMinUnits = minimizeUnits(digitalStorageItems);
             for (int i = 0; i < itemsWithMinUnits.size(); i++) {
                 if (digitalStorageItems.get(i).getItemCache().getProductName().equals(recipeIngredientDto.name())) {
+                    if (unitService.areUnitsComparable(digitalStorageItems.get(i).getItemCache().getUnit(), unitMapper.unitDtoToEntity(recipeIngredientDto.unitEnum()))){
+
                     DigitalStorageItem digitalStorageItem = itemsWithMinUnits.get(i);
 
                     if (digitalStorageItem.getQuantityCurrent() >= ingAmountMin) {
                         if (digitalStorageItem.getItemCache().getUnit().equals(digitalStorageItems.get(i).getItemCache().getUnit())) {
-                            ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity((digitalStorageItem.getQuantityCurrent() - ingAmountMin));
+                            ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(truncateToDecimalPlaces(digitalStorageItem.getQuantityCurrent() - ingAmountMin,2));
                             itemService.update(updatedItem);
                         } else {
                             Double updatedQuantity = unitService.convertUnits(digitalStorageItem.getItemCache().getUnit(), digitalStorageItems.get(i).getItemCache().getUnit(), digitalStorageItem.getQuantityCurrent() - ingAmountMin);
+                            updatedQuantity = truncateToDecimalPlaces(updatedQuantity,2);
                             digitalStorageItem.getItemCache().setUnit(digitalStorageItems.get(i).getItemCache().getUnit());
                             ItemDto updatedItem = itemMapper.entityToDto(digitalStorageItem).withUpdatedQuantity(updatedQuantity);
                             itemService.update(updatedItem);
@@ -446,6 +449,7 @@ public class CookingServiceImpl implements CookingService {
                         itemService.update(updatedItem);
 
                     }
+                }
                 }
             }
         }
