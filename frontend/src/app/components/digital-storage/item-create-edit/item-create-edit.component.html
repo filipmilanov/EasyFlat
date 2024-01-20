@@ -264,7 +264,8 @@
                  role="switch"
                  id="addToFinance"
                  name="addToFinance"
-                 [(ngModel)]="item.addToFiance">
+                 [(ngModel)]="item.addToFiance"
+                 (click)="this.item.priceInCent = 1">
         </div>
         <input type="number"
                class="form-control"
@@ -276,7 +277,7 @@
                aria-describedby="addToFinanceHelp"
         >
         <small id="addToFinanceHelp" class="form-text text-muted">Create a finance entry for this item with the given
-          price.</small>
+          price in €.</small>
       </div>
       <div class="col-md-6 mt-2">
         <label for="description" class="form-label">

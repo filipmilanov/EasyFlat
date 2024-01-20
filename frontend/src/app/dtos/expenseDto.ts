@@ -13,6 +13,7 @@ export class ExpenseDto {
   isRepeating?: boolean;
   periodInDays?: number;
   repeatingExpenseType?: RepeatingExpenseType;
+  addedViaStorage?: boolean;
 }
 
 export class ExpenseSearchDto {

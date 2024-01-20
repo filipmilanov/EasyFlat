@@ -11,6 +11,10 @@ import {Unit} from "../../../dtos/unit";
 import {UnitService} from "../../../services/unit.service";
 import {NgxScannerQrcodeComponent, ScannerQRCodeResult} from "ngx-scanner-qrcode";
 import {OpenFoodFactService} from "../../../services/open-food-fact.service";
+import {FinanceService} from "../../../services/finance.service";
+import {DebitDto, ExpenseDto, SplitBy} from "../../../dtos/expenseDto";
+import {AuthService} from "../../../services/auth.service";
+import {UserService} from "../../../services/user.service";
 
 export enum ItemCreateEditMode {
   create,
@@ -34,9 +38,10 @@ export class ItemCreateEditComponent implements OnInit {
     boughtAt: '',
     unit: {
       name: ''
-    }
+    },
+    priceInCent: null,
   }
-  priceInEuro: number = 0.00;
+  priceInEuro: number = 1.00;
   availableUnits: Unit[] = [];
 
 
@@ -47,7 +52,10 @@ export class ItemCreateEditComponent implements OnInit {
     private route: ActivatedRoute,
     private notification: ToastrService,
     private unitServ: UnitService,
-    private openFoodFactService: OpenFoodFactService
+    private openFoodFactService: OpenFoodFactService,
+    private financeService: FinanceService,
+    private authService: AuthService,
+    private userService: UserService,
   ) {
   }
 
@@ -137,7 +145,7 @@ export class ItemCreateEditComponent implements OnInit {
   }
 
   public onSubmit(form: NgForm): void {
-    this.item.priceInCent = this.priceInEuro * 100;
+    this.item.priceInCent = this.item.addToFiance ? this.priceInEuro * 100 : null;
     if (this.item.ean == '') {
       this.item.ean = null;
     }
@@ -158,6 +166,10 @@ export class ItemCreateEditComponent implements OnInit {
       }
       observable.subscribe({
         next: () => {
+          if (this.item.addToFiance) {
+            this.createExpenseFromItemDto();
+          }
+
           if(this.modeIsCreate){
             this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
           } else {
@@ -189,6 +201,64 @@ export class ItemCreateEditComponent implements OnInit {
       });
     }
   }
+
+  private createExpenseFromItemDto() {
+    this.authService.getUser(this.authService.getToken()).subscribe({
+      next: activeUser => {
+        this.userService.findFlatmates().subscribe({
+          next: (users) => {
+            let debitUsers: DebitDto[] = users.map(user => {
+              return {
+                user: user,
+                splitBy: SplitBy.EQUAL,
+                value: this.priceInEuro * 100 / users.length
+              }
+            });
+            let expenseToCreate: ExpenseDto = {
+              title: 'Bought ' + this.item.productName,
+              description: 'Bought ' + this.item.quantityCurrent
+                + ' ' + this.item.unit.name
+                + ' of ' + this.item.productName
+                + ' for ' + this.priceInEuro
+                + ' €'
+                + (this.item.boughtAt != null
+                  ? ' at ' + this.item.boughtAt
+                  : ''),
+              amountInCents: this.item.priceInCent,
+              createdAt: new Date(),
+              paidBy: {
+                id: Number(activeUser.id),
+                firstName: activeUser.firstName,
+                lastName: activeUser.lastName,
+              },
+              debitUsers: debitUsers,
+              items: [this.item],
+              isRepeating: false,
+              periodInDays: null,
+              repeatingExpenseType: null,
+              addedViaStorage: true
+            };
+            this.financeService.createExpense(expenseToCreate).subscribe({
+              next: () => {
+                this.notification.success(`Item ${this.item.productName} successfully added to finance.`, "Success");
+              },
+              error: error => {
+                this.notification.error(`Item ${this.item.productName} could not be added to finance: ${error}`);
+              }
+            });
+          },
+          error: error => {
+            this.notification.error('Cannot find other flatmates, cannot add expense', "Error");
+          }
+        });
+
+      },
+      error: error => {
+        this.notification.error('Failed to load User, cannot add expense', "Error");
+      }
+    });
+  }
+
 
   addIngredient(ingredient: string): void {
     if (ingredient == undefined || ingredient.length == 0) {

@@ -40,6 +40,9 @@ public class Expense {
     @Column
     private Integer periodInDays;
 
+    @Column
+    private Boolean addedViaStorage;
+
     @ManyToOne
     private ApplicationUser paidBy;
 
@@ -130,6 +133,14 @@ public class Expense {
 
     public void setPeriodInDays(Integer periodInDays) {
         this.periodInDays = periodInDays;
+    }
+
+    public Boolean getAddedViaStorage() {
+        return addedViaStorage;
+    }
+
+    public void setAddedViaStorage(Boolean addedViaStorage) {
+        this.addedViaStorage = addedViaStorage;
     }
 
     @Override
