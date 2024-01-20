@@ -76,7 +76,7 @@ export class AllChoreComponent {
         document.body.removeChild(downloadLink);
       },
       error => {
-        console.error("Error exporting PDF");
+        this.notification.error("PDF could not be exported")
       });
   }
 
