@@ -118,7 +118,6 @@ public class ChoresEndpoint {
     @Secured("ROLE_USER")
     public List<UserDetailDto> getUsers() throws AuthenticationException {
         LOGGER.trace("getUsers()");
-        LOGGER.error("Error: getting users");
         List<ApplicationUser> users = choreService.getUsers();
 
         return userMapper.entityListToUserDetailDtoList(users);
