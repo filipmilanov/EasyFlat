@@ -231,6 +231,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     public Expense update(ExpenseDto expenseDto) throws ConflictException, ValidationException, AuthorizationException {
         LOGGER.trace("update: {}", expenseDto);
 
+        findById(expenseDto.id());
+
         ApplicationUser user = authService.getUserFromToken();
         List<ApplicationUser> usersOfFlat = user.getSharedFlat().getUsers().stream().toList();
 
