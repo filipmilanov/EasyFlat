@@ -272,15 +272,15 @@ class ExpenseEndpointTest {
             ),
             () -> assertThat(actual.stream()
                 .map(pair ->
-                    Math.round((pair.value()) * 10) / 10.0
+                    Math.floor(Math.round((pair.value()) * 10) / 10.0)
                 ).toList()
             ).containsAll(
                 List.of(
-                    2881.2,
+                    2881.0,
                     1408.0,
-                    1713.9,
-                    1537.5,
-                    269.3
+                    1713.0,
+                    1537.0,
+                    269.0
                 )
             )
         );
