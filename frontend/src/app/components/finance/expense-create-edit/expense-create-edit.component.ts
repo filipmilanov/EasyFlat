@@ -158,14 +158,14 @@ export class ExpenseCreateEditComponent implements OnInit {
             },
             error: error => {
               console.error(`Expense could not be retrieved from the backend: ${error}`);
-              this.router.navigate(['/finance']);
+              this.router.navigate(['/expense']);
               this.notification.error('Expense could not be retrieved', "Error");
             }
           })
         },
         error: error => {
           console.error(`Expense could not be retrieved using the ID from the URL: ${error}`);
-          this.router.navigate(['/finance']);
+          this.router.navigate(['/expense']);
           this.notification.error('No expense provided for editing', "Error");
         }
       });
