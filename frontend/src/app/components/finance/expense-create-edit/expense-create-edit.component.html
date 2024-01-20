@@ -24,8 +24,8 @@
         <button type="button"
                 class="btn btn-secondary mb-1 md-md-0"
                 [routerLink]="[previousUrl]">
-          <i class="bi" [class.bi-arrow-left]="true"></i>
-          Back
+          <i class="bi" [class.bi-arrow-left]="modeIsCreate" [class.bi-ban]="!modeIsCreate"></i>
+          {{ modeIsCreate ? 'Back' : 'Cancel' }}
         </button>
       </div>
     </div>
