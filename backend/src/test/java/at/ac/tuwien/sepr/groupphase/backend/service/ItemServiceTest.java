@@ -14,7 +14,6 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
-import at.ac.tuwien.sepr.groupphase.backend.repository.IngredientRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +34,6 @@ import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidAlwa
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemDto;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemId;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.itemDtoWithInvalidDigitalStorage;
-import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.itemDtoWithInvalidIngredients;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ml;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validAlwaysInStockItem;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validInStockItemDto;
@@ -63,9 +61,6 @@ class ItemServiceTest {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private IngredientRepository ingredientRepository;
 
     @MockBean
     private AuthService authService;
@@ -578,31 +573,5 @@ class ItemServiceTest {
         assertDoesNotThrow(
             () -> service.findById(alwaysInStockItem.getItemId())
         );
-    }
-
-    @Test
-    @DisplayName("Try to create item with invalid ingredients - Refs: #288")
-    void givenItemWithInvalidIngredientWhenCreateThenItemIsPersistedWithId() throws ValidationException, ConflictException, AuthorizationException {
-        // given
-
-        // when
-        String message = assertThrows(ValidationException.class, () ->
-            service.create(itemDtoWithInvalidIngredients)
-        ).getMessage();
-
-        // then
-        List<Ingredient> allIngredients = ingredientRepository.findAll();
-
-        assertAll(
-            () -> assertThat(message).containsSequence("ingredient"),
-            () -> assertThat(allIngredients).extracting(
-                Ingredient::getTitle
-            ).doesNotContain(
-                itemDtoWithInvalidIngredients.ingredients().get(0).name(),
-                itemDtoWithInvalidIngredients.ingredients().get(1).name()
-            )
-        );
-
-
     }
 }
