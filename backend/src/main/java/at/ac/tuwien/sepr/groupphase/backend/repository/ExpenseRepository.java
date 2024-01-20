@@ -18,10 +18,12 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
         + "WHERE (:title IS NULL OR UPPER(e.title) LIKE UPPER(CONCAT('%', :title, '%')))"
         + "AND (:paidById IS NULL OR e.paidBy.id = :paidById)"
         + "AND ((:startOfDay IS NULL AND :endOfDay IS NULL) OR (e.createdAt BETWEEN :startOfDay AND :endOfDay))"
-        + "AND (:amountInCents IS NULL OR e.amountInCents >= :amountInCents)")
+        + "AND (:minAmountInCents IS NULL OR e.amountInCents >= :minAmountInCents)"
+        + "AND (:maxAmountInCents IS NULL OR e.amountInCents <= :maxAmountInCents)")
     List<Expense> findByCriteria(@Param("title") String title,
                                  @Param("paidById") Long paidById,
-                                 @Param("amountInCents") Double amountInCents,
+                                 @Param("minAmountInCents") Double minAmountInCents,
+                                 @Param("maxAmountInCents") Double maxAmountInCents,
                                  @Param("startOfDay") LocalDateTime startOfDay,
                                  @Param("endOfDay") LocalDateTime endOfDay
     );

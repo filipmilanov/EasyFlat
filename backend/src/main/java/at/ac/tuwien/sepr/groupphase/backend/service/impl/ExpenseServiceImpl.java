@@ -90,7 +90,8 @@ public class ExpenseServiceImpl implements ExpenseService {
         return expenseRepository.findByCriteria(
             expenseSearchDto.title(),
             expenseSearchDto.paidById(),
-            expenseSearchDto.amountInCents(),
+            expenseSearchDto.minAmountInCents(),
+            expenseSearchDto.maxAmountInCents(),
             expenseSearchDto.createdAt() != null
                 ? expenseSearchDto.createdAt().atStartOfDay()
                 : null,
