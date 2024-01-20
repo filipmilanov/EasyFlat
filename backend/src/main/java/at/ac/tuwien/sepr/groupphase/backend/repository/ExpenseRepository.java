@@ -15,11 +15,14 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findAllByPaidByIs(ApplicationUser user);
 
     @Query("SELECT e FROM Expense e "
-        + "WHERE (:title IS NULL OR UPPER(e.title) LIKE UPPER(CONCAT('%', :title, '%')))"
+        + "JOIN application_user user ON e.paidBy.id = user.id "
+        + "WHERE user.sharedFlat.id = :flatId "
+        + "AND (:title IS NULL OR UPPER(e.title) LIKE UPPER(CONCAT('%', :title, '%')))"
         + "AND (:paidById IS NULL OR e.paidBy.id = :paidById)"
         + "AND ((:startOfDay IS NULL AND :endOfDay IS NULL) OR (e.createdAt BETWEEN :startOfDay AND :endOfDay))"
         + "AND (:amountInCents IS NULL OR e.amountInCents >= :amountInCents)")
-    List<Expense> findByCriteria(@Param("title") String title,
+    List<Expense> findByCriteria(@Param("flatId") Long flatId,
+                                 @Param("title") String title,
                                  @Param("paidById") Long paidById,
                                  @Param("amountInCents") Double amountInCents,
                                  @Param("startOfDay") LocalDateTime startOfDay,

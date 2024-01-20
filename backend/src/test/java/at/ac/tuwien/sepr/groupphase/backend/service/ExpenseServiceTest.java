@@ -109,13 +109,20 @@ class ExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("Can all expenses be found?")
-    void givenNothingWhenFindAllThenAllExpensesAreReturned() {
+    @DisplayName("Can all expenses for the current flat be found?")
+    void givenNothingWhenFindAllThenAllExpensesForFlatAreReturned() {
+        // given
+        Long currentFlatId = applicationUser.getSharedFlat().getId();
+
+        List<Expense> allExpensesInFlat = expenseRepository.findAll().stream()
+            .filter(expense -> expense.getPaidBy().getSharedFlat().getId().equals(currentFlatId))
+            .toList();
+
         // when
         List<Expense> actual = service.findAll(new ExpenseSearchDto(null, null, null, null));
 
         // then
-        assertThat(actual).hasSize(expenseRepository.findAll().size());
+        assertThat(actual).hasSize(allExpensesInFlat.size());
     }
 
     @Test
