@@ -40,7 +40,9 @@
         <button class="btn btn-outline-secondary" [routerLink]="[recipe.id, 'edit']">Edit</button>
       </div>
       <div class="col-3 mb-2">
-        <button class="btn btn-success" (click)="cook()">Cook</button>
+        <button class="btn btn-success" (click)="cook()"
+                ngbTooltip="Cooking this recipe will deduct the corresponding quantities from your storage items.">Cook
+        </button>
       </div>
     </div>
   </div>
