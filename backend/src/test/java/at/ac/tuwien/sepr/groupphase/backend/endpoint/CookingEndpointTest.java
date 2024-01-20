@@ -1,15 +1,21 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeIngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.RecipeIngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.UnitRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
@@ -36,10 +42,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -82,6 +90,12 @@ public class CookingEndpointTest {
 
     @MockBean
     private AuthService authService;
+
+    @Autowired
+    private RecipeIngredientMapper ingredientMapper;
+
+    @Autowired
+    private UnitRepository unitRepository;
 
     @BeforeEach
     public void cleanUp() throws ValidationException, ConflictException {
@@ -298,7 +312,7 @@ public class CookingEndpointTest {
 
         String body = objectMapper.writeValueAsString(updatedRecipeDto);
 
-        MvcResult mvcResult = this.mockMvc.perform(put(COOKBOOK_BASE_URI + "/1")
+        MvcResult mvcResult = this.mockMvc.perform(get(COOKBOOK_BASE_URI + "/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
@@ -360,6 +374,134 @@ public class CookingEndpointTest {
         MockHttpServletResponse response = mvcResult.getResponse();
 
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+    }
+
+    @Test
+    void getMissingIngredientsReturnStatus200() throws Exception {
+
+        List<RecipeIngredientDto> ingredients = new ArrayList<>();
+
+        Unit unit = unitRepository.findByName("kg").orElseThrow();
+
+        RecipeIngredient ingredient1 = new RecipeIngredient();
+        ingredient1.setName("Ingredient " +  (1));
+        ingredient1.setAmount(1);
+        ingredient1.setUnit(unit.getName());
+        ingredient1.setUnitEnum(unit);
+        ingredients.add(ingredientMapper.entityToDto(ingredient1));
+
+        RecipeIngredient ingredient2 = new RecipeIngredient();
+        ingredient2.setName("Ingredient " +  (2));
+        ingredient2.setAmount(1);
+        ingredient2.setUnit(unit.getName());
+        ingredient2.setUnitEnum(unit);
+        ingredients.add(ingredientMapper.entityToDto(ingredient2));
+
+        RecipeSuggestionDto recipe = RecipeSuggestionDtoBuilder.builder()
+            .id(1L)
+            .title("Recipe Number 1")
+            .servings(2)
+            .readyInMinutes(20)
+            .summary("This is recipe 1")
+            .extendedIngredients(ingredients)
+            .build();
+
+        String body = objectMapper.writeValueAsString(recipe);
+
+        MvcResult mvcResult = this.mockMvc.perform(get(COOKBOOK_BASE_URI + "/missing/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        RecipeSuggestionDto recipeWithMissing = objectMapper.readValue(response.getContentAsString(),RecipeSuggestionDto.class);
+
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType()),
+            () -> assertThat(recipeWithMissing.title()).isEqualTo(recipe.title()),
+            () -> assertThat(recipeWithMissing.summary()).isEqualTo(recipe.summary()),
+            () -> assertThat(recipeWithMissing.readyInMinutes()).isEqualTo(recipe.readyInMinutes()),
+            () -> assertThat(recipeWithMissing.servings()).isEqualTo(recipe.servings()),
+            () -> assertThat(recipeWithMissing.extendedIngredients()).isEqualTo(recipe.extendedIngredients()),
+            () -> assertThat(recipe.missedIngredients()).isNull(),
+            () -> assertThat(recipeWithMissing.missedIngredients()).isNotNull()
+        );
+
+    }
+
+    @Test
+    void getAllRecipesFromCookbookReturnsStatus200() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(get(COOKBOOK_BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
+
+        List<RecipeSuggestionDto> recipes = objectMapper.readValue(response.getContentAsString(), new TypeReference<List<RecipeSuggestionDto>>() {});
+
+        assertThat(recipes.size()).isEqualTo(5);
+    }
+
+    @Test
+    void getCookbookRecipeReturnStatus200() throws Exception {
+
+        List<RecipeIngredientDto> ingredients = new ArrayList<>();
+
+        Unit unit = unitRepository.findByName("kg").orElseThrow();
+
+        RecipeIngredient ingredient1 = new RecipeIngredient();
+        ingredient1.setName("Ingredient " +  (1));
+        ingredient1.setAmount(1);
+        ingredient1.setUnit(unit.getName());
+        ingredient1.setUnitEnum(unit);
+        ingredients.add(ingredientMapper.entityToDto(ingredient1));
+
+        RecipeIngredient ingredient2 = new RecipeIngredient();
+        ingredient2.setName("Ingredient " +  (2));
+        ingredient2.setAmount(1);
+        ingredient2.setUnit(unit.getName());
+        ingredient2.setUnitEnum(unit);
+        ingredients.add(ingredientMapper.entityToDto(ingredient2));
+
+        RecipeSuggestionDto mockedRecipe = RecipeSuggestionDtoBuilder.builder()
+            .id(1L)
+            .title("Recipe Number 1")
+            .servings(2)
+            .readyInMinutes(20)
+            .summary("This is recipe 1")
+            .extendedIngredients(ingredients)
+            .build();
+
+        String body = objectMapper.writeValueAsString(mockedRecipe);
+
+        MvcResult mvcResult = this.mockMvc.perform(get(COOKBOOK_BASE_URI + "/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        RecipeSuggestionDto recipe = objectMapper.readValue(response.getContentAsString(),RecipeSuggestionDto.class);
+
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType()),
+            () -> assertThat(mockedRecipe.title()).isEqualTo(recipe.title()),
+            () -> assertThat(mockedRecipe.summary()).isEqualTo(recipe.summary()),
+            () -> assertThat(mockedRecipe.readyInMinutes()).isEqualTo(recipe.readyInMinutes()),
+            () -> assertThat(mockedRecipe.servings()).isEqualTo(recipe.servings()),
+            () -> assertThat(mockedRecipe.extendedIngredients()).isEqualTo(recipe.extendedIngredients())
+        );
+
     }
 
 

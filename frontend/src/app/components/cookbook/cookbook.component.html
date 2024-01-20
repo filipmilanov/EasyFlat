@@ -15,13 +15,14 @@
     <h3>No recipes found!</h3>
   </div>
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 justify-content-center">
-      <div class="col" *ngFor="let recipe of recipes" style="margin-right: 1rem; margin-bottom: 1rem;">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 ">
+      <div class="col" *ngFor="let recipe of recipes" style="margin-right: 2.5rem; margin-bottom: 2.5rem;">
         <app-cookbook-card [recipe]="recipe" (cookClicked)="openRecipeModal($event)"
                            (recipeCooked)="handleRecipeIsCooked($event)"
                            (recipeDeleted)="handleRecipeDeleted($event)"
                            (detailsClicked)="openDetailModal($event)">
         </app-cookbook-card>
+
       </div>
     </div>
   </div>

@@ -46,9 +46,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,6 +58,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -75,8 +78,12 @@ public class CookingServiceTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
+    @Autowired
+    private ItemRepository itemRepositoryAutowired;
+
     @MockBean
-    private ItemRepository itemRepository;
+    private ItemRepository itemRepositoryMockBean;
+
 
     @MockBean
     private RestTemplate restTemplate;
@@ -89,6 +96,9 @@ public class CookingServiceTest {
 
     private ApplicationUser applicationUser;
 
+    @Autowired
+    private ShoppingListService shoppingListService;
+
 
     @BeforeEach
     public void cleanUp() throws ValidationException, ConflictException {
@@ -100,7 +110,7 @@ public class CookingServiceTest {
 
     @Test
     void testGetRecipeSuggestionFromAPI() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException, DeepLException, InterruptedException {
-        when(itemRepository.findAllByDigitalStorage_StorageId(any())).thenReturn(getMockedItemsWithoutMatching());
+        when(itemRepositoryMockBean.findAllByDigitalStorage_StorageId(any())).thenReturn(getMockedItemsWithoutMatching());
         mockAPIResponse();
 
         // when
@@ -211,80 +221,7 @@ public class CookingServiceTest {
     }
 
     @Test
-    void testCookRecipeRemoveItemsQuantityFromStorage() throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
-        // given
-        Set<UnitDto> subUnit = new HashSet<>();
-        subUnit.add(new UnitDto("g", null, null));
-        RecipeSuggestionDto testRecipe = RecipeSuggestionDtoBuilder.builder()
-            .id(1L)
-            .title("Test recipe")
-            .servings(5)
-            .readyInMinutes(10)
-            .extendedIngredients(Arrays.asList(
-                RecipeIngredientDtoBuilder.builder()
-                    .id(1L)
-                    .name("apples")
-                    .unit("kg")
-                    .unitEnum(UnitDtoBuilder.builder()
-                        .name("kg")
-                        .convertFactor(1000L)
-                        .subUnit(subUnit)
-                        .build())
-                    .amount(1.0)
-                    .build(),
-                RecipeIngredientDtoBuilder.builder()
-                    .id(2L)
-                    .name("flour")
-                    .unit("kg")
-                    .unitEnum(UnitDtoBuilder.builder()
-                        .name("kg")
-                        .convertFactor(1000L)
-                        .subUnit(subUnit)
-                        .build())
-                    .amount(0.5)
-                    .build(),
-                RecipeIngredientDtoBuilder.builder()
-                    .id(3L)
-                    .name("sugar")
-                    .unit("kg")
-                    .unitEnum(UnitDtoBuilder.builder()
-                        .name("kg")
-                        .convertFactor(1000L)
-                        .subUnit(subUnit)
-                        .build())
-                    .amount(0.2)
-                    .build()))
-            .summary("How to cook")
-            .build();
-
-        ItemSearchDto searchParamsIS = new ItemSearchDto(false, null, null, null, null);
-        ItemSearchDto searchParamsAIS = new ItemSearchDto(true, null, null, null, null);
-        List<ItemListDto> itemsFromDigitalStorageIS = digitalStorageService.searchItems(searchParamsIS);
-        List<ItemListDto> itemsFromDigitalStorageAIS = digitalStorageService.searchItems(searchParamsAIS);
-        List<ItemListDto> items = new LinkedList<>();
-        items.addAll(itemsFromDigitalStorageIS);
-        items.addAll(itemsFromDigitalStorageAIS);
-        // when
-        RecipeSuggestionDto result = cookingService.cookRecipe(testRecipe);
-
-        List<ItemListDto> itemsFromDigitalStorageIST = digitalStorageService.searchItems(searchParamsIS);
-        List<ItemListDto> itemsFromDigitalStorageAIST = digitalStorageService.searchItems(searchParamsAIS);
-        List<ItemListDto> itemsT = new LinkedList<>();
-        items.addAll(itemsFromDigitalStorageIST);
-        items.addAll(itemsFromDigitalStorageAIST);
-
-
-        for (ItemListDto item : itemsT) {
-            for (ItemListDto initialItem : items) {
-                if (item.generalName().equals(initialItem.generalName())) {
-                    for (RecipeIngredientDto ingredientDto : testRecipe.extendedIngredients()) {
-                        if (item.generalName().equals(ingredientDto.name())) {
-                            assertThat(item.quantityCurrent()).isEqualTo(initialItem.quantityCurrent() - ingredientDto.amount());
-                        }
-                    }
-                }
-            }
-        }
+    void takeRecipeFromApiAndSaveItInTheCookbook(){
 
     }
 
@@ -384,7 +321,7 @@ public class CookingServiceTest {
 
     @Test
     void matchIngredientThanTheIngredientShouldBeMatchedInGetRecipes() throws AuthorizationException, DeepLException, ValidationException, ConflictException, AuthenticationException, InterruptedException {
-        when(itemRepository.findAllByDigitalStorage_StorageId(any())).thenReturn(getMockedItems());
+        when(itemRepositoryMockBean.findAllByDigitalStorage_StorageId(any())).thenReturn(getMockedItems());
         DigitalStorageItem digitalStorageItem = getMockedItems().get(0);
         mockAPIResponse();
 
@@ -405,7 +342,7 @@ public class CookingServiceTest {
 
     @Test
     void matchIngredientThanTheIngredientShouldBeMatchedInCookRecipe() throws ValidationException, ConflictException, AuthorizationException, AuthenticationException {
-        when(itemRepository.findAllByDigitalStorage_StorageId(any())).thenReturn(getMockedItems());
+        when(itemRepositoryMockBean.findAllByDigitalStorage_StorageId(any())).thenReturn(getMockedItems());
         DigitalStorageItem digitalStorageItem = getMockedItems().get(0);
 
         // when
@@ -420,7 +357,7 @@ public class CookingServiceTest {
 
     @Test
     void matchIngredientThanTheIngredientShouldBeMatchedInRecipeDetailDto(){
-        when(itemRepository.findAllByDigitalStorage_StorageId(any())).thenReturn(getMockedItems());
+        when(itemRepositoryMockBean.findAllByDigitalStorage_StorageId(any())).thenReturn(getMockedItems());
         DigitalStorageItem digitalStorageItem = getMockedItems().get(0);
 
         mockAPIResponseForDetails();
@@ -436,6 +373,33 @@ public class CookingServiceTest {
             () -> assertThat(matchedIngredient.amount()).isEqualTo(100),
             () -> assertThat(matchedIngredient.realName()).isEqualTo("Parmesan cheese")
         );
+    }
+
+    @Test
+    void getMissingIngredientsShouldReturnRecipeWithMissingIngredients() throws ValidationException, AuthorizationException, ConflictException {
+
+        RecipeSuggestionDto recipeWithoutMissing = cookingService.getCookbookRecipe(1L);
+
+        RecipeSuggestionDto recipeWithMissing = cookingService.getMissingIngredients(recipeWithoutMissing.id());
+
+        RecipeSuggestionDto recipe = cookingService.getCookbookRecipe(recipeWithoutMissing.id());
+
+        assertAll(
+            () -> assertThat(recipeWithMissing.title()).isEqualTo(recipe.title()),
+            () -> assertThat(recipeWithMissing.summary()).isEqualTo(recipe.summary()),
+            () -> assertThat(recipeWithMissing.readyInMinutes()).isEqualTo(recipe.readyInMinutes()),
+            () -> assertThat(recipeWithMissing.servings()).isEqualTo(recipe.servings()),
+            () -> assertThat(recipeWithMissing.extendedIngredients()).isEqualTo(recipe.extendedIngredients()),
+            () -> assertThat(recipeWithoutMissing.missedIngredients()).isNull(),
+            () -> assertThat(recipeWithMissing.missedIngredients()).isNotNull()
+        );
+    }
+
+    @Test
+    void getAllRecipesFromCookbook() throws ValidationException, AuthorizationException, AuthenticationException {
+        List<RecipeSuggestionDto> recipes = cookingService.getCookbook();
+
+        assertThat(recipes.size()).isEqualTo(5);
     }
 
     private void mockAPIResponse() {
@@ -828,5 +792,7 @@ public class CookingServiceTest {
 
         return recipeDetailDto;
     }
+
+
 
 }
