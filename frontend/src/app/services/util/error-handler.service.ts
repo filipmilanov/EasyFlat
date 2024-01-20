@@ -42,6 +42,7 @@ export class ErrorHandlerService {
     } else if (error.status === 502) {
       this.notification.error(`There was an issue communicating with an external API.`, "Error");
     } else {
+      this.notification.error(`The ${entityType} could not be ${action}.`, "Error");
       this.handleErrorMessages(error);
     }
   }
