@@ -11,10 +11,12 @@ public class UserLoginDto {
 
     @NotBlank(message = "Email cannot be empty")
     @Email(message = "Email is not in a valid form")
+    @Size(max = 100, message = "The email cannot be larger than 100 characters")
     private String email;
 
     @NotBlank(message = "Password cannot be empty")
     @Size(min = 8, message = "The password must be at least 8 characters")
+    @Size(max = 100, message = "The password cannot be larger than 100 characters")
     private String password;
 
     public String getEmail() {
