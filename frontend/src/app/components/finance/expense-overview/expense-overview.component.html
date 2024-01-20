@@ -49,13 +49,23 @@
       </option>
     </select>
   </div>
-  <div class="flex-grow-1">
-    <label for="searchExpenseAmount" class="col-form-label">
-      Amount
+  <div class="ms-1">
+    <label for="searchMinExpenseAmount" class="col-form-label">
+      Minimum Amount
     </label>
-    <input type="number" id="searchExpenseAmount" name="searchExpenseAmount"
+    <input type="number" id="searchMinExpenseAmount" name="searchMinExpenseAmount"
            class="form-control"
-           [(ngModel)]="searchParams.amountInEuro"
+           [(ngModel)]="searchParams.minAmountInEuro"
+           (ngModelChange)="searchChanged()"
+    >
+  </div>
+  <div class="ms-1">
+    <label for="searchMaxExpenseAmount" class="col-form-label">
+      Maximum Amount
+    </label>
+    <input type="number" id="searchMaxExpenseAmount" name="searchMaxExpenseAmount"
+           class="form-control"
+           [(ngModel)]="searchParams.maxAmountInEuro"
            (ngModelChange)="searchChanged()"
     >
   </div>

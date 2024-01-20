@@ -19,7 +19,8 @@ export class ExpenseDto {
 export class ExpenseSearchDto {
   title?: string;
   paidBy?: UserListDto;
-  amountInEuro?: number;
+  minAmountInEuro?: number;
+  maxAmountInEuro?: number;
   createdAt?: Date;
 }
 
