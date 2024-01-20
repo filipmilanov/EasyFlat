@@ -258,6 +258,9 @@ export class ExpenseCreateEditComponent implements OnInit {
     if (this.selectedRepeatingOption != RepeatingExpenseOptions.REPEAT_AT) {
       this.expense.repeatingExpenseType = null;
     }
+    if (this.selectedRepeatingOption == RepeatingExpenseOptions.NO_REPEAT) {
+      this.expense.periodInDays = null;
+    }
     if (this.selectedSplitBy === SplitBy.EQUAL || this.selectedSplitBy === SplitBy.UNEQUAL) {
       this.expense.debitUsers.forEach(user => {
         user.value = user.value * 100;
