@@ -61,7 +61,7 @@ export class ExpenseDetailComponent implements OnInit {
   delete(): void {
     this.financeService.deleteExpense(this.expense.id).subscribe({
           next: (): void => {
-            this.router.navigate(['/expense']);
+            this.router.navigate([this.previousUrl]);
             this.notification.success(`Expense ${this.expense.title} was successfully deleted`, "Success");
           },
           error: error => {
