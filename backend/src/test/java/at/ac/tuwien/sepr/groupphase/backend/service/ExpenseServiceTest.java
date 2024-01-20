@@ -109,13 +109,20 @@ class ExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("Can all expenses be found?")
-    void givenNothingWhenFindAllThenAllExpensesAreReturned() {
+    @DisplayName("Can all expenses for the current flat be found?")
+    void givenNothingWhenFindAllThenAllExpensesForFlatAreReturned() {
+        // given
+        Long currentFlatId = applicationUser.getSharedFlat().getId();
+
+        List<Expense> allExpensesInFlat = expenseRepository.findAll().stream()
+            .filter(expense -> expense.getPaidBy().getSharedFlat().getId().equals(currentFlatId))
+            .toList();
+
         // when
         List<Expense> actual = service.findAll(new ExpenseSearchDto(null, null, null, null));
 
         // then
-        assertThat(actual).hasSize(expenseRepository.findAll().size());
+        assertThat(actual).hasSize(allExpensesInFlat.size());
     }
 
     @Test
@@ -592,12 +599,12 @@ class ExpenseServiceTest {
             () -> assertThat(actual).isNotNull(),
             () -> assertThat(actual).extracting(
                 (UserValuePairDto userValuePairDto) -> userValuePairDto.user().id(),
-                (UserValuePairDto userValuePairDto) -> Math.round((userValuePairDto.value()) * 10) / 10.0
+                (UserValuePairDto userValuePairDto) -> Math.floor(Math.round((userValuePairDto.value()) * 10) / 10.0)
             ).containsExactlyInAnyOrder(
-                new Tuple(1L, 2881.1),
-                new Tuple(6L, 1713.9),
-                new Tuple(11L, 1537.5),
-                new Tuple(16L, 269.3),
+                new Tuple(1L, 2881.0),
+                new Tuple(6L, 1713.0),
+                new Tuple(11L, 1537.0),
+                new Tuple(16L, 269.0),
                 new Tuple(21L, 1408.0)
             )
         );

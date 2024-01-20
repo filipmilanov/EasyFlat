@@ -87,7 +87,10 @@ public class ExpenseServiceImpl implements ExpenseService {
     public List<Expense> findAll(ExpenseSearchDto expenseSearchDto) {
         LOGGER.trace("findAll({})", expenseSearchDto);
 
+        Long flatId = authService.getUserFromToken().getSharedFlat().getId();
+
         return expenseRepository.findByCriteria(
+            flatId,
             expenseSearchDto.title(),
             expenseSearchDto.paidById(),
             expenseSearchDto.amountInCents(),

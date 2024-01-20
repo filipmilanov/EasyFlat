@@ -14,19 +14,23 @@ public class UserDetailDto {
     private Long id;
 
     @NotBlank(message = "First name cannot be empty")
+    @Size(max = 100, message = "The first name cannot be larger than 100 characters")
     private String firstName;
 
     @NotBlank(message = "Last name cannot be empty")
+    @Size(max = 100, message = "The last name cannot be larger than 100 characters")
     private String lastName;
 
     @NotBlank(message = "Email cannot be empty")
     @Email(message = "Email is not in a valid form")
+    @Size(max = 100, message = "The email cannot be larger than 100 characters")
     private String email;
 
     private String flatName;
 
     @NotBlank(message = "Password cannot be empty")
     @Size(min = 8, message = "The password must be at least 8 characters")
+    @Size(max = 100, message = "The password cannot be larger than 100 characters")
     private String password;
 
     private boolean admin;
