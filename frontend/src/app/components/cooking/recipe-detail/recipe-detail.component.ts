@@ -37,10 +37,11 @@ export class RecipeDetailComponent implements OnInit {
 
   load() {
 
-    console.log("DEATILS" + this.recipeID);
+    console.log("DEATILS" + this.recipeDetail.extendedIngredients);
     this.service.getRecipeDetails(this.recipeID).subscribe({
       next: res => {
         this.recipeDetail = res;
+        console.log("Ingredients:", this.recipeDetail.extendedIngredients);
       },
       error: error => {
 

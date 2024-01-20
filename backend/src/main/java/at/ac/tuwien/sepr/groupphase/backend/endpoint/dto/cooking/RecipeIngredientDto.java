@@ -24,17 +24,20 @@ public record RecipeIngredientDto(
     double amount,
     boolean matched,
     boolean autoMatched,
+    boolean haveWithDifferentUnits,
     String realName,
     ItemDto matchedItem) {
 
 
     public RecipeIngredientDto withName(String nameNew) {
         return new RecipeIngredientDto(this.id, nameNew, this.unit, this.unitEnum, this.amount,
-            this.matched, this.autoMatched, this.realName, this.matchedItem);
+            this.matched, this.autoMatched, this.haveWithDifferentUnits, this.realName, this.matchedItem);
     }
 
-
-
+    public RecipeIngredientDto updateHaveWithDifferentIngredients(boolean haveWithDifferentUnitsNew) {
+        return new RecipeIngredientDto(this.id, this.name, this.unit, this.unitEnum, this.amount,
+            this.matched, this.autoMatched, haveWithDifferentUnitsNew, this.realName, this.matchedItem);
+    }
 
     @Override
     public boolean equals(Object o) {
