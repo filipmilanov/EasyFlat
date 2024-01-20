@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,22 +38,11 @@ public class Chore {
 
     @ManyToOne
     @JoinColumn(name = "shared_flat_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private SharedFlat sharedFlat;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private ApplicationUser user;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<Preference> firstPrefList;
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<Preference> secondPrefList;
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<Preference> thirdPrefList;
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<Preference> fourthPrefList;
-
 
 
     public Chore() {
@@ -99,40 +90,8 @@ public class Chore {
         return sharedFlat;
     }
 
-    public List<Preference> getFirstPrefList() {
-        return firstPrefList;
-    }
-
-    public List<Preference> getSecondPrefList() {
-        return secondPrefList;
-    }
-
-    public List<Preference> getThirdPrefList() {
-        return thirdPrefList;
-    }
-
-    public List<Preference> getFourthPrefList() {
-        return fourthPrefList;
-    }
-
     public void setSharedFlat(SharedFlat sharedFlat) {
         this.sharedFlat = sharedFlat;
-    }
-
-    public void setFirstPrefList(List<Preference> firstPrefList) {
-        this.firstPrefList = firstPrefList;
-    }
-
-    public void setSecondPrefList(List<Preference> secondPrefList) {
-        this.secondPrefList = secondPrefList;
-    }
-
-    public void setThirdPrefList(List<Preference> thirdPrefList) {
-        this.thirdPrefList = thirdPrefList;
-    }
-
-    public void setFourthPrefList(List<Preference> fourthPrefList) {
-        this.fourthPrefList = fourthPrefList;
     }
 
     public Chore setPoints(int points) {

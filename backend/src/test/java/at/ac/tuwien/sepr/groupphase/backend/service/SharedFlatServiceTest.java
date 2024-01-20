@@ -110,7 +110,7 @@ public class SharedFlatServiceTest {
         testUser.setSharedFlat(newSharedFlat);
         userRepository.save(testUser);
 
-        sharedFlatService.delete();
+        sharedFlatService.delete(testUser.getId());
 
         assertAll(
             () -> assertEquals(0, sharedFlatRepository.findAll().size())
@@ -130,7 +130,7 @@ public class SharedFlatServiceTest {
         ApplicationUser user = new ApplicationUser(2L, "FirstName1", "LastName1", "user1@email.com", "password", Boolean.FALSE, newSharedFlat);
         userRepository.save(user);
 
-        sharedFlatService.delete();
+        sharedFlatService.delete(testUser.getId());
         assertAll(
             () -> assertEquals(0, sharedFlatRepository.findAll().size())
         );

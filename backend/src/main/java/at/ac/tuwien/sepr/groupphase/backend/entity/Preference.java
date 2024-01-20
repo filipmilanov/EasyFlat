@@ -33,8 +33,7 @@ public class Preference {
     private Chore thirdId;
     @ManyToOne
     private Chore fourthId;
-    @OneToOne(fetch = FetchType.EAGER)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne
     private ApplicationUser user;
 
     public Long getId() {

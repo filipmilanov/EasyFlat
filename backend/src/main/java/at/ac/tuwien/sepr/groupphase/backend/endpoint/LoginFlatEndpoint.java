@@ -44,10 +44,10 @@ public class LoginFlatEndpoint {
         return sharedFlatService.loginWg(wgDetailDto);
     }
 
-    @DeleteMapping("/{email}")
-    public WgDetailDto deleteSharedFlat(@PathVariable String email) throws AuthorizationException {
+    @DeleteMapping("/{id}")
+    public WgDetailDto deleteSharedFlat(@PathVariable Long id) throws AuthorizationException {
         LOGGER.trace("delete()");
-        return sharedFlatService.delete();
+        return sharedFlatService.delete(id);
     }
 
 

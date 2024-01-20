@@ -8,13 +8,13 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ChoreRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.CookbookRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.PreferenceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
@@ -23,11 +23,9 @@ import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.authorization.Authorization;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.SharedFlatValidatorImpl;
 import jakarta.transaction.Transactional;
-import jdk.dynalink.linker.LinkerServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,23 +40,14 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
     private final SharedFlatRepository sharedFlatRepository;
     private final PasswordEncoder passwordEncoder;
     private final SharedFlatMapper sharedFlatMapper;
-
     private final UserRepository userRepository;
-
-    private final JwtTokenizer jwtTokenizer;
-    private final Authorization authorization;
-
     private final DigitalStorageRepository digitalStorageRepository;
     private final ShoppingListRepository shoppingListRepository;
     private final CookbookRepository cookbookRepository;
-
     private final SharedFlatValidatorImpl validator;
-
     private final AuthService authService;
-
-    private final CustomUserDetailService customUserDetailService;
-
     private final ChoreRepository choreRepository;
+    private final PreferenceRepository preferenceRepository;
 
     @Autowired
     public SharedFlatService(SharedFlatRepository sharedFlatRepository,
@@ -66,17 +55,13 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
                              SharedFlatMapper sharedFlatMapper,
                              DigitalStorageRepository digitalStorageRepository,
                              CookbookRepository cookbookRepository,
-                             JwtTokenizer jwtTokenizer,
                              UserRepository userRepository,
-                             Authorization authorization,
                              ShoppingListRepository shoppingListRepository,
-                             SharedFlatValidatorImpl validator, AuthService authService, CustomUserDetailService customUserDetailService, ChoreRepository choreRepository) {
+                             SharedFlatValidatorImpl validator, AuthService authService, ChoreRepository choreRepository, PreferenceRepository preferenceRepository) {
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.sharedFlatMapper = sharedFlatMapper;
-        this.jwtTokenizer = jwtTokenizer;
         this.userRepository = userRepository;
-        this.authorization = authorization;
         this.digitalStorageRepository = digitalStorageRepository;
 
 
@@ -84,8 +69,8 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         this.shoppingListRepository = shoppingListRepository;
         this.validator = validator;
         this.authService = authService;
-        this.customUserDetailService = customUserDetailService;
         this.choreRepository = choreRepository;
+        this.preferenceRepository = preferenceRepository;
     }
 
 
@@ -161,32 +146,40 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
 
     @Override
     @Transactional
-    public WgDetailDto delete() {
+    public WgDetailDto delete(Long id) {
         LOGGER.trace("delete()");
-        ApplicationUser user = authService.getUserFromToken();
-        if (!user.getAdmin()) {
-            throw new BadCredentialsException("User is not admin, so he can not delete the flat");
-        } else {
-            SharedFlat flat = user.getSharedFlat();
-            if (flat == null) {
-                throw new NotFoundException("Flat doesn't exist");
-            }
-            Long deletedFlatId = flat.getId();
-            List<ApplicationUser> users = userRepository.findAllByFlatId(deletedFlatId);
-            if (!users.isEmpty()) {
-                for (ApplicationUser us : users) {
-                    us.setSharedFlat(null);
-                    us.setAdmin(false);
-                    userRepository.save(us);
+        Optional<ApplicationUser> applicationUser = userRepository.findById(id);
+        if (applicationUser.isPresent()) {
+            ApplicationUser user = applicationUser.get();
+            if (!user.getAdmin()) {
+                throw new BadCredentialsException("User is not admin, so he can not delete the flat");
+            } else {
+                SharedFlat flat = user.getSharedFlat();
+                if (flat == null) {
+                    throw new NotFoundException("Flat doesn't exist");
                 }
+                Long deletedFlatId = flat.getId();
+                List<ApplicationUser> users = userRepository.findAllByFlatId(deletedFlatId);
+                if (!users.isEmpty()) {
+                    for (ApplicationUser us : users) {
+                        if (us.getPreference() != null) {
+                            preferenceRepository.delete(us.getPreference());
+                        }
+                        us.setPreference(null);
+                        us.setSharedFlat(null);
+                        us.setAdmin(false);
+                        userRepository.save(us);
+                    }
+                }
+                List<Chore> chores = choreRepository.findAllBySharedFlatId(deletedFlatId);
+                if (!chores.isEmpty()) {    //are there chores
+                    choreRepository.deleteAll(chores);
+                }
+                sharedFlatRepository.deleteById(deletedFlatId);
+                return sharedFlatMapper.entityToWgDetailDto(flat);
             }
-            List<Chore> chores = choreRepository.findAllBySharedFlatId(deletedFlatId);
-            if (!chores.isEmpty()) {    //are there chores
-                choreRepository.deleteAll(chores);
-            }
-            sharedFlatRepository.deleteById(deletedFlatId);
-            return sharedFlatMapper.entityToWgDetailDto(flat);
+        } else {
+            throw new NotFoundException("User not found");
         }
-
     }
 }

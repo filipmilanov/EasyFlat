@@ -30,6 +30,6 @@ public interface SharedFlatService {
      *
      * @return WgDetailDto representing the deleted shared flat
      */
-    WgDetailDto delete();
+    WgDetailDto delete(Long id);
 }
 

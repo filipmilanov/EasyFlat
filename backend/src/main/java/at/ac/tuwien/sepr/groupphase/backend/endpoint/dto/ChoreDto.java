@@ -22,7 +22,7 @@ public record ChoreDto(
     @Size(max = 200, message = "The name is too long")
     String name,
 
-    @Size(max = 200, message = "The name is too long")
+    @Size(max = 200, message = "The description is too long")
     String description,
 
     LocalDate endDate,
