@@ -217,7 +217,7 @@ public class ItemServiceImpl implements ItemService {
     public List<DigitalStorageItem> findByName(String name, String unitName) {
         ApplicationUser user = authService.getUserFromToken();
         List<DigitalStorageItem> items = itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_ProductNameStartingWith(user.getSharedFlat().getDigitalStorage().getStorageId(), name);
-
+        List<DigitalStorageItem> filtered = filterItemsByUnits(items, unitName);
         return filterItemsByUnits(items, unitName);
     }
 

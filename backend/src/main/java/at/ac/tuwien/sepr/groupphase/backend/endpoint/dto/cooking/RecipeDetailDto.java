@@ -21,5 +21,8 @@ public record RecipeDetailDto(
 
 ) {
 
-
+    public RecipeDetailDto withExtendedIngredients(List<RecipeIngredientDto> updatedIngredients) {
+        return new RecipeDetailDto(this.id, this.title, this.servings, this.readyInMinutes, updatedIngredients,
+            this.summary, this.steps);
+    }
 }

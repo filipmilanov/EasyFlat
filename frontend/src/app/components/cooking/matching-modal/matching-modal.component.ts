@@ -53,7 +53,7 @@ export class MatchingModalComponent implements OnInit {
   }
 
 
-  formatGeneralName(item: ItemDto | null): string {
+  formatProductName(item: ItemDto | null): string {
     return item ? item.productName : '';
   }
 

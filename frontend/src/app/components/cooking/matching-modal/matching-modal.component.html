@@ -29,17 +29,16 @@
             textInputClass="form-control"
             valueNeedsToMatchSuggestion="true"
             placeholder="digital storage item"
-            [formatModel]="formatGeneralName"
+            [formatModel]="formatProductName"
             [suggestions]="nameSuggestions"
             [(ngModel)]="selectedItem"
-            aria-describedby="generalNameHelp"
+            aria-describedby="modalHelp"
           ></app-autocomplete>
           <!-- Unit Matching Information Circle -->
           <!--          <div class="d-flex align-items-center position-relative" *ngIf="selectedItem">-->
           <!--            <span class="bi bi-info-circle text-danger ms-2 info-icon" data-bs-toggle="tooltip"  title="Units do not match" *ngIf="selectedItem.unit.name !== ingredient.unit"></span>-->
           <!--          </div>-->
-          <small id="modalHelp" class="form-text text-muted">Only ingredients with comparable units are
-            suggested</small>
+          <small id="modalHelp" class="form-text text-muted">Only ingredients with comparable units are suggested</small>
         </div>
       </div>
     </div>

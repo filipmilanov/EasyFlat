@@ -28,11 +28,13 @@ public record RecipeIngredientDto(
     ItemDto matchedItem) {
 
 
-    public static RecipeIngredientDto createWithCustomLogic(Long id, String name, String unit, UnitDto unitEnum, double amount, boolean matched, boolean autoMatched, String realName, ItemDto matchedItem) {
-
-        // Return the new instance of RecipeIngredientDto
-        return new RecipeIngredientDto(id, name, unit, unitEnum, amount, matched, autoMatched, realName, matchedItem);
+    public RecipeIngredientDto withName(String nameNew) {
+        return new RecipeIngredientDto(this.id, nameNew, this.unit, this.unitEnum, this.amount,
+            this.matched, this.autoMatched, this.realName, this.matchedItem);
     }
+
+
+
 
     @Override
     public boolean equals(Object o) {

@@ -69,6 +69,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Service
 public class CookingServiceImpl implements CookingService {
@@ -199,6 +200,9 @@ public class CookingServiceImpl implements CookingService {
         });
 
         RecipeDetailDto recipeDetailDto = response.getBody();
+        if (response.getBody() != null) {
+            recipeDetailDto = filterRecipeDetailIngredients(response.getBody());
+        }
         CookingSteps steps = null;
 
         if (responseSteps.getBody() != null && !responseSteps.getBody().isEmpty()) {
@@ -339,7 +343,7 @@ public class CookingServiceImpl implements CookingService {
             fromApi = true;
         }
 
-        RecipeSuggestionDto recipeSuggestionDto = recipeMapper.entityToRecipeSuggestionDto(recipeEntity);
+        RecipeSuggestionDto recipeSuggestionDto = filterRecipeSuggestionIngredients(recipeMapper.entityToRecipeSuggestionDto(recipeEntity));
         if (fromApi) {
             List<RecipeSuggestionDto> recipes = this.saveUnitsAlsUnits(List.of(recipeSuggestionDto));
             recipeSuggestionDto = recipes.get(0);
@@ -546,10 +550,53 @@ public class CookingServiceImpl implements CookingService {
                     hereWeHaveMissIng.missedIngredients(),
                     details.dishTypes()
                 );
-                toReturn.add(toAdd);
+                toReturn.add(filterRecipeSuggestionIngredients(toAdd));
             }
         }
         return toReturn;
+    }
+
+    private RecipeSuggestionDto filterRecipeSuggestionIngredients(RecipeSuggestionDto recipeSuggestion) {
+        List<RecipeIngredientDto> recipeIngredientDtos = recipeSuggestion.extendedIngredients();
+        Map<String, RecipeIngredientDto> recipeIngredientDtoMap = new HashMap<>();
+
+
+        for (RecipeIngredientDto recipeIngredient : recipeIngredientDtos) {
+            String normalizedIngredientName = removeSpecialCharacters(recipeIngredient.name());
+            RecipeIngredientDto ingredientUpdated = recipeIngredient.withName(normalizedIngredientName);
+
+            recipeIngredientDtoMap.put(normalizedIngredientName, ingredientUpdated);
+        }
+        List<RecipeIngredientDto> recipeIngredientDtoListNew = new ArrayList<>(recipeIngredientDtoMap.values());
+
+        return recipeSuggestion.withExtendedIngredients(recipeIngredientDtoListNew);
+    }
+
+    public RecipeDetailDto filterRecipeDetailIngredients(RecipeDetailDto recipeDetailDto) {
+        List<RecipeIngredientDto> recipeIngredientDtos = recipeDetailDto.extendedIngredients();
+        Map<String, RecipeIngredientDto> recipeIngredientDtoMap = new HashMap<>();
+
+        for (RecipeIngredientDto recipeIngredient : recipeIngredientDtos) {
+            String normalizedIngredientName = removeSpecialCharacters(recipeIngredient.name());
+            RecipeIngredientDto ingredientUpdated = recipeIngredient.withName(normalizedIngredientName);
+
+            recipeIngredientDtoMap.put(normalizedIngredientName, ingredientUpdated);
+        }
+
+        List<RecipeIngredientDto> recipeIngredientDtoListNew = new ArrayList<>(recipeIngredientDtoMap.values());
+
+        // Return a new RecipeDetailDto with updated ingredients
+        return recipeDetailDto.withExtendedIngredients(recipeIngredientDtoListNew);
+    }
+
+    public static String removeSpecialCharacters(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
+        Pattern pattern = Pattern.compile("[^a-zA-Z0-9\\s]");
+
+        return pattern.matcher(input).replaceAll("");
     }
 
     private List<RecipeSuggestionDto> setMatchedIngredients(List<RecipeSuggestionDto> recipeSuggestionDtos) {
