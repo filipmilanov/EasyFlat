@@ -32,28 +32,14 @@ export class ExpenseDetailComponent implements OnInit {
             this.expense = res;
           },
           error: error => {
-            console.error("Error finding expense:", error);
             this.router.navigate([this.previousUrl]);
-            let firstBracket = error.error.indexOf('[');
-            let lastBracket = error.error.indexOf(']');
-            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-            let errorDescription = error.error.substring(0, firstBracket - 2);
-            errorMessages.forEach(message => {
-              this.notification.error(message, errorDescription);
-            });
+            this.notification.error("Could not load expense", "Error")
           }
         });
       },
       error: error => {
-        console.error("Error fetching parameters:", error);
         this.router.navigate([this.previousUrl]);
-        let firstBracket = error.error.indexOf('[');
-        let lastBracket = error.error.indexOf(']');
-        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-        let errorDescription = error.error.substring(0, firstBracket - 2);
-        errorMessages.forEach(message => {
-          this.notification.error(message, errorDescription);
-        });
+        this.notification.error("Could not find ID", "Error");
       }
     });
   }
