@@ -169,6 +169,15 @@ public interface TestData {
             .build()
     );
 
+    List<IngredientDto> invalidIngredientDtoList = List.of(
+        IngredientDtoBuilder.builder()
+            .name("Random Ingredient")
+            .build(),
+        IngredientDtoBuilder.builder()
+            .name("fjasdkfjisdfsdfjdklfdjklfjdfjdaskldjfkldjflasdjfsdklfjsdlfjsflsdjflsdjflksdjfskljfsdljaslffjasdkfjisdfsdfjdklfdjklfjdfjdaskldjfkldjflasdjfsdklfjsdlfjsflsdjflsdjflksdjfskljfsdljaslf")
+            .build()
+    );
+
 
     ItemDto validItemDto = ItemDtoBuilder.builder()
         .ean("0123456789123")
@@ -250,5 +259,21 @@ public interface TestData {
         .digitalStorage(invalidDigitalStorageDto)
         .ingredients(ingredientDtoList)
         .boughtAt("Hofer")
+        .build();
+
+    ItemDto itemDtoWithInvalidIngredients = ItemDtoBuilder.builder()
+        .ean("0123456789123")
+        .generalName("Test")
+        .productName("MyTest")
+        .brand("Hofer")
+        .quantityCurrent(100.0)
+        .quantityTotal(200.0)
+        .unit(ml)
+        .expireDate(LocalDate.now().plusYears(1))
+        .description("This is valid description")
+        .priceInCent(1234L)
+        .boughtAt("Hofer")
+        .digitalStorage(digitalStorageDto)
+        .ingredients(invalidIngredientDtoList)
         .build();
 }
