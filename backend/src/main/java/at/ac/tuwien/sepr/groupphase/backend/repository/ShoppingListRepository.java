@@ -68,7 +68,11 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
     @Query("DELETE FROM ShoppingList sl WHERE sl.id = :listId")
     void deleteByListId(@Param("listId") Long listId);
 
-
-
-
+    /**
+     * Retrieves all ShoppingLists by their associated SharedFlat.
+     *
+     * @param sharedFlat The SharedFlat entity associated with the ShoppingLists.
+     * @return A List containing the found ShoppingLists, if present.
+     */
+    List<ShoppingList> findBySharedFlat(SharedFlat sharedFlat);
 }
