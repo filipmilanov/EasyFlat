@@ -21,17 +21,26 @@
 <hr>
 
 <div class="leaderboard-container">
-  <mat-card *ngFor="let group of groupedUsers; let i = index">
-    <mat-card-content>
-      <div class="row-number-container">
-        <span [ngStyle]="getRowNumberStyle(i + 1)" class="row-number">{{ i + 1 }}</span>
-      </div>
-      <ng-container *ngFor="let user of group.users; let j = index">
-        <mat-list-item>
-          <div style="font-weight: bold">{{ user.firstName }} {{ user.lastName }}</div>
+  <div class="total-points">{{ totalPoints }} Total Points</div>
+  <ng-container *ngFor="let group of groupedUsers; let i = index">
+    <mat-card class="leaderboard-card">
+      <mat-card-content>
+        <div class="group-header">
+          <span [ngStyle]="getRowNumberStyle(i + 1)" class="row-number">{{ i + 1 }}</span>
+          <div class="points">{{ group.points }} points{{ group.users.length > 1 ? ' (each)' : '' }}</div>
+        </div>
+        <mat-list-item class="user-list-item">
+          <div class="user-names">
+            <div style="font-weight: bold" *ngIf="group.users">
+              <ng-container *ngFor="let user of group.users; let isLast = last">
+                {{ user?.firstName }} {{ user?.lastName }}{{ isLast ? '' : ',' }}
+              </ng-container>
+            </div>
+          </div>
         </mat-list-item>
-      </ng-container>
-      <div class="points">{{ group.points }} points{{group.users.length > 1 ? ' (each)' : ''}}</div>
-    </mat-card-content>
-  </mat-card>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
 </div>
+
+

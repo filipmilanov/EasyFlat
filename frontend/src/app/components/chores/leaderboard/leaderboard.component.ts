@@ -12,6 +12,7 @@ import { UserDetail } from '../../../dtos/auth-request';
 export class LeaderboardComponent {
     users: UserDetail[];
     groupedUsers: { points: number; users: UserDetail[] }[];
+    totalPoints: number = 0;
     constructor(
         private router: Router,
         private notification: ToastrService,
@@ -22,6 +23,10 @@ export class LeaderboardComponent {
         this.choreService.getUsers().subscribe({
             next: (res) => {
                 this.groupedUsers = this.groupUsersByPoints(res);
+
+                for (let i = 0; i < this.groupedUsers.length; i++) {
+                  this.totalPoints += this.groupedUsers[i]?.points != null ? this.groupedUsers[i]?.points : 0;
+                }
 
                 this.groupedUsers = this.groupedUsers.sort((a, b) => b.points - a.points);
 

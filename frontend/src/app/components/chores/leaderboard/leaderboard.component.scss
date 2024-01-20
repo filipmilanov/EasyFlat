@@ -5,21 +5,48 @@
   gap: 20px;
 }
 
-.mat-card {
-  padding: 20px;
-  border: 1px solid #ccc;
+.leaderboard-title {
+  font-size: 24px;
+  margin-bottom: 10px;
 }
 
-.row-number-container {
-  margin-bottom: 5px;
+.total-points {
+  font-weight: bold;
+  font-size: 18px;
+  color: #2196f3; /* Update to your preferred color */}
+
+.leaderboard-card {
+  width: 80%;
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .row-number {
-  font-size: 22px;
+  font-size: 23px;
   font-weight: bold;
 }
 
 .points {
+  font-style: italic;
+  font-weight: bold;
+  color: #4caf50;
+}
+
+.user-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-points {
   font-style: italic;
   color: #4caf50;
 }
