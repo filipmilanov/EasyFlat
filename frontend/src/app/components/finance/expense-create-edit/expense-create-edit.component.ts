@@ -195,7 +195,11 @@ export class ExpenseCreateEditComponent implements OnInit {
       observable.subscribe({
         next: () => {
           this.notification.success(`Expense ${this.expense.title} successfully ${this.modeActionFinished}.`, "Success");
-          this.router.navigate([this.previousUrl]);
+          if(this.modeIsCreate){
+            this.router.navigate([this.previousUrl]);
+          } else {
+            this.router.navigate(['/expense']);
+          }
         },
         error: (error) => {
           console.error(`Error expense was not ${this.modeActionFinished}: ${error}`);
