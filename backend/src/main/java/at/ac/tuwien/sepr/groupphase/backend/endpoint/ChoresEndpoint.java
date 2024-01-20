@@ -8,15 +8,12 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ChoreMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ChoreService;
-import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -33,13 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -71,7 +64,7 @@ public class ChoresEndpoint {
 
     @GetMapping()
     @Secured("ROLE_USER")
-    public List<ChoreDto> getChores(ChoreSearchDto searchParams) throws AuthenticationException {
+    public List<ChoreDto> getChores(ChoreSearchDto searchParams) {
         LOGGER.trace("getChores({})", searchParams);
         List<Chore> lists = choreService.getChores(searchParams);
         return choreMapper.entityListToDtoList(lists);
@@ -87,7 +80,7 @@ public class ChoresEndpoint {
 
     @PutMapping
     @Secured("ROLE_USER")
-    public List<ChoreDto> assignChores() throws AuthenticationException {
+    public List<ChoreDto> assignChores() {
         LOGGER.trace("assignChores()");
         List<ChoreDto> ret = this.choreService.assignChores();
         this.choreService.deleteAllUserPreference();
@@ -96,7 +89,7 @@ public class ChoresEndpoint {
 
     @GetMapping("/user")
     @Secured("ROLE_USER")
-    public List<ChoreDto> getChoresByUser() throws AuthenticationException {
+    public List<ChoreDto> getChoresByUser() {
         LOGGER.trace("getChoresByUser()");
         List<Chore> chores = choreService.getChoresByUser();
         return choreMapper.entityListToDtoList(chores);
@@ -116,7 +109,7 @@ public class ChoresEndpoint {
 
     @GetMapping("/users")
     @Secured("ROLE_USER")
-    public List<UserDetailDto> getUsers() throws AuthenticationException {
+    public List<UserDetailDto> getUsers() {
         LOGGER.trace("getUsers()");
         List<ApplicationUser> users = choreService.getUsers();
 
@@ -137,7 +130,7 @@ public class ChoresEndpoint {
 
     @GetMapping("/pdf")
     @Secured("ROLE_USER")
-    public ResponseEntity<byte[]> generateChoreListPdf() throws AuthenticationException, IOException {
+    public ResponseEntity<byte[]> generateChoreListPdf() throws IOException {
         byte[] pdfBytes = choreService.generatePdf();
         return new ResponseEntity<>(pdfBytes, HttpStatus.OK);
     }
