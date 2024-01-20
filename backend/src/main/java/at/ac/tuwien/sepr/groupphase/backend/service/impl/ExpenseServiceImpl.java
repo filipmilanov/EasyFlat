@@ -66,7 +66,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public Expense findById(Long id) throws NotFoundException, AuthorizationException {
-        LOGGER.trace("findById: {}", id);
+        LOGGER.trace("findById({})", id);
 
         Expense persistedExpense = expenseRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Expense not found"));
