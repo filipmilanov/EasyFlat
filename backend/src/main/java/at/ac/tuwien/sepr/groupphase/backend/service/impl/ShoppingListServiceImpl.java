@@ -126,7 +126,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public Optional<ShoppingList> getShoppingListByName(String name) throws AuthenticationException {
         LOGGER.trace("getShoppingListByName({})", name);
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (name == null) {
+        if (name == null || name.isBlank()) {
             return Optional.empty();
         }
         return shoppingListRepository.getByNameAndSharedFlatIs(name, applicationUser.getSharedFlat());
@@ -236,11 +236,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    @Secured("ROLE_USER")
+    @Transactional
     public List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) {
         LOGGER.trace("transferToServer({})", items);
         ApplicationUser applicationUser = authService.getUserFromToken();
-        List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage " + applicationUser.getSharedFlat().getName(), applicationUser.getSharedFlat());
+        List<DigitalStorage> storage = digitalStorageRepository.findBySharedFlatIs(applicationUser.getSharedFlat());
         List<DigitalStorageItem> itemsList = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
             DigitalStorageItem item;

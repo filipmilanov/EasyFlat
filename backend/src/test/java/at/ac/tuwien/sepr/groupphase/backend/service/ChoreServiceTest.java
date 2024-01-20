@@ -489,8 +489,9 @@ public class ChoreServiceTest {
             //this user is the last in Leaderboard, so he has one chore more
             () -> assertEquals(2, choreRepository.findAllByUser(testUser5).size())
         );
-
     }
+
+
 
     @Test
     public void getChoresByUserShouldSucceed() throws AuthenticationException {

@@ -26,6 +26,8 @@ public interface DigitalStorageRepository extends JpaRepository<DigitalStorage, 
                                          @Param("title") String title,
                                          @Param("fillLevel") String fillLevel,
                                          @Param("alwaysInStock") Class alwaysInStock);
+
+    List<DigitalStorage> findBySharedFlatIs(SharedFlat sharedFlat);
 }
 
 

@@ -19,6 +19,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.LabelMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemCache;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
@@ -26,11 +27,15 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.LabelRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ShoppingListRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UnitRepository;
@@ -64,6 +69,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -119,7 +125,13 @@ public class ShoppingListServiceTest {
     private UnitRepository unitRepository;
 
     @Autowired
-    ShoppingListRepository shoppingListRepository;
+    private ShoppingListRepository shoppingListRepository;
+
+    @Autowired
+    private SharedFlatRepository sharedFlatRepository;
+
+    @Autowired
+    ItemRepository itemRepository;
 
     @Autowired
     private LabelMapper labelMapper;
@@ -137,7 +149,6 @@ public class ShoppingListServiceTest {
         shoppingListDataGenerator.generateShoppingLists();
         storageDataGenerator.generateDigitalStorages();
         ingredientsDataGenerator.generateIngredients();
-        shoppingListDataGenerator.generateShoppingLists();
         itemLabelDataGenerator.generateItemLabels();
 
         Unit testUnit1 = new Unit();
@@ -319,7 +330,7 @@ public class ShoppingListServiceTest {
         );
 
         ShoppingItemDto nonExistingShoppingItemDto = ShoppingItemDtoBuilder.builder()
-                .itemId(-1L).build();
+            .itemId(-1L).build();
 
         assertThrows(NotFoundException.class, () -> shoppingListService.updateShoppingItem(nonExistingShoppingItemDto));
 
@@ -360,7 +371,7 @@ public class ShoppingListServiceTest {
 
     @Test
     void deleteExistingShoppingItemShouldSucceed() throws AuthorizationException {
-        // link testUser to SharedFlat wit Id 1
+        // link testUser to SharedFlat with Id 1
         ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
         when(authService.getUserFromToken()).thenReturn(testUser);
 
@@ -379,7 +390,7 @@ public class ShoppingListServiceTest {
             () -> assertEquals(validShoppingItemEntity.getAlwaysInStock(), deleted.getAlwaysInStock()),
             () -> assertEquals(validShoppingItemEntity.getPriceInCent(), deleted.getPriceInCent()),
             () -> assertNull(deleted.getMinimumQuantity())
-            );
+        );
     }
 
     @Test
@@ -399,6 +410,70 @@ public class ShoppingListServiceTest {
                 }
             }
         );
+    }
+
+    @Test
+    void givenExistingShoppingListDeleteListShouldSucceed() throws ValidationException, AuthenticationException, AuthorizationException {
+        // link testUser to SharedFlat with Id 1
+        ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
+        when(authService.getUserFromToken()).thenReturn(testUser);
+
+        // add some ShoppingItems to the existing ShoppingList in SharedFlat with Id 1
+        ShoppingList toDelete = new ShoppingList();
+        toDelete.setId(2L);
+        toDelete.setName("Second1");
+
+        validShoppingItemEntity.setShoppingList(toDelete);
+        ShoppingItem item2 = new ShoppingItem();
+        item2.setShoppingList(toDelete);
+        shoppingItemRepository.save(validShoppingItemEntity); // item referencing other existing objects
+        shoppingItemRepository.save(item2); // item not referencing other objects except for ShoppingList toDelete
+
+        Long idOfExistingShoppingListToDelete = 2L; // is linked to SharedFlat with Id 1
+
+        ShoppingList result = shoppingListService.deleteList(idOfExistingShoppingListToDelete);
+
+        assertAll(
+            () -> assertEquals(toDelete.getId(), result.getId()),
+            () -> assertEquals(toDelete.getName(), result.getName()),
+            // items associated with deleted ShoppingList should also be deleted
+            () -> assertEquals(0, shoppingItemRepository.findByShoppingListId(idOfExistingShoppingListToDelete).size())
+        );
+    }
+
+    @Test
+    void givenExistingShoppingItemAndExistingDigitalStorageTransferToServerShouldSucceed() {
+        // link testUser to SharedFlat with Id 1
+        ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
+        when(authService.getUserFromToken()).thenReturn(testUser);
+
+        Long idOfExistingDigitalStorage = 1L; // linked to SharedFlat with Id 1
+
+        // save ShoppingItem linked to SharedFlat with Id 1, DigitalStorage with Id 1 and ShoppingList with Id 1
+        shoppingItemRepository.save(validShoppingItemEntity);
+
+        List<DigitalStorageItem> result = shoppingListService.transferToServer(List.of(validShoppingItemDto.withId(1)));
+
+        assertAll(
+            // ShoppingList with Id 1 shouldn't be linked to any ShoppingItems
+            () -> assertEquals(0, shoppingItemRepository.findByShoppingListId(1L).size()),
+            () -> assertTrue(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).contains(result.get(0)))
+        );
+    }
+
+    @Test
+    void getDefaultShoppingListWhenGetShoppingListByNameShouldSucceed() throws AuthenticationException {
+        // link testUser to SharedFlat with Id 1
+        ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
+        when(authService.getUserFromToken()).thenReturn(testUser);
+
+        Optional<ShoppingList> result = shoppingListService.getShoppingListByName("Shopping List (Default)");
+
+        assertAll(
+            () -> assertTrue(result.isPresent()),
+            () -> assertEquals("Shopping List (Default)", result.get().getName())
+        );
+
     }
 
     @NotNull
