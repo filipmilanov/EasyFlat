@@ -17,7 +17,7 @@
 
     <div class="ms-1">
         <label for="searchChoreLatestDeadline" class="col-form-label">
-            Latest Deadline
+          Do Before
         </label>
         <input type="date" id="searchChoreLatestDeadline" name="searchChoreLatestDeadline"
                pattern="\d{4}-\d{2}-\d{2}"
@@ -45,6 +45,9 @@
           <button class="btn btn-primary" style="margin-right: 4px;" (click)="navigateToPreference()">
             Preference
           </button>
+          <button class="btn btn-warning" style="margin-right: 4px;" (click)="navigateToLeaderboard()">
+            Leaderbord
+          </button>
         </div>
 
 
@@ -53,6 +56,9 @@
 </form>
 
 <div style="width: 100%; height: 100%; border: 1px black solid"></div>
+<button class="btn btn-primary float-end p-2" style="margin-top: 20px" (click)="navigateToNewChore()">
+  Add Chore
+</button>
 
 <div style="width: 100%;margin-top: 20px; height: 100%;"></div>
 <div class="row row-cols-4">
@@ -68,11 +74,9 @@
         </a>
     </div>
 </div>
-<div *ngIf="chores.length === 0" style="text-align: center;">
+<div *ngIf="chores?.length === 0" style="text-align: center;">
   <h3>No chores found!</h3>
 </div>
 
-<button class="btn btn-primary float-end p-2" style="margin-top: 20px" (click)="navigateToNewChore()">
-    Add Chore
-</button>
+
 

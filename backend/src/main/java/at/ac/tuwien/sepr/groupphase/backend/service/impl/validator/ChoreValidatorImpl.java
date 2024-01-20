@@ -43,35 +43,26 @@ public class ChoreValidatorImpl implements ChoreValidator {
         LOGGER.trace("checkConflictForCreate({})", chore);
 
         List<String> errors = new ArrayList<>();
+        if (chore.id() != null) {
+            errors.add("The id must be null");
+        }
 
-        if (chore.name() == null) {
-            errors.add("No name given");
-        } else {
+        if (chore.name() == null || chore.name().trim().isEmpty()) {
             if (chore.name().isBlank()) {
                 errors.add("The given name can not be blank");
             }
-            if (chore.name().length() > 120) {
-                errors.add("The name is too long");
-            }
         }
-        if (chore.points() < 0) {
-            errors.add("You can't give negative points to a chore");
-        }
-        if (chore.endDate().getDay() < (new Date().getDay())) {
+        if (chore.endDate().isBefore(LocalDate.now())) {
             errors.add("You can not create a chore with expired date");
         }
-        if (chore.description() != null) {
+        if (chore.description() != null && !chore.description().trim().isEmpty()) {
             if (chore.description().isBlank()) {
                 errors.add("The description can not be blank");
-            }
-
-            if (chore.description().length() > 150) {
-                errors.add("Description to long");
             }
         }
 
         if (!errors.isEmpty()) {
-            throw new ConflictException("There is a conflict with persisted data", errors);
+            throw new ConflictException("Not valid data", errors);
         }
     }
 

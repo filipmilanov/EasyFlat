@@ -142,4 +142,9 @@ export class ChorePreferenceComponent implements OnInit {
   navigateToMyChores() {
     this.router.navigate(['chores','my']);
   }
+
+  navigateToLeaderboard() {
+    this.router.navigate(['chores','leaderboard']);
+
+  }
 }

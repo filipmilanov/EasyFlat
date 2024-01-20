@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ChoreService;
@@ -53,7 +54,6 @@ public class ChoresEndpoint {
 
     private final UserMapper userMapper;
 
-    @Autowired
     public ChoresEndpoint(ChoreService choreService, ChoreMapper choreMapper, UserMapper userMapper) {
         this.choreService = choreService;
         this.choreMapper = choreMapper;
@@ -63,7 +63,7 @@ public class ChoresEndpoint {
 
     @PostMapping
     @Secured("ROLE_USER")
-    public ChoreDto createChore(@RequestBody ChoreDto chore) throws AuthenticationException, ValidationException, ConflictException {
+    public ChoreDto createChore(@RequestBody ChoreDto chore) throws ValidationException, ConflictException {
         LOGGER.trace("createChore({})", chore);
         return choreService.createChore(chore);
     }
@@ -104,7 +104,7 @@ public class ChoresEndpoint {
 
     @DeleteMapping("/delete")
     @Secured("ROLE_USER")
-    public List<ChoreDto> deleteChores(@RequestParam(name = "choreIds") String choreIdsString) {
+    public List<ChoreDto> deleteChores(@RequestParam(name = "choreIds") String choreIdsString) throws AuthorizationException {
         LOGGER.trace("deleteChores({})", choreIdsString);
         List<Long> choreIds = Arrays.stream(choreIdsString.split(","))
             .map(Long::valueOf)
@@ -118,7 +118,6 @@ public class ChoresEndpoint {
     @Secured("ROLE_USER")
     public List<UserDetailDto> getUsers() throws AuthenticationException {
         LOGGER.trace("getUsers()");
-        LOGGER.error("Error: getting users");
         List<ApplicationUser> users = choreService.getUsers();
 
         return userMapper.entityListToUserDetailDtoList(users);
@@ -140,13 +139,12 @@ public class ChoresEndpoint {
     @Secured("ROLE_USER")
     public ResponseEntity<byte[]> generateChoreListPdf() throws AuthenticationException, IOException {
         byte[] pdfBytes = choreService.generatePdf();
-
         return new ResponseEntity<>(pdfBytes, HttpStatus.OK);
     }
 
     @PatchMapping("/repeat")
     @Secured("ROLE_USER")
-    public ChoreDto repeatChore(@RequestBody RepeatChoreRequest request) {
+    public ChoreDto repeatChore(@RequestBody RepeatChoreRequest request) throws AuthorizationException {
         LOGGER.trace("repeatChore({})", request);
         Long id = request.getId();
         Date date = request.getDate();

@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.IngredientMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ShoppingListMapper;
@@ -17,6 +18,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.DigitalStorageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
@@ -28,12 +30,12 @@ import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LabelService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ShoppingListService;
 import at.ac.tuwien.sepr.groupphase.backend.service.UnitService;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingItemValidator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ItemLabelValidator;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ShoppingItemValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ShoppingListValidatorImpl;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -55,18 +57,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final ItemRepository itemRepository;
     private final DigitalStorageService digitalStorageService;
     private final IngredientService ingredientService;
-    private CustomUserDetailService customUserDetailService;
     private final DigitalStorageRepository digitalStorageRepository;
     private final ShoppingItemValidator shoppingItemValidator;
     private final UnitService unitService;
-    private final ShoppingListValidatorImpl validator;
+    private final ShoppingListValidatorImpl shoppingListValidator;
     private final AuthService authService;
+    private final ItemLabelValidator itemLabelValidator;
 
     public ShoppingListServiceImpl(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository,
                                    ShoppingListMapper shoppingListMapper, LabelService labelService, ItemMapper itemMapper,
                                    IngredientMapper ingredientMapper, ItemRepository itemRepository, DigitalStorageService digitalStorageService,
-                                   IngredientService ingredientService, CustomUserDetailService customUserDetailService, DigitalStorageRepository digitalStorageRepository,
-                                   ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidatorImpl validator, AuthService authService) {
+                                   IngredientService ingredientService, DigitalStorageRepository digitalStorageRepository,
+                                   ShoppingItemValidator shoppingItemValidator, UnitService unitService, ShoppingListValidatorImpl shoppingListValidator, AuthService authService, ItemLabelValidator itemLabelValidator) {
         this.shoppingItemRepository = shoppingItemRepository;
         this.labelService = labelService;
         this.itemMapper = itemMapper;
@@ -76,20 +78,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.itemRepository = itemRepository;
         this.digitalStorageService = digitalStorageService;
         this.ingredientService = ingredientService;
-        this.customUserDetailService = customUserDetailService;
         this.digitalStorageRepository = digitalStorageRepository;
         this.shoppingItemValidator = shoppingItemValidator;
         this.unitService = unitService;
-        this.validator = validator;
+        this.shoppingListValidator = shoppingListValidator;
         this.authService = authService;
+        this.itemLabelValidator = itemLabelValidator;
     }
 
     @Override
     @Transactional
-    public ShoppingItem create(ShoppingItemDto itemDto, String jwt)
-        throws ValidationException, ConflictException, AuthenticationException, AuthorizationException {
-        LOGGER.trace("create({},{})", itemDto, jwt);
-        List<ShoppingList> shoppingLists = this.getShoppingLists("", jwt);
+    public ShoppingItem createShoppingItem(ShoppingItemDto itemDto)
+        throws ValidationException, ConflictException, AuthorizationException {
+        LOGGER.trace("createShoppingItem({})", itemDto);
+        List<ShoppingList> shoppingLists = this.getShoppingLists("");
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         List<Unit> unitList = unitService.findAll();
         shoppingItemValidator.validateForCreate(itemDto, shoppingLists, digitalStorageList, unitList);
@@ -102,7 +104,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public Optional<ShoppingItem> getById(Long itemId) throws AuthenticationException {
+    public Optional<ShoppingItem> getShoppingItemById(Long itemId) throws AuthorizationException {
         LOGGER.trace("getById({})", itemId);
         ApplicationUser applicationUser = authService.getUserFromToken();
 
@@ -113,7 +115,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (itemOptional.isPresent()) {
             ShoppingItem item = itemOptional.get();
             if (!item.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
-                throw new AuthenticationException("Authentication error", List.of("User has no access to this shopping items"));
+                throw new AuthorizationException("Authorization failed", List.of("User has no access to this shopping item!"));
             }
         }
 
@@ -121,25 +123,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public Optional<ShoppingList> getShoppingListByName(String name, String jwt) throws AuthenticationException {
-        LOGGER.trace("getShoppingListByName({},{})", name, jwt);
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-        if (name == null) {
+    public Optional<ShoppingList> getShoppingListByName(String name) {
+        LOGGER.trace("getShoppingListByName({})", name);
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        if (name == null || name.isBlank()) {
             return Optional.empty();
         }
         return shoppingListRepository.getByNameAndSharedFlatIs(name, applicationUser.getSharedFlat());
     }
 
     @Override
-    public Optional<ShoppingList> getShoppingListById(Long id, String jwt) throws AuthenticationException {
-        LOGGER.trace("getShoppingListById({},{})", id, jwt);
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
+    public Optional<ShoppingList> getShoppingListById(Long id) {
+        LOGGER.trace("getShoppingListById({})", id);
+        ApplicationUser applicationUser = authService.getUserFromToken();
         if (id == null) {
             return Optional.empty();
         }
@@ -147,74 +143,60 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<ShoppingItem> getItemsById(Long id, ShoppingItemSearchDto itemSearchDto, String jwt) throws AuthenticationException {
-        LOGGER.trace("getItemsById({},{},{})", id, itemSearchDto, jwt);
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+    public List<ShoppingItem> getItemsByShoppingListId(Long shopListId, ShoppingItemSearchDto itemSearchDto) throws AuthorizationException {
+        LOGGER.trace("getItemsById({},{})", shopListId, itemSearchDto);
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findById(shopListId);
+        if (shoppingListOptional.isPresent()) {
+            if (applicationUser.getSharedFlat() == null || !applicationUser.getSharedFlat().equals(shoppingListOptional.get().getSharedFlat())) {
+                throw new AuthorizationException("Authorization failed", List.of("User has no access to this shopping list!"));
+            }
+        } else {
+            throw new NotFoundException("Shopping list does not exist in the database!");
         }
-        List<ShoppingItem> shoppingItems = shoppingItemRepository.searchItems(id,
+
+        return shoppingItemRepository.searchItems(shopListId,
             (itemSearchDto.productName() != null) ? itemSearchDto.productName() : null,
             (itemSearchDto.label() != null) ? itemSearchDto.label() : null);
-        List<ShoppingItem> ret = new ArrayList<>();
-        for (ShoppingItem item : shoppingItems) {
-            if (item.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
-                ret.add(item);
-            }
-        }
-        return ret;
     }
 
     @Override
     @Transactional
-    public ShoppingList createList(String listName) throws ValidationException, AuthenticationException, ConflictException {
-        LOGGER.trace("createList({})", listName);
+    public ShoppingList createList(ShoppingListDto shoppingListDto) throws ValidationException, ConflictException {
+        LOGGER.trace("createList({})", shoppingListDto);
+        shoppingListValidator.validateForCreate(shoppingListDto);
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-
         ShoppingList shoppingList = new ShoppingList();
-        shoppingList.setName(listName);
+        shoppingList.setName(shoppingListDto.name());
         shoppingList.setSharedFlat(applicationUser.getSharedFlat());
-        if (shoppingListRepository.findByNameAndSharedFlatIs(listName, applicationUser.getSharedFlat()) != null) {
-            throw new ValidationException("Validation error", List.of("List name already exists"));
-        }
-        validator.validateForCreate(shoppingList);
         return shoppingListRepository.save(shoppingList);
     }
 
     @Override
     @Transactional
-    public ShoppingItem deleteItem(Long itemId) throws AuthenticationException {
+    public ShoppingItem deleteItem(Long itemId) throws AuthorizationException {
         LOGGER.trace("deleteItem({})", itemId);
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-        // Input validation
-        if (itemId == null || itemId <= 0) {
-            throw new IllegalArgumentException("Invalid itemId");
-        }
+
         Optional<ShoppingItem> toDeleteOptional = shoppingItemRepository.findById(itemId);
         if (toDeleteOptional.isPresent()) {
             ShoppingItem toDelete = toDeleteOptional.get();
             // Enhanced authorization
             if (!toDelete.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
-                throw new AuthenticationException("Authentication wrong", List.of("User can not delete this item"));
+                throw new AuthorizationException("Authorization failed", List.of("User has no access to this shopping item and can not delete it!"));
             }
             toDelete.setLabels(null);
             shoppingItemRepository.save(toDelete);
             shoppingItemRepository.delete(toDelete);
             return toDelete;
         } else {
-            throw new NoSuchElementException("Item with this id does not exist!");
+            throw new NotFoundException("Item with this id does not exist!");
         }
     }
 
     @Override
     @Transactional
-    public ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException, AuthorizationException {
+    public ShoppingList deleteList(Long shopId) throws ValidationException, AuthorizationException {
         LOGGER.trace("deleteList({})", shopId);
 
         // Authentication (check the correct user)
@@ -242,28 +224,23 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
 
     @Override
-    public List<ShoppingList> getShoppingLists(String name, String jwt) throws AuthenticationException {
-        LOGGER.trace("getShoppingLists({})", jwt);
-        ApplicationUser applicationUser = customUserDetailService.getUser(jwt);
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
+    public List<ShoppingList> getShoppingLists(String name) throws AuthorizationException {
+        LOGGER.trace("getShoppingLists()");
+        ApplicationUser applicationUser = authService.getUserFromToken();
+
         List<ShoppingList> ret = shoppingListRepository.findAllByNameContainingIgnoreCaseAndSharedFlatIs(name != null ? name : "", applicationUser.getSharedFlat());
         for (ShoppingList shoppingList : ret) {
-            shoppingList.setItems(this.getItemsById(shoppingList.getId(), new ShoppingItemSearchDto(null, null, null), jwt));
+            shoppingList.setItems(this.getItemsByShoppingListId(shoppingList.getId(), new ShoppingItemSearchDto(null, null, null)));
         }
         return ret;
     }
 
     @Override
-    @Secured("ROLE_USER")
-    public List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) throws AuthenticationException {
+    @Transactional
+    public List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) {
         LOGGER.trace("transferToServer({})", items);
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-        List<DigitalStorage> storage = digitalStorageRepository.findByTitleContainingAndSharedFlatIs("Storage " + applicationUser.getSharedFlat().getName(), applicationUser.getSharedFlat());
+        List<DigitalStorage> storage = digitalStorageRepository.findBySharedFlatIs(applicationUser.getSharedFlat());
         List<DigitalStorageItem> itemsList = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
             DigitalStorageItem item;
@@ -281,11 +258,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     @Transactional
-    public ShoppingItem update(ShoppingItemDto itemDto, String jwt)
-        throws ConflictException, AuthenticationException, ValidationException, AuthorizationException {
+    public ShoppingItem updateShoppingItem(ShoppingItemDto itemDto)
+        throws ConflictException, ValidationException, AuthorizationException {
         LOGGER.trace("update({})", itemDto);
 
-        List<ShoppingList> shoppingLists = this.getShoppingLists("", jwt);
+        shoppingItemRepository.findByItemId(itemDto.itemId()).orElseThrow(() -> new NotFoundException("Given Id does not exist in the database!"));
+
+        List<ShoppingList> shoppingLists = this.getShoppingLists("");
         List<DigitalStorage> digitalStorageList = digitalStorageService.findAll(null);
         List<Unit> unitList = unitService.findAll();
         shoppingItemValidator.validateForUpdate(itemDto, shoppingLists, digitalStorageList, unitList);
@@ -303,11 +282,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
 
-    private List<ItemLabel> findLabelsAndCreateMissing(List<ItemLabelDto> labels) {
+    private List<ItemLabel> findLabelsAndCreateMissing(List<ItemLabelDto> labels) throws ValidationException, ConflictException {
         LOGGER.trace("findLabelsAndCreateMissing({})", labels);
         if (labels == null) {
             return List.of();
         }
+        for (ItemLabelDto itemLabelDto : labels) {
+            itemLabelValidator.validate(itemLabelDto);
+        }
+
         List<String> values = labels.stream()
             .map(ItemLabelDto::labelValue)
             .toList();

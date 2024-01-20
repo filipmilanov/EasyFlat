@@ -37,12 +37,11 @@ import {
 import {FinanceComponent} from "./components/finance/finance.component";
 import {ExpenseDetailComponent} from "./components/finance/expense-detail/expense-detail.component";
 import {ExpenseOverviewComponent} from "./components/finance/expense-overview/expense-overview.component";
-import {HaushaltPlanComponent} from "./components/haushalt-plan/haushalt-plan.component";
-import {ChorePreferenceComponent} from "./components/haushalt-plan/chore-preference/chore-preference.component";
-import {AllChoreComponent} from "./components/haushalt-plan/all-chore/all-chore.component";
-import {MyChoresComponent} from "./components/haushalt-plan/my-chores/my-chores.component";
-import {NewChoreComponent} from "./components/haushalt-plan/new-chore/new-chore.component";
-import {LeaderboardComponent} from "./components/haushalt-plan/leaderboard/leaderboard.component";
+import {ChorePreferenceComponent} from "./components/chores/chore-preference/chore-preference.component";
+import {AllChoreComponent} from "./components/chores/all-chore/all-chore.component";
+import {MyChoresComponent} from "./components/chores/my-chores/my-chores.component";
+import {NewChoreComponent} from "./components/chores/new-chore/new-chore.component";
+import {LeaderboardComponent} from "./components/chores/leaderboard/leaderboard.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -82,7 +81,6 @@ const routes: Routes = [
   },
   {path: 'register', component: RegisterComponent},
   {path: 'chores', children: [
-      {path: '', component: HaushaltPlanComponent},
       {path: 'preference', component: ChorePreferenceComponent},
       {path: 'all', component: AllChoreComponent},
       {path: 'my', component: MyChoresComponent},

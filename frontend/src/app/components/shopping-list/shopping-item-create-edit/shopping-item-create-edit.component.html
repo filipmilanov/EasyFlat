@@ -2,7 +2,7 @@
   <h1 class="display-4">{{ heading }}</h1>
   <div style="width: 100%; height: 100%; border: 1px black solid"></div>
 
-  <form #form="ngForm" [class.was-validated]="form.submitted" (submit)="onSubmit(form)">
+  <form #form="ngForm" (submit)="onSubmit(form)">
 
     <div class="row row-cols-1">
 
@@ -17,7 +17,8 @@
                  class="form-control"
                  id="productName"
                  name="productName"
-                 [(ngModel)]="item.productName">
+                 [(ngModel)]="item.productName"
+                 required>
         </div>
       </div>
 
@@ -33,7 +34,8 @@
                  id="generalName"
                  name="generalName"
                  placeholder="e.g. fruit"
-                 [(ngModel)]="item.generalName">
+                 [(ngModel)]="item.generalName"
+                 required>
         </div>
       </div>
 
@@ -48,7 +50,6 @@
                  class="form-control"
                  id="totalQuantityAndUnit"
                  name="totalQuantityAndUnit"
-                 min=1
                  [(ngModel)]="item.quantityTotal"
                  required>
         </div>
@@ -104,7 +105,7 @@
         <div class="col-md-10 col-lg-8" id="labels">
 
     <span *ngFor="let labelDto of item.labels; let i = index" class="p-2">
-      <div class="border-bottom pb-3 pt-2" style="font-weight: bold" [style.color]="labelDto.labelColour">
+      <div class="border-bottom pb-3 pt-2" [style.color]="labelDto.labelColour" style="font-weight: bold">
 
         <button type="button"
                 class="btn btn-outline-danger float-end"

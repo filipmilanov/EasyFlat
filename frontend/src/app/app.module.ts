@@ -66,22 +66,19 @@ import {
   RadioButtonsComponentComponent
 } from './components/utils/radio-buttons-component/radio-buttons-component.component';
 import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expense/show-user-for-expense.component';
-import {HaushaltPlanComponent} from './components/haushalt-plan/haushalt-plan.component';
-import {ChorePreferenceComponent} from './components/haushalt-plan/chore-preference/chore-preference.component';
-import {AllChoreComponent} from './components/haushalt-plan/all-chore/all-chore.component';
-import {MyChoresComponent} from './components/haushalt-plan/my-chores/my-chores.component';
-import {NewChoreComponent} from './components/haushalt-plan/new-chore/new-chore.component';
-import {ChoreCardComponent} from './components/haushalt-plan/chore-card/chore-card.component';
-import {LeaderboardComponent} from './components/haushalt-plan/leaderboard/leaderboard.component';
-import {MatListModule} from '@angular/material/list';
-import {MatCardModule} from '@angular/material/card';
-import {
-  ChorePreferenceCardComponent
-} from './components/haushalt-plan/chore-preference-card/chore-preference-card.component';
-import {MyChoreCardComponent} from './components/haushalt-plan/my-chore-card/my-chore-card.component';
+import { ChorePreferenceComponent } from './components/chores/chore-preference/chore-preference.component';
+import { AllChoreComponent } from './components/chores/all-chore/all-chore.component';
+import { MyChoresComponent } from './components/chores/my-chores/my-chores.component';
+import { NewChoreComponent } from './components/chores/new-chore/new-chore.component';
+import { ChoreCardComponent } from './components/chores/chore-card/chore-card.component';
+import { LeaderboardComponent } from './components/chores/leaderboard/leaderboard.component';
+import { MatListModule } from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
+import { ChorePreferenceCardComponent } from './components/chores/chore-preference-card/chore-preference-card.component';
+import { MyChoreCardComponent } from './components/chores/my-chore-card/my-chore-card.component';
 import {
   ChoreConfirmationModalComponent
-} from "./components/haushalt-plan/my-chores/chore-confirmation-modal/chore-confirmation-modal.component";
+} from "./components/chores/my-chores/chore-confirmation-modal/chore-confirmation-modal.component";
 import {UserDropdownComponent} from './components/utils/user-dropdown/user-dropdown.component';
 import {DebitsComponent} from './components/finance/debits/debits.component';
 import {ConfirmPayedPackComponent} from './components/utils/confirm-payed-pack/confirm-payed-pack.component';
@@ -147,7 +144,6 @@ LOAD_WASM().subscribe();
         ExpenseDetailComponent,
         ConfirmDeleteDialogComponent,
         ExpenseOverviewComponent,
-        HaushaltPlanComponent,
         ChorePreferenceComponent,
         AllChoreComponent,
         MyChoresComponent,

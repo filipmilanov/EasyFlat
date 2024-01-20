@@ -125,7 +125,7 @@ class DigitalStorageServiceTest {
         // given
         when(jwtTokenizer.getEmailFromToken(any(String.class))).thenReturn(applicationUser.getEmail());
 
-        SharedFlat sharedFlat = new SharedFlat();
+        WgDetailDto sharedFlat = new WgDetailDto();
         sharedFlat.setName("TestWG");
         sharedFlat.setPassword("1234");
 

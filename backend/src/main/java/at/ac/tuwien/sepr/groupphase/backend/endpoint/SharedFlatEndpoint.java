@@ -35,7 +35,7 @@ public class SharedFlatEndpoint {
 
     @PostMapping
     @Secured("ROLE_USER")
-    public WgDetailDto create(@RequestBody SharedFlat wgDetailDto) throws ValidationException, ConflictException {
+    public WgDetailDto create(@RequestBody WgDetailDto wgDetailDto) throws ValidationException, ConflictException {
         LOGGER.trace("create({})", wgDetailDto);
         return sharedFlatService.create(wgDetailDto);
     }

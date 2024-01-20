@@ -14,9 +14,11 @@ import at.ac.tuwien.sepr.groupphase.backend.datagenerator.StorageDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.UnitDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!unitTest")
 public class TestDataGenerator {
 
     private final StorageDataGenerator digitalStorageDataGenerator;
