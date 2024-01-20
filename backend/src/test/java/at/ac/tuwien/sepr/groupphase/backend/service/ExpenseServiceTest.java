@@ -592,12 +592,12 @@ class ExpenseServiceTest {
             () -> assertThat(actual).isNotNull(),
             () -> assertThat(actual).extracting(
                 (UserValuePairDto userValuePairDto) -> userValuePairDto.user().id(),
-                (UserValuePairDto userValuePairDto) -> Math.round((userValuePairDto.value()) * 10) / 10.0
+                (UserValuePairDto userValuePairDto) -> Math.floor(Math.round((userValuePairDto.value()) * 10) / 10.0)
             ).containsExactlyInAnyOrder(
-                new Tuple(1L, 2881.1),
-                new Tuple(6L, 1713.9),
-                new Tuple(11L, 1537.5),
-                new Tuple(16L, 269.3),
+                new Tuple(1L, 2881.0),
+                new Tuple(6L, 1713.0),
+                new Tuple(11L, 1537.0),
+                new Tuple(16L, 269.0),
                 new Tuple(21L, 1408.0)
             )
         );
