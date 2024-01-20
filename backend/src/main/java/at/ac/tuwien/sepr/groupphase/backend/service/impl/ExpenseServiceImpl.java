@@ -91,7 +91,8 @@ public class ExpenseServiceImpl implements ExpenseService {
             flatId,
             expenseSearchDto.title(),
             expenseSearchDto.paidById(),
-            expenseSearchDto.amountInCents(),
+            expenseSearchDto.minAmountInCents(),
+            expenseSearchDto.maxAmountInCents(),
             expenseSearchDto.createdAt() != null
                 ? expenseSearchDto.createdAt().atStartOfDay()
                 : null,

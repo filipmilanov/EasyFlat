@@ -65,8 +65,11 @@ export class FinanceService {
     if (searchParams.paidBy) {
       params = params.append('paidById', searchParams.paidBy.id);
     }
-    if (searchParams.amountInEuro) {
-      params = params.append('amountInCents', searchParams.amountInEuro * 100);
+    if (searchParams.minAmountInEuro) {
+      params = params.append('minAmountInCents', searchParams.minAmountInEuro * 100);
+    }
+    if (searchParams.maxAmountInEuro) {
+      params = params.append('maxAmountInCents', searchParams.maxAmountInEuro * 100);
     }
     if (searchParams.createdAt) {
       params = params.append('createdAt', formatDate(searchParams.createdAt, 'dd-MM-yyyy', 'en-US'));
