@@ -284,7 +284,7 @@ export class ItemCreateEditComponent implements OnInit {
   }
 
   generalNameSuggestions = (input: string) => (input === '')
-    ? of([])
+    ? this.itemService.findAll(5)
     : this.itemService.findByGeneralName(input);
 
   formatBrand(brand: ItemDto | string | null): string {
@@ -295,7 +295,7 @@ export class ItemCreateEditComponent implements OnInit {
   }
 
   brandSuggestions = (input: string) => (input === '')
-    ? of([])
+    ? this.itemService.findAll(5)
     : this.itemService.findByBrand(input);
 
   formatBoughtAt(boughtAt: ItemDto | string | null): string {
@@ -306,7 +306,7 @@ export class ItemCreateEditComponent implements OnInit {
   }
 
   boughtAtSuggestions = (input: string) => (input === '')
-    ? of([])
+    ? this.itemService.findAll(5)
     : this.itemService.findByBoughtAt(input);
 
   formatUnitName(unit: Unit | null): string {

@@ -24,6 +24,15 @@ public interface ItemService {
      */
     DigitalStorageItem findById(Long id) throws AuthorizationException;
 
+
+    /**
+     * Finds all items of a flat with limit
+     *
+     * @param limit a limit for the number of items to be returned
+     * @return a list of items
+     */
+    List<DigitalStorageItem> findAll(int limit);
+
     /**
      * Search for an item in the database where one field is matching.
      *
