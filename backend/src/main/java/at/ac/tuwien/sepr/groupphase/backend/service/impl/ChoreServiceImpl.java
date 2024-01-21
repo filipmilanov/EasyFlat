@@ -446,38 +446,30 @@ public class ChoreServiceImpl implements ChoreService {
         htmlContent.append("<title>Chores</title>");
 
         htmlContent.append("<style>");
+        htmlContent.append("body { font-family: 'Arial', sans-serif; margin: 20px; }");
         htmlContent.append("h1 { text-align: center; }");
-        htmlContent.append(".row { display: flex; flex-wrap: wrap; justify-content: space-between; }");
-        htmlContent.append(".chore-card { width: calc(25% - 1em); margin: 0.5em; border: 1px solid #ddd; padding: 1em; box-sizing: border-box; page-break-inside: avoid; }");
+        htmlContent.append("hr { border: 1px solid #ddd; }");
+        htmlContent.append(".row { display: flex; flex-wrap: wrap; justify-content: space-between; margin-bottom: 20px; }");
+        htmlContent.append(".chore-card { width: calc(25% - 1em); margin: 0.5em; padding: 1em; box-sizing: border-box; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }");
+        htmlContent.append(".chore-card h2 { margin-top: 0; }");
+        htmlContent.append(".chore-card p { margin: 0.5em 0; }");
         htmlContent.append("</style>");
-
         htmlContent.append("</head>");
         htmlContent.append("<body>");
 
         htmlContent.append("<h1 class=\"display-4\">Chores</h1>");
         htmlContent.append("<hr></hr>");
 
-        int cardsPerRow = 4;
-        int totalChores = chores.size();
-
-        for (int i = 0; i < totalChores; i += cardsPerRow) {
+        for (Chore value : chores) {
             htmlContent.append("<div class=\"row\">");
-
-            for (int j = i; j < Math.min(i + cardsPerRow, totalChores); j++) {
-                Chore chore = chores.get(j);
-
-                htmlContent.append("<div class=\"chore-card\">");
-                htmlContent.append("<h2>").append(chore.getName()).append("</h2>");
-                if (chore.getDescription() != null) {
-                    htmlContent.append("<p>Description: ").append(chore.getDescription()).append("</p>");
-                }
-                htmlContent.append("<p>Deadline: ").append(chore.getEndDate().toString()).append("</p>");
-                htmlContent.append("<p>Responsible Person: ").append(chore.getUser() != null ? chore.getUser().getFirstName() : "None").append(" ")
-                    .append(chore.getUser() != null ? chore.getUser().getLastName() : "")
-                    .append("</p>");
-                htmlContent.append("</div>");
+            htmlContent.append("<div class=\"chore-card\">");
+            htmlContent.append("<h2>").append(value.getName()).append("</h2>");
+            if (value.getDescription() != null) {
+                htmlContent.append("<p><strong>Description:</strong> ").append(value.getDescription()).append("</p>");
             }
-
+            htmlContent.append("<p><strong>Deadline:</strong> ").append(value.getEndDate().toString()).append("</p>");
+            htmlContent.append("<p><strong>Responsible Person:</strong> ").append(value.getUser() != null ? value.getUser().getFirstName() + " " + value.getUser().getLastName() : "None").append("</p>");
+            htmlContent.append("</div>");
             htmlContent.append("</div>");
         }
 
@@ -485,6 +477,7 @@ public class ChoreServiceImpl implements ChoreService {
         htmlContent.append("</html>");
 
         return htmlContent.toString();
+
     }
 }
 
