@@ -3,6 +3,7 @@ import {BalanceDebitDto, ExpenseDto, SplitBy} from "../../../dtos/expenseDto";
 import {UserListDto} from "../../../dtos/user";
 import {FinanceService} from "../../../services/finance.service";
 import {ToastrService} from "ngx-toastr";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 @Component({
     selector: 'app-debits',
@@ -18,6 +19,7 @@ export class DebitsComponent {
     constructor(
         private financeService: FinanceService,
         private notification: ToastrService,
+        private errorHandlerService: ErrorHandlerService
     ) {
     }
 
@@ -49,17 +51,11 @@ export class DebitsComponent {
 
         this.financeService.createExpense(expenseDto).subscribe({
             next: (expense) => {
-                this.notification.success("Payback successful", "Success");
+              this.notification.success("Payment successful", "Success");
                 this.reloadData.emit();
             },
             error: (error) => {
-                let firstBracket = error.error.indexOf('[');
-                let lastBracket = error.error.indexOf(']');
-                let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-                let errorDescription = error.error.substring(0, firstBracket);
-                errorMessages.forEach(message => {
-                    this.notification.error(message, errorDescription);
-                });
+              this.errorHandlerService.handleErrors(error, "payment", "created");
             }
         });
 
