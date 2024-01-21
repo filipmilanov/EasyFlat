@@ -39,8 +39,8 @@ export class ExpenseOverviewComponent implements OnInit {
         this.users = users;
       },
       error: (error) => {
-        console.error(error);
         this.notification.error("Could not load flatmates", "Error");
+        this.errorHandler.handleErrors(error, "flatmates", "loaded");
       }
     });
     this.reloadExpenses();
@@ -73,7 +73,6 @@ export class ExpenseOverviewComponent implements OnInit {
             this.errorHandler.handleErrors(error, 'search', 'validated');
           } else {
             this.router.navigate(['/finance/']);
-            console.log(error.status)
             this.errorHandler.handleErrors(error, "expenses", "loaded");
           }
         }
@@ -87,15 +86,7 @@ export class ExpenseOverviewComponent implements OnInit {
         this.reloadExpenses();
       },
       error: error => {
-        console.error(`Expense could not be deleted: ${error}`);
-        this.notification.error(`Expense ${expense.title} could not be deleted`, "Error");
-        let firstBracket = error.error.indexOf('[');
-        let lastBracket = error.error.indexOf(']');
-        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-        let errorDescription = error.error.substring(0, firstBracket);
-        errorMessages.forEach(message => {
-          this.notification.error(message, errorDescription);
-        });
+        this.errorHandler.handleErrors(error, "expense", "deleted");
       }
     });
   }
