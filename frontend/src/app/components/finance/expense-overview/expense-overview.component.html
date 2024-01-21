@@ -42,7 +42,7 @@
             [(ngModel)]="searchParams.paidBy"
             (ngModelChange)="searchChanged()"
     >
-      <option></option>
+      <option [ngValue]=undefined>Any User</option>
       <option *ngFor="let user of users"
               [ngValue]="user">
         {{ user.firstName + ' ' + user.lastName }}
