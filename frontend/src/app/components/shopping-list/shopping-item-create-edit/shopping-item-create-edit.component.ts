@@ -29,6 +29,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
 
   mode: ItemCreateEditMode = ItemCreateEditMode.create;
   item: ShoppingItemDto = {
+    shoppingList: new ShoppingListDto(null, null, null),
     alwaysInStock: false,
     addToFiance: false
   }
@@ -48,9 +49,9 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   public get heading(): string {
     switch (this.mode) {
       case ItemCreateEditMode.create:
-        return 'Add New Item';
+        return 'Create New Shopping Item';
       case ItemCreateEditMode.edit:
-        return 'Add Additional Info';
+        return 'Editing Shopping Item';
       default:
         return '?';
     }
@@ -59,9 +60,9 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   public get submitButtonText(): string {
     switch (this.mode) {
       case ItemCreateEditMode.create:
-        return 'Add Item';
+        return 'Create';
       case ItemCreateEditMode.edit:
-        return 'Update Item';
+        return 'Update';
       default:
         return '?';
     }
@@ -78,7 +79,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   private get modeActionFinished(): string {
     switch (this.mode) {
       case ItemCreateEditMode.create:
-        return 'added';
+        return 'created';
       case ItemCreateEditMode.edit:
         return 'updated';
       default:
@@ -88,18 +89,6 @@ export class ShoppingItemCreateEditComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.unitService.findAll().subscribe({
-      next: res => {
-        this.availableUnits = res.filter((unit) => {
-          return unit.name === "g" || unit.name === "kg" || unit.name === "ml" || unit.name === "l" || unit.name === "pcs" || unit.name === "pound" || unit.name === "gallon";
-        });
-        this.item.unit = this.availableUnits[0];
-      },
-      error: err => {
-        this.notification.error('Failed to load Units', "Error");
-      }
-    });
-
     this.route.data.subscribe(data => {
       this.mode = data.mode;
       this.route.params.subscribe(params => {
@@ -112,6 +101,18 @@ export class ShoppingItemCreateEditComponent implements OnInit {
         });
 
       });
+    });
+
+    this.unitService.findAll().subscribe({
+      next: res => {
+        this.availableUnits = res.filter((unit) => {
+          return unit.name === "g" || unit.name === "kg" || unit.name === "ml" || unit.name === "l" || unit.name === "pcs" || unit.name === "pound" || unit.name === "gallon";
+        });
+        this.item.unit = this.availableUnits[0];
+      },
+      error: err => {
+        this.notification.error('Failed to load Units', "Error");
+      }
     });
 
     if (this.mode === ItemCreateEditMode.edit) {

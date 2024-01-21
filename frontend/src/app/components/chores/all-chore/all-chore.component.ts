@@ -5,6 +5,7 @@ import {ToastrService} from "ngx-toastr";
 import {ChoreService} from "../../../services/chore.service";
 import {HttpResponse} from "@angular/common/http";
 import {tap} from "rxjs/operators";
+import {UserDetail} from "../../../dtos/auth-request";
 
 @Component({
   selector: 'app-all-chore',
@@ -13,6 +14,8 @@ import {tap} from "rxjs/operators";
 })
 export class AllChoreComponent {
   chores: ChoresDto[];
+  unassigned: ChoresDto[] = [];
+  assigned: ChoresDto[] = [];
   searchParams: ChoreSearchDto = {
     userName: '',
     endDate: null,
@@ -37,6 +40,8 @@ export class AllChoreComponent {
         this.chores = res.sort((a: ChoresDto, b: ChoresDto) => {
           return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
         });
+        this.assigned = this.chores.filter(chore => chore.user !== null);
+        this.unassigned = this.chores.filter(chore => chore.user === null);
       },
       error: error => {
         let firstBracket = error.error.indexOf('[');
@@ -74,9 +79,6 @@ export class AllChoreComponent {
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
-      },
-      error => {
-        this.notification.error("No chores found to export")
       });
   }
 

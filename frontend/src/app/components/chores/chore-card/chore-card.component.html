@@ -1,12 +1,24 @@
-<div class="card">
-  <div class = "card-header">
-    <h5 class="card-title">{{ name }}</h5>
+<div class="card h-100" [ngClass]="mode === 1 ? 'custom-card' : ''" [class.completed-chore]="completed">
+
+  <div class="card-header">
+    <h5 class="card-title">{{getTruncated(name, 23)}} </h5>
   </div>
   <div class="card-body">
-    <p class="card-text" *ngIf="description">Description: {{ description }}</p>
-    <p class="card-text">Deadline: {{ endDate | date }}</p>
-    <p class="card-text">User: {{ user }}</p>
-    <!-- Additional chore details can be displayed here -->
+
+    <p class="card-text" *ngIf="description">
+      Description: {{ getTruncated(description, 58) }}
+    </p>
+
+    <p class="card-text">Deadline:
+      <span style="font-weight: bold" [ngClass]="getColorBasedOnDeadline()">
+        {{ endDate | date }}
+      </span>
+    </p>
+
+    <p *ngIf="mode === 0" class="card-text">User:
+      {{ user }}
+    </p>
+
   </div>
   <div class="card-footer">
     <p class="card-text">Points: {{ points }}</p>

@@ -75,7 +75,6 @@ import {LeaderboardComponent} from './components/chores/leaderboard/leaderboard.
 import {MatListModule} from '@angular/material/list';
 import {MatCardModule} from '@angular/material/card';
 import {ChorePreferenceCardComponent} from './components/chores/chore-preference-card/chore-preference-card.component';
-import {MyChoreCardComponent} from './components/chores/my-chore-card/my-chore-card.component';
 import {
   ChoreConfirmationModalComponent
 } from "./components/chores/my-chores/chore-confirmation-modal/chore-confirmation-modal.component";
@@ -152,7 +151,6 @@ LOAD_WASM().subscribe();
         ChoreCardComponent,
         LeaderboardComponent,
         ChorePreferenceCardComponent,
-        MyChoreCardComponent,
         ChoreConfirmationModalComponent,
       SortButtonComponent,
       CreateExpenseFromShopComponent,

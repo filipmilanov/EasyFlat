@@ -7,6 +7,7 @@ import {ShoppingListService} from "../../services/shopping-list.service";
 import {ShoppingListDto} from "../../dtos/shoppingList";
 import {SharedFlat} from "../../dtos/sharedFlat";
 import {Observable} from "rxjs";
+import {ErrorHandlerService} from "../../services/util/error-handler.service";
 import {forEach} from "lodash";
 
 @Component({
@@ -23,7 +24,7 @@ export class ShoppingListComponent implements OnInit {
   };
   items: ShoppingItemDto[] = [];
   shopId: string;
-  checkedItems: ShoppingItemDto[] = this.getCheckedItems();
+  checkedItems: ShoppingItemDto[] = [];
   selectedShoppingListId: number;
   shoppingLists: ShoppingListDto[] = [];
   searchParams: ShoppingItemSearchDto = {
@@ -37,6 +38,7 @@ export class ShoppingListComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
+    private errorHandler: ErrorHandlerService
   ) {
   }
 
@@ -86,7 +88,7 @@ export class ShoppingListComponent implements OnInit {
       }
     });
 
-    this.checkedItems = this.getCheckedItems();
+    this.checkedItems = [];
   }
 
   getItems() {
@@ -111,26 +113,23 @@ export class ShoppingListComponent implements OnInit {
     this.router.navigate([this.baseUri, this.shoppingList.id, 'item', 'create']);
   }
 
-
   deleteList() {
-    if (confirm("Are you sure you want to delete this list?")) {
-      console.log(this.shopId)
-      this.shoppingListService.deleteList(this.shopId).subscribe({
-        next: (deletedList: ShoppingListDto) => {
-          this.router.navigate(['shopping-lists']);
-          this.notification.success(deletedList.name + " was successfully deleted.", "Success");
-        },
-        error: error => {
-          let firstBracket = error.error.indexOf('[');
-          let lastBracket = error.error.indexOf(']');
-          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-          let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach(message => {
-            this.notification.error(message, errorDescription);
-          });
-        }
-      });
-    }
+    console.log(this.shopId)
+    this.shoppingListService.deleteList(this.shopId).subscribe({
+      next: (deletedList: ShoppingListDto) => {
+        this.router.navigate(['shopping-lists']);
+        this.notification.success(deletedList.name + " was successfully deleted.", "Success");
+      },
+      error: error => {
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
+      }
+    });
   }
 
   updateCheckedItems(item: ShoppingItemDto) {
@@ -152,24 +151,20 @@ export class ShoppingListComponent implements OnInit {
     }
 
     if (confirm("Are you sure you want to delete the checked items?")) {
-      checkedItems.forEach(item => {
-        this.shoppingListService.deleteItem(item.itemId).subscribe({
-          next: (deletedItem: ShoppingItemDto) => {
-            this.notification.success(deletedItem.productName + " was successfully deleted from the list", "Success");
-            this.items = this.items.filter(listItem => listItem.itemId !== deletedItem.itemId);
-            this.checkedItems = this.getCheckedItems();
-            console.log('Checked Items:', this.checkedItems);
-          },
-          error: error => {
-            let firstBracket = error.error.indexOf('[');
-            let lastBracket = error.error.indexOf(']');
-            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-            let errorDescription = error.error.substring(0, firstBracket);
-            errorMessages.forEach(message => {
-              this.notification.error(message, errorDescription);
-            });
-          }
-        });
+      this.shoppingListService.deleteItems(checkedItems).subscribe({
+        next: () => {
+          this.notification.success("Items were successfully deleted from the list", "Success");
+          this.ngOnInit();
+        },
+        error: error => {
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
+        }
       });
     }
   }
@@ -197,7 +192,10 @@ export class ShoppingListComponent implements OnInit {
           this.router.navigate([`/digital-storage`])
         },
         error: err => {
-          this.notification.error('Items were not added to the storage', err)
+          this.errorHandler.handleErrors(err, "shopping-item", "created");
+          if (err.status === 409) {
+            this.notification.error("Either change the unit or the category")
+          }
         }
       }
     );
@@ -225,5 +223,16 @@ export class ShoppingListComponent implements OnInit {
 
   getIdFormatForDeleteModalForChecked(checkedItems: ShoppingItemDto[]) {
     return checkedItems.toString().replace(/[^a-zA-Z0-9]+/g, '');
+  }
+
+  truncateString(input: string, maxLength: number): string {
+    console.log(input)
+    if (input.length <= maxLength) {
+      console.log("njionjoij")
+      return input;
+    }
+
+    const truncated = input.substring(0, maxLength - 3);
+    return truncated + '...';
   }
 }

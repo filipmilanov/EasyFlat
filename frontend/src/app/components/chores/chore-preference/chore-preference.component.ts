@@ -101,6 +101,7 @@ export class ChorePreferenceComponent implements OnInit {
       next: (lastPreference: Preference) => {
         if (lastPreference) {
           this.oldPreference = lastPreference;
+          this.preference = lastPreference;
           console.log('lastPref', lastPreference);
         }
 

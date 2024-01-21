@@ -36,9 +36,11 @@ export class NewChoreComponent {
   }
 
   onSubmit(form: NgForm) {
-    console.log('is form valid?', form.valid, this.chore);
     if (!this.chore.points) {
       this.chore.points = 0;
+    }
+    if (this.chore.points > 100) {
+      this.notification.error("Points can be at most 100")
     }
     this.choreService.createChore(this.chore).subscribe({
       next: data => {
