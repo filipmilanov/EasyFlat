@@ -172,7 +172,7 @@ export class ItemCreateEditComponent implements OnInit {
             this.createExpenseFromItemDto();
           }
 
-          if(this.modeIsCreate){
+          if (this.modeIsCreate) {
             this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished} and added to the storage.`, "Success");
           } else {
             this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished}.`, "Success");
@@ -316,30 +316,32 @@ export class ItemCreateEditComponent implements OnInit {
   }
 
   searchForEan(ean: string) {
-    this.notification.info("Fetching barcode data...", "Fetching data");
-    let o = this.openFoodFactService.findByEan(ean);
-    o.subscribe({
-      next: data => {
-        this.notification.success("EAN data successfully retrieved.", "Success");
-        if (data != null) {
-          this.item = {
-            ...this.item,
-            generalName: data.generalName,
-            productName: data.productName,
-            brand: data.brand,
-            ingredients: data.ingredients,
-            quantityTotal: data.quantityTotal,
-            unit: (this.availableUnits[0] == null ? this.item.unit : this.availableUnits[0]),
-            ean: ean
-          };
-        } else {
-          this.notification.warning("No data found for EAN number.", "No Data");
+    if (ean.length === 13) {
+      this.notification.info("Fetching barcode data...", "Fetching data");
+      let o = this.openFoodFactService.findByEan(ean);
+      o.subscribe({
+        next: data => {
+          this.notification.success("EAN data successfully retrieved.", "Success");
+          if (data != null) {
+            this.item = {
+              ...this.item,
+              generalName: data.generalName,
+              productName: data.productName,
+              brand: data.brand,
+              ingredients: data.ingredients,
+              quantityTotal: data.quantityTotal,
+              unit: (this.availableUnits[0] == null ? this.item.unit : this.availableUnits[0]),
+              ean: ean
+            };
+          } else {
+            this.notification.warning("No data found for EAN number.", "No Data");
+          }
+        },
+        error: error => {
+          this.errorHandler.handleErrors(error, "EAN", "fetched");
         }
-      },
-      error: error => {
-        this.errorHandler.handleErrors(error, "EAN", "fetched");
-      }
-    })
+      })
+    }
   }
 
   togglePlayPause() {
