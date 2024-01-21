@@ -15,6 +15,7 @@ import {FinanceService} from "../../../services/finance.service";
 import {DebitDto, ExpenseDto, SplitBy} from "../../../dtos/expenseDto";
 import {AuthService} from "../../../services/auth.service";
 import {UserService} from "../../../services/user.service";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 export enum ItemCreateEditMode {
   create,
@@ -56,6 +57,7 @@ export class ItemCreateEditComponent implements OnInit {
     private financeService: FinanceService,
     private authService: AuthService,
     private userService: UserService,
+    private errorHandler: ErrorHandlerService
   ) {
   }
 
@@ -102,8 +104,8 @@ export class ItemCreateEditComponent implements OnInit {
         this.availableUnits = res;
         this.item.unit = this.availableUnits[0];
       },
-      error: () => {
-        this.notification.error('Failed to load units.', "Error");
+      error: error => {
+        this.errorHandler.handleErrors(error, "units", "loaded");
       }
     });
 
@@ -119,9 +121,9 @@ export class ItemCreateEditComponent implements OnInit {
             next: res => {
               this.item = res;
             },
-            error: () => {
+            error: error => {
               this.router.navigate(['/digital-storage/']);
-              this.notification.error('Item could not be retrieved from the server.', "Error");
+              this.errorHandler.handleErrors(error, "item", "loaded");
             }
           })
         },
@@ -137,8 +139,8 @@ export class ItemCreateEditComponent implements OnInit {
         next: res => {
           this.item.digitalStorage = res[0];
         },
-        error: () => {
-          this.notification.error('Failed to load the storage.', "Error");
+        error: error => {
+          this.errorHandler.handleErrors(error, "storage", "loaded");
         }
       });
     }
@@ -175,28 +177,17 @@ export class ItemCreateEditComponent implements OnInit {
           } else {
             this.notification.success(`Item ${this.item.productName} successfully ${this.modeActionFinished}.`, "Success");
           }
-          if( !this.modeIsCreate && this.item.alwaysInStock && this.item.quantityCurrent < this.item.minimumQuantity){
+          if (!this.modeIsCreate && this.item.alwaysInStock && this.item.quantityCurrent < this.item.minimumQuantity) {
             this.notification.success(`The item was automatically added to the shopping list.`, "Success");
           }
-          if( !this.modeIsCreate && !this.item.alwaysInStock && this.item.quantityCurrent <= 0 ){
+          if (!this.modeIsCreate && !this.item.alwaysInStock && this.item.quantityCurrent <= 0) {
             this.notification.success(`Item ${this.item.productName} has no stock and was successfully deleted.`, "Success");
           }
 
           this.router.navigate(['/digital-storage']);
         },
         error: error => {
-          if (error.status === 500) {
-            this.notification.error(`The item could not be ${this.modeActionFinished} due to an issue with the server.`, "Error");
-          } else {
-            let firstBracket = error.error.indexOf('[');
-            let lastBracket = error.error.indexOf(']');
-            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-            let errorDescription = error.error.substring(0, firstBracket);
-            errorMessages.forEach((message: string) => {
-              this.notification.error(message, errorDescription);
-            });
-            this.notification.error(`The item could not be ${this.modeActionFinished}.`, "Error");
-          }
+          this.errorHandler.handleErrors(error, "item", this.modeActionFinished);
         }
       });
     }
@@ -243,18 +234,20 @@ export class ItemCreateEditComponent implements OnInit {
                 this.notification.success(`Item ${this.item.productName} successfully added to finance.`, "Success");
               },
               error: error => {
-                this.notification.error(`Item ${this.item.productName} could not be added to finance: ${error}`);
+                this.errorHandler.handleErrors(error, "item " + this.item.productName, "added to finance");
               }
             });
           },
           error: error => {
             this.notification.error('Cannot find other flatmates, cannot add expense', "Error");
+            this.errorHandler.handleErrors(error, "expense", "added");
           }
         });
 
       },
       error: error => {
         this.notification.error('Failed to load User, cannot add expense', "Error");
+        this.errorHandler.handleErrors(error, "expense", "added");
       }
     });
   }
@@ -319,11 +312,11 @@ export class ItemCreateEditComponent implements OnInit {
     this.scanner.pause();
     this.item.ean = this.scanner.data.value[0].value;
 
-    this.notification.info("Fetching barcode data...", "Fetching data");
-    this.searchForEan(this.item.ean, true);
+    this.searchForEan(this.item.ean);
   }
 
-  searchForEan(ean: string, wasFromScanner: boolean) {
+  searchForEan(ean: string) {
+    this.notification.info("Fetching barcode data...", "Fetching data");
     let o = this.openFoodFactService.findByEan(ean);
     o.subscribe({
       next: data => {
@@ -343,12 +336,8 @@ export class ItemCreateEditComponent implements OnInit {
           this.notification.warning("No data found for EAN number.", "No Data");
         }
       },
-      error: () => {
-        if (wasFromScanner) {
-          this.notification.error("An error occurred while fetching EAN data.", "Error");
-        } else {
-          this.notification.error("An error occurred while searching for EAN data.", "Error");
-        }
+      error: error => {
+        this.errorHandler.handleErrors(error, "EAN", "fetched");
       }
     })
   }
@@ -367,8 +356,8 @@ export class ItemCreateEditComponent implements OnInit {
         this.router.navigate(['/digital-storage/']);
         this.notification.success(`Item ${this.item.productName} was successfully deleted.`, "Success");
       },
-      error: () => {
-        this.notification.error(`Item ${this.item.productName} could not be deleted.`, "Error");
+      error: error => {
+        this.errorHandler.handleErrors(error, "item " + this.item.productName, "deleted");
       }
     });
   }

@@ -5,6 +5,7 @@ import {ItemDto} from "../../../dtos/item";
 import {ItemService} from "../../../services/item.service";
 import {ToastrService} from "ngx-toastr";
 import {ShoppingListService} from "../../../services/shopping-list.service";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 export enum QuantityChange {
   INCREASE = "increased",
@@ -27,7 +28,8 @@ export class ItemDetailListComponent implements OnInit {
               private route: ActivatedRoute,
               private itemService: ItemService,
               private notification: ToastrService,
-              private shoppingService: ShoppingListService) {
+              private shoppingService: ShoppingListService,
+              private errorHandler: ErrorHandlerService) {
   }
 
   ngOnInit(): void {
@@ -65,9 +67,9 @@ export class ItemDetailListComponent implements OnInit {
               }
             }
           },
-          error: () => {
+          error: error => {
             this.router.navigate(['/digital-storage/']);
-            this.notification.error(`Items of type ${generalName} could not be loaded.`, "Error");
+            this.errorHandler.handleErrors(error, "category " + generalName, "loaded");
           }
         })
       },
@@ -135,11 +137,11 @@ export class ItemDetailListComponent implements OnInit {
           }
         }
       },
-      error: () => {
+      error: error => {
         item.quantityCurrent = previousCurrentQuantity;
         item.quantityTotal = previousTotalQuantity;
         this.quantityInputs[item.itemId] = null;
-        this.notification.error(`Item ${item.productName} could not be ${mode} by ${quantityInput}.`, "Error");
+        this.errorHandler.handleErrors(error, "item " + item.productName, mode);
       }
     });
   }
@@ -154,8 +156,8 @@ export class ItemDetailListComponent implements OnInit {
         }
         this.notification.success(`Item ${item.productName} was successfully deleted.`, "Success");
       },
-      error: () => {
-        this.notification.error(`Item ${item.productName} could not be deleted.`, "Error");
+      error: error => {
+        this.errorHandler.handleErrors(error, "item " + item.productName, "deleted");
       }
     });
   }
@@ -189,8 +191,8 @@ export class ItemDetailListComponent implements OnInit {
           }
         })
       },
-      error: () => {
-        this.notification.error(`Item ${item.productName} could not be added to the shopping list.`, "Error");
+      error: error => {
+        this.errorHandler.handleErrors(error, "item " + item.productName, "added to shopping list");
       }
     });
   }
