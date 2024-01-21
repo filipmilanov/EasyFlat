@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {ExpenseDto, ExpenseSearchDto, RepeatingExpenseType} from "../../../dtos/expenseDto";
+import {ExpenseDto, ExpenseSearchDto} from "../../../dtos/expenseDto";
 import {FinanceService} from "../../../services/finance.service";
 import {ToastrService} from "ngx-toastr";
 import {Router} from "@angular/router";
 import {debounceTime, Subject} from "rxjs";
 import {UserListDto} from "../../../dtos/user";
 import {UserService} from "../../../services/user.service";
-import {ItemDto} from "../../../dtos/item";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 @Component({
   selector: 'app-expense-overview',
@@ -25,7 +25,8 @@ export class ExpenseOverviewComponent implements OnInit {
   constructor(private userService: UserService,
               private financeService: FinanceService,
               private router: Router,
-              private notification: ToastrService) {
+              private notification: ToastrService,
+              private errorHandler: ErrorHandlerService) {
   }
 
   searchChanged(): void {
@@ -59,22 +60,22 @@ export class ExpenseOverviewComponent implements OnInit {
     } else {
       this.searchParams.toDate = new Date(this.searchToDate);
     }
+
+    this.validateSearchParams();
+
     this.financeService.findAll(this.searchParams)
       .subscribe({
         next: res => {
           this.expenses = res;
         },
         error: error => {
-          console.error(`Expenses could not be loaded: ${error}`);
-          this.router.navigate(['/finance/']);
-          this.notification.error(`Expenses could not be loaded`, "Error");
-          let firstBracket = error.error.indexOf('[');
-          let lastBracket = error.error.indexOf(']');
-          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-          let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach(message => {
-            this.notification.error(message, errorDescription);
-          });
+          if (error.status === 422) {
+            this.errorHandler.handleErrors(error, 'search', 'validated');
+          } else {
+            this.router.navigate(['/finance/']);
+            console.log(error.status)
+            this.errorHandler.handleErrors(error, "expenses", "loaded");
+          }
         }
       });
   }
@@ -99,9 +100,38 @@ export class ExpenseOverviewComponent implements OnInit {
     });
   }
 
+  validateSearchParams(): void {
+    if (this.searchParams.title?.length > 160) {
+      this.notification.error("The title search cannot contain more than 160 characters.", "Error");
+      this.searchParams.title = null;
+
+    } else if (this.searchParams.minAmountInEuro < 0) {
+      this.notification.error("The minimum amount search cannot be less than 0 €.", "Error");
+      this.searchParams.minAmountInEuro = 0;
+
+    } else if (this.searchParams.minAmountInEuro > 10000) {
+      this.notification.error("The minimum amount search cannot be larger than 10000 €.", "Error");
+      this.searchParams.minAmountInEuro = 10000;
+
+    } else if (this.searchParams.minAmountInEuro?.toString().length > 6) {
+      this.notification.error("The minimum amount search cannot have more than 5 digits.", "Error");
+      this.searchParams.minAmountInEuro = null;
+
+    } else if (this.searchParams.maxAmountInEuro < 0) {
+      this.notification.error("The maximum amount search cannot be less than 0 €.", "Error");
+      this.searchParams.maxAmountInEuro = 0;
+
+    } else if (this.searchParams.maxAmountInEuro > 10000) {
+      this.notification.error("The maximum amount search cannot be larger than 10000 €.", "Error");
+      this.searchParams.maxAmountInEuro = 10000;
+
+    }  else if (this.searchParams.maxAmountInEuro?.toString().length > 6) {
+      this.notification.error("The maximum amount search cannot have more than 5 digits.", "Error");
+      this.searchParams.minAmountInEuro = null;
+    }
+  }
+
   getIdFormatForDeleteModal(expense: ExpenseDto): string {
     return `${expense.title}${expense.id.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
-
-  protected readonly UserListDto = UserListDto;
 }

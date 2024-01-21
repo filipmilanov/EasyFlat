@@ -3,6 +3,7 @@ import {StorageService} from "../../services/storage.service";
 import {ItemSearchDto, StorageItemListDto} from "../../dtos/storageItem";
 import {OrderType} from "../../dtos/orderType";
 import {ErrorHandlerService} from "../../services/util/error-handler.service";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-digital-storage',
@@ -22,6 +23,7 @@ export class DigitalStorageComponent implements OnInit {
 
 
   constructor(private storageService: StorageService,
+              private notification: ToastrService,
               private errorHandler: ErrorHandlerService) {
   }
 
@@ -30,6 +32,7 @@ export class DigitalStorageComponent implements OnInit {
   }
 
   public loadStorage() {
+    this.validateSearchParams();
     this.searchParameters.alwaysInStock = false;
     this.storageService.getItems(this.searchParameters).subscribe({
         next: res => {
@@ -50,6 +53,13 @@ export class DigitalStorageComponent implements OnInit {
         }
       }
     )
+  }
+
+  validateSearchParams(): void {
+    if (this.searchParameters.productName?.length > 50) {
+      this.notification.error("The title search cannot contain more than 50 characters.", "Error");
+      this.searchParameters.productName = null;
+    }
   }
 
   protected readonly OrderType = OrderType;

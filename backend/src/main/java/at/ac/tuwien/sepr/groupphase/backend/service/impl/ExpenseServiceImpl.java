@@ -83,8 +83,10 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public List<Expense> findAll(ExpenseSearchDto expenseSearchDto) {
+    public List<Expense> findAll(ExpenseSearchDto expenseSearchDto) throws ValidationException {
         LOGGER.trace("findAll({})", expenseSearchDto);
+
+        expenseValidator.validateExpenseForSearch(expenseSearchDto);
 
         Long flatId = authService.getUserFromToken().getSharedFlat().getId();
 
