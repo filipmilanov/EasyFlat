@@ -17,7 +17,7 @@
     </button>
 
     <button type="button"
-            [ngClass]="{'btn btn-primary': true, 'col-4 w-25': action.isStart}"
+            [ngClass]="{'btn btn-outline-primary': true, 'col-4 w-25': action.isStart}"
             (click)="toggleScanning()">
       {{ action.isStart ? 'Stop' : 'Start Scanning' }}
     </button>
@@ -315,7 +315,7 @@
           </div>
           <div class="col-auto">
             <button type="button"
-                    class="btn btn-primary"
+                    class="btn btn-outline-primary"
                     (click)="addIngredient(ingredientInput.value); ingredientInput.value = ''; ingredientInput.focus() ">
               <i class="bi bi-plus-square"></i>
             </button>
