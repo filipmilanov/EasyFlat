@@ -39,6 +39,23 @@ public class ChoreValidatorImpl implements ChoreValidator {
         checkConflictForCreate(chore);
     }
 
+    @Override
+    public void validateForUpdate(Chore chore) throws ValidationException, ConflictException {
+        LOGGER.trace("validateForUpdate({})", chore);
+        List<String> errors = new ArrayList<>();
+        if (chore.getId() == null) {
+            errors.add("The id must not be null");
+        }
+        if (chore.getEndDate().isBefore(LocalDate.now())) {
+            errors.add("You can not create a chore with expired date");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ConflictException("Not valid data", errors);
+        }
+
+    }
+
     private void checkConflictForCreate(ChoreDto chore) throws ConflictException {
         LOGGER.trace("checkConflictForCreate({})", chore);
 

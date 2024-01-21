@@ -22,7 +22,6 @@ public record EventDto(
     @Size(max = 200, message = "Title length must not exceed 200 characters")
     String title,
     @Size(max = 1000, message = "Title length must not exceed 1000 characters")
-    @NotBlank(message = "Description must not be blank")
     String description,
     @NotNull(message = "The start time must be given")
     LocalTime startTime,
