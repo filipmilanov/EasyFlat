@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,18 +88,24 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         Long flatId = authService.getUserFromToken().getSharedFlat().getId();
 
+        LocalDateTime fromCreatedAt = null;
+        LocalDateTime toCreatedAt = null;
+
+        if (expenseSearchDto.fromCreatedAt() != null) {
+            fromCreatedAt = expenseSearchDto.fromCreatedAt().atStartOfDay();
+        }
+        if (expenseSearchDto.toCreatedAt() != null) {
+            toCreatedAt = expenseSearchDto.toCreatedAt().atTime(23, 59, 59);
+        }
+
         return expenseRepository.findByCriteria(
             flatId,
             expenseSearchDto.title(),
             expenseSearchDto.paidById(),
             expenseSearchDto.minAmountInCents(),
             expenseSearchDto.maxAmountInCents(),
-            expenseSearchDto.createdAt() != null
-                ? expenseSearchDto.createdAt().atStartOfDay()
-                : null,
-            expenseSearchDto.createdAt() != null
-                ? expenseSearchDto.createdAt().atTime(23, 59, 59)
-                : null
+            fromCreatedAt,
+            toCreatedAt
         );
     }
 

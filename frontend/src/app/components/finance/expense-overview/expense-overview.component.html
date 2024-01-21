@@ -70,14 +70,26 @@
     >
   </div>
   <div class="ms-1">
-    <label for="searchExpenseCreatedAt" class="col-form-label">
-      Date
+    <label for="searchFromExpenseCreatedAt" class="col-form-label">
+      From Date
     </label>
-    <input type="date" id="searchExpenseCreatedAt" name="searchExpenseCreatedAt"
+    <input type="date" id="searchFromExpenseCreatedAt" name="searchFromExpenseCreatedAt"
            pattern="\d{4}-\d{2}-\d{2}"
            placeholder="yyyy-mm-dd"
            class="form-control"
-           [(ngModel)]="searchDate"
+           [(ngModel)]="searchFromDate"
+           (ngModelChange)="searchChanged()"
+    >
+  </div>
+  <div class="ms-1">
+    <label for="searchToExpenseCreatedAt" class="col-form-label">
+      To Date
+    </label>
+    <input type="date" id="searchToExpenseCreatedAt" name="searchToExpenseCreatedAt"
+           pattern="\d{4}-\d{2}-\d{2}"
+           placeholder="yyyy-mm-dd"
+           class="form-control"
+           [(ngModel)]="searchToDate"
            (ngModelChange)="searchChanged()"
     >
   </div>

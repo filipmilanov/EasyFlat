@@ -12,6 +12,8 @@ public record ExpenseSearchDto(
     Double minAmountInCents,
     Double maxAmountInCents,
     @DateTimeFormat(pattern = "dd-MM-yyyy")
-    LocalDate createdAt
+    LocalDate fromCreatedAt,
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    LocalDate toCreatedAt
 ) {
 }
