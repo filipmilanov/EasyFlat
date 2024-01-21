@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -15,4 +16,6 @@ public interface ChoreValidator {
      * @throws ConflictException  Thrown if there is a conflict with existing data preventing creation.
      */
     void validateForCreate(ChoreDto chore) throws ValidationException, ConflictException;
+
+    void validateForUpdate(Chore chore) throws ValidationException, ConflictException;
 }

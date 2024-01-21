@@ -85,7 +85,7 @@ public interface ChoreService {
      * @param newDate The new date for the repeated chore.
      * @return The repeated ChoreDto.
      */
-    ChoreDto repeatChore(Long choreId, Date newDate) throws AuthorizationException;
+    ChoreDto repeatChore(Long choreId, Date newDate) throws AuthorizationException, ValidationException, ConflictException;
 
     /**
      * Retrieves a list of unassigned chores.

@@ -137,7 +137,7 @@ public class ChoresEndpoint {
 
     @PatchMapping("/repeat")
     @Secured("ROLE_USER")
-    public ChoreDto repeatChore(@RequestBody RepeatChoreRequest request) throws AuthorizationException {
+    public ChoreDto repeatChore(@RequestBody RepeatChoreRequest request) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.trace("repeatChore({})", request);
         Long id = request.getId();
         Date date = request.getDate();

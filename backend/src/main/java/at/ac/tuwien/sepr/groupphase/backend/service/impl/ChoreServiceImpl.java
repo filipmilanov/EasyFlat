@@ -386,7 +386,7 @@ public class ChoreServiceImpl implements ChoreService {
 
     @Override
     @Transactional
-    public ChoreDto repeatChore(Long choreId, Date newDate) throws AuthorizationException {
+    public ChoreDto repeatChore(Long choreId, Date newDate) throws AuthorizationException, ValidationException, ConflictException {
         ApplicationUser user = authService.getUserFromToken();
         Optional<Chore> toChange = choreRepository.findById(choreId);
         if (toChange.isPresent()) {
@@ -396,6 +396,7 @@ public class ChoreServiceImpl implements ChoreService {
             }
             changeChore.setUser(null);
             changeChore.setEndDate(newDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            choreValidator.validateForUpdate(changeChore);
             user.setPoints(user.getPoints() + changeChore.getPoints());
             userRepository.save(user);
             choreRepository.save(changeChore);

@@ -119,7 +119,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void createValidChoreShouldSucceed() throws ValidationException, ConflictException {
+    void createValidChoreShouldSucceed() throws ValidationException, ConflictException {
         doNothing().when(choreValidator).validateForCreate(
             eq(validChoreDto)
         );
@@ -138,7 +138,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void getChoresShouldSucceed() throws AuthenticationException {
+    void getChoresShouldSucceed() throws AuthenticationException {
         List<Chore> chores = choreService.getChores(new ChoreSearchDto(null, null));
 
         assertAll(
@@ -148,7 +148,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void assignChoreShouldSucceed() throws AuthenticationException {
+    void assignChoreShouldSucceed() throws AuthenticationException {
         //Data
         Preference pref1 = new Preference();
         pref1.setFirst(new Chore().setId(1L));
@@ -195,7 +195,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void assignChoreShouldFailWithNotFoundException() {
+    void assignChoreShouldFailWithNotFoundException() {
         //Data
         List<Chore> chores = choreRepository.findAllBySharedFlatId(testUser.getSharedFlat().getId());
         choreRepository.deleteAll(chores);
@@ -206,7 +206,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void secondAssignChoreShouldSucceed() throws AuthenticationException {
+    void secondAssignChoreShouldSucceed() throws AuthenticationException {
         //Data
         Preference pref1 = new Preference();
         pref1.setFirst(new Chore().setId(1L));
@@ -264,7 +264,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void secondAssignChoreShouldFailWithNotFoundException() throws AuthenticationException {
+    void secondAssignChoreShouldFailWithNotFoundException() throws AuthenticationException {
         //Data
         Preference pref1 = new Preference();
         pref1.setFirst(new Chore().setId(1L));
@@ -297,7 +297,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void assignChoreWithMoreUsersAndPointsShouldSucceed() throws AuthenticationException {
+    void assignChoreWithMoreUsersAndPointsShouldSucceed() throws AuthenticationException {
         //Data
         testUser.setPoints(10);
         testUser.setSharedFlat(new SharedFlat().setId(1L));
@@ -333,7 +333,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void secondAssignChoreWithMoreUsersAndPointsShouldSucceed() throws AuthenticationException {
+    void secondAssignChoreWithMoreUsersAndPointsShouldSucceed() throws AuthenticationException {
         //Data
         testUser.setPoints(10);
         testUser.setSharedFlat(new SharedFlat().setId(1L));
@@ -382,7 +382,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void secondAssignChoreWithMoreUsersPointsAndPreferenceShouldSucceed() throws AuthenticationException {
+    void secondAssignChoreWithMoreUsersPointsAndPreferenceShouldSucceed() throws AuthenticationException {
         //Data
         Preference pref = new Preference();
         pref.setFirst(new Chore().setId(1L));
@@ -492,7 +492,7 @@ public class ChoreServiceTest {
 
 
     @Test
-    public void getChoresByUserShouldSucceed() throws AuthenticationException {
+    void getChoresByUserShouldSucceed() throws AuthenticationException {
         //Data
         choreService.assignChores();
         //Test
@@ -503,7 +503,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void deleteChoresShouldSucceed() throws AuthorizationException {
+    void deleteChoresShouldSucceed() throws AuthorizationException {
         //Data
         List<Long> choreIds = new ArrayList<>();
         choreIds.add(1L);
@@ -520,7 +520,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void deleteChoresShouldFailWithAuthorizationException() {
+    void deleteChoresShouldFailWithAuthorizationException() {
         //Data
         List<Long> choreIds = new ArrayList<>();
         choreIds.add(1L);
@@ -534,7 +534,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void getUserShouldSucceed() throws AuthenticationException {
+    void getUserShouldSucceed() throws AuthenticationException {
         //Data
         ApplicationUser testUser4 = new ApplicationUser(5L, "FirstName4", "LastName4", "user4@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L));
         testUser4.setPoints(0);
@@ -550,7 +550,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void updatePointsShouldSucceed() {
+    void updatePointsShouldSucceed() {
         //Data
         ApplicationUser testUser1 = new ApplicationUser(2L, "FirstName1", "LastName1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L));
         testUser1.setPoints(9);
@@ -567,7 +567,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void generatePdfShouldFailWithNotFoundException() {
+    void generatePdfShouldFailWithNotFoundException() {
         //Data
         choreRepository.deleteAll(choreRepository.findAllBySharedFlatId(testUser.getSharedFlat().getId()));
         //Test + Results
@@ -577,7 +577,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void repeatChoreShouldFailWithAuthorizationException() {
+    void repeatChoreShouldFailWithAuthorizationException() {
         //Data
         Date newDate = new Date();
         //Test + Result
@@ -587,7 +587,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    public void repeatChoreShouldSucceed() throws AuthorizationException, AuthenticationException {
+    void repeatChoreShouldSucceed() throws AuthorizationException, AuthenticationException, ValidationException, ConflictException {
         //Data
         Date newDate = new Date();
         choreService.assignChores();
@@ -601,7 +601,7 @@ public class ChoreServiceTest {
     }
 
     @Test
-    void getUnassignedChoresShouldSucceed() throws AuthenticationException, AuthorizationException {
+    void getUnassignedChoresShouldSucceed() throws AuthenticationException, AuthorizationException, ValidationException, ConflictException {
         //Data
         Date newDate = new Date();
         choreService.assignChores();
