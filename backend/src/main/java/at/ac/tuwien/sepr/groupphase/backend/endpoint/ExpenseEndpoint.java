@@ -52,7 +52,7 @@ public class ExpenseEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping()
-    public List<ExpenseDto> findAll(ExpenseSearchDto expenseSearchDto) {
+    public List<ExpenseDto> findAll(ExpenseSearchDto expenseSearchDto) throws ValidationException {
         LOGGER.info("findAll()");
         return expenseMapper.entityListToExpenseDtoList(
             expenseService.findAll(expenseSearchDto)

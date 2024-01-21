@@ -191,7 +191,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeDetailDto getRecipeDetails(Long recipeId) {
-        LOGGER.trace("getRecipeDetails for Recipe with ID {}",recipeId);
+        LOGGER.trace("getRecipeDetails for Recipe with ID {}", recipeId);
         String reqString = getNewReqStringForInformation(recipeId);
         ResponseEntity<RecipeDetailDto> response = restTemplate.exchange(reqString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<RecipeDetailDto>() {
         });

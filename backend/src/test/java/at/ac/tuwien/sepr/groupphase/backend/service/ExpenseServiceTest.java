@@ -110,7 +110,7 @@ class ExpenseServiceTest {
 
     @Test
     @DisplayName("Can all expenses for the current flat be found?")
-    void givenNothingWhenFindAllThenAllExpensesForFlatAreReturned() {
+    void givenNothingWhenFindAllThenAllExpensesForFlatAreReturned() throws ValidationException {
         // given
         Long currentFlatId = applicationUser.getSharedFlat().getId();
 
@@ -127,7 +127,7 @@ class ExpenseServiceTest {
 
     @Test
     @DisplayName("Searching with specific parameters returns exactly one correct item")
-    void givenValidSearchParametersWhenSearchExpensesThenReturnList() {
+    void givenValidSearchParametersWhenSearchExpensesThenReturnList() throws ValidationException {
         // given
         ExpenseSearchDto searchParams = new ExpenseSearchDto("Dinner at Restaurant", 1L, 1900.0, 2000.0, LocalDate.of(2022, 8, 18), LocalDate.of(2022, 8, 18));
 

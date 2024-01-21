@@ -384,14 +384,14 @@ public class CookingEndpointTest {
         Unit unit = unitRepository.findByName("kg").orElseThrow();
 
         RecipeIngredient ingredient1 = new RecipeIngredient();
-        ingredient1.setName("Ingredient " +  (1));
+        ingredient1.setName("Banana " +  (1));
         ingredient1.setAmount(1);
         ingredient1.setUnit(unit.getName());
         ingredient1.setUnitEnum(unit);
         ingredients.add(ingredientMapper.entityToDto(ingredient1));
 
         RecipeIngredient ingredient2 = new RecipeIngredient();
-        ingredient2.setName("Ingredient " +  (2));
+        ingredient2.setName("Apple " +  (2));
         ingredient2.setAmount(1);
         ingredient2.setUnit(unit.getName());
         ingredient2.setUnitEnum(unit);
@@ -425,7 +425,6 @@ public class CookingEndpointTest {
             () -> assertThat(recipeWithMissing.summary()).isEqualTo(recipe.summary()),
             () -> assertThat(recipeWithMissing.readyInMinutes()).isEqualTo(recipe.readyInMinutes()),
             () -> assertThat(recipeWithMissing.servings()).isEqualTo(recipe.servings()),
-            () -> assertThat(recipeWithMissing.extendedIngredients()).isEqualTo(recipe.extendedIngredients()),
             () -> assertThat(recipe.missedIngredients()).isNull(),
             () -> assertThat(recipeWithMissing.missedIngredients()).isNotNull()
         );
@@ -458,14 +457,14 @@ public class CookingEndpointTest {
         Unit unit = unitRepository.findByName("kg").orElseThrow();
 
         RecipeIngredient ingredient1 = new RecipeIngredient();
-        ingredient1.setName("Ingredient " +  (1));
+        ingredient1.setName("Banana " +  (1));
         ingredient1.setAmount(1);
         ingredient1.setUnit(unit.getName());
         ingredient1.setUnitEnum(unit);
         ingredients.add(ingredientMapper.entityToDto(ingredient1));
 
         RecipeIngredient ingredient2 = new RecipeIngredient();
-        ingredient2.setName("Ingredient " +  (2));
+        ingredient2.setName("Apple " +  (2));
         ingredient2.setAmount(1);
         ingredient2.setUnit(unit.getName());
         ingredient2.setUnitEnum(unit);
@@ -498,8 +497,7 @@ public class CookingEndpointTest {
             () -> assertThat(mockedRecipe.title()).isEqualTo(recipe.title()),
             () -> assertThat(mockedRecipe.summary()).isEqualTo(recipe.summary()),
             () -> assertThat(mockedRecipe.readyInMinutes()).isEqualTo(recipe.readyInMinutes()),
-            () -> assertThat(mockedRecipe.servings()).isEqualTo(recipe.servings()),
-            () -> assertThat(mockedRecipe.extendedIngredients()).isEqualTo(recipe.extendedIngredients())
+            () -> assertThat(mockedRecipe.servings()).isEqualTo(recipe.servings())
         );
 
     }

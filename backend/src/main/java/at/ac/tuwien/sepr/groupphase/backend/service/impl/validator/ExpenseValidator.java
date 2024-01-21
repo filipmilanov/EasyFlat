@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -23,6 +24,15 @@ public class ExpenseValidator {
 
     public ExpenseValidator(Validator validator) {
         this.validator = validator;
+    }
+
+    public void validateExpenseForSearch(ExpenseSearchDto expenseSearchDto) throws ValidationException {
+        LOGGER.trace("validateExpenseForSearch({})", expenseSearchDto);
+
+        Set<ConstraintViolation<ExpenseSearchDto>> validationViolations = validator.validate(expenseSearchDto);
+        if (!validationViolations.isEmpty()) {
+            throw new ValidationException("The search data is not valid", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+        }
     }
 
     public void validateExpenseForCreate(ExpenseDto expenseDto,

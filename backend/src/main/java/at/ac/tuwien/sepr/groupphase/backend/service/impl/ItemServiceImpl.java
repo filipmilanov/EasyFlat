@@ -88,6 +88,23 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public List<DigitalStorageItem> findAll(int limit) {
+        LOGGER.trace("findAll()");
+
+        ApplicationUser applicationUser = authService.getUserFromToken();
+
+        Long digitalStorageId = applicationUser.getSharedFlat().getDigitalStorage().getStorageId();
+
+        if (limit > 0) {
+            var log = itemRepository.findAllByDigitalStorage_StorageId(digitalStorageId).stream().limit(limit).collect(Collectors.toList());
+            LOGGER.info("found {}", log);
+            return log;
+        } else {
+            return itemRepository.findAllByDigitalStorage_StorageId(digitalStorageId);
+        }
+    }
+
+    @Override
     public List<DigitalStorageItem> findByFields(ItemFieldSearchDto itemFieldSearchDto) {
         LOGGER.trace("findByFields({})", itemFieldSearchDto);
 
@@ -106,7 +123,7 @@ public class ItemServiceImpl implements ItemService {
 
         Long digitalStorageId = applicationUser.getSharedFlat().getDigitalStorage().getStorageId();
 
-        return itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_GeneralName(digitalStorageId, generalName);
+        return itemRepository.findAllByDigitalStorage_StorageIdIsAndItemCache_GeneralNameContainsIgnoreCase(digitalStorageId, generalName);
     }
 
     @Override

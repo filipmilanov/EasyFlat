@@ -39,10 +39,10 @@ public record ItemDto(
     UnitDto unit,
     @FutureOrPresent(message = "You cannot store products which have already expired")
     LocalDate expireDate,
-    @Size(max = 200, message = "The description cannot have more than 200 characters")
+    @Size(max = 100, message = "The description cannot have more than 100 characters")
     String description,
-    @Min(value = 1, message = "The price must be at least €0.01 and needs to be a number")
-    @Max(value = 1_000_000_00, message = "The price cannot be more than €1.000.000")
+    @Min(value = 1, message = "The price must be at least 0.01 € and needs to be a number")
+    @Max(value = 1_000_000, message = "The price cannot be more than 10.000 €")
     Long priceInCent,
     Boolean alwaysInStock,
     @Min(value = 0, message = "The minimum quantity must be at least 0 and needs to be a number")
@@ -78,7 +78,7 @@ public record ItemDto(
     @AssertTrue(message = "The current quantity cannot have more than 2 decimal places")
     private boolean isQuantityCurrentValidDecimalPlaces() {
 
-        if (this.quantityCurrent == null) {
+        if (this.quantityCurrent == null || this.quantityCurrent > 5000) {
             return true;
         }
 
@@ -102,7 +102,7 @@ public record ItemDto(
     @AssertTrue(message = "The total quantity cannot have more than 2 decimal places")
     private boolean isQuantityTotalValidDecimalPlaces() {
 
-        if (this.quantityTotal == null) {
+        if (this.quantityTotal == null || this.quantityTotal > 5000) {
             return true;
         }
 

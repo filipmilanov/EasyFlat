@@ -32,7 +32,7 @@ public interface ExpenseService {
      *
      * @return any expense that was found for the given search parameters, empty if there are none
      */
-    List<Expense> findAll(ExpenseSearchDto expenseSearchDto);
+    List<Expense> findAll(ExpenseSearchDto expenseSearchDto) throws ValidationException;
 
     /**
      * Finds all repeating expenses in the database.
