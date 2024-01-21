@@ -22,7 +22,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
         + "AND (:minAmountInCents IS NULL OR e.amountInCents >= :minAmountInCents)"
         + "AND (:maxAmountInCents IS NULL OR e.amountInCents <= :maxAmountInCents)"
         + "AND (:fromCreatedAt IS NULL OR e.createdAt >= :fromCreatedAt)"
-        + "AND (:toCreatedAt IS NULL OR e.createdAt <= :toCreatedAt)")
+        + "AND (:toCreatedAt IS NULL OR e.createdAt <= :toCreatedAt)"
+        + "ORDER BY e.createdAt DESC")
 
     List<Expense> findByCriteria(@Param("flatId") Long flatId,
                                  @Param("title") String title,
