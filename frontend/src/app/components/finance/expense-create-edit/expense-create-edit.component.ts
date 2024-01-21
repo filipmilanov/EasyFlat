@@ -125,7 +125,7 @@ export class ExpenseCreateEditComponent implements OnInit {
           });
         },
         error: (error) => {
-          this.notification.error("Could not load flatmates", "Error");
+          this.errorHandlerService.handleErrors(error, "flatmates", "loaded");
         }
       });
       let now = new Date();
@@ -163,7 +163,7 @@ export class ExpenseCreateEditComponent implements OnInit {
         },
         error: error => {
           this.router.navigate(['/expense']);
-          this.notification.error('No expense provided for editing', "Error");
+          this.errorHandlerService.handleErrors(error, "expense", "edited");
         }
       });
 

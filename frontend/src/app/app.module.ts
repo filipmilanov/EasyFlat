@@ -88,6 +88,7 @@ import {RadarComponent} from './components/finance/graphs/radar/radar.component'
 import {ExpenseDetailComponent} from './components/finance/expense-detail/expense-detail.component';
 import {ExpenseOverviewComponent} from './components/finance/expense-overview/expense-overview.component';
 import {SortButtonComponent} from './components/utils/sort-button/sort-button.component';
+import { CreateExpenseFromShopComponent } from './components/utils/create-expense-from-shop/create-expense-from-shop.component';
 
 LOAD_WASM().subscribe();
 
@@ -154,6 +155,7 @@ LOAD_WASM().subscribe();
         MyChoreCardComponent,
         ChoreConfirmationModalComponent,
       SortButtonComponent,
+      CreateExpenseFromShopComponent,
     ],
     imports: [
         BrowserModule,

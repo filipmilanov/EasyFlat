@@ -41,7 +41,7 @@
     <div class="row border-bottom p-2 align-items-center">
       <label class="col-form-label col-md-2 col-lg-2">Title</label>
       <div class="col-md-10 col-lg-8">
-        {{ expense.title }} <span *ngIf="expense.addedViaStorage" class="badge me-2 bg-success">Added by Storage</span>
+        {{ expense.title }} <span *ngIf="expense.addedViaStorage" class="badge me-2 bg-success">Added by System</span>
       </div>
     </div>
 
@@ -57,26 +57,19 @@
 
     <div class="row border-bottom p-2 align-items-center odd-detail">
       <label class="col-form-label col-md-2 col-lg-2">Date</label>
-      <div class="col-md-10 col-lg-8">{{ expense.createdAt | date: 'dd.MM.yyyy HH:mm'}}</div>
+      <div class="col-md-10 col-lg-8">{{ expense.createdAt | date: 'dd.MM.yyyy HH:mm' }}</div>
     </div>
 
-    <div *ngIf="expense.periodInDays !== null"
-         class="row border-bottom p-2 align-items-center">
-      <label class="col-form-label col-md-2 col-lg-2">Repeating</label>
-      <div class="col-md-8 col-lg-5 d-flex align-items-center">
-        <span class="badge me-2 bg-success">
-          every {{expense.periodInDays}} days
-        </span>
-      </div>
-    </div>
     <div class="row border-bottom p-2 align-items-center">
       <label class="col-form-label col-md-2 col-lg-2">Repeating</label>
       <div class="col-md-8 col-lg-5 d-flex align-items-center">
-        <span *ngIf="expense.repeatingExpenseType !== null"
-              class="badge me-2 bg-success">
+        <span *ngIf="expense.repeatingExpenseType !== null" class="badge me-2 bg-success">
           {{ formatRepeatingExpenseType(expense.repeatingExpenseType) }}
         </span>
-        <span *ngIf="expense.repeatingExpenseType === null"
+        <span *ngIf="expense.periodInDays !== null" class="badge me-2 bg-success">
+          every {{ expense.periodInDays }} days
+        </span>
+        <span *ngIf="expense.repeatingExpenseType === null && expense.periodInDays === null"
               class="badge me-2 bg-danger">
           No
         </span>
@@ -92,7 +85,7 @@
       <label class="col-form-label col-md-2 col-lg-2">Split Strategy</label>
       <div class="col-md-8 col-lg-5 d-flex align-items-center">
         <span class="badge me-2 bg-success">
-          {{expense.debitUsers[0].splitBy}}
+          {{ expense.debitUsers[0].splitBy }}
         </span>
       </div>
     </div>
@@ -103,7 +96,7 @@
         <ul class="list-group">
           <li class="list-group-item" *ngFor="let debitUser of expense.debitUsers">
             {{ debitUser.user.firstName + " " + debitUser.user.lastName }}
-            pays {{ formatAmount(debitUser.splitBy, debitUser.value) + " " + determineValueRepresentation(debitUser)}}
+            pays {{ formatAmount(debitUser.splitBy, debitUser.value) + " " + determineValueRepresentation(debitUser) }}
             for this expense
           </li>
         </ul>
