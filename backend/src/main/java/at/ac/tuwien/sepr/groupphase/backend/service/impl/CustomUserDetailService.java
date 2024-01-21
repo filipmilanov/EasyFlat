@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ChoreRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.PreferenceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
@@ -44,18 +45,21 @@ public class CustomUserDetailService implements UserService {
     private final UserMapper userMapper;
     private final UserValidator userValidator;
 
+    private final PreferenceRepository preferenceRepository;
+
     private final ChoreRepository choreRepository;
 
     @Autowired
     public CustomUserDetailService(UserRepository userRepository, SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder,
                                    JwtTokenizer jwtTokenizer,
-                                   UserMapper userMapper, UserValidator userValidator, ChoreRepository choreRepository) {
+                                   UserMapper userMapper, UserValidator userValidator, PreferenceRepository preferenceRepository, ChoreRepository choreRepository) {
         this.userRepository = userRepository;
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenizer = jwtTokenizer;
         this.userMapper = userMapper;
         this.userValidator = userValidator;
+        this.preferenceRepository = preferenceRepository;
         this.choreRepository = choreRepository;
     }
 
@@ -200,6 +204,9 @@ public class CustomUserDetailService implements UserService {
         if (userFlat == null) {
             throw new BadCredentialsException("");
         }
+        if (user.getPreference() != null) {
+            preferenceRepository.delete(user.getPreference());
+        }
         if (userFlat.getName().equals(flatName)) {
             user.setSharedFlat(null);
             user.setAdmin(false);
@@ -209,6 +216,9 @@ public class CustomUserDetailService implements UserService {
             if (!exist) {  // there are users, delete all chores
                 if (!chores.isEmpty()) {
                     choreRepository.deleteAll();
+                }
+                if (user.getPreference() != null) {
+                    preferenceRepository.delete(user.getPreference());
                 }
                 sharedFlatRepository.deleteById(userFlat.getId());
             } else {
