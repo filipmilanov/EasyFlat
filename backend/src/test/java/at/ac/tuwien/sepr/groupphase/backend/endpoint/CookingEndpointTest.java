@@ -384,14 +384,14 @@ public class CookingEndpointTest {
         Unit unit = unitRepository.findByName("kg").orElseThrow();
 
         RecipeIngredient ingredient1 = new RecipeIngredient();
-        ingredient1.setName("Ingredient " +  (1));
+        ingredient1.setName("Banana " +  (1));
         ingredient1.setAmount(1);
         ingredient1.setUnit(unit.getName());
         ingredient1.setUnitEnum(unit);
         ingredients.add(ingredientMapper.entityToDto(ingredient1));
 
         RecipeIngredient ingredient2 = new RecipeIngredient();
-        ingredient2.setName("Ingredient " +  (2));
+        ingredient2.setName("Apple " +  (2));
         ingredient2.setAmount(1);
         ingredient2.setUnit(unit.getName());
         ingredient2.setUnitEnum(unit);
@@ -458,14 +458,14 @@ public class CookingEndpointTest {
         Unit unit = unitRepository.findByName("kg").orElseThrow();
 
         RecipeIngredient ingredient1 = new RecipeIngredient();
-        ingredient1.setName("Ingredient " +  (1));
+        ingredient1.setName("Banana " +  (1));
         ingredient1.setAmount(1);
         ingredient1.setUnit(unit.getName());
         ingredient1.setUnitEnum(unit);
         ingredients.add(ingredientMapper.entityToDto(ingredient1));
 
         RecipeIngredient ingredient2 = new RecipeIngredient();
-        ingredient2.setName("Ingredient " +  (2));
+        ingredient2.setName("Apple " +  (2));
         ingredient2.setAmount(1);
         ingredient2.setUnit(unit.getName());
         ingredient2.setUnitEnum(unit);
