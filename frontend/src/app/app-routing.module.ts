@@ -47,11 +47,11 @@ const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'login', component: LoginComponent},
   {
-    path: 'digital-storage', children: [
+    path: 'digital-storage', canActivate: mapToCanActivate([AuthGuard]), children: [
       {path: '', component: DigitalStorageComponent},
       {path: ':name', component: ItemDetailListComponent }
   ]},
-  { path: 'item', children: [
+  { path: 'item', canActivate: mapToCanActivate([AuthGuard]), children: [
       { path: 'create', component: ItemCreateEditComponent, data: { mode: ItemCreateEditMode.create } },
       { path: ':id/detail', component: ItemDetailComponent },
       { path: ':id/edit', component: ItemCreateEditComponent, data: { mode: ItemCreateEditMode.edit } },
@@ -59,7 +59,7 @@ const routes: Routes = [
   },
   {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
   {
-    path: 'shopping-lists', children: [
+    path: 'shopping-lists', canActivate: mapToCanActivate([AuthGuard]),children: [
       {path: '', component: ShoppingListsComponent},
       {
         path: 'list', children: [
@@ -80,14 +80,14 @@ const routes: Routes = [
     ]
   },
   {path: 'register', component: RegisterComponent},
-  {path: 'chores', children: [
+  {path: 'chores', canActivate: mapToCanActivate([AuthGuard]), children: [
       {path: 'preference', component: ChorePreferenceComponent},
       {path: 'all', component: AllChoreComponent},
       {path: 'my', component: MyChoresComponent},
       {path: 'add', component: NewChoreComponent},
       {path: 'leaderboard', component: LeaderboardComponent},
     ]},
-  {path: 'account', component: AccountComponent},
+  {path: 'account', canActivate: mapToCanActivate([AuthGuard]), component: AccountComponent},
   {path: 'wgLogin', component: LoginFlatComponent},
   {path: 'wgCreate', component: CreateFlatComponent},
   {
@@ -96,7 +96,7 @@ const routes: Routes = [
         ]
     },
     {
-      path: 'expense', children: [
+      path: 'expense', canActivate: mapToCanActivate([AuthGuard]),children: [
         {path: '', component: ExpenseOverviewComponent},
         {path: 'create', component: ExpenseCreateEditComponent, data: {mode: ExpenseCreateEditMode.create}},
         {path: ':id/edit', component: ExpenseCreateEditComponent, data: {mode: ExpenseCreateEditMode.edit}},
@@ -105,13 +105,13 @@ const routes: Routes = [
     },
 
     {
-        path: 'cooking', children: [
+        path: 'cooking', canActivate: mapToCanActivate([AuthGuard]), children: [
         {path: '', component: CookingComponent},
         {path: ':id/detail', component: RecipeDetailComponent}
         ]
     },
     {
-        path: 'cookbook', children: [
+        path: 'cookbook', canActivate: mapToCanActivate([AuthGuard]), children: [
         {path: '', component: CookbookComponent},
         {path: 'create', component: CookbookCreateComponent, data: {mode: CookbookMode.create}},
         {path: ':id/edit', component: CookbookCreateComponent, data: {mode: CookbookMode.edit}},
@@ -119,7 +119,7 @@ const routes: Routes = [
         ]
     },
   {
-    path: 'events', children: [
+    path: 'events', canActivate: mapToCanActivate([AuthGuard]), children: [
       {path: '', component: EventsComponent},
       {path: 'create', component: EventsCreateComponent, data: {mode: EventsMode.create}},
       {path: ':id/edit', component: EventsCreateComponent, data: {mode: EventsMode.edit}}
