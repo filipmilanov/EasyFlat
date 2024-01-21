@@ -90,7 +90,7 @@
                name="ean"
                aria-describedby="eanHelp"
                [(ngModel)]="item.ean"
-               (ngModelChange)="searchForEan($event, false)">
+               (ngModelChange)="searchForEan($event)">
         <small id="eanHelp" class="form-text text-muted">The EAN can be used to fetch the data of an item.</small>
       </div>
       <div class="col-md-6 mt-2">
