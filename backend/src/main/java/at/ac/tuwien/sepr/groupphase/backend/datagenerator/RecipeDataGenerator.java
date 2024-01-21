@@ -54,13 +54,13 @@ public class RecipeDataGenerator {
             recipe.setCookbook(cookbook);
 
             RecipeIngredient ingredient1 = new RecipeIngredient();
-            ingredient1.setName("Ingredient " +  (i * 2 + 1));
+            ingredient1.setName("Banana " +  (i * 2 + 1));
             ingredient1.setAmount(1);
             ingredient1.setUnit(unit.getName());
             ingredient1.setUnitEnum(unit);
 
             RecipeIngredient ingredient2 = new RecipeIngredient();
-            ingredient2.setName("Ingredient " +  (i * 2 + 2));
+            ingredient2.setName("Apple " +  (i * 2 + 2));
             ingredient2.setAmount(1);
             ingredient2.setUnit(unit.getName());
             ingredient2.setUnitEnum(unit);

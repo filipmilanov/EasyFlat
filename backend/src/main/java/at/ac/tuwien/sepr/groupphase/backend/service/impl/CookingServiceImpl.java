@@ -157,7 +157,7 @@ public class CookingServiceImpl implements CookingService {
 
         List<ItemDto> items = itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId()).stream().map(itemMapper::entityToDto).toList();
         if (items.isEmpty()) {
-            throw new ConflictException("Storage is empty", List.of("Please add some ingredients."));
+            throw new ConflictException("Storage is empty", List.of("Please add some ingredients"));
         }
 
         String requestString = getRequestStringForRecipeSearch(items);
@@ -471,6 +471,7 @@ public class CookingServiceImpl implements CookingService {
         Long storageId = this.getStorageIdForUser();
         DigitalStorage storage = digitalStorageService.findById(storageId);
         DigitalStorageDto storageDto = digitalStorageMapper.entityToDto(storage);
+        List<RecipeIngredientDto> ingredientDtoList = recipeToCook.missedIngredients();
         for (RecipeIngredientDto ingredient : recipeToCook.missedIngredients()) {
             ShoppingItemDto newShoppingItem = new ShoppingItemDto(null, null, ingredient.name(), ingredient.name(), ingredient.name(), ingredient.amount(), ingredient.amount(),
                 ingredient.unitEnum(), null, null, false, ingredient.amount(), null, null, null, shoppingListDto);
