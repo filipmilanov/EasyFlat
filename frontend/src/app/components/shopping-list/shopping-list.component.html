@@ -115,6 +115,15 @@
         (click)="transferToStorage()">Bought
 </button>
 
+<button *ngIf="!checkIsEmpty()"
+        data-bs-toggle="modal"
+        [attr.data-bs-target]="'#createExpenseFromShopModal'"
+        style="margin-top: 30px; margin-right: 20px;" type="button" class="btn btn-success  m-3">
+  Add to finance
+</button>
+
+<app-create-expense-from-shop [checkedShoppingItems]="checkedItems"></app-create-expense-from-shop>
+
 
 
 
