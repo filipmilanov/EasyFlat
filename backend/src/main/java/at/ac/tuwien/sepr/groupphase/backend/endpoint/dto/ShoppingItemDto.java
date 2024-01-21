@@ -24,13 +24,12 @@ public record ShoppingItemDto(
     @Size(max = 30, message = "The brand name cannot have more than 30 characters")
     String brand,
     @Min(value = 0, message = "Quantity must be positive")
-    @Max(value = 5000, message = "The current quantity cannot be greater than 5000")
+    @Max(value = 5000, message = "Quantity cannot be greater than 5000")
     Double quantityCurrent,
-    @Min(value = 0)
-    @Max(value = 5000)
     Double quantityTotal,
     @NotNull(message = "The unit cannot be null")
     UnitDto unit,
+    @Size(max = 200, message = "The product name cannot have more than 40 characters")
     String description,
     @Min(value = 0)
     Long priceInCent,
@@ -40,11 +39,33 @@ public record ShoppingItemDto(
     Double minimumQuantity,
     String boughtAt,
     List<IngredientDto> ingredients,
+    @Size(max = 5)
     List<ItemLabelDto> labels,
     ShoppingListDto shoppingList
 ) {
 
     public ShoppingItemDto withId(long newId) {
+        return new ShoppingItemDto(
+            newId,
+            ean,
+            generalName,
+            productName,
+            brand,
+            quantityCurrent,
+            quantityTotal,
+            unit,
+            description,
+            priceInCent,
+            alwaysInStock,
+            minimumQuantity,
+            boughtAt,
+            ingredients,
+            labels,
+            shoppingList
+        );
+    }
+
+    public ShoppingItemDto withAlwaysInStock(long newId, boolean alwaysInStock) {
         return new ShoppingItemDto(
             newId,
             ean,
