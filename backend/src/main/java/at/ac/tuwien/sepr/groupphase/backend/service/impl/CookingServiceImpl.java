@@ -596,7 +596,7 @@ public class CookingServiceImpl implements CookingService {
             return input;
         }
 
-        Pattern pattern = Pattern.compile("[^a-zA-Z0-9\\s]");
+        Pattern pattern = Pattern.compile("[^a-zA-Z0-9\\s-]");
 
         return pattern.matcher(input).replaceAll("");
     }
