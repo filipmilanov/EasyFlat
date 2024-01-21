@@ -69,6 +69,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Service
 public class CookingServiceImpl implements CookingService {
@@ -199,6 +200,9 @@ public class CookingServiceImpl implements CookingService {
         });
 
         RecipeDetailDto recipeDetailDto = response.getBody();
+        if (response.getBody() != null) {
+            recipeDetailDto = filterRecipeDetailIngredients(response.getBody());
+        }
         CookingSteps steps = null;
 
         if (responseSteps.getBody() != null && !responseSteps.getBody().isEmpty()) {
@@ -339,7 +343,7 @@ public class CookingServiceImpl implements CookingService {
             fromApi = true;
         }
 
-        RecipeSuggestionDto recipeSuggestionDto = recipeMapper.entityToRecipeSuggestionDto(recipeEntity);
+        RecipeSuggestionDto recipeSuggestionDto = filterRecipeSuggestionIngredients(recipeMapper.entityToRecipeSuggestionDto(recipeEntity));
         if (fromApi) {
             List<RecipeSuggestionDto> recipes = this.saveUnitsAlsUnits(List.of(recipeSuggestionDto));
             recipeSuggestionDto = recipes.get(0);
@@ -375,6 +379,7 @@ public class CookingServiceImpl implements CookingService {
                                 ingAmountMin - itemQuantityTotal,
                                 false,
                                 ingredient.autoMatched(),
+                                ingredient.haveWithDifferentUnits(),
                                 ingredient.realName(),
                                 ingredient.matchedItem()
                             );
@@ -390,6 +395,7 @@ public class CookingServiceImpl implements CookingService {
                                 updatedQuantity,
                                 false,
                                 ingredient.autoMatched(),
+                                ingredient.haveWithDifferentUnits(),
                                 ingredient.realName(),
                                 ingredient.matchedItem()
                             );
@@ -457,17 +463,17 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt)
+    public RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook)
         throws AuthenticationException, ValidationException, ConflictException, AuthorizationException {
-        ShoppingList shoppingList = shoppingListService.getShoppingListByName("Shopping List (Default)", jwt).orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
+        ShoppingList shoppingList = shoppingListService.getShoppingListByName("Shopping List (Default)").orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         ShoppingListDto shoppingListDto = shoppingListMapper.entityToDto(shoppingList);
         Long storageId = this.getStorageIdForUser();
         DigitalStorage storage = digitalStorageService.findById(storageId);
         DigitalStorageDto storageDto = digitalStorageMapper.entityToDto(storage);
         for (RecipeIngredientDto ingredient : recipeToCook.missedIngredients()) {
             ShoppingItemDto newShoppingItem = new ShoppingItemDto(null, null, ingredient.name(), ingredient.name(), ingredient.name(), ingredient.amount(), ingredient.amount(),
-                ingredient.unitEnum(), null, null, false, ingredient.amount(), null, storageDto, null, null, shoppingListDto);
-            shoppingListService.create(newShoppingItem, jwt);
+                ingredient.unitEnum(), null, null, false, ingredient.amount(), null, null, null, shoppingListDto);
+            shoppingListService.createShoppingItem(newShoppingItem);
         }
         return recipeToCook;
     }
@@ -546,10 +552,133 @@ public class CookingServiceImpl implements CookingService {
                     hereWeHaveMissIng.missedIngredients(),
                     details.dishTypes()
                 );
-                toReturn.add(toAdd);
+                toReturn.add(filterRecipeSuggestionIngredients(toAdd));
             }
         }
         return toReturn;
+    }
+
+    private RecipeSuggestionDto filterRecipeSuggestionIngredients(RecipeSuggestionDto recipeSuggestion) {
+        List<RecipeIngredientDto> recipeIngredientDtos = recipeSuggestion.extendedIngredients();
+        Map<String, RecipeIngredientDto> recipeIngredientDtoMap = new HashMap<>();
+
+
+        for (RecipeIngredientDto recipeIngredient : recipeIngredientDtos) {
+            String normalizedIngredientName = removeSpecialCharacters(recipeIngredient.name());
+            RecipeIngredientDto ingredientUpdated = recipeIngredient.withName(normalizedIngredientName);
+
+            recipeIngredientDtoMap.put(normalizedIngredientName, ingredientUpdated);
+        }
+        List<RecipeIngredientDto> recipeIngredientDtoListNew = new ArrayList<>(recipeIngredientDtoMap.values());
+
+        return recipeSuggestion.withExtendedIngredients(recipeIngredientDtoListNew);
+    }
+
+    public RecipeDetailDto filterRecipeDetailIngredients(RecipeDetailDto recipeDetailDto) {
+        List<RecipeIngredientDto> recipeIngredientDtos = recipeDetailDto.extendedIngredients();
+        Map<String, RecipeIngredientDto> recipeIngredientDtoMap = new HashMap<>();
+
+        for (RecipeIngredientDto recipeIngredient : recipeIngredientDtos) {
+            String normalizedIngredientName = removeSpecialCharacters(recipeIngredient.name());
+            RecipeIngredientDto ingredientUpdated = recipeIngredient.withName(normalizedIngredientName);
+
+            recipeIngredientDtoMap.put(normalizedIngredientName, ingredientUpdated);
+        }
+
+        List<RecipeIngredientDto> recipeIngredientDtoListNew = new ArrayList<>(recipeIngredientDtoMap.values());
+
+        // Return a new RecipeDetailDto with updated ingredients
+        return recipeDetailDto.withExtendedIngredients(recipeIngredientDtoListNew);
+    }
+
+    public static String removeSpecialCharacters(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
+        Pattern pattern = Pattern.compile("[^a-zA-Z0-9\\s-]");
+
+        return pattern.matcher(input).replaceAll("");
+    }
+
+    private List<RecipeIngredientDto> getMatchedIngredients(List<RecipeIngredientDto> ingredientDtos) {
+
+        ApplicationUser user = authService.getUserFromToken();
+        List<DigitalStorageItem> itemsInStorage = itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId());
+
+        List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
+
+        loop2:
+        for (RecipeIngredientDto recipeIngredient : ingredientDtos) {
+            boolean matched = false;
+            boolean haveWithDivUnits = false;
+
+            ingredientService.unMatchIngredient(recipeIngredient.name());
+            //case auto Match
+            for (DigitalStorageItem digitalStorageItem : itemsInStorage) {
+
+                if (recipeIngredient.name().equals(digitalStorageItem.getItemCache().getProductName())) {
+                    haveWithDivUnits = true;
+                }
+
+
+                Unit recipeIngredientUnit = unitMapper.unitDtoToEntity(recipeIngredient.unitEnum());
+                Unit digitalStorageItemUnit = digitalStorageItem.getItemCache().getUnit();
+                if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)
+                    && recipeIngredient.realName() == null) {
+                    RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
+                        digitalStorageItem.getItemCache().getProductName(),
+                        recipeIngredient.unit(),
+                        recipeIngredient.unitEnum(),
+                        recipeIngredient.amount(),
+                        true,
+                        true,
+                        recipeIngredient.haveWithDifferentUnits(),
+                        recipeIngredient.name(),
+                        itemMapper.entityToDto(digitalStorageItem));
+                    updatedIngredients.add(updatedIngredient);
+                    continue loop2;
+                } else if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)
+                    //case Yet Matched
+                    && !recipeIngredient.name().equals(recipeIngredient.realName())) {
+                    for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
+                        if (alternativeName.getName().equals(recipeIngredient.realName())) {
+                            RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
+                                digitalStorageItem.getItemCache().getProductName(),
+                                recipeIngredient.unit(),
+                                recipeIngredient.unitEnum(),
+                                recipeIngredient.amount(),
+                                true,
+                                false,
+                                recipeIngredient.haveWithDifferentUnits(),
+                                recipeIngredient.realName(),
+                                itemMapper.entityToDto(digitalStorageItem));
+                            updatedIngredients.add(updatedIngredient);
+                            continue loop2;
+                        }
+                    }
+                }
+                //case Not Matched Yet
+                for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
+                    if (alternativeName.getName().equals(recipeIngredient.name())) {
+                        RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
+                            digitalStorageItem.getItemCache().getProductName(),
+                            recipeIngredient.unit(),
+                            recipeIngredient.unitEnum(),
+                            recipeIngredient.amount(),
+                            true,
+                            false,
+                            recipeIngredient.haveWithDifferentUnits(),
+                            recipeIngredient.name(),
+                            itemMapper.entityToDto(digitalStorageItem));
+                        updatedIngredients.add(updatedIngredient);
+                        continue loop2;
+                    }
+                }
+            }
+            updatedIngredients.add(recipeIngredient.updateHaveWithDifferentIngredients(haveWithDivUnits));
+        }
+        return updatedIngredients;
     }
 
     private List<RecipeSuggestionDto> setMatchedIngredients(List<RecipeSuggestionDto> recipeSuggestionDtos) {
@@ -635,75 +764,6 @@ public class CookingServiceImpl implements CookingService {
         return newReqString;
     }
 
-    private List<RecipeIngredientDto> getMatchedIngredients(List<RecipeIngredientDto> ingredientDtos) {
-
-        ApplicationUser user = authService.getUserFromToken();
-        List<DigitalStorageItem> itemsInStorage = itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId());
-
-        List<RecipeIngredientDto> updatedIngredients = new LinkedList<>();
-
-        loop2:
-        for (RecipeIngredientDto recipeIngredient : ingredientDtos) {
-            boolean matched = false;
-            ingredientService.unMatchIngredient(recipeIngredient.name());
-            //case auto Match
-            for (DigitalStorageItem digitalStorageItem : itemsInStorage) {
-                Unit recipeIngredientUnit = unitMapper.unitDtoToEntity(recipeIngredient.unitEnum());
-                Unit digitalStorageItemUnit = digitalStorageItem.getItemCache().getUnit();
-                if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)
-                    && recipeIngredient.realName() == null) {
-                    RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
-                        digitalStorageItem.getItemCache().getProductName(),
-                        recipeIngredient.unit(),
-                        recipeIngredient.unitEnum(),
-                        recipeIngredient.amount(),
-                        true,
-                        true,
-                        recipeIngredient.name(),
-                        itemMapper.entityToDto(digitalStorageItem));
-                    updatedIngredients.add(updatedIngredient);
-                    continue loop2;
-                } else if (digitalStorageItem.getItemCache().getProductName().equals(recipeIngredient.name()) && unitService.areUnitsComparable(recipeIngredientUnit, digitalStorageItemUnit)
-                    //case Yet Matched
-                    && !recipeIngredient.name().equals(recipeIngredient.realName())) {
-                    for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
-                        if (alternativeName.getName().equals(recipeIngredient.realName())) {
-                            RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
-                                digitalStorageItem.getItemCache().getProductName(),
-                                recipeIngredient.unit(),
-                                recipeIngredient.unitEnum(),
-                                recipeIngredient.amount(),
-                                true,
-                                false,
-                                recipeIngredient.realName(),
-                                itemMapper.entityToDto(digitalStorageItem));
-                            updatedIngredients.add(updatedIngredient);
-                            continue loop2;
-                        }
-                    }
-                }
-                //case Not Matched Yet
-                for (AlternativeName alternativeName : digitalStorageItem.getItemCache().getAlternativeNames()) {
-                    if (alternativeName.getName().equals(recipeIngredient.name())) {
-                        RecipeIngredientDto updatedIngredient = new RecipeIngredientDto(recipeIngredient.id(),
-                            digitalStorageItem.getItemCache().getProductName(),
-                            recipeIngredient.unit(),
-                            recipeIngredient.unitEnum(),
-                            recipeIngredient.amount(),
-                            true,
-                            false,
-                            recipeIngredient.name(),
-                            itemMapper.entityToDto(digitalStorageItem));
-                        updatedIngredients.add(updatedIngredient);
-                        continue loop2;
-                    }
-                }
-            }
-            updatedIngredients.add(recipeIngredient);
-        }
-        return updatedIngredients;
-    }
-
     private String getRequestStringForRecipeSearch(List<ItemDto> items) throws
         DeepLException, InterruptedException {
         translator = new Translator(translateKey);
@@ -725,7 +785,7 @@ public class CookingServiceImpl implements CookingService {
                 requestString += "%2C" + ingredient;
             }
         }
-        requestString += "&number=5";
+        requestString += "&number=15";
         return requestString + "&ranking=2";
     }
 
@@ -885,6 +945,7 @@ public class CookingServiceImpl implements CookingService {
             convertedAmount,
             ingredient.matched(),
             ingredient.autoMatched(),
+            ingredient.haveWithDifferentUnits(),
             ingredient.realName(),
             ingredient.matchedItem()
         );

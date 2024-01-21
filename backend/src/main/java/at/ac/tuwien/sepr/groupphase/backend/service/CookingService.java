@@ -109,7 +109,7 @@ public interface CookingService {
      * @param recipeToCook the recipe with the missing ingredients
      * @return the recipe with the missing ingredients
      */
-    RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt)
+    RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook)
         throws AuthenticationException, ValidationException, ConflictException, AuthorizationException;
 
 

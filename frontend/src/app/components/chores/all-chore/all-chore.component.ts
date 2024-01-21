@@ -47,7 +47,7 @@ export class AllChoreComponent {
           this.notification.error(message, errorDescription);
         });
       }
-    })
+    });
   }
 
   assignChores() {
@@ -76,7 +76,7 @@ export class AllChoreComponent {
         document.body.removeChild(downloadLink);
       },
       error => {
-        console.error("Error exporting PDF");
+        this.notification.error("No chores found to export")
       });
   }
 
@@ -86,5 +86,9 @@ export class AllChoreComponent {
 
   navigateToPreference() {
     this.router.navigate(['/chores/preference']);
+  }
+
+  navigateToLeaderboard() {
+    this.router.navigate(['/chores/leaderboard']);
   }
 }

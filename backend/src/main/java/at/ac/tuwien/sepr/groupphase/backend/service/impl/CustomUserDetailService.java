@@ -29,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -62,11 +63,6 @@ public class CustomUserDetailService implements UserService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         LOGGER.debug("Load all user by email");
         ApplicationUser applicationUser = userRepository.findUserByEmail(email);
-
-        if (applicationUser == null) {
-            return null;
-        }
-
         List<GrantedAuthority> grantedAuthorities;
         if (applicationUser.getAdmin()) {
             grantedAuthorities = AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER");
@@ -81,6 +77,7 @@ public class CustomUserDetailService implements UserService {
     @Override
     public ApplicationUser findApplicationUserByEmail(String email) {
         LOGGER.debug("Find application user by email");
+        LOGGER.trace("findApplicationUserByEmail({})", email);
         ApplicationUser applicationUser = userRepository.findUserByEmail(email);
         if (applicationUser != null) {
             return applicationUser;
@@ -90,6 +87,7 @@ public class CustomUserDetailService implements UserService {
 
     @Override
     public String login(UserLoginDto userLoginDto) throws ValidationException, ConflictException {
+        LOGGER.trace("login({})", userLoginDto);
         userValidator.validateForLogIn(userLoginDto);
         UserDetails userDetails = loadUserByUsername(userLoginDto.getEmail());
         if (userDetails != null
@@ -109,6 +107,7 @@ public class CustomUserDetailService implements UserService {
 
     @Override
     public String register(UserDetailDto userDetailDto) throws ValidationException, ConflictException {
+        LOGGER.trace("register({})", userDetailDto);
         userValidator.validateForRegister(userDetailDto);
         LOGGER.debug("Registering a new user");
 
@@ -139,6 +138,7 @@ public class CustomUserDetailService implements UserService {
 
     @Override
     public ApplicationUser getUser(String authToken) {
+        LOGGER.trace("getUser({})", authToken);
         String email = jwtTokenizer.getEmailFromToken(authToken);
         return userRepository.findUserByEmail(email);
     }
@@ -149,6 +149,12 @@ public class CustomUserDetailService implements UserService {
         userValidator.validateForUpdate(userDetailDto);
         ApplicationUser user = userRepository.findApplicationUserById(userDetailDto.getId());
         if (user != null) {
+            if (!user.getEmail().equals(userDetailDto.getEmail())) {
+                ApplicationUser user2 = userRepository.findUserByEmail(userDetailDto.getEmail());
+                if (user2 != null) {
+                    throw new ConflictException("Could not update user " + user.getEmail(), List.of("User with email" + user2.getEmail() + "  already exists"));
+                }
+            }
             user.setFirstName(userDetailDto.getFirstName());
             user.setLastName(userDetailDto.getLastName());
             user.setEmail(userDetailDto.getEmail());
@@ -168,6 +174,7 @@ public class CustomUserDetailService implements UserService {
     @Override
     @Transactional
     public UserDetailDto delete(Long id) {
+        LOGGER.trace("delete({})", id);
         if (userRepository.findApplicationUserById(id) != null) {
             ApplicationUser deletedUser = userRepository.findApplicationUserById(id);
             List<Chore> chores = choreRepository.allChoresByUserId(deletedUser.getSharedFlat().getId(), deletedUser.getId());
@@ -198,12 +205,19 @@ public class CustomUserDetailService implements UserService {
             user.setAdmin(false);
             ApplicationUser updatedUser = userRepository.save(user);
             boolean exist = userRepository.existsBySharedFlat(userFlat);
-            if (!exist) {  // are there users
-                List<Chore> chores = choreRepository.findAllBySharedFlatId(userFlat.getId());
-                if (!chores.isEmpty()) {    //are there chores
+            List<Chore> chores = choreRepository.findAllBySharedFlatId(userFlat.getId());
+            if (!exist) {  // there are users, delete all chores
+                if (!chores.isEmpty()) {
                     choreRepository.deleteAll();
                 }
                 sharedFlatRepository.deleteById(userFlat.getId());
+            } else {
+                //make the chores of the user unassigned
+                for (Chore choresUser : chores) {
+                    if (choresUser.getUser() == user) {
+                        choresUser.setUser(null);
+                    }
+                }
             }
             return userMapper.entityToUserDetailDto(updatedUser);
         }
@@ -217,6 +231,9 @@ public class CustomUserDetailService implements UserService {
         LOGGER.trace("getAllOtherUsers()");
         String email = jwtTokenizer.getEmailFromToken(authToken);
         ApplicationUser user = userRepository.findUserByEmail(email);
+        if (user.getSharedFlat() == null) {
+            return new ArrayList<>();
+        }
         Long userFlatId = user.getSharedFlat().getId();
         List<ApplicationUser> users = userRepository.findAllByFlatId(userFlatId);
         users.remove(user);

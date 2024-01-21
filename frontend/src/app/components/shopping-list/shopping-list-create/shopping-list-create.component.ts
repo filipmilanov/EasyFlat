@@ -18,7 +18,7 @@ import {ShoppingListDto} from "../../../dtos/shoppingList";
 export class ShoppingListCreateComponent {
 
   list: ShoppingListDto = {
-    id: 0,
+    id: null,
     name: '',
     itemsCount: 0
   };
@@ -37,7 +37,7 @@ export class ShoppingListCreateComponent {
 
     if (form.valid) {
       let observable: Observable<ShoppingListDto>;
-      observable = this.shoppingService.createList(this.list.name);
+      observable = this.shoppingService.createList(this.list);
       observable.subscribe({
         next: data => {
           this.notification.success('Shopping list '+ this.list.name +' is successfully created.', "Success");

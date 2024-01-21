@@ -138,7 +138,7 @@ public class EventEndpointTest {
     public void givenExistingEventIdWhenGetEventWithIdThenReturnEvent() throws Exception {
         // given
         Long eventId = 1L;
-        SharedFlat sharedFlat = new SharedFlat().setId(1L);
+        SharedFlat sharedFlat = new SharedFlat().setId(1L).setName("Shared Flat 1");
         EventDto eventDto = new EventDto(eventId, "House Meeting", "Discussing important matters regarding the shared living space.", LocalTime.now(),LocalTime.now().plusHours(2),LocalDate.now().plusDays(7), sharedFlatMapper.entityToWgDetailDto(sharedFlat),new ArrayList<>());
 
 

@@ -24,12 +24,7 @@ export class ShoppingListService {
    * @return an Observable for the stored shopping list in the system
    */
   createItem(item: ShoppingItemDto): Observable<ShoppingItemDto> {
-    console.log('Create item with content ' + item);
-
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
-    return this.http.post<ItemDto>(this.baseUri, item, {headers});
+    return this.http.post<ItemDto>(this.baseUri, item);
   }
 
   /**
@@ -39,11 +34,7 @@ export class ShoppingListService {
    * @return an Observable for the existing shopping list in the system
    */
   getById(id: string): Observable<ShoppingItemDto> {
-    console.log('Get item with ID ' + id);
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
-    return this.http.get<ShoppingItemDto>(this.baseUri + '/' + id, {headers});
+    return this.http.get<ShoppingItemDto>(this.baseUri + '/' + id);
   }
 
   /**
@@ -54,7 +45,6 @@ export class ShoppingListService {
    * @return an Observable for the existing shopping items in the system
    */
   getItemsWithShopId(shopId: string, searchParams: ShoppingItemSearchDto):Observable<ShoppingItemDto[]> {
-    console.log('Get items with shopId ' + shopId + ' and search parameters ' + searchParams);
     let params = new HttpParams();
     if (searchParams.productName) {
       params = params.append('productName', searchParams.productName);
@@ -72,10 +62,7 @@ export class ShoppingListService {
    * @return an Observable for the existing shopping list in the system
    */
   getShoppingListByName(shoppingListName: string): Observable<ShoppingListDto> {
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
-    return this.http.get<ShoppingListDto>(this.baseUri + '/list/' + shoppingListName, {headers});
+    return this.http.get<ShoppingListDto>(this.baseUri + '/list/' + shoppingListName);
   }
 
   /**
@@ -85,29 +72,18 @@ export class ShoppingListService {
    * @return an Observable for the existing shopping list in the system
    */
   getShoppingListById(shoppingListId: string): Observable<ShoppingListDto> {
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
-    return this.http.get<ShoppingListDto>(this.baseUri + '/listId/' + shoppingListId, {headers});
+    return this.http.get<ShoppingListDto>(this.baseUri + '/listId/' + shoppingListId);
   }
 
-  createList(listName: string): Observable<ShoppingListDto> {
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
-    return this.http.post<ShoppingListDto>(this.baseUri + "/list-create", listName, {headers});
+  createList(list: ShoppingListDto): Observable<ShoppingListDto> {
+    return this.http.post<ShoppingListDto>(this.baseUri + "/list-create", list);
   }
 
   deleteItem(itemId: number): Observable<ShoppingItemDto> {
-    console.log('Delete item with ID ');
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
-    return this.http.delete<ShoppingItemDto>(this.baseUri + '/' + itemId, {headers});
+    return this.http.delete<ShoppingItemDto>(this.baseUri + '/' + itemId);
   }
 
   deleteList(shopId: string): Observable<ShoppingListDto> {
-    console.log('Delete list with ID ');
     return this.http.delete<ShoppingListDto>(this.baseUri + '/delete/' + shopId);
   }
 
@@ -122,18 +98,11 @@ export class ShoppingListService {
     if (searchParams) {
       params = params.append('searchParams', searchParams);
     }
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
-    return this.http.get<ShoppingListDto[]>(this.baseUri + '/lists', {params, headers});
+    return this.http.get<ShoppingListDto[]>(this.baseUri + '/lists', {params});
   }
 
   transferToStorage(shoppingItems: ShoppingItemDto[]): Observable<StorageItem[]> {
-    console.log('Add items to storage ' + shoppingItems)
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
-    return this.http.post<StorageItem[]>(this.baseUri + '/storage', shoppingItems, {headers});
+    return this.http.post<StorageItem[]>(this.baseUri + '/storage', shoppingItems);
   }
 
   /**
@@ -143,11 +112,7 @@ export class ShoppingListService {
    * @return an Observable for the updated item
    */
   updateItem(item: ShoppingItemDto): Observable<ShoppingItemDto> {
-    console.log('Update item with ID ' + item.itemId);
-    const headers = new HttpHeaders({
-      'Authorization': this.authService.getToken()
-    });
-    return this.http.put<ShoppingItemDto>(`${this.baseUri}/${item.itemId}`, item, {headers});
+    return this.http.put<ShoppingItemDto>(`${this.baseUri}/${item.itemId}`, item);
   }
 
 }

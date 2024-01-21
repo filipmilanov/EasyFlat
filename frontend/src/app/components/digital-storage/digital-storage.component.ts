@@ -2,8 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {StorageService} from "../../services/storage.service";
 import {ItemSearchDto, StorageItemListDto} from "../../dtos/storageItem";
 import {OrderType} from "../../dtos/orderType";
-import {ToastrService} from "ngx-toastr";
-
+import {ErrorHandlerService} from "../../services/util/error-handler.service";
 
 @Component({
   selector: 'app-digital-storage',
@@ -23,8 +22,7 @@ export class DigitalStorageComponent implements OnInit {
 
 
   constructor(private storageService: StorageService,
-              private notification: ToastrService,) {
-
+              private errorHandler: ErrorHandlerService) {
   }
 
   ngOnInit() {
@@ -37,8 +35,8 @@ export class DigitalStorageComponent implements OnInit {
         next: res => {
           this.items = res;
         },
-        error: () => {
-          this.notification.error("An error occurred while loading in stock items from the storage storage.", "Error");
+        error: error => {
+          this.errorHandler.handleErrors(error, "in-stock items", "loaded");
         }
       }
     )
@@ -47,8 +45,8 @@ export class DigitalStorageComponent implements OnInit {
         next: res => {
           this.itemsAIS = res;
         },
-        error: () => {
-          this.notification.error("An error occurred while loading always in stock items from the storage storage.", "Error");
+        error: error => {
+          this.errorHandler.handleErrors(error, "always-in-stock items", "loaded");
         }
       }
     )

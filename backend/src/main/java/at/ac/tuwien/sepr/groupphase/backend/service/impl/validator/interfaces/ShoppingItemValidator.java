@@ -1,4 +1,4 @@
-package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
+package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;

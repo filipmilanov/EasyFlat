@@ -71,10 +71,8 @@ public class ExpenseServiceImpl implements ExpenseService {
         Expense persistedExpense = expenseRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Expense not found"));
 
-        List<ApplicationUser> allowedUsers = persistedExpense.getDebitUsers().stream().map(
-            debit -> debit.getId().getUser()
-        ).collect(Collectors.toList());
-        allowedUsers.add(persistedExpense.getPaidBy());
+        List<ApplicationUser> allowedUsers = persistedExpense.getPaidBy().getSharedFlat().getUsers().stream().toList();
+
         authorization.authorizeUser(
             allowedUsers.stream().map(ApplicationUser::getId).toList(),
             "User does not have access to this expense"
@@ -87,10 +85,14 @@ public class ExpenseServiceImpl implements ExpenseService {
     public List<Expense> findAll(ExpenseSearchDto expenseSearchDto) {
         LOGGER.trace("findAll({})", expenseSearchDto);
 
+        Long flatId = authService.getUserFromToken().getSharedFlat().getId();
+
         return expenseRepository.findByCriteria(
+            flatId,
             expenseSearchDto.title(),
             expenseSearchDto.paidById(),
-            expenseSearchDto.amountInCents(),
+            expenseSearchDto.minAmountInCents(),
+            expenseSearchDto.maxAmountInCents(),
             expenseSearchDto.createdAt() != null
                 ? expenseSearchDto.createdAt().atStartOfDay()
                 : null,
@@ -230,6 +232,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Transactional
     public Expense update(ExpenseDto expenseDto) throws ConflictException, ValidationException, AuthorizationException {
         LOGGER.trace("update: {}", expenseDto);
+
+        findById(expenseDto.id());
 
         ApplicationUser user = authService.getUserFromToken();
         List<ApplicationUser> usersOfFlat = user.getSharedFlat().getUsers().stream().toList();

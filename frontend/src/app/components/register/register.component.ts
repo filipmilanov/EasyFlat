@@ -31,26 +31,28 @@ export class RegisterComponent implements OnInit{
 
       if(this.registerForm.controls.password.value != this.registerForm.controls.password2.value) {
         this.notification.error("Passwords don't match!")
-      }
-
-    const userDetail: UserDetail = new UserDetail(null,this.registerForm.controls.firstName.value,this.registerForm.controls.lastName.value,  this.registerForm.controls.email.value,null, this.registerForm.controls.password.value,null, 0);
-    console.log(userDetail)
-    this.authService.registerUser(userDetail).subscribe({
-      next: () => {
-        console.log('Successfully registered user: ' + userDetail.email);
-        this.router.navigate(['']);
-      },
-      error: error => {
-        console.log('Could not register due to:');
-        let firstBracket = error.error.indexOf('[');
-        let lastBracket = error.error.indexOf(']');
-        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-        let errorDescription = error.error.substring(0, firstBracket);
-        errorMessages.forEach(message => {
-          this.notification.error(errorDescription, "Could not register user " + userDetail.email);
+      } else {
+        const userDetail: UserDetail = new UserDetail(null,this.registerForm.controls.firstName.value,this.registerForm.controls.lastName.value,  this.registerForm.controls.email.value,null, this.registerForm.controls.password.value,null, 0);
+        console.log(userDetail)
+        this.authService.registerUser(userDetail).subscribe({
+          next: () => {
+            console.log('Successfully registered user: ' + userDetail.email);
+            this.router.navigate(['']);
+          },
+          error: error => {
+            console.log('Could not register due to:');
+            let firstBracket = error.error.indexOf('[');
+            let lastBracket = error.error.indexOf(']');
+            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+            let errorDescription = error.error.substring(0, firstBracket);
+            errorMessages.forEach(message => {
+              this.notification.error(message, "Could not register user " + userDetail.email);
+            });
+          }
         });
       }
-    });
+
+
 
   }
 

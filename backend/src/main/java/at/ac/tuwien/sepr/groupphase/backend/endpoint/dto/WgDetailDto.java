@@ -28,7 +28,7 @@ public class WgDetailDto {
     }
 
     public void setName(String firstName) {
-        this.name = name;
+        this.name = firstName;
     }
 
     public String getPassword() {

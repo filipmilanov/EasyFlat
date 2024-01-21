@@ -46,12 +46,12 @@ export class SharedFlatService {
   }
 
   /**
-   * Deletes a user from the shared flat.
+   * Deletes a shared flat from the db.
    * @param user The details of the user to delete.
    * @returns An Observable of the SharedFlat object.
    */
   delete(user: UserDetail): Observable<SharedFlat> {
-    return this.httpClient.delete<SharedFlat>(this.sharedFlatBaseUri + '/' + user.email);
+    return this.httpClient.delete<SharedFlat>(this.sharedFlatBaseUri + '/' + user.id);
   }
 
   /**

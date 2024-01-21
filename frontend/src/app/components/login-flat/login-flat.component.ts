@@ -39,7 +39,7 @@ export class LoginFlatComponent implements OnInit{
         () => {
           console.log('You have successfully logged in!');
           this.changeEventToTrue();
-          this.router.navigate(['/account']);
+          this.router.navigate(['/']);
           this.notification.success("You have successfully logged in shared flat: " + sharedFlat.name , "Success");
         },
         (error) => {
@@ -70,12 +70,6 @@ export class LoginFlatComponent implements OnInit{
       }
     );
   }
-
-
-  vanishError() {
-    this.error = false;
-  }
-
   changeEventToTrue() {
     return this.sharedFlatService.changeEvent();
   }

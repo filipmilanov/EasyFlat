@@ -62,11 +62,12 @@ public class EventValidator {
 
     public void validateLabels(List<EventLabelDto> labels) throws ValidationException {
         LOGGER.trace("validateLabels({})", labels);
-
-        for (EventLabelDto label : labels) {
-            Set<ConstraintViolation<EventLabelDto>> validationViolations = validator.validate(label);
-            if (!validationViolations.isEmpty()) {
-                throw new ValidationException("Ingredient data is not valid: ", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+        if (labels != null) {
+            for (EventLabelDto label : labels) {
+                Set<ConstraintViolation<EventLabelDto>> validationViolations = validator.validate(label);
+                if (!validationViolations.isEmpty()) {
+                    throw new ValidationException("Ingredient data is not valid: ", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+                }
             }
         }
     }

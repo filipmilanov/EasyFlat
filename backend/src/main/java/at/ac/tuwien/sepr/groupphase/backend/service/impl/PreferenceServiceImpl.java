@@ -3,10 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PreferenceDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.PreferenceMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Preference;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ChoreRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PreferenceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
@@ -17,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,24 +27,21 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     private final PreferenceMapper preferenceMapper;
 
-    private final ChoreRepository choreRepository;
-
     private final UserRepository userRepository;
 
     private final Authorization authorization;
 
 
-    public PreferenceServiceImpl(AuthService authService, PreferenceRepository preferenceRepository, PreferenceMapper preferenceMapper, ChoreRepository choreRepository, UserRepository userRepository, Authorization authorization) {
+    public PreferenceServiceImpl(AuthService authService, PreferenceRepository preferenceRepository, PreferenceMapper preferenceMapper, UserRepository userRepository, Authorization authorization) {
         this.authService = authService;
         this.preferenceRepository = preferenceRepository;
         this.preferenceMapper = preferenceMapper;
-        this.choreRepository = choreRepository;
         this.userRepository = userRepository;
         this.authorization = authorization;
     }
 
     @Override
-    public PreferenceDto update(PreferenceDto preferenceDto) throws AuthenticationException {
+    public PreferenceDto update(PreferenceDto preferenceDto) {
         LOGGER.trace("update({})", preferenceDto);
         ApplicationUser applicationUser = authService.getUserFromToken();
 
@@ -77,12 +70,9 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public PreferenceDto getLastPreference() throws AuthenticationException {
+    public PreferenceDto getLastPreference() {
         LOGGER.trace("getLastPreference()");
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
         Preference preferenceToRet = preferenceRepository.findByUserId(applicationUser);
         return preferenceMapper.entityToPreferenceDto(preferenceToRet);
     }

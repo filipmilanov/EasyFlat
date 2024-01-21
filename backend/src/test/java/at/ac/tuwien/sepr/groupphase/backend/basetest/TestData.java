@@ -64,7 +64,6 @@ public interface TestData {
         false,
         null,
         null,
-        new DigitalStorageDto(1L, "Storage", null),
         null,
         null,
         new ShoppingListDto(1L, "Default", 0));
@@ -83,7 +82,6 @@ public interface TestData {
         true,
         5.0,
         "Store",
-        new DigitalStorageDto(1L, "Storage", null),
         null,
         null,
         null);
@@ -162,9 +160,11 @@ public interface TestData {
 
     List<IngredientDto> ingredientDtoList = List.of(
         IngredientDtoBuilder.builder()
+            .ingredientId(1L)
             .name("Ingredient 1")
             .build(),
         IngredientDtoBuilder.builder()
+            .ingredientId(2L)
             .name("Ingredient 2")
             .build()
     );

@@ -90,7 +90,7 @@
                name="ean"
                aria-describedby="eanHelp"
                [(ngModel)]="item.ean"
-               (ngModelChange)="searchForEan($event, false)">
+               (ngModelChange)="searchForEan($event)">
         <small id="eanHelp" class="form-text text-muted">The EAN can be used to fetch the data of an item.</small>
       </div>
       <div class="col-md-6 mt-2">
@@ -103,7 +103,6 @@
           textInputClass="form-control"
           valueNeedsToMatchSuggestion="false"
           placeholder="e.g. fruit"
-          required
           [(ngModel)]="item.generalName"
           [formatModel]="formatGeneralName"
           [suggestions]="generalNameSuggestions"
@@ -119,7 +118,6 @@
                class="form-control"
                id="productName"
                name="productName"
-               required
                [(ngModel)]="item.productName">
       </div>
     </fieldset>
@@ -130,7 +128,7 @@
       <div [ngClass]="{'col-md-6': modeIsCreate, 'col-md-8': !modeIsCreate}">
         <label for="currentQuantityAndUnit" class="form-label"
         >
-          Quantity<span style="color: red">*</span>
+          <span *ngIf="modeIsCreate"> Current & Total Quantity</span><span *ngIf="!modeIsCreate">Quantity</span><span style="color: red">*</span>
         </label>
         <div class="row">
           <div *ngIf="!modeIsCreate" class="col-md-4">
@@ -140,26 +138,24 @@
                    name="currentQuantityAndUnit"
                    placeholder="Current Quantity"
                    aria-describedby="quantityCurrentHelp"
-                   required
                    [(ngModel)]="item.quantityCurrent">
             <small id="quantityCurrentHelp" class="form-text text-muted">The current quantity.</small>
           </div>
 
-          <div class="mt-2 mt-md-0 mt-lg-0" [ngClass]="{'col-md-6': modeIsCreate, 'col-md-4': !modeIsCreate}">
+          <div class="mt-2 mt-md-0 mt-lg-0" [ngClass]="{'col-md-8': modeIsCreate, 'col-md-4': !modeIsCreate}">
             <input type="number"
                    class="form-control"
                    id="totalQuantityAndUnit"
                    name="totalQuantityAndUnit"
                    placeholder="Total Quantity"
                    aria-describedby="quantityTotalHelp"
-                   required
                    [(ngModel)]="item.quantityTotal">
-            <small *ngIf="!modeIsCreate" id="quantityTotalHelp" class="form-text text-muted">The total quantity.</small>
+            <small id="quantityTotalHelp" class="form-text text-muted">
+              <span *ngIf="modeIsCreate">If the current quantity is 0 the item is deleted when updated.</span>
+              <span *ngIf="!modeIsCreate">The total quantity.</span>
+            </small>
           </div>
-          <div class="mt-2 mt-md-0 mt-lg-0" [ngClass]="{
-              'col-md-6': modeIsCreate,
-              'col-md-4': !modeIsCreate
-          }">
+          <div class="col-md-4 mt-2 mt-md-0 mt-lg-0">
             <select class="form-select"
                     name="unit"
                     [(ngModel)]="item.unit"
@@ -174,7 +170,7 @@
       </div>
       <div class="mt-2 mt-md-0 mt-lg-0" [ngClass]="{'col-md-6': modeIsCreate, 'col-md-4': !modeIsCreate}">
         <label for="alwaysInStock" class="form-label me-2">
-          Always In Stock
+          Always In Stock<span *ngIf="item.alwaysInStock" style="color: red">*</span>
         </label>
         <div class="form-check-inline form-switch">
           <input class="form-check-input custom-switch"
@@ -185,7 +181,7 @@
                  [(ngModel)]="item.alwaysInStock">
         </div>
         <div class="row">
-          <div [ngClass]="{'col-md-10': modeIsCreate, 'col-md-9': !modeIsCreate}">
+          <div class="col-md-9">
             <input class="form-control"
                    [disabled]="!item.alwaysInStock"
                    type="text"
@@ -197,7 +193,7 @@
             <small id="minimumQuantityHelp" class="form-text text-muted">If quantity is below minimum, item is added to
               shopping list.</small>
           </div>
-          <div class="mt-2 mt-md-0 mt-lg-0" [ngClass]="{'col-md-2': modeIsCreate, 'col-md-3': !modeIsCreate}">
+          <div class="col-md-3 mt-2 mt-md-0 mt-lg-0">
             <input class="form-control"
                    [disabled]="true"
                    type="text"
@@ -241,7 +237,7 @@
       <legend>Product Details and Finance</legend>
       <div class="col-md-6">
         <label for="boughtAt" class="form-label">
-          Bought At
+          Store
         </label>
         <app-autocomplete
           id="boughtAt"
@@ -256,7 +252,7 @@
       </div>
       <div class="col-md-6 mt-2 mt-md-0 mt-lg-0" *ngIf="modeIsCreate">
         <label for="addToFinance" class="form-label me-2">
-          Add To Finance
+          Add To Finance<span *ngIf="item.addToFiance" style="color: red">*</span>
         </label>
         <div class="form-check-inline form-switch">
           <input class="form-check-input custom-switch"

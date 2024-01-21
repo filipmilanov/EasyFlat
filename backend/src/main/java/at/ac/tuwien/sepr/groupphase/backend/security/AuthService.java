@@ -9,5 +9,5 @@ public interface AuthService {
      *
      * @return The ApplicationUser associated with the token.
      */
-    public ApplicationUser getUserFromToken();
+    ApplicationUser getUserFromToken();
 }

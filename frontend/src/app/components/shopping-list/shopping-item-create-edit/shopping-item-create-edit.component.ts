@@ -90,7 +90,9 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   ngOnInit(): void {
     this.unitService.findAll().subscribe({
       next: res => {
-        this.availableUnits = res;
+        this.availableUnits = res.filter((unit) => {
+          return unit.name === "g" || unit.name === "kg" || unit.name === "ml" || unit.name === "l" || unit.name === "pcs" || unit.name === "pound" || unit.name === "gallon";
+        });
         this.item.unit = this.availableUnits[0];
       },
       error: err => {
@@ -149,7 +151,6 @@ export class ShoppingItemCreateEditComponent implements OnInit {
           if (this.item.generalName == null) {
             this.item.generalName = this.item.productName;
           }
-          console.log(this.item)
           observable = this.shoppingService.createItem(this.item);
           break;
         case ItemCreateEditMode.edit:
@@ -165,11 +166,14 @@ export class ShoppingItemCreateEditComponent implements OnInit {
           this.router.navigate(['shopping-lists', 'list', this.item.shoppingList.id]);
         },
         error: error => {
-          console.error(`Error item was not ${this.modeActionFinished}`);
-          this.notification.error(`Item could not be ${this.modeActionFinished}.`)
-          if (this.modeIsEdit && this.item.alwaysInStock) {
-            this.notification.error("Check if you set minimum quantity");
-          }
+          console.log(error)
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(message, errorDescription);
+          });
         }
       });
     }

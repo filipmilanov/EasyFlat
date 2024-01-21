@@ -23,7 +23,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,18 +37,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
 @Disabled
@@ -110,9 +105,8 @@ public class ShoppingItemIntegrationTest implements TestData  {
             true,
             5.0,
             "Store",
-            new DigitalStorageDto(1L, "Storage", null),
             null,
-            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000", null))), // Labels
+            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
             new ShoppingListDto(1L, "Default", 0));
 
     }
@@ -199,9 +193,8 @@ public class ShoppingItemIntegrationTest implements TestData  {
             true,
             5.0,
             "Store",
-            new DigitalStorageDto(1L, "Storage", null),
             null,
-            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000", null))), // Labels
+            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
             new ShoppingListDto(1L, "Default", 0));
         MvcResult mvcResult = mockMvc.perform(put(this.baseUri + "/" + updated.itemId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -237,9 +230,8 @@ public class ShoppingItemIntegrationTest implements TestData  {
             true,
             null, // minimumQuantity set to null, although alwaysInStock is true
             "Store",
-            new DigitalStorageDto(1L, "Storage", null),
             null,
-            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000", null))), // Labels
+            new ArrayList<>(Collections.singleton(new ItemLabelDto(null, "fruit", "#ff0000"))), // Labels
             new ShoppingListDto(1L, "Default", 0));
         MvcResult mvcResult = mockMvc.perform(put(this.baseUri + "/" + updated.itemId())
                 .contentType(MediaType.APPLICATION_JSON)

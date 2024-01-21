@@ -55,19 +55,18 @@ export class MatchingModalCookbookComponent {
 
 
   formatGeneralName(item: ItemDto | null): string {
+
     return item ? item.productName : '';
   }
 
   nameSuggestions = (input: string): Observable<any[]> => {
     if (!input.trim()) {
-      return of([]); // Return an empty array if the input is empty or contains only whitespaces
+      return of([]);
     }
 
     const suggestions$ = this.itemService.findByName(input,this.ingredient.unitEnum.name);
-
     return suggestions$.pipe(
       map(suggestions => Array.isArray(suggestions) ? suggestions : [suggestions])
     );
   }
-
 }

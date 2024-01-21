@@ -14,9 +14,11 @@ import at.ac.tuwien.sepr.groupphase.backend.datagenerator.StorageDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.UnitDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!unitTest")
 public class TestDataGenerator {
 
     private final StorageDataGenerator digitalStorageDataGenerator;
@@ -30,7 +32,6 @@ public class TestDataGenerator {
     private final EventDataGenerator eventDataGenerator;
     private final UnitDataGenerator unitDataGenerator;
     private final ExpenseDataGenerator expenseDataGenerator;
-
     private final ShoppingListDataGenerator shoppingListDataGenerator;
 
     public TestDataGenerator(StorageDataGenerator digitalStorageDataGenerator,
@@ -42,7 +43,9 @@ public class TestDataGenerator {
                              SharedFlatDataGenerator sharedFlatDataGenerator,
                              ExpenseDataGenerator expenseDataGenerator,
                              RecipeDataGenerator recipeDataGenerator,
-                             CookbookDataGenerator cookbookDataGenerator, EventDataGenerator eventDataGenerator, ShoppingListDataGenerator shoppingListDataGenerator) {
+                             CookbookDataGenerator cookbookDataGenerator,
+                             EventDataGenerator eventDataGenerator,
+                             ShoppingListDataGenerator shoppingListDataGenerator1) {
         this.digitalStorageDataGenerator = digitalStorageDataGenerator;
         this.ingredientsDataGenerator = ingredientsDataGenerator;
         this.itemDataGenerator = itemDataGenerator;
@@ -54,7 +57,7 @@ public class TestDataGenerator {
         this.cookbookDataGenerator = cookbookDataGenerator;
         this.eventDataGenerator = eventDataGenerator;
         this.expenseDataGenerator = expenseDataGenerator;
-        this.shoppingListDataGenerator = shoppingListDataGenerator;
+        this.shoppingListDataGenerator = shoppingListDataGenerator1;
     }
 
     public void cleanUp() throws ValidationException, ConflictException {
@@ -63,6 +66,7 @@ public class TestDataGenerator {
         sharedFlatDataGenerator.generateSharedFlats();
         applicationUserDataGenerator.generateApplicationUsers();
         digitalStorageDataGenerator.generateDigitalStorages();
+        shoppingListDataGenerator.generateShoppingLists();
         cookbookDataGenerator.generateCookbooks();
         recipeDataGenerator.generateItems();
         eventDataGenerator.generateEvents();

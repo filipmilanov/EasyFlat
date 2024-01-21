@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
@@ -20,35 +21,34 @@ public interface ShoppingListService {
      *
      * @param itemDto a shopping item without ID
      * @return an object of type {@link ShoppingItem} which is persisted and has an ID
-     * @throws AuthenticationException If authentication fails or the user does not exist
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    ShoppingItem create(ShoppingItemDto itemDto, String jwt) throws AuthenticationException, ValidationException, ConflictException, AuthorizationException;
+    ShoppingItem createShoppingItem(ShoppingItemDto itemDto) throws ValidationException, ConflictException, AuthorizationException;
 
     /**
      * Search for a shopping item in the database with given ID.
      *
      * @param itemId a valid ID
      * @return if the id exists in the DB, an Optional of a persisted ShoppingItem with given ID, an empty Optional otherwise
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    Optional<ShoppingItem> getById(Long itemId) throws AuthenticationException;
+    Optional<ShoppingItem> getShoppingItemById(Long itemId) throws AuthorizationException;
 
     /**
      * Search for a shopping list in the database with given ID.
      *
      * @param name a valid listName
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
-     * @throws AuthenticationException If authentication fails or the user does not exist
      */
-    Optional<ShoppingList> getShoppingListByName(String name, String jwt) throws AuthenticationException;
+    Optional<ShoppingList> getShoppingListByName(String name);
 
     /**
      * Search for a shopping list in the database with given ID.
      *
      * @param id a valid ID of a ShoppingList
      * @return if the id exists in the DB, an Optional of a persisted ShoppingList with given ID, an empty Optional otherwise
-     * @throws AuthenticationException If authentication fails or the user does not exist
      */
-    Optional<ShoppingList> getShoppingListById(Long id, String jwt) throws AuthenticationException;
+    Optional<ShoppingList> getShoppingListById(Long id);
 
 
     /**
@@ -57,25 +57,26 @@ public interface ShoppingListService {
      * @param id a valid ID of a ShoppingList
      * @param itemSearchDto search parameters consisting of the product's name and its label's value
      * @return if the id exists in the DB, a List of a persisted ShoppingItems with the given ID, an empty Optional otherwise
-     * @throws AuthenticationException If authentication fails or the user does not exist
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    List<ShoppingItem> getItemsById(Long id, ShoppingItemSearchDto itemSearchDto, String jwt) throws AuthenticationException;
+    List<ShoppingItem> getItemsByShoppingListId(Long id, ShoppingItemSearchDto itemSearchDto) throws AuthorizationException;
 
     /**
      * Create a new ShoppingList in the db.
      *
-     * @param listName a valid name for the new ShoppingList
+     * @param shoppingListDto a DTO of type shopping list ID null
      * @return an object of type {@link ShoppingList} which is persisted and has an ID
      */
-    ShoppingList createList(String listName) throws ValidationException, AuthenticationException, ConflictException;
+    ShoppingList createList(ShoppingListDto shoppingListDto) throws ValidationException, ConflictException;
 
     /**
      * Delete a ShoppingItem from the db based on its ID.
      *
      * @param itemId a valid ID of a ShoppingItem
      * @return the deleted ShoppingItem
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    ShoppingItem deleteItem(Long itemId) throws AuthenticationException;
+    ShoppingItem deleteItem(Long itemId) throws AuthorizationException;
 
     /**
      * Delete a ShoppingList from the db based on its ID.
@@ -83,16 +84,16 @@ public interface ShoppingListService {
      * @param shopId a valid ID of a ShoppingList
      * @return the deleted ShoppingList
      */
-    ShoppingList deleteList(Long shopId) throws ValidationException, AuthenticationException, AuthorizationException;
+    ShoppingList deleteList(Long shopId) throws ValidationException, AuthorizationException;
 
     /**
      * Get all ShoppingLists from the db filtered by search parameters.
      *
      * @param searchParams name of the list, through which we search for it. Can also be null
      * @return a List of all persisted ShoppingLists
-     * @throws AuthenticationException If authentication fails or the user does not exist
+     * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    List<ShoppingList> getShoppingLists(String searchParams, String jwt) throws AuthenticationException;
+    List<ShoppingList> getShoppingLists(String searchParams) throws AuthorizationException;
 
     /**
      * Transfer ShoppingItems to the server.
@@ -100,18 +101,18 @@ public interface ShoppingListService {
      * @param items a List of ShoppingItemDto to be transferred
      * @return a List of DigitalStorageItem objects
      */
-    List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) throws AuthenticationException;
+    List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) throws AuthorizationException;
 
     /**
      * Validates and Updates a new {@link ShoppingItem} in the db.
      *
      * @param shoppingItemDto a DTO of type shopping item with existing ID
      * @return an object of type {@link ShoppingItem} which is updated
-     * @throws AuthenticationException If authentication fails or the user does not exist
+     * @throws AuthorizationException if the user is not authorized to access a resource
      * @throws ConflictException if there is a conflict with the persisted data
      * @throws ValidationException if the data in shoppingItemDto is not valid
      */
-    ShoppingItem update(ShoppingItemDto shoppingItemDto, String jwt)
-        throws ConflictException, AuthenticationException, ValidationException, AuthorizationException;
+    ShoppingItem updateShoppingItem(ShoppingItemDto shoppingItemDto)
+        throws ConflictException, ValidationException, AuthorizationException;
 }
 

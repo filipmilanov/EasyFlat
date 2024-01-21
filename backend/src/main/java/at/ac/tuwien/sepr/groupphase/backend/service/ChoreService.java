@@ -4,7 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
@@ -19,36 +19,32 @@ public interface ChoreService {
      *
      * @param chore The ChoreDto containing chore details.
      * @return The created ChoreDto.
-     * @throws AuthenticationException If the user is not authenticated.
      * @throws ValidationException     If the provided chore data is invalid.
      * @throws ConflictException       If there is a conflict during chore creation.
      */
-    ChoreDto createChore(ChoreDto chore) throws AuthenticationException, ValidationException, ConflictException;
+    ChoreDto createChore(ChoreDto chore) throws ValidationException, ConflictException;
 
     /**
      * Retrieves a list of chores based on the specified search parameters.
      *
      * @param searchParams The search parameters for filtering chores.
      * @return List of chores matching the search criteria.
-     * @throws AuthenticationException If the user is not authenticated.
      */
-    List<Chore> getChores(ChoreSearchDto searchParams) throws AuthenticationException;
+    List<Chore> getChores(ChoreSearchDto searchParams);
 
     /**
      * Assigns chores to users based on predefined rules.
      *
      * @return List of ChoreDto objects representing assigned chores.
-     * @throws AuthenticationException If the user is not authenticated.
      */
-    List<ChoreDto> assignChores() throws AuthenticationException;
+    List<ChoreDto> assignChores();
 
     /**
      * Retrieves a list of chores assigned to the authenticated user.
      *
      * @return List of chores assigned to the authenticated user.
-     * @throws AuthenticationException If the user is not authenticated.
      */
-    List<Chore> getChoresByUser() throws AuthenticationException;
+    List<Chore> getChoresByUser();
 
     /**
      * Deletes the specified chores.
@@ -56,15 +52,14 @@ public interface ChoreService {
      * @param choreIds List of chore IDs to be deleted.
      * @return List of remaining chores after deletion.
      */
-    List<Chore> deleteChores(List<Long> choreIds);
+    List<Chore> deleteChores(List<Long> choreIds) throws AuthorizationException;
 
     /**
      * Retrieves a list of all users.
      *
      * @return List of ApplicationUser objects representing users.
-     * @throws AuthenticationException If the user is not authenticated.
      */
-    List<ApplicationUser> getUsers() throws AuthenticationException;
+    List<ApplicationUser> getUsers();
 
     /**
      * Updates the points of a user identified by the provided userId.
@@ -80,9 +75,8 @@ public interface ChoreService {
      *
      * @return Byte array representing the generated PDF.
      * @throws IOException              If an I/O error occurs during PDF generation.
-     * @throws AuthenticationException   If the user is not authenticated.
      */
-    byte[] generatePdf() throws IOException, AuthenticationException;
+    byte[] generatePdf() throws IOException;
 
     /**
      * Repeats a chore identified by choreId with a new date.
@@ -91,7 +85,7 @@ public interface ChoreService {
      * @param newDate The new date for the repeated chore.
      * @return The repeated ChoreDto.
      */
-    ChoreDto repeatChore(Long choreId, Date newDate);
+    ChoreDto repeatChore(Long choreId, Date newDate) throws AuthorizationException, ValidationException, ConflictException;
 
     /**
      * Retrieves a list of unassigned chores.

@@ -27,11 +27,11 @@ public record ItemDto(
     String productName,
     @Size(max = 30, message = "The brand name cannot have more than 30 characters")
     String brand,
-    @NotNull(message = "The current quantity cannot be empty")
+    @NotNull(message = "The current quantity cannot be empty and needs to be a number")
     @Min(value = 0, message = "The current quantity must be at least 0")
     @Max(value = 5000, message = "The current quantity cannot be greater than 5000")
     Double quantityCurrent,
-    @NotNull(message = "The total quantity cannot be empty")
+    @NotNull(message = "The total quantity cannot be empty and needs to be a number")
     @Min(value = 0, message = "The total quantity must be at least 0")
     @Max(value = 5000, message = "The total quantity cannot be greater than 5000")
     Double quantityTotal,
@@ -41,11 +41,11 @@ public record ItemDto(
     LocalDate expireDate,
     @Size(max = 200, message = "The description cannot have more than 200 characters")
     String description,
-    @Min(value = 1, message = "The price must be at least €0.01")
+    @Min(value = 1, message = "The price must be at least €0.01 and needs to be a number")
     @Max(value = 1_000_000_00, message = "The price cannot be more than €1.000.000")
     Long priceInCent,
     Boolean alwaysInStock,
-    @Min(value = 0, message = "The minimum quantity must be at least 0")
+    @Min(value = 0, message = "The minimum quantity must be at least 0 and needs to be a number")
     @Max(value = 5000, message = "The minimum quantity cannot be greater than 5000")
     Long minimumQuantity,
     @Size(max = 30, message = "The store name cannot have more than 30 characters")

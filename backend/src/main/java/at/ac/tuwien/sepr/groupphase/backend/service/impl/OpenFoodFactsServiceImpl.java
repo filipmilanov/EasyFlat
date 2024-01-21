@@ -6,11 +6,11 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ItemFromOpenFoodFact
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.service.OpenFoodFactsService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.invoke.MethodHandles;
@@ -32,19 +32,27 @@ public class OpenFoodFactsServiceImpl implements OpenFoodFactsService {
 
     @Override
     public OpenFoodFactsItemDto findByEan(Long ean)
-        throws ConflictException, RestClientException, JsonProcessingException {
+        throws ConflictException {
         LOGGER.trace("findByEan({})", ean);
 
         String requestString = openFoodFactsApi + ean;
 
-        // Get data from API using EAN code
-        OpenFoodFactsResponseDto jsonResponse = restTemplate.getForObject(requestString, OpenFoodFactsResponseDto.class);
+        try {
+            // Get data from API using EAN code
+            OpenFoodFactsResponseDto jsonResponse = restTemplate.getForObject(requestString, OpenFoodFactsResponseDto.class);
 
-        if (jsonResponse == null) {
-            throw new NotFoundException("JSON could not be obtained from API");
+            if (jsonResponse == null || !jsonResponse.status()) {
+                throw new NotFoundException("Product with EAN " + ean + " not found");
+            }
+
+            // Map the data to an ItemDto
+            return itemFromApiMapper.mapFromJsonNode(jsonResponse);
+        } catch (HttpClientErrorException exception) {
+            if (exception.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new NotFoundException("Product with EAN " + ean + " not found");
+            } else {
+                throw new NotFoundException("An error occurred while trying to process the EAN");
+            }
         }
-
-        // Map the data to an ItemDto
-        return itemFromApiMapper.mapFromJsonNode(jsonResponse);
     }
 }

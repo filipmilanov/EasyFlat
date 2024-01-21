@@ -1,4 +1,5 @@
 <h1 class="display-4">{{shoppingList?.name}}</h1>
+<div class="custom-header-border"></div>
 
 <a class="btn btn-sm btn-primary"
    routerLink="/shopping-lists"
@@ -47,7 +48,14 @@
 
 </form>
 
-<div style="width: 100%; height: 100%; border: 1px black solid"></div>
+<div class="text-end">
+  <button type="button"
+          class="btn btn-primary"
+          (click)="navigateToCreateItem()">
+    <i class="bi bi-plus-square"></i>
+    Add Item
+  </button>
+</div>
 
 <table class="table table-hover">
   <thead class="thead-dark">
@@ -86,10 +94,6 @@
 
   </tbody>
 </table>
-
-<button style="margin-top: 30px; margin-right: 20px;" type="button"
-        class="btn btn-primary  m-3" (click)="navigateToCreateItem()">Add item
-</button>
 
 <button *ngIf="!checkId()"
         style="margin-top: 30px; margin-right: 20px;"

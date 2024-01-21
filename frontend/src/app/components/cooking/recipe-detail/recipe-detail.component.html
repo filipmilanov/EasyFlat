@@ -36,6 +36,10 @@
                       style="font-size: 1.2em; margin: 10px;" placement="top"
                       ngbTooltip="This ingredient is automatically matched."
                 ></span>
+                <span *ngIf="ingredient.haveWithDifferentUnits" class="bi bi-info-circle text-info"
+                      style="font-size: 1.2em; margin: 10px;"
+                      ngbTooltip="You have this ingredient, but the units are different"
+                ></span>
                 <button type="button" class="btn btn-outline-danger small" *ngIf="ingredient.matched && !ingredient.autoMatched"
                          (click)="unMatchIngredient(ingredient)"><span
                   class="bi bi-arrow-counterclockwise"></span>

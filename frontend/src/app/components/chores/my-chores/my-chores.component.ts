@@ -60,7 +60,7 @@ export class MyChoresComponent {
     this.choreService.getChoresByUser(this.searchParams).subscribe({
       next: res => {
         if (res.length == 0) {
-          this.message = 'Good Job!'
+          this.message = 'Good Job! You have completed all of your chores.'
         } else {
           this.chores = res.sort((a: ChoresDto, b: ChoresDto) => {
             return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
@@ -98,15 +98,16 @@ export class MyChoresComponent {
     if (confirm("Are you sure you want to delete this item?")) {
       return this.choreService.deleteChores(this.completedChores).subscribe({
         next: res => {
-          if (res.length == 0) {
-            this.message = 'Good Job!';
-          } else {
-            for (let i = 0; i < res.length; i++) {
-              this.chores = this.chores.filter(chore => chore.id !== res[i].id);
-            }
+
+          for (let i = 0; i < res.length; i++) {
+            this.chores = this.chores.filter(chore => chore.id !== res[i].id);
           }
+
           this.awardPoints();
           this.completedChores = [];
+          if (this.chores.length === 0) {
+            this.message = 'Good Job! You have completed all of your chores.';
+          }
           this.notification.success("Chores completed and points awarded.", "Success");
         },
         error: err => {
@@ -124,7 +125,7 @@ export class MyChoresComponent {
         next: () => {
         },
         error: err => {
-          console.error("Application users could not be update", err);
+          console.error("Application users could not be updated", err);
         }
       });
     }
@@ -136,5 +137,10 @@ export class MyChoresComponent {
 
   navigateToPreference() {
     this.router.navigate(['/chores/preference']);
+  }
+
+  navigateToLeaderboard() {
+    this.router.navigate(['/chores/leaderboard']);
+
   }
 }

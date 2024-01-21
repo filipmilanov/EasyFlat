@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -26,23 +27,23 @@ public class SharedFlatValidatorImpl implements SharedFlatValidator {
         this.validator = validator;
     }
 
-    public void validateForCreate(SharedFlat sharedFlat) throws ConflictException, ValidationException {
+    public void validateForCreate(WgDetailDto sharedFlat) throws ConflictException, ValidationException {
         LOGGER.trace("validateForCreate({})", sharedFlat);
 
         checkValidationForCreate(sharedFlat);
         checkConflictForCreate(sharedFlat);
     }
 
-    private void checkValidationForCreate(SharedFlat sharedFlat) throws ValidationException {
+    private void checkValidationForCreate(WgDetailDto sharedFlat) throws ValidationException {
         LOGGER.trace("checkValidationForCreate({})", sharedFlat);
 
-        Set<ConstraintViolation<SharedFlat>> validationViolations = validator.validate(sharedFlat);
+        Set<ConstraintViolation<WgDetailDto>> validationViolations = validator.validate(sharedFlat);
         if (!validationViolations.isEmpty()) {
             throw new ValidationException("The data is not valid", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
         }
     }
 
-    private void checkConflictForCreate(SharedFlat sharedFlat) throws ConflictException {
+    private void checkConflictForCreate(WgDetailDto sharedFlat) throws ConflictException {
         LOGGER.trace("checkConflictForCreate({})", sharedFlat);
 
         List<String> errors = new ArrayList<>();

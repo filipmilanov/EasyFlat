@@ -6,9 +6,12 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.soabase.recordbuilder.core.RecordBuilder;
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
 
@@ -17,21 +20,29 @@ import java.util.Objects;
 public record RecipeIngredientDto(
     Long id,
     @NotBlank(message = "The ingredient name cannot be empty")
+    @Size(max = 100, message = "The ingredient name cannot exceed 100 characters.")
     String name,
     String unit,
     UnitDto unitEnum,
     @DecimalMin(value = "0.01", message = "The ingredient amount must be positive")
+    @DecimalMax(value = "5000", message = "The ingredient amount cannot exceed 5000")
     double amount,
     boolean matched,
     boolean autoMatched,
+    boolean haveWithDifferentUnits,
+    @Size(max = 100, message = "The ingredient name cannot exceed 100 characters.")
     String realName,
     ItemDto matchedItem) {
 
 
-    public static RecipeIngredientDto createWithCustomLogic(Long id, String name, String unit, UnitDto unitEnum, double amount, boolean matched, boolean autoMatched, String realName, ItemDto matchedItem) {
+    public RecipeIngredientDto withName(String nameNew) {
+        return new RecipeIngredientDto(this.id, nameNew, this.unit, this.unitEnum, this.amount,
+            this.matched, this.autoMatched, this.haveWithDifferentUnits, this.realName, this.matchedItem);
+    }
 
-        // Return the new instance of RecipeIngredientDto
-        return new RecipeIngredientDto(id, name, unit, unitEnum, amount, matched, autoMatched, realName, matchedItem);
+    public RecipeIngredientDto updateHaveWithDifferentIngredients(boolean haveWithDifferentUnitsNew) {
+        return new RecipeIngredientDto(this.id, this.name, this.unit, this.unitEnum, this.amount,
+            this.matched, this.autoMatched, haveWithDifferentUnitsNew, this.realName, this.matchedItem);
     }
 
     @Override

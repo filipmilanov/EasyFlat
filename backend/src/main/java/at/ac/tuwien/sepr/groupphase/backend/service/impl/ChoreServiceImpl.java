@@ -6,7 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ChoreMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Preference;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -22,7 +22,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -68,26 +67,26 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     @Transactional
-    public ChoreDto createChore(ChoreDto choreDto) throws AuthenticationException, ValidationException, ConflictException {
+    public ChoreDto createChore(ChoreDto choreDto) throws ValidationException, ConflictException {
         LOGGER.trace("createChore({})", choreDto);
-        this.choreValidator.validateForCreate(choreDto);
-        ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
+        ChoreDto newChore;
+        if (choreDto.description() != null) {
+            newChore = choreDto.trimmed(choreDto.name().trim(), choreDto.description().trim());
+        } else {
+            newChore = choreDto.trimmedName(choreDto.name().trim());
         }
-        Chore chore = choreMapper.choreDtoToEntity(choreDto);
+        this.choreValidator.validateForCreate(newChore);
+        ApplicationUser applicationUser = authService.getUserFromToken();
+        Chore chore = choreMapper.choreDtoToEntity(newChore);
         chore.setSharedFlat(applicationUser.getSharedFlat());
         Chore savedChore = choreRepository.save(chore);
         return choreMapper.entityToChoreDto(savedChore);
     }
 
     @Override
-    public List<Chore> getChores(ChoreSearchDto searchParams) throws AuthenticationException {
+    public List<Chore> getChores(ChoreSearchDto searchParams) {
         LOGGER.trace("createChore({})", searchParams);
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
         return choreRepository.searchChores(
             (searchParams.userName() != null) ? searchParams.userName() : null,
             (searchParams.endDate() != null) ? searchParams.endDate() : null,
@@ -95,13 +94,10 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     @Override
-    public List<ChoreDto> assignChores() throws AuthenticationException {
+    public List<ChoreDto> assignChores() {
         LOGGER.trace("assignChores()");
         //check the user
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
         //all chores from this flat
         List<Chore> chores = choreRepository.findAllBySharedFlatId(applicationUser.getSharedFlat().getId());
         List<Chore> choresAfterAssign = choreRepository.findAllBySharedFlatIdWhereUserIsNull(applicationUser.getSharedFlat().getId());
@@ -114,13 +110,10 @@ public class ChoreServiceImpl implements ChoreService {
         }
     }
 
-    private List<ChoreDto> secondAssign(List<Chore> choresAfterAssign) throws AuthenticationException {
+    private List<ChoreDto> secondAssign(List<Chore> choresAfterAssign) {
         LOGGER.trace("secondAssign({})", choresAfterAssign);
         //check the user
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
         //all chores for this flat
         List<Chore> chores = choreRepository.findAllBySharedFlatId(applicationUser.getSharedFlat().getId());
         //all users from this flat
@@ -170,6 +163,8 @@ public class ChoreServiceImpl implements ChoreService {
                 }
                 if (choresAfterAssign.size() == 0) {
                     break;
+                } else {
+                    notAssignedUsers = new ArrayList<>();
                 }
             }
         }
@@ -177,13 +172,10 @@ public class ChoreServiceImpl implements ChoreService {
         return choreMapper.entityListToDtoList(choreRepository.findAllBySharedFlatId(applicationUser.getId()));
     }
 
-    private List<ChoreDto> assignChoresHelp(List<Chore> chores) throws AuthenticationException {
+    private List<ChoreDto> assignChoresHelp(List<Chore> chores) {
         LOGGER.trace("assignChoresHelp({})", chores);
         //check the user
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
         //all users from this flat
         List<ApplicationUser> users = userRepository.findAllBySharedFlat(applicationUser.getSharedFlat());
         //all chores without user from this flat are stored in chores list.
@@ -264,23 +256,25 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     @Override
-    public List<Chore> getChoresByUser() throws AuthenticationException {
+    public List<Chore> getChoresByUser() {
         LOGGER.trace("getChoresByUser()");
         ApplicationUser applicationUser = authService.getUserFromToken();
-        if (applicationUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
         return choreRepository.findAllByUser(applicationUser);
     }
 
     @Override
     @Transactional
-    public List<Chore> deleteChores(List<Long> choreIds) {
+    public List<Chore> deleteChores(List<Long> choreIds) throws AuthorizationException {
         LOGGER.trace("deleteChores({})", choreIds);
-
         List<Chore> toDelete = choreRepository.findAllById(choreIds);
         if (toDelete.size() != choreIds.size()) {
             throw new NotFoundException("The given chores do not exist in the persistent data");
+        }
+        ApplicationUser user = authService.getUserFromToken();
+        for (Chore chore : toDelete) {
+            if (!user.getSharedFlat().equals(chore.getSharedFlat()) && !user.equals(chore.getUser())) {
+                throw new AuthorizationException("Authorization error", List.of("User has no access to chore: " + chore.getName()));
+            }
         }
         choreRepository.deleteAllById(choreIds);
         return toDelete;
@@ -349,16 +343,13 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     @Override
-    public List<ApplicationUser> getUsers() throws AuthenticationException {
+    public List<ApplicationUser> getUsers() {
         ApplicationUser existingUser = authService.getUserFromToken();
-        if (existingUser == null) {
-            throw new AuthenticationException("Authentication failed", List.of("User does not exist"));
-        }
-
         return userRepository.findAllBySharedFlat(existingUser.getSharedFlat());
     }
 
     @Override
+    @Transactional
     public ApplicationUser updatePoints(Long userId, Integer points) {
         ApplicationUser existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
@@ -367,8 +358,7 @@ public class ChoreServiceImpl implements ChoreService {
         return userRepository.save(existingUser);
     }
 
-    @Transactional
-    public byte[] generatePdf() throws IOException, AuthenticationException {
+    public byte[] generatePdf() throws IOException {
         String htmlContent = this.createChoreListHtml();
 
         Path tempFilePath = Files.createTempFile("my-pdf", ".html");
@@ -395,13 +385,18 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     @Override
-    public ChoreDto repeatChore(Long choreId, Date newDate) {
+    @Transactional
+    public ChoreDto repeatChore(Long choreId, Date newDate) throws AuthorizationException, ValidationException, ConflictException {
+        ApplicationUser user = authService.getUserFromToken();
         Optional<Chore> toChange = choreRepository.findById(choreId);
         if (toChange.isPresent()) {
             Chore changeChore = toChange.get();
+            if (!user.getSharedFlat().equals(changeChore.getSharedFlat())) {
+                throw new AuthorizationException("Authorization error", List.of("User has no access to this chore"));
+            }
             changeChore.setUser(null);
             changeChore.setEndDate(newDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-            ApplicationUser user = authService.getUserFromToken();
+            choreValidator.validateForUpdate(changeChore);
             user.setPoints(user.getPoints() + changeChore.getPoints());
             userRepository.save(user);
             choreRepository.save(changeChore);
@@ -423,21 +418,23 @@ public class ChoreServiceImpl implements ChoreService {
     public void deleteAllUserPreference() {
         ApplicationUser user = authService.getUserFromToken();
         List<ApplicationUser> users = userRepository.findAllBySharedFlat(user.getSharedFlat());
-        for (int i = 0; i < users.size(); i++) {
-            users.get(i).setPreference(null);
-            userRepository.save(users.get(i));
+        for (ApplicationUser applicationUser : users) {
+            applicationUser.setPreference(null);
+            userRepository.save(applicationUser);
         }
         List<Preference> preferences = preferenceRepository.findAllByUserSharedFlatIs(user.getSharedFlat());
-        for (int i = 0; i < preferences.size(); i++) {
-            preferences.get(i).setUserId(null);
-            preferenceRepository.save(preferences.get(i));
-            preferenceRepository.deleteById(preferences.get(i).getId());
+        for (Preference preference : preferences) {
+            preference.setUserId(null);
+            preferenceRepository.save(preference);
+            preferenceRepository.deleteById(preference.getId());
         }
     }
 
-    @Transactional
-    private String createChoreListHtml() throws AuthenticationException {
+    private String createChoreListHtml() {
         List<Chore> chores = this.getChores(new ChoreSearchDto(null, null));
+        if (chores.isEmpty()) {
+            throw new NotFoundException("No chores found to export!");
+        }
         chores.sort(Comparator.comparing(Chore::getEndDate));
 
         StringBuilder htmlContent = new StringBuilder();

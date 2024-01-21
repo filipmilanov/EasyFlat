@@ -3,6 +3,7 @@ import {ItemDto} from "../../../dtos/item";
 import {ItemService} from "../../../services/item.service";
 import {ToastrService} from "ngx-toastr";
 import {ActivatedRoute, Router} from "@angular/router";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 @Component({
   selector: 'app-item-detail',
@@ -32,6 +33,7 @@ export class ItemDetailComponent implements OnInit {
     private notification: ToastrService,
     private router: Router,
     private route: ActivatedRoute,
+    private errorHandler: ErrorHandlerService,
   ) {
   }
 
@@ -43,9 +45,9 @@ export class ItemDetailComponent implements OnInit {
           next: res => {
             this.item = res;
           },
-          error: () => {
+          error: error => {
             this.router.navigate(['/digital-storage/']);
-            this.notification.error('Item could not be retrieved from the server.', "Error");
+            this.errorHandler.handleErrors(error, "item", "loaded");
           }
         })
       },
@@ -66,8 +68,8 @@ export class ItemDetailComponent implements OnInit {
         this.router.navigate(['/digital-storage/']);
         this.notification.success(`Item ${this.item.productName} was successfully deleted.`, "Success");
       },
-      error: () => {
-        this.notification.error(`Item ${this.item.productName} could not be deleted.`, "Error");
+      error: error => {
+        this.errorHandler.handleErrors(error, "item " + this.item.productName, "deleted");
       }
     });
   }

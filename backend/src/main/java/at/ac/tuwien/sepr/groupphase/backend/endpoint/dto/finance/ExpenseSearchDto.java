@@ -9,7 +9,8 @@ import java.time.LocalDate;
 public record ExpenseSearchDto(
     String title,
     Long paidById,
-    Double amountInCents,
+    Double minAmountInCents,
+    Double maxAmountInCents,
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     LocalDate createdAt
 ) {
