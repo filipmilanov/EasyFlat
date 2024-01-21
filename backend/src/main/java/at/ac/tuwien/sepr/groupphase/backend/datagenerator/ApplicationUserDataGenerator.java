@@ -43,6 +43,7 @@ public class ApplicationUserDataGenerator {
             user.setEmail(faker.internet().emailAddress());
             user.setPassword(passwordEncoder.encode("12341234"));
             user.setAdmin(i % 5 == 0);
+            user.setPoints(0);
 
             SharedFlat sharedFlat = new SharedFlat();
             sharedFlat.setId((long) (i % 5 + 1));
