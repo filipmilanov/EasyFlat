@@ -463,7 +463,7 @@ public class CookingServiceImpl implements CookingService {
     }
 
     @Override
-    public RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook, String jwt)
+    public RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook)
         throws AuthenticationException, ValidationException, ConflictException, AuthorizationException {
         ShoppingList shoppingList = shoppingListService.getShoppingListByName("Shopping List (Default)").orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         ShoppingListDto shoppingListDto = shoppingListMapper.entityToDto(shoppingList);
