@@ -276,24 +276,33 @@ export class ItemCreateEditComponent implements OnInit {
     ? of([])
     : this.storageService.findAll(input, 5);
 
-  formatGeneralName(generalName: string | null): string {
-    return generalName != null ? generalName : '';
+  formatGeneralName(generalName: ItemDto | string | null): string {
+    if (typeof generalName === 'string') {
+      return generalName;
+    }
+    return generalName != null ? generalName.generalName : '';
   }
 
   generalNameSuggestions = (input: string) => (input === '')
     ? of([])
     : this.itemService.findByGeneralName(input);
 
-  formatBrand(brand: string | null): string {
-    return brand ? brand : '';
+  formatBrand(brand: ItemDto | string | null): string {
+    if (typeof brand === 'string') {
+      return brand;
+    }
+    return brand ? brand.brand : '';
   }
 
   brandSuggestions = (input: string) => (input === '')
     ? of([])
     : this.itemService.findByBrand(input);
 
-  formatBoughtAt(boughtAt: string | null): string {
-    return boughtAt != null ? boughtAt : '';
+  formatBoughtAt(boughtAt: ItemDto | string | null): string {
+    if (typeof boughtAt === 'string') {
+      return boughtAt;
+    }
+    return boughtAt ? boughtAt.boughtAt : '';
   }
 
   boughtAtSuggestions = (input: string) => (input === '')
