@@ -25,9 +25,6 @@ export class CreateExpenseFromShopComponent {
   }
 
   createExpense(): void {
-    console.log(this.newExpenseTitle);
-    console.log(this.newExpensePrice);
-    console.log(this.checkedShoppingItems);
     let dateInCET: Date = new Date();
     dateInCET.setHours(dateInCET.getHours() + 1);
     if (this.newExpenseTitle && (this.newExpensePrice != null || this.newExpensePrice != undefined) && this.checkedShoppingItems.length > 0) {
