@@ -3,6 +3,7 @@ import {FinanceService} from "../../../services/finance.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {DebitDto, ExpenseDto, RepeatingExpenseType, SplitBy} from "../../../dtos/expenseDto";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 @Component({
   selector: 'app-expense-detail',
@@ -20,6 +21,7 @@ export class ExpenseDetailComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private notification: ToastrService,
+    private errorHandlingService: ErrorHandlerService
   ) {
     this.previousUrl = '/expense';
   }
@@ -33,13 +35,13 @@ export class ExpenseDetailComponent implements OnInit {
           },
           error: error => {
             this.router.navigate([this.previousUrl]);
-            this.notification.error("Could not load expense", "Error")
+            this.errorHandlingService.handleErrors(error, "expense", "loaded");
           }
         });
       },
       error: error => {
         this.router.navigate([this.previousUrl]);
-        this.notification.error("Could not find ID", "Error");
+        this.errorHandlingService.handleErrors(error, "expense", "found");
       }
     });
   }
@@ -51,15 +53,7 @@ export class ExpenseDetailComponent implements OnInit {
             this.notification.success(`Expense ${this.expense.title} was successfully deleted`, "Success");
           },
           error: error => {
-            console.error(`Expense could not be deleted: ${error}`);
-            this.notification.error(`Expense ${this.expense.title} could not be deleted`, "Error");
-            let firstBracket = error.error.indexOf('[');
-            let lastBracket = error.error.indexOf(']');
-            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-            let errorDescription = error.error.substring(0, firstBracket);
-            errorMessages.forEach(message => {
-              this.notification.error(message, errorDescription);
-            });
+            this.errorHandlingService.handleErrors(error, "expense", "deleted");
           }
     });
   }
