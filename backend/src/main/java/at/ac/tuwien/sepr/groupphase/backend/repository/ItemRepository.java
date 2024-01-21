@@ -19,7 +19,7 @@ public interface ItemRepository extends JpaRepository<DigitalStorageItem, Long> 
         String brand,
         String boughtAt);
 
-    List<DigitalStorageItem> findAllByDigitalStorage_StorageIdAndItemCache_GeneralName(
+    List<DigitalStorageItem> findAllByDigitalStorage_StorageIdIsAndItemCache_GeneralNameContainsIgnoreCase(
         Long storageId,
         String generalName
     );

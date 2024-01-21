@@ -106,7 +106,7 @@ public class ItemServiceImpl implements ItemService {
 
         Long digitalStorageId = applicationUser.getSharedFlat().getDigitalStorage().getStorageId();
 
-        return itemRepository.findAllByDigitalStorage_StorageIdAndItemCache_GeneralName(digitalStorageId, generalName);
+        return itemRepository.findAllByDigitalStorage_StorageIdIsAndItemCache_GeneralNameContainsIgnoreCase(digitalStorageId, generalName);
     }
 
     @Override
