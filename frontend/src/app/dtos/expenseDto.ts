@@ -21,7 +21,8 @@ export class ExpenseSearchDto {
   paidBy?: UserListDto;
   minAmountInEuro?: number;
   maxAmountInEuro?: number;
-  createdAt?: Date;
+  fromDate?: Date;
+  toDate?: Date;
 }
 
 export class DebitDto {
