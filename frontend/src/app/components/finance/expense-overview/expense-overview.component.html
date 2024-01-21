@@ -112,7 +112,7 @@
     </thead>
     <tbody>
     <tr *ngFor="let expense of expenses" class="center-td">
-      <td>{{ expense.title }} <span *ngIf="expense.addedViaStorage" class="badge bg-success">Added by Storage</span></td>
+      <td>{{ expense.title }} <span *ngIf="expense.addedViaStorage" class="badge bg-success">Added by System</span></td>
       <td class="d-none d-md-table-cell">{{ expense.paidBy.firstName }} {{ expense.paidBy.lastName }}</td>
       <td>
         {{ (expense.amountInCents / 100).toFixed(2) }} €
