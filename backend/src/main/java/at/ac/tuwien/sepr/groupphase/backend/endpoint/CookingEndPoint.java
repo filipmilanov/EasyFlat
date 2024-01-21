@@ -105,9 +105,9 @@ public class CookingEndPoint {
 
     @Secured("ROLE_USER")
     @PostMapping("/shopping")
-    public RecipeSuggestionDto addToShoppingList(@RequestBody RecipeSuggestionDto recipeToCook, @RequestHeader("Authorization") String jwt)
+    public RecipeSuggestionDto addToShoppingList(@RequestBody RecipeSuggestionDto recipeToCook)
         throws ValidationException, AuthenticationException, ConflictException, AuthorizationException {
-        return cookingService.addToShoppingList(recipeToCook, jwt);
+        return cookingService.addToShoppingList(recipeToCook);
     }
 
     @Secured("ROLE_USER")

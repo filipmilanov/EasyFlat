@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit {
         let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
         let errorDescription = error.error.substring(0, firstBracket);
         errorMessages.forEach(message => {
-          this.notification.error(errorDescription, "Could not login user " + authRequest.email);
+          this.notification.error(message, "Could not login user " + authRequest.email);
         });
       }
     });
