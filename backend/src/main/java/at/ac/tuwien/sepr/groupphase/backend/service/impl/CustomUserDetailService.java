@@ -149,6 +149,12 @@ public class CustomUserDetailService implements UserService {
         userValidator.validateForUpdate(userDetailDto);
         ApplicationUser user = userRepository.findApplicationUserById(userDetailDto.getId());
         if (user != null) {
+            if (!user.getEmail().equals(userDetailDto.getEmail())) {
+                ApplicationUser user2 = userRepository.findUserByEmail(userDetailDto.getEmail());
+                if (user2 != null) {
+                    throw new ConflictException("Could not update user " + user.getEmail(), List.of("User with email" + user2.getEmail() + "  already exists"));
+                }
+            }
             user.setFirstName(userDetailDto.getFirstName());
             user.setLastName(userDetailDto.getLastName());
             user.setEmail(userDetailDto.getEmail());

@@ -140,6 +140,7 @@ export class AccountComponent implements OnInit {
       console.log(userDetail)
       this.authService.update(userDetail).subscribe({
         next: () => {
+          this.user = userDetail
           this.notification.success('Successfully updated user: ' + this.user.firstName + ' ' + this.user.lastName)
         },
         error: error => {
