@@ -70,12 +70,6 @@ export class LoginFlatComponent implements OnInit{
       }
     );
   }
-
-
-  vanishError() {
-    this.error = false;
-  }
-
   changeEventToTrue() {
     return this.sharedFlatService.changeEvent();
   }
