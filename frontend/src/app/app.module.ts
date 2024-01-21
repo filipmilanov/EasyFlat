@@ -66,16 +66,16 @@ import {
   RadioButtonsComponentComponent
 } from './components/utils/radio-buttons-component/radio-buttons-component.component';
 import {ShowUserForExpenseComponent} from './components/utils/show-user-for-expense/show-user-for-expense.component';
-import { ChorePreferenceComponent } from './components/chores/chore-preference/chore-preference.component';
-import { AllChoreComponent } from './components/chores/all-chore/all-chore.component';
-import { MyChoresComponent } from './components/chores/my-chores/my-chores.component';
-import { NewChoreComponent } from './components/chores/new-chore/new-chore.component';
-import { ChoreCardComponent } from './components/chores/chore-card/chore-card.component';
-import { LeaderboardComponent } from './components/chores/leaderboard/leaderboard.component';
-import { MatListModule } from '@angular/material/list';
-import { MatCardModule } from '@angular/material/card';
-import { ChorePreferenceCardComponent } from './components/chores/chore-preference-card/chore-preference-card.component';
-import { MyChoreCardComponent } from './components/chores/my-chore-card/my-chore-card.component';
+import {ChorePreferenceComponent} from './components/chores/chore-preference/chore-preference.component';
+import {AllChoreComponent} from './components/chores/all-chore/all-chore.component';
+import {MyChoresComponent} from './components/chores/my-chores/my-chores.component';
+import {NewChoreComponent} from './components/chores/new-chore/new-chore.component';
+import {ChoreCardComponent} from './components/chores/chore-card/chore-card.component';
+import {LeaderboardComponent} from './components/chores/leaderboard/leaderboard.component';
+import {MatListModule} from '@angular/material/list';
+import {MatCardModule} from '@angular/material/card';
+import {ChorePreferenceCardComponent} from './components/chores/chore-preference-card/chore-preference-card.component';
+import {MyChoreCardComponent} from './components/chores/my-chore-card/my-chore-card.component';
 import {
   ChoreConfirmationModalComponent
 } from "./components/chores/my-chores/chore-confirmation-modal/chore-confirmation-modal.component";
@@ -163,7 +163,7 @@ LOAD_WASM().subscribe();
         NgbModule,
         FormsModule,
         ToastrModule.forRoot({
-            timeOut: 10000,
+          timeOut: 7000,
             positionClass: 'toast-top-right',
             preventDuplicates: true,
         }),
