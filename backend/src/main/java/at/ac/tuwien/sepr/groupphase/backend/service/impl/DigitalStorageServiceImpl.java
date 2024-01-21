@@ -180,7 +180,7 @@ public class DigitalStorageServiceImpl implements DigitalStorageService {
         if (shoppingList == null) {
             throw new NotFoundException("Shopping List not found!");
         }
-        ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItem(itemDto,
+        ShoppingItem shoppingItem = itemMapper.itemDtoToShoppingItemEntity(itemDto,
             ingredientMapper.dtoListToEntityList(itemDto.ingredients()),
             shoppingList
         );

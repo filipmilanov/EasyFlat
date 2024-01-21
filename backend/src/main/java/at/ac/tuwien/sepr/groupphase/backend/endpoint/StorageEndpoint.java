@@ -68,6 +68,6 @@ public class StorageEndpoint {
     public ShoppingItemDto addItemToShopping(@RequestBody ItemDto itemDto) throws AuthorizationException, ValidationException, ConflictException {
         LOGGER.info("addItemToShopping({})", itemDto);
         ShoppingItem item = digitalStorageService.addItemToShopping(itemDto);
-        return itemMapper.entityToShopping(item, shoppingListMapper.entityToDto(item.getShoppingList()));
+        return itemMapper.shoppingItemEntityToShoppingItemDto(item, shoppingListMapper.entityToDto(item.getShoppingList()));
     }
 }
