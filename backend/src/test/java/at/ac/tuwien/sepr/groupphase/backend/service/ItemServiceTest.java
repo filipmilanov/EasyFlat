@@ -1,12 +1,15 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AlternativeNameDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AlternativeNameDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.entity.AlternativeName;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
@@ -26,6 +29,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.util.AbstractList;
 import java.util.List;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.digitalStorageDto;
@@ -605,4 +609,41 @@ class ItemServiceTest {
 
 
     }
+
+    @Test
+    @DisplayName("Test matching recipe ingredient to digital storage item")
+    void testMatchRecipeIngredientToDigitalStorageItem()
+        throws AuthorizationException, ValidationException, ConflictException {
+        DigitalStorageItem createdDigitalStorageItem = service.create(validInStockItemDto);
+
+        AlternativeNameDto alternativeName = AlternativeNameDtoBuilder.builder().name("apple").build();
+        AlternativeName alternativeNameEntity = new AlternativeName();
+        alternativeNameEntity.setName("apple");
+
+        ItemDto updatedItemDto = ItemDtoBuilder.builder()
+            .itemId(createdDigitalStorageItem.getItemId())
+            .ean("0123456789123")
+            .generalName("Test")
+            .productName("TestProduct")
+            .brand("TestBrand")
+            .quantityCurrent(100.0)
+            .quantityTotal(200.0)
+            .unit(g)
+            .expireDate(LocalDate.now().plusYears(1))
+            .description("This is valid description")
+            .priceInCent(1234L)
+            .digitalStorage(digitalStorageDto)
+            .ingredients(ingredientDtoList)
+            .alternativeNames(List.of(alternativeName))
+            .build();
+
+        //when
+
+        DigitalStorageItem updatedItem = service.update(updatedItemDto);
+
+        assertThat(updatedItem.getItemCache().getAlternativeNames()).contains(alternativeNameEntity);
+
+    }
+
+
 }

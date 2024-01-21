@@ -8,6 +8,7 @@ import {NgForm} from "@angular/forms";
 import {Observable} from "rxjs";
 import {Unit} from "../../../dtos/unit";
 import {UnitService} from "../../../services/unit.service";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 
 export enum CookbookMode {
@@ -38,7 +39,8 @@ export class CookbookCreateComponent implements OnInit{
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
-    private unitService: UnitService
+    private unitService: UnitService,
+    private errorH: ErrorHandlerService
   ) {
   }
 
@@ -175,15 +177,7 @@ export class CookbookCreateComponent implements OnInit{
           this.router.navigate(['/cookbook']);
         },
         error: error => {
-          console.error(`Error cookbook was not ${this.modeActionFinished}: ${error}`);
-          console.error(error);
-          let firstBracket = error.error.indexOf('[');
-          let lastBracket = error.error.indexOf(']');
-          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-          let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach(message => {
-            this.notification.error(message, errorDescription);
-          });
+          this.errorH.handleErrors(error,"recipe","created")
         }
       });
   }
