@@ -41,9 +41,9 @@ public abstract class ShoppingListMapper {
     @Mapping(target = "itemCache.quantityTotal", source = "quantityTotal")
     @Mapping(target = "itemCache.unit", source = "unit")
     @Mapping(target = "itemCache.description", source = "description")
-    public abstract DigitalStorageItem shoppingItemDtoToItem(ShoppingItemDto shoppingItemDto,
-                                                             @Context List<Ingredient> ingredients,
-                                                             @Context DigitalStorage digitalStorage);
+    public abstract DigitalStorageItem shoppingItemDtoToItemEntity(ShoppingItemDto shoppingItemDto,
+                                                                   @Context List<Ingredient> ingredients,
+                                                                   @Context DigitalStorage digitalStorage);
 
     @Mapping(target = "itemId", ignore = true)
     @Mapping(target = "ingredientList", source = "ingredients")
@@ -55,7 +55,7 @@ public abstract class ShoppingListMapper {
     @Mapping(target = "itemCache.quantityTotal", source = "quantityTotal")
     @Mapping(target = "itemCache.unit", source = "unit")
     @Mapping(target = "itemCache.description", source = "description")
-    public abstract AlwaysInStockDigitalStorageItem shoppingItemDtoToAis(ShoppingItemDto shoppingItem,
-                                                                         @Context List<Ingredient> ingredients,
-                                                                         @Context DigitalStorage digitalStorage);
+    public abstract AlwaysInStockDigitalStorageItem shoppingItemDtoToAisEntity(ShoppingItemDto shoppingItem,
+                                                                               @Context List<Ingredient> ingredients,
+                                                                               @Context DigitalStorage digitalStorage);
 }

@@ -70,8 +70,8 @@ public abstract class ItemMapper {
     @Mapping(target = "itemCache.unit", source = "unit")
     @Mapping(target = "itemCache.description", source = "description")
     @Mapping(target = "itemCache.ingredientList", source = "ingredients")
-    public abstract ShoppingItem dtoToShopping(ShoppingItemDto itemDto,
-                                               @Context List<ItemLabel> labels);
+    public abstract ShoppingItem shoppingItemDtoToShoppingItemEntity(ShoppingItemDto itemDto,
+                                                                     @Context List<ItemLabel> labels);
 
     @Mapping(target = "ean", source = "itemCache.ean")
     @Mapping(target = "generalName", source = "itemCache.generalName")
@@ -81,8 +81,8 @@ public abstract class ItemMapper {
     @Mapping(target = "unit", source = "itemCache.unit")
     @Mapping(target = "description", source = "itemCache.description")
     @Mapping(target = "ingredients", source = "itemCache.ingredientList")
-    public abstract ShoppingItemDto entityToShopping(ShoppingItem item,
-                                                     @Context ShoppingListDto shoppingList);
+    public abstract ShoppingItemDto shoppingItemEntityToShoppingItemDto(ShoppingItem item,
+                                                                        @Context ShoppingListDto shoppingList);
 
     @Mapping(target = "itemCache.ean", source = "ean")
     @Mapping(target = "itemCache.generalName", source = "generalName")
@@ -93,9 +93,11 @@ public abstract class ItemMapper {
     @Mapping(target = "itemCache.description", source = "description")
     @Mapping(target = "itemCache.ingredientList", expression = "java( ingredients )")
     @Mapping(target = "shoppingList", expression = "java( shoppingList )")
-    public abstract ShoppingItem itemDtoToShoppingItem(ItemDto itemDto,
-                                              @Context List<Ingredient> ingredients,
-                                              @Context ShoppingList shoppingList);
+    public abstract ShoppingItem itemDtoToShoppingItemEntity(ItemDto itemDto,
+                                                             @Context List<Ingredient> ingredients,
+                                                             @Context ShoppingList shoppingList);
+
+    public abstract List<ShoppingItemDto> shoppingItemEntityListToShoppingItemDtoList(List<ShoppingItem> digitalStorageItems);
 
     public abstract List<ItemDto> entityListToItemDtoList(List<DigitalStorageItem> digitalStorageItems);
 

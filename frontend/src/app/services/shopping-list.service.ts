@@ -115,5 +115,11 @@ export class ShoppingListService {
     return this.http.put<ShoppingItemDto>(`${this.baseUri}/${item.itemId}`, item);
   }
 
+  deleteItems(items: ShoppingItemDto[]) {
+    console.log(items)
+    const itemIds = items.map(item => item.itemId);
+    return this.http.delete<ShoppingItemDto[]>(this.baseUri + '/delete', {params: {itemIds: itemIds.join(',')}});
+  }
+
 }
 
