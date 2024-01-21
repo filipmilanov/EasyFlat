@@ -8,7 +8,7 @@
     </label>
     <input type="text" id="searchTitle" name="searchTitle"
            class="form-control" [(ngModel)]="searchParameters.productName"
-           (change)="loadStorage()"
+           (ngModelChange)="loadStorage()"
     >
   </div>
 
@@ -18,7 +18,7 @@
     </label>
     <select id="fillLevel" name="fillLevel"
             class="form-select" [(ngModel)]="searchParameters.fillLevel"
-            (change)="loadStorage()"
+            (ngModelChange)="loadStorage()"
     >
       <option value="" selected>Any</option>
       <option value="full">High quantity</option>
@@ -37,7 +37,7 @@
              autocomplete="off"
              [checked]="searchParameters.orderBy === OrderType.GENERAL_NAME"
              [(ngModel)]="searchParameters.orderBy" [value]="OrderType.GENERAL_NAME"
-             (change)="loadStorage()">
+             (ngModelChange)="loadStorage()">
       <label class="btn btn-outline-primary" for="orderName">Name</label>
 
       <input type="radio"
@@ -47,7 +47,7 @@
              autocomplete="off"
              [checked]="searchParameters.orderBy === OrderType.QUANTITY_CURRENT"
              [(ngModel)]="searchParameters.orderBy" [value]="OrderType.QUANTITY_CURRENT"
-             (change)="loadStorage()">
+             (ngModelChange)="loadStorage()">
       <label class="btn btn-outline-primary" for="orderQuantity">Quantity</label>
 
       <app-sort-button class="btn btn-outline-primary"
