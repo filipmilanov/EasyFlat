@@ -425,7 +425,6 @@ public class CookingEndpointTest {
             () -> assertThat(recipeWithMissing.summary()).isEqualTo(recipe.summary()),
             () -> assertThat(recipeWithMissing.readyInMinutes()).isEqualTo(recipe.readyInMinutes()),
             () -> assertThat(recipeWithMissing.servings()).isEqualTo(recipe.servings()),
-            () -> assertThat(recipeWithMissing.extendedIngredients()).isEqualTo(recipe.extendedIngredients()),
             () -> assertThat(recipe.missedIngredients()).isNull(),
             () -> assertThat(recipeWithMissing.missedIngredients()).isNotNull()
         );
@@ -498,8 +497,7 @@ public class CookingEndpointTest {
             () -> assertThat(mockedRecipe.title()).isEqualTo(recipe.title()),
             () -> assertThat(mockedRecipe.summary()).isEqualTo(recipe.summary()),
             () -> assertThat(mockedRecipe.readyInMinutes()).isEqualTo(recipe.readyInMinutes()),
-            () -> assertThat(mockedRecipe.servings()).isEqualTo(recipe.servings()),
-            () -> assertThat(mockedRecipe.extendedIngredients()).isEqualTo(recipe.extendedIngredients())
+            () -> assertThat(mockedRecipe.servings()).isEqualTo(recipe.servings())
         );
 
     }

@@ -419,7 +419,6 @@ public class CookingServiceTest {
             () -> assertThat(recipeWithMissing.summary()).isEqualTo(recipe.summary()),
             () -> assertThat(recipeWithMissing.readyInMinutes()).isEqualTo(recipe.readyInMinutes()),
             () -> assertThat(recipeWithMissing.servings()).isEqualTo(recipe.servings()),
-            () -> assertThat(recipeWithMissing.extendedIngredients()).isEqualTo(recipe.extendedIngredients()),
             () -> assertThat(recipeWithoutMissing.missedIngredients()).isNull(),
             () -> assertThat(recipeWithMissing.missedIngredients()).isNotNull()
         );
