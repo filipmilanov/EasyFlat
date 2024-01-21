@@ -42,70 +42,91 @@ public class ItemFromOpenFoodFactsApiMapper {
         LOGGER.trace("mapFromJsonNode({})", openFoodFactsResponseDto);
 
         if (openFoodFactsResponseDto.status()) {
+            if (openFoodFactsResponseDto.product() == null) {
+                return null;
+            } else {
 
-            String ean = openFoodFactsResponseDto.eanCode();
-            String generalName = Optional.ofNullable(
-                openFoodFactsResponseDto.product().genericName()
-            ).orElse(
-                Optional.ofNullable(
-                    openFoodFactsResponseDto.product().genericNameEn()
+                final String ean = openFoodFactsResponseDto.eanCode();
+                final String generalName = Optional.ofNullable(
+                    openFoodFactsResponseDto.product().genericName()
                 ).orElse(
-                    openFoodFactsResponseDto.product().genericNameDe()
-                )
-            );
-            String productName = Optional.ofNullable(
-                openFoodFactsResponseDto.product().productName()
-            ).orElse(
-                Optional.ofNullable(
-                    openFoodFactsResponseDto.product().productNameEn()
+                    Optional.ofNullable(
+                        openFoodFactsResponseDto.product().genericNameEn()
+                    ).orElse(
+                        openFoodFactsResponseDto.product().genericNameDe()
+                    )
+                );
+                final String productName = Optional.ofNullable(
+                    openFoodFactsResponseDto.product().productName()
                 ).orElse(
-                    openFoodFactsResponseDto.product().productNameEn()
-                )
-            );
-            String brand = openFoodFactsResponseDto.product().brands();
-            Long totalQuantity = openFoodFactsResponseDto.product().productQuantity();
-            String unit = openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging().packagings().get(0).unit();
-            String description = openFoodFactsResponseDto.product().categoryProperties().description();
-            String boughtAt = openFoodFactsResponseDto.product().boughtAt();
-            List<OpenFoodFactsIngredientDto> ingredientList = openFoodFactsResponseDto.product().ingredients();
+                    Optional.ofNullable(
+                        openFoodFactsResponseDto.product().productNameEn()
+                    ).orElse(
+                        openFoodFactsResponseDto.product().productNameEn()
+                    )
+                );
 
-            List<Ingredient> ingredients = null;
+                final String brand = openFoodFactsResponseDto.product().brands();
+                final Long totalQuantity = openFoodFactsResponseDto.product().productQuantity();
+                final String unit = getString(openFoodFactsResponseDto);
+                String description = null;
+                if (openFoodFactsResponseDto.product().categoryProperties() != null) {
+                    description = openFoodFactsResponseDto.product().categoryProperties().description();
+                }
+                final String boughtAt = openFoodFactsResponseDto.product().boughtAt();
+                List<OpenFoodFactsIngredientDto> ingredientList = openFoodFactsResponseDto.product().ingredients();
 
-            if (!ingredientList.isEmpty()) {
-                // Create a pattern to match non-letter characters - because every ingredient should only consist of letters
-                Pattern nonLetterPattern = Pattern.compile("[^\\p{L}]+");
+                List<Ingredient> ingredients = null;
 
-                List<IngredientDto> ingredientDtoList = ingredientList.stream()
-                    .map(OpenFoodFactsIngredientDto::text) // Extract text
-                    .map(text -> nonLetterPattern.matcher(text).replaceAll("")) // Remove non-letter characters
-                    .map(cleanedText -> IngredientDtoBuilder.builder()
-                        .name(cleanedText)
-                        .build())
-                    .collect(Collectors.toList());
+                if (ingredientList != null && !ingredientList.isEmpty()) {
+                    // Create a pattern to match non-letter characters - because every ingredient should only consist of letters
+                    Pattern nonLetterPattern = Pattern.compile("[^\\p{L}]+");
 
-                ingredients = ingredientService.findIngredientsAndCreateMissing(ingredientDtoList);
+                    List<IngredientDto> ingredientDtoList = ingredientList.stream()
+                        .map(OpenFoodFactsIngredientDto::text) // Extract text
+                        .map(text -> nonLetterPattern.matcher(text).replaceAll("")) // Remove non-letter characters
+                        .map(cleanedText -> IngredientDtoBuilder.builder()
+                            .name(cleanedText)
+                            .build())
+                        .collect(Collectors.toList());
+
+                    ingredients = ingredientService.findIngredientsAndCreateMissing(ingredientDtoList);
+                }
+
+                UnitDto unitDto = null;
+                try {
+                    unitDto = unitMapper.entityToUnitDto(unitService.findByName(unit));
+                } catch (NotFoundException e) {
+                    LOGGER.info("Unit {} not found in database", unit);
+                }
+
+                return new OpenFoodFactsItemDto(
+                    ean,
+                    !Objects.equals(generalName, "") ? generalName : productName,
+                    productName,
+                    brand,
+                    totalQuantity,
+                    unitDto,
+                    description,
+                    boughtAt,
+                    ingredients
+                );
             }
-
-            UnitDto unitDto = null;
-            try {
-                unitDto = unitMapper.entityToUnitDto(unitService.findByName(unit));
-            } catch (NotFoundException e) {
-                LOGGER.info("Unit {} not found in database", unit);
-            }
-
-            return new OpenFoodFactsItemDto(
-                ean,
-                !Objects.equals(generalName, "") ? generalName : productName,
-                productName,
-                brand,
-                totalQuantity,
-                unitDto,
-                description,
-                boughtAt,
-                ingredients
-            );
         } else {
             throw new NotFoundException("EAN not found in API");
         }
+    }
+
+    private String getString(OpenFoodFactsResponseDto openFoodFactsResponseDto) {
+        String unit = null;
+        if (openFoodFactsResponseDto.product().ecoscoreData() != null
+            && openFoodFactsResponseDto.product().ecoscoreData().adjustments() != null
+            && openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging() != null
+            && openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging().packagings() != null
+            && !openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging().packagings().isEmpty()) {
+
+            unit = openFoodFactsResponseDto.product().ecoscoreData().adjustments().packaging().packagings().get(0).unit();
+        }
+        return unit;
     }
 }
