@@ -20,6 +20,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.AlternativeName;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemCache;
+import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
@@ -32,8 +33,10 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import com.deepl.api.DeepLException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -42,6 +45,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -62,10 +66,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
 public class CookingServiceTest {
 
 
@@ -78,8 +85,6 @@ public class CookingServiceTest {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
-    @Autowired
-    private ItemRepository itemRepositoryAutowired;
 
     @MockBean
     private ItemRepository itemRepositoryMockBean;
@@ -425,6 +430,36 @@ public class CookingServiceTest {
         assertThat(recipes.size()).isEqualTo(5);
     }
 
+    @Test
+    @Disabled
+    void getMissingIngredientsForAPIRecipeShouldReturnRecipeWithMissingIngredients() throws ValidationException, AuthorizationException, ConflictException {
+        when(itemRepositoryMockBean.findAllByDigitalStorage_StorageId(any())).thenReturn(getMockedItems());
+
+        RecipeSuggestionDto recipeToGetMissingIngredientsFor = getExpectedRecipeSuggestionDtoWithUnits();
+        ParameterizedTypeReference<RecipeSuggestion> ref3 = new ParameterizedTypeReference<RecipeSuggestion>() {
+        };
+
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ref3)))
+            .thenReturn(ResponseEntity.ok(getRecipeSuggestionEntity()));
+        //when
+
+        RecipeSuggestionDto recipeWithMissing = cookingService.getMissingIngredients(recipeToGetMissingIngredientsFor.id());
+        verify(restTemplate, times(1)).exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class),eq(ref3));
+
+        assertAll(
+            () -> assertThat(recipeWithMissing.title()).isEqualTo(recipeToGetMissingIngredientsFor.title()),
+            () -> assertThat(recipeWithMissing.summary()).isEqualTo(recipeToGetMissingIngredientsFor.summary()),
+            () -> assertThat(recipeWithMissing.readyInMinutes()).isEqualTo(recipeToGetMissingIngredientsFor.readyInMinutes()),
+            () -> assertThat(recipeWithMissing.servings()).isEqualTo(recipeToGetMissingIngredientsFor.servings()),
+            () -> assertThat(recipeWithMissing.extendedIngredients()).isEqualTo(recipeToGetMissingIngredientsFor.extendedIngredients()),
+            () -> assertThat(recipeWithMissing.missedIngredients()).isNotNull(),
+            () -> assertThat(recipeWithMissing.missedIngredients()).contains(getMissedRecipeIngredient())
+
+        );
+
+
+    }
+
     private void mockAPIResponse() {
         List<RecipeDto> mockedRecipesDtos = getRecipeDtos();
         RecipeSuggestionDto mockedRecipeSuggestionDto = getRecipeSuggestionDtoWithoutUnits();
@@ -434,10 +469,12 @@ public class CookingServiceTest {
         };
         ParameterizedTypeReference<RecipeSuggestionDto> ref2 = new ParameterizedTypeReference<RecipeSuggestionDto>() {
         };
+
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ref)))
             .thenReturn(ResponseEntity.ok(mockedRecipesDtos));
         when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ref2)))
             .thenReturn(ResponseEntity.ok(mockedRecipeSuggestionDto));
+       ;
 
     }
 
@@ -461,7 +498,6 @@ public class CookingServiceTest {
 
     }
 
-
     private void mockAPIResponseForDetails() {
         RecipeDetailDto mockedRecipeDetailDto = getRecipeDetailDtoWithoutUnitsAndSteps();
         List<CookingSteps> mockedSteps = getCookingStepsDto();
@@ -479,7 +515,7 @@ public class CookingServiceTest {
 
     private RecipeSuggestionDto getRecipeSuggestionDtoWithoutUnits() {
         RecipeSuggestionDto recipeDto2 = RecipeSuggestionDtoBuilder.builder()
-            .id(1L)
+            .id(123123L)
             .title("Pasta Carbonara")
             .servings(4)
             .readyInMinutes(25)
@@ -548,7 +584,7 @@ public class CookingServiceTest {
 
 
         RecipeSuggestionDto recipeDto2 = RecipeSuggestionDtoBuilder.builder()
-            .id(1L)
+            .id(123123L)
             .title("Pasta Carbonara")
             .servings(4)
             .readyInMinutes(25)
@@ -1177,5 +1213,66 @@ public class CookingServiceTest {
         return recipeDetailDto;
     }
 
+    private RecipeIngredientDto getMissedRecipeIngredient() {
 
+        UnitDto gUnit = UnitDtoBuilder.builder()
+            .name("g")
+            .subUnit(new HashSet<>())
+            .build();
+
+        return RecipeIngredientDtoBuilder.builder()
+            .id(4L)
+            .name("Spaghetti")
+            .unit("g")
+            .amount(400.0)
+            .matched(true)
+            .autoMatched(false)
+            .realName("Spaghetti")
+            .matchedItem(null)
+            .unitEnum(gUnit)
+            .build();
+    }
+
+    private RecipeSuggestion getRecipeSuggestionEntity() {
+        RecipeSuggestion recipeSuggestion = new RecipeSuggestion();
+        recipeSuggestion.setId(123123L);
+        recipeSuggestion.setTitle("Pasta Carbonara");
+        recipeSuggestion.setServings(4);
+        recipeSuggestion.setReadyInMinutes(25);
+        recipeSuggestion.setVersion(1);
+        recipeSuggestion.setSummary("Classic Italian pasta dish with eggs, cheese, pancetta, and black pepper.");
+        recipeSuggestion.setExtendedIngredients(createRecipeIngredients());
+
+        return recipeSuggestion;
+    }
+
+    private List<RecipeIngredient> createRecipeIngredients() {
+        List<RecipeIngredient> recipeIngredients = new ArrayList<>();
+
+        // Create Unit
+        Unit gUnit = new Unit();
+        gUnit.setName("g");
+
+        // Create RecipeIngredient 1
+        RecipeIngredient ingredient1 = new RecipeIngredient();
+        ingredient1.setName("Spaghetti");
+        ingredient1.setUnit("g");
+        ingredient1.setAmount(400.0);
+        ingredient1.setRealName("Spaghetti");
+        ingredient1.setUnitEnum(gUnit);
+
+        // Create RecipeIngredient 2
+        RecipeIngredient ingredient2 = new RecipeIngredient();
+        ingredient2.setName("Parmesan cheese");
+        ingredient2.setUnit("g");
+        ingredient2.setAmount(150.0);
+        ingredient2.setRealName("Parmesan cheese");
+        ingredient2.setUnitEnum(gUnit);
+
+        // Add ingredients to the list
+        recipeIngredients.add(ingredient1);
+        recipeIngredients.add(ingredient2);
+
+        return recipeIngredients;
+    }
 }

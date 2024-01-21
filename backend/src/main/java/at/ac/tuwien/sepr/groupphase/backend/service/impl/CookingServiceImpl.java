@@ -152,8 +152,7 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public List<RecipeSuggestionDto> getRecipeSuggestion(String type)
         throws ConflictException, AuthorizationException, AuthenticationException, DeepLException, InterruptedException {
-
-
+        LOGGER.trace("getRecipeSuggestions");
         ApplicationUser user = authService.getUserFromToken();
 
         List<ItemDto> items = itemRepository.findAllByDigitalStorage_StorageId(user.getSharedFlat().getDigitalStorage().getStorageId()).stream().map(itemMapper::entityToDto).toList();
@@ -170,6 +169,7 @@ public class CookingServiceImpl implements CookingService {
         if (exchange.getBody() != null) {
             for (RecipeDto recipeDto : exchange.getBody()) {
                 String newReqString = getNewReqStringForInformation(recipeDto.id());
+                LOGGER.debug("Sending request to Spoonacular API for recipe information.");
                 ResponseEntity<RecipeSuggestionDto> response = restTemplate.exchange(newReqString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<RecipeSuggestionDto>() {
                 });
                 recipeInfo.add(response.getBody());
@@ -191,6 +191,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeDetailDto getRecipeDetails(Long recipeId) {
+        LOGGER.trace("getRecipeDetails for Recipe with ID {}",recipeId);
         String reqString = getNewReqStringForInformation(recipeId);
         ResponseEntity<RecipeDetailDto> response = restTemplate.exchange(reqString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<RecipeDetailDto>() {
         });
@@ -581,7 +582,6 @@ public class CookingServiceImpl implements CookingService {
         for (RecipeIngredientDto recipeIngredient : recipeIngredientDtos) {
             String normalizedIngredientName = removeSpecialCharacters(recipeIngredient.name());
             RecipeIngredientDto ingredientUpdated = recipeIngredient.withName(normalizedIngredientName);
-
             recipeIngredientDtoMap.put(normalizedIngredientName, ingredientUpdated);
         }
 
@@ -785,7 +785,7 @@ public class CookingServiceImpl implements CookingService {
                 requestString += "%2C" + ingredient;
             }
         }
-        requestString += "&number=15";
+        requestString += "&number=5";
         return requestString + "&ranking=2";
     }
 
