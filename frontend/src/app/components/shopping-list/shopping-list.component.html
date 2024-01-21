@@ -97,11 +97,15 @@
 
 <button *ngIf="!checkId()"
         style="margin-top: 30px; margin-right: 20px;"
+        data-bs-toggle="modal"
+        [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModalForList(this.shoppingList)"
         type="button" class="btn btn-danger bi-trash m-3" (click)="deleteList()">
   Delete List
 </button>
 
 <button *ngIf="!checkIsEmpty()"
+        data-bs-toggle="modal"
+        [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModalForChecked(this.checkedItems)"
         style="margin-top: 30px; margin-right: 20px;" type="button" class="btn btn-danger bi-trash m-3"
         (click)="deleteCheckedItems()">Delete
 </button>

@@ -54,8 +54,8 @@ public class EventDataGenerator {
         test2.setTitle("Cleaning Day");
         test2.setDescription("A day dedicated to cleaning and maintaining the shared areas.");
         test2.setSharedFlat(sharedFlat);
-        test2.setStartTime(LocalTime.of(16, 0));
-        test2.setEndTime(LocalTime.of(17, 0));
+        test2.setStartTime(LocalTime.of(0, 0));
+        test2.setEndTime(LocalTime.of(23, 59));
         test2.setDate(LocalDate.now().plusDays(14)); // Set a date two weeks from now
 
         Event test3 = new Event();

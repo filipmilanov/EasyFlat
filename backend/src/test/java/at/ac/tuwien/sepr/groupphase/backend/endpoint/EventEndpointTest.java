@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventLabelDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeSuggestionDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.SharedFlatMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
@@ -13,6 +14,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,6 +39,8 @@ import java.util.List;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -259,7 +263,11 @@ public class EventEndpointTest {
         String retrievedExport = response.getContentAsString();
 
         assertAll(
-            () -> assertNotNull(retrievedExport)
+            () -> assertNotNull(retrievedExport),
+            () -> assertTrue(retrievedExport.startsWith("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//EasyFlat//\n")),
+            () -> assertTrue(retrievedExport.contains("House Meeting")),
+            () -> assertTrue(retrievedExport.contains("Discussing important matters regarding the shared living space.")),
+            () -> assertTrue(retrievedExport.endsWith("END:VCALENDAR"))
         );
     }
 
@@ -280,8 +288,40 @@ public class EventEndpointTest {
         String retrievedExport = response.getContentAsString();
 
         assertAll(
-            () -> assertNotNull(retrievedExport)
+            () -> assertNotNull(retrievedExport),
+            () -> assertTrue(retrievedExport.startsWith("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//EasyFlat//\n")),
+            () -> assertTrue(retrievedExport.contains("House Meeting")),
+            () -> assertTrue(retrievedExport.contains("Discussing important matters regarding the shared living space.")),
+            () -> assertTrue(retrievedExport.contains("Cleaning Day")),
+            () -> assertTrue(retrievedExport.contains("A day dedicated to cleaning and maintaining the shared areas.")),
+            () -> assertTrue(retrievedExport.contains("Movie Night")),
+            () -> assertTrue(retrievedExport.contains("Gathering for a cozy movie night in the common area.")),
+            () -> assertTrue(retrievedExport.endsWith("END:VCALENDAR"))
         );
+    }
+
+    @Test
+    public void givenLabelNameReturnListWithAllEventsWithThisLabel() throws Exception {
+        // given
+        String labelName = "party";
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/search")
+                .param("label", labelName)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+
+        List<EventDto> events = objectMapper.readValue(response.getContentAsString(), new TypeReference<List<EventDto>>() {});
+
+
+        assertThat(events.size()).isEqualTo(2);
     }
 
 

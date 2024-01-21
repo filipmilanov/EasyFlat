@@ -1,12 +1,13 @@
 import {Component, ElementRef, NgIterable, OnInit} from '@angular/core';
 import {DefaultGlobalConfig, ToastrService} from "ngx-toastr";
 import {ActivatedRoute, Router} from "@angular/router";
-import {ShoppingItemDto, ShoppingItemSearchDto} from "../../dtos/item";
+import {ItemDto, ShoppingItemDto, ShoppingItemSearchDto} from "../../dtos/item";
 import {ItemService} from "../../services/item.service";
 import {ShoppingListService} from "../../services/shopping-list.service";
 import {ShoppingListDto} from "../../dtos/shoppingList";
 import {SharedFlat} from "../../dtos/sharedFlat";
 import {Observable} from "rxjs";
+import {forEach} from "lodash";
 
 @Component({
   selector: 'app-shopping-list',
@@ -110,6 +111,7 @@ export class ShoppingListComponent implements OnInit {
     this.router.navigate([this.baseUri, this.shoppingList.id, 'item', 'create']);
   }
 
+
   deleteList() {
     if (confirm("Are you sure you want to delete this list?")) {
       console.log(this.shopId)
@@ -195,7 +197,7 @@ export class ShoppingListComponent implements OnInit {
           this.router.navigate([`/digital-storage`])
         },
         error: err => {
-          this.notification.error('Items were not added to the storage', err )
+          this.notification.error('Items were not added to the storage', err)
         }
       }
     );
@@ -213,4 +215,15 @@ export class ShoppingListComponent implements OnInit {
     this.router.navigate([this.baseUri, this.shopId, 'item', itemId, 'edit']);
   }
 
+  getIdFormatForDeleteModal(item: ItemDto): string {
+    return `${item.productName}${item.itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
+  }
+
+  getIdFormatForDeleteModalForList(shoppingList: ShoppingListDto) {
+    return `${shoppingList.name}${shoppingList.id.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
+  }
+
+  getIdFormatForDeleteModalForChecked(checkedItems: ShoppingItemDto[]) {
+    return checkedItems.toString().replace(/[^a-zA-Z0-9]+/g, '');
+  }
 }

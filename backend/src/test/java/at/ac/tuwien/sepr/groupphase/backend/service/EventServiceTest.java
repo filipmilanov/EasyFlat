@@ -263,11 +263,26 @@ public class EventServiceTest {
 
        String exported = this.eventsService.exportEvent(1L);
 
-       assertNotNull(exported);
-       assertTrue(exported.startsWith("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//EasyFlat//\n"));
-       assertTrue(exported.contains("House Meeting"));
-       assertTrue(exported.contains("Discussing important matters regarding the shared living space."));
-       assertTrue(exported.endsWith("END:VCALENDAR"));
+       assertAll(
+           () -> assertNotNull(exported),
+           () -> assertTrue(exported.startsWith("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//EasyFlat//\n")),
+           () -> assertTrue(exported.contains("House Meeting")),
+           () -> assertTrue(exported.contains("Discussing important matters regarding the shared living space.")),
+           () -> assertTrue(exported.endsWith("END:VCALENDAR"))
+       );
+    }
+    @Test
+    void givenValidEventIdForAllDayEventExportShouldSucceed() throws AuthorizationException {
+
+        String exported = this.eventsService.exportEvent(2L);
+
+        assertAll(
+            () -> assertNotNull(exported),
+            () -> assertTrue(exported.startsWith("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//EasyFlat//\n")),
+            () -> assertTrue(exported.contains("Cleaning Day")),
+            () -> assertTrue(exported.contains("A day dedicated to cleaning and maintaining the shared areas.")),
+            () -> assertTrue(exported.endsWith("END:VCALENDAR"))
+        );
     }
 
     @Test
@@ -282,15 +297,17 @@ public class EventServiceTest {
 
         String exported = this.eventsService.exportAll();
 
-        assertNotNull(exported);
-        assertTrue(exported.startsWith("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//EasyFlat//\n"));
-        assertTrue(exported.contains("House Meeting"));
-        assertTrue(exported.contains("Discussing important matters regarding the shared living space."));
-        assertTrue(exported.contains("Cleaning Day"));
-        assertTrue(exported.contains("A day dedicated to cleaning and maintaining the shared areas."));
-        assertTrue(exported.contains("Movie Night"));
-        assertTrue(exported.contains("Gathering for a cozy movie night in the common area."));
-        assertTrue(exported.endsWith("END:VCALENDAR"));
+        assertAll(
+            () -> assertNotNull(exported),
+            () -> assertTrue(exported.startsWith("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//EasyFlat//\n")),
+            () -> assertTrue(exported.contains("House Meeting")),
+            () -> assertTrue(exported.contains("Discussing important matters regarding the shared living space.")),
+            () -> assertTrue(exported.contains("Cleaning Day")),
+            () -> assertTrue(exported.contains("A day dedicated to cleaning and maintaining the shared areas.")),
+            () -> assertTrue(exported.contains("Movie Night")),
+            () -> assertTrue(exported.contains("Gathering for a cozy movie night in the common area.")),
+            () -> assertTrue(exported.endsWith("END:VCALENDAR"))
+        );
     }
 
     @Test

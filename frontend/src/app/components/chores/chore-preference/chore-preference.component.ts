@@ -96,6 +96,7 @@ export class ChorePreferenceComponent implements OnInit {
   ngOnInit(): void {
     console.log(this.oldPreference);
 
+
     this.preferenceService.getLastPreference().subscribe({
       next: (lastPreference: Preference) => {
         if (lastPreference) {
@@ -134,6 +135,7 @@ export class ChorePreferenceComponent implements OnInit {
       }
     });
   }
+
 
   navigateToAllChores() {
     this.router.navigate(['chores','all']);

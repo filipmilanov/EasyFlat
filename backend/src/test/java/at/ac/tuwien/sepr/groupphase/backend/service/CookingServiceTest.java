@@ -22,6 +22,8 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemCache;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeIngredient;
 import at.ac.tuwien.sepr.groupphase.backend.entity.RecipeSuggestion;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Unit;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
@@ -458,6 +460,25 @@ public class CookingServiceTest {
         );
 
 
+    }
+
+    @Test
+    @Disabled
+    void givenRecipeWithMissingIngredientsThenAddTheMissingIngredientsToTheShoppingList()
+        throws ValidationException, AuthorizationException, ConflictException, AuthenticationException {
+
+        ShoppingList shoppingList = shoppingListService.getShoppingListByName("Shopping List (Default)").orElseThrow();
+        List<ShoppingItem> items = shoppingList.getItems();
+
+        RecipeSuggestionDto recipeWithoutMissing = cookingService.getCookbookRecipe(1L);
+
+        RecipeSuggestionDto recipeWithMissing = cookingService.getMissingIngredients(recipeWithoutMissing.id());
+        cookingService.addToShoppingList(recipeWithMissing);
+
+        ShoppingList shoppingListAfter = shoppingListService.getShoppingListByName("Shopping List (Default)").orElseThrow();
+        List<ShoppingItem> itemsAfter = shoppingListAfter.getItems();
+
+        assertThat(items.size() + recipeWithMissing.missedIngredients().size()).isEqualTo(itemsAfter.size());
     }
 
     private void mockAPIResponse() {
