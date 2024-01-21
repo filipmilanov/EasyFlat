@@ -41,6 +41,7 @@ public record ExpenseDto(
     List<ItemDto> items,
     Boolean isRepeating,
     @Min(value = 1, message = "The days until repeated must be at least 1 day")
+    @Max(value = 365, message = "The days until repeated must be at most 365 days")
     Integer periodInDays,
     RepeatingExpenseType repeatingExpenseType,
     Boolean addedViaStorage

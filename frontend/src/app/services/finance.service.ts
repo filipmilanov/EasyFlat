@@ -71,8 +71,11 @@ export class FinanceService {
     if (searchParams.maxAmountInEuro) {
       params = params.append('maxAmountInCents', searchParams.maxAmountInEuro * 100);
     }
-    if (searchParams.createdAt) {
-      params = params.append('createdAt', formatDate(searchParams.createdAt, 'dd-MM-yyyy', 'en-US'));
+    if (searchParams.fromDate) {
+      params = params.append('fromCreatedAt', formatDate(searchParams.fromDate, 'dd-MM-yyyy', 'en-US'));
+    }
+    if (searchParams.toDate) {
+      params = params.append('toCreatedAt', formatDate(searchParams.toDate, 'dd-MM-yyyy', 'en-US'));
     }
 
     return this.http.get<ExpenseDto[]>(this.baseUri, {params})

@@ -17,7 +17,8 @@ export class ExpenseOverviewComponent implements OnInit {
 
   expenses: ExpenseDto[];
   searchParams: ExpenseSearchDto = {};
-  searchDate: string | null = null;
+  searchFromDate: string | null = null;
+  searchToDate: string | null = null;
   searchChangedObservable = new Subject<void>();
   users: UserListDto[] = [];
 
@@ -48,10 +49,15 @@ export class ExpenseOverviewComponent implements OnInit {
   }
 
   reloadExpenses() {
-    if (this.searchDate == null || this.searchDate === "") {
-      delete this.searchParams.createdAt;
+    if (this.searchFromDate == null || this.searchFromDate === "") {
+      delete this.searchParams.fromDate;
     } else {
-      this.searchParams.createdAt = new Date(this.searchDate);
+      this.searchParams.fromDate = new Date(this.searchFromDate);
+    }
+    if (this.searchToDate == null || this.searchToDate === "") {
+      delete this.searchParams.toDate;
+    } else {
+      this.searchParams.toDate = new Date(this.searchToDate);
     }
     this.financeService.findAll(this.searchParams)
       .subscribe({

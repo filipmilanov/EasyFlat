@@ -6,6 +6,7 @@ import {ActivatedRoute} from "@angular/router";
 import {Subject} from "rxjs";
 import {UserDetail} from "../../dtos/auth-request";
 import {AuthService} from "../../services/auth.service";
+import {ErrorHandlerService} from "../../services/util/error-handler.service";
 
 @Component({
   selector: 'app-finance',
@@ -23,6 +24,7 @@ export class FinanceComponent implements OnInit {
     private notification: ToastrService,
     private activatedRoute: ActivatedRoute,
     private authService: AuthService,
+    private errorHandlerService: ErrorHandlerService
   ) {
   }
 
@@ -37,7 +39,7 @@ export class FinanceComponent implements OnInit {
         this.activeUser = user;
       },
       error: (error) => {
-        this.notification.error("Could not load active user", "Error");
+        this.errorHandlerService.handleErrors(error, "user", "loaded");
       }
     });
   }
@@ -50,7 +52,7 @@ export class FinanceComponent implements OnInit {
         this.balanceDebits = balanceDebits;
       },
       error: (error) => {
-        this.notification.error("Could not load balance debits", "Error");
+        this.errorHandlerService.handleErrors(error, "balance debits", "loaded");
       }
     })
   }

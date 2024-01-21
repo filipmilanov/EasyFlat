@@ -8,7 +8,7 @@
     </label>
     <input type="text" id="searchTitle" name="searchTitle"
            class="form-control" [(ngModel)]="searchParameters.productName"
-           (change)="loadStorage()"
+           (ngModelChange)="loadStorage()"
     >
   </div>
 
@@ -18,7 +18,7 @@
     </label>
     <select id="fillLevel" name="fillLevel"
             class="form-select" [(ngModel)]="searchParameters.fillLevel"
-            (change)="loadStorage()"
+            (ngModelChange)="loadStorage()"
     >
       <option value="" selected>Any</option>
       <option value="full">High quantity</option>
@@ -37,7 +37,7 @@
              autocomplete="off"
              [checked]="searchParameters.orderBy === OrderType.GENERAL_NAME"
              [(ngModel)]="searchParameters.orderBy" [value]="OrderType.GENERAL_NAME"
-             (change)="loadStorage()">
+             (ngModelChange)="loadStorage()">
       <label class="btn btn-outline-primary" for="orderName">Name</label>
 
       <input type="radio"
@@ -47,7 +47,7 @@
              autocomplete="off"
              [checked]="searchParameters.orderBy === OrderType.QUANTITY_CURRENT"
              [(ngModel)]="searchParameters.orderBy" [value]="OrderType.QUANTITY_CURRENT"
-             (change)="loadStorage()">
+             (ngModelChange)="loadStorage()">
       <label class="btn btn-outline-primary" for="orderQuantity">Quantity</label>
 
       <app-sort-button class="btn btn-outline-primary"
@@ -107,8 +107,8 @@
   </div>
 </div>
 <h3 *ngIf="items.length <= 0 && itemsAIS.length <= 0" class="d-flex justify-content-center mt-5">
-  <span *ngIf="searchParameters.fillLevel === ''">There are no items in the storage.</span>
-  <span *ngIf="searchParameters.fillLevel === 'full'">There are no items with a high quantity in the storage.</span>
-  <span *ngIf="searchParameters.fillLevel === 'nearly_empty'">There are no items with a medium quantity in the storage.</span>
-  <span *ngIf="searchParameters.fillLevel === 'empty'">There are no items with a low quantity in the storage.</span>
+  <span *ngIf="searchParameters.fillLevel === ''">No items found in the storage.</span>
+  <span *ngIf="searchParameters.fillLevel === 'full'">No items with a high quantity found in the storage.</span>
+  <span *ngIf="searchParameters.fillLevel === 'nearly_empty'">No items with a medium quantity found in the storage.</span>
+  <span *ngIf="searchParameters.fillLevel === 'empty'">No items with a low quantity found in the storage.</span>
 </h3>

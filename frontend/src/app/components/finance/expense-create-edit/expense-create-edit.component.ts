@@ -9,6 +9,7 @@ import {UserListDto} from "../../../dtos/user";
 import {AuthService} from "../../../services/auth.service";
 import {NgbDateStruct, NgbTimepickerConfig, NgbTimeStruct} from '@ng-bootstrap/ng-bootstrap';
 import {Observable} from "rxjs";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 export enum ExpenseCreateEditMode {
   create,
@@ -50,7 +51,8 @@ export class ExpenseCreateEditComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
-    config: NgbTimepickerConfig
+    config: NgbTimepickerConfig,
+    private errorHandlerService: ErrorHandlerService
   ) {
     config.spinners = false;
     this.previousUrl = (this.router.getCurrentNavigation().previousNavigation == null ? '/finance' : this.router.getCurrentNavigation().previousNavigation.finalUrl.toString());
@@ -118,13 +120,11 @@ export class ExpenseCreateEditComponent implements OnInit {
               this.expense.repeatingExpenseType = RepeatingExpenseType.FIRST_OF_MONTH;
             },
             error: (error) => {
-              console.error(error);
-              this.notification.error("Could not load user data", "Error");
+              this.errorHandlerService.handleErrors(error, "user", "loaded");
             }
           });
         },
         error: (error) => {
-          console.error(error);
           this.notification.error("Could not load flatmates", "Error");
         }
       });
@@ -151,20 +151,17 @@ export class ExpenseCreateEditComponent implements OnInit {
                   this.users = users;
                 },
                 error: (error) => {
-                  console.error(error);
-                  this.notification.error("Could not load flatmates", "Error");
+                  this.errorHandlerService.handleErrors(error, "flatmates", "loaded");
                 }
               });
             },
             error: error => {
-              console.error(`Expense could not be retrieved from the backend: ${error}`);
               this.router.navigate(['/expense']);
-              this.notification.error('Expense could not be retrieved', "Error");
+              this.errorHandlerService.handleErrors(error, "expense", "loaded");
             }
           })
         },
         error: error => {
-          console.error(`Expense could not be retrieved using the ID from the URL: ${error}`);
           this.router.navigate(['/expense']);
           this.notification.error('No expense provided for editing', "Error");
         }
@@ -195,22 +192,14 @@ export class ExpenseCreateEditComponent implements OnInit {
       observable.subscribe({
         next: () => {
           this.notification.success(`Expense ${this.expense.title} successfully ${this.modeActionFinished}.`, "Success");
-          if(this.modeIsCreate){
+          if (this.modeIsCreate) {
             this.router.navigate([this.previousUrl]);
           } else {
             this.router.navigate(['/expense']);
           }
         },
         error: (error) => {
-          console.error(`Error expense was not ${this.modeActionFinished}: ${error}`);
-          console.error(error);
-          let firstBracket = error.error.indexOf('[');
-          let lastBracket = error.error.indexOf(']');
-          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-          let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach(message => {
-            this.notification.error(message, errorDescription);
-          });
+          this.errorHandlerService.handleErrors(error, "expense", this.modeActionFinished);
 
           if (this.selectedSplitBy === SplitBy.EQUAL || this.selectedSplitBy === SplitBy.UNEQUAL) {
             this.expense.debitUsers.forEach(user => {
@@ -229,15 +218,7 @@ export class ExpenseCreateEditComponent implements OnInit {
         this.notification.success(`Expense ${this.expense.title} was successfully deleted`, "Success");
       },
       error: error => {
-        console.error(`Expense could not be deleted: ${error}`);
-        this.notification.error(`Expense ${this.expense.title} could not be deleted`, "Error");
-        let firstBracket = error.error.indexOf('[');
-        let lastBracket = error.error.indexOf(']');
-        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-        let errorDescription = error.error.substring(0, firstBracket);
-        errorMessages.forEach(message => {
-          this.notification.error(message, errorDescription);
-        });
+        this.errorHandlerService.handleErrors(error, "expense", "deleted");
       }
     });
   }
