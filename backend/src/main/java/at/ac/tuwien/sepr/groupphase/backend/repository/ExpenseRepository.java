@@ -19,16 +19,18 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
         + "WHERE user.sharedFlat.id = :flatId "
         + "AND (:title IS NULL OR UPPER(e.title) LIKE UPPER(CONCAT('%', :title, '%')))"
         + "AND (:paidById IS NULL OR e.paidBy.id = :paidById)"
-        + "AND ((:startOfDay IS NULL AND :endOfDay IS NULL) OR (e.createdAt BETWEEN :startOfDay AND :endOfDay))"
         + "AND (:minAmountInCents IS NULL OR e.amountInCents >= :minAmountInCents)"
-        + "AND (:maxAmountInCents IS NULL OR e.amountInCents <= :maxAmountInCents)")
+        + "AND (:maxAmountInCents IS NULL OR e.amountInCents <= :maxAmountInCents)"
+        + "AND (:fromCreatedAt IS NULL OR e.createdAt >= :fromCreatedAt)"
+        + "AND (:toCreatedAt IS NULL OR e.createdAt <= :toCreatedAt)")
+
     List<Expense> findByCriteria(@Param("flatId") Long flatId,
                                  @Param("title") String title,
                                  @Param("paidById") Long paidById,
                                  @Param("minAmountInCents") Double minAmountInCents,
                                  @Param("maxAmountInCents") Double maxAmountInCents,
-                                 @Param("startOfDay") LocalDateTime startOfDay,
-                                 @Param("endOfDay") LocalDateTime endOfDay
+                                 @Param("fromCreatedAt") LocalDateTime fromCreatedAt,
+                                 @Param("toCreatedAt") LocalDateTime toCreatedAt
     );
 
     List<Expense> findByPaidByIsIn(Set<ApplicationUser> users);
