@@ -15,10 +15,10 @@ public record ExpenseSearchDto(
     String title,
     Long paidById,
     @Min(value = 0, message = "The minimum amount must be at least 0")
-    @Max(value = 1_000_000, message = "The minimum amount can be at most 1.000.000")
+    @Max(value = 1_000_000, message = "The minimum amount can be at most 10.000 €")
     Double minAmountInCents,
     @Min(value = 0, message = "The maximum amount must be at least 0")
-    @Max(value = 1_000_000, message = "The maximum amount can be at most 1.000.000")
+    @Max(value = 1_000_000, message = "The maximum amount can be at most 10.000 €")
     Double maxAmountInCents,
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     LocalDate fromCreatedAt,
