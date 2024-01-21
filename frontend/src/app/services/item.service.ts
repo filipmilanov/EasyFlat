@@ -27,6 +27,15 @@ export class ItemService {
   }
 
   /**
+   * Find all items in the system
+   */
+  findAll(limit: number): Observable<ItemDto[]> {
+    let params = new HttpParams();
+    params = params.append('limit', limit);
+    return this.http.get<ItemDto[]>(this.baseUri, {params});
+  }
+
+  /**
    * Find an item via their {@link generalName}
    *
    * @param generalName the group which an item belongs to
@@ -93,7 +102,7 @@ export class ItemService {
   findByName(productName: string, unitName: string): Observable<ItemDto> {
     let params = new HttpParams();
     params = params.append('unitName', unitName);
-    return this.http.get<ItemDto>(this.baseUri + '/name/' + productName,{params})
+    return this.http.get<ItemDto>(this.baseUri + '/name/' + productName, {params})
   }
 
 }

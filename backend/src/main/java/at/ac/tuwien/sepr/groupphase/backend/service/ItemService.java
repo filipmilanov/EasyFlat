@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemFieldSearchDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -23,6 +22,15 @@ public interface ItemService {
      * @throws AuthorizationException if the user is not authorized to access a resource
      */
     DigitalStorageItem findById(Long id) throws AuthorizationException;
+
+
+    /**
+     * Finds all items of a flat with limit.
+     *
+     * @param limit a limit for the number of items to be returned
+     * @return a list of items
+     */
+    List<DigitalStorageItem> findAll(int limit);
 
     /**
      * Search for an item in the database where one field is matching.
