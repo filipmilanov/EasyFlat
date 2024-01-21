@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Preference;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
@@ -204,14 +205,17 @@ public class CustomUserDetailService implements UserService {
         if (userFlat == null) {
             throw new BadCredentialsException("");
         }
-        if (user.getPreference() != null) {
-            preferenceRepository.delete(user.getPreference());
-        }
         if (userFlat.getName().equals(flatName)) {
             user.setSharedFlat(null);
             user.setAdmin(false);
             ApplicationUser updatedUser = userRepository.save(user);
             boolean exist = userRepository.existsBySharedFlat(userFlat);
+            Preference pref = preferenceRepository.findByUserId(user);
+            if (pref != null) {
+                user.setPreference(null);
+                userRepository.save(user);
+                preferenceRepository.delete(pref);
+            }
             List<Chore> chores = choreRepository.findAllBySharedFlatId(userFlat.getId());
             if (!exist) {  // there are users, delete all chores
                 if (!chores.isEmpty()) {
