@@ -82,7 +82,7 @@ public class PreferenceServiceTest {
             "First",
             "",
             LocalDate.of(2022, 8, 18),
-            5,
+            "5",
             null
         );
         second = new ChoreDto(
@@ -90,7 +90,7 @@ public class PreferenceServiceTest {
             "Second",
             "Description for Chore 2",
             LocalDate.of(2022, 8, 18),
-            5,
+            "5",
             null
         );
         third = new ChoreDto(
@@ -98,7 +98,7 @@ public class PreferenceServiceTest {
             "Third",
             "",
             LocalDate.of(2022, 8, 18),
-            5,
+            "5",
             null
         );
         fourth = new ChoreDto(
@@ -106,7 +106,7 @@ public class PreferenceServiceTest {
             "Fourth",
             "",
             LocalDate.of(2022, 8, 18),
-            5,
+            "5",
             null
         );
 
