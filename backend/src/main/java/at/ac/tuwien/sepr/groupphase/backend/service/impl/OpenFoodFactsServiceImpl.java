@@ -31,8 +31,7 @@ public class OpenFoodFactsServiceImpl implements OpenFoodFactsService {
     }
 
     @Override
-    public OpenFoodFactsItemDto findByEan(Long ean)
-        throws ConflictException {
+    public OpenFoodFactsItemDto findByEan(Long ean) throws ConflictException {
         LOGGER.trace("findByEan({})", ean);
 
         String requestString = openFoodFactsApi + ean;
