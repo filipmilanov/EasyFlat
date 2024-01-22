@@ -51,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -448,6 +449,52 @@ class ExpenseEndpointTest {
                 "amount",
                 "positive"
             )
+        );
+    }
+
+    @Test
+    @DisplayName("Delete existing expense with debits")
+    void deleteExpense() throws Exception {
+        // given
+        ExpenseDto expenseDto = this.generateExpenseDto();
+
+        String createExpenseBody = objectMapper.writeValueAsString(expenseDto);
+
+        MvcResult createResult = mockMvc.perform(post(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createExpenseBody)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andReturn();
+        MockHttpServletResponse createResponse = createResult.getResponse();
+        ExpenseDto createdExpenseDto = objectMapper.readValue(createResponse.getContentAsString(), ExpenseDto.class);
+
+        // when
+        MvcResult deleteResult = mockMvc.perform(delete(BASE_URI + "/" + createdExpenseDto.id())
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andReturn();
+        MockHttpServletResponse deleteResultResponse = deleteResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertThat(deleteResultResponse.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value())
+        );
+    }
+
+    @Test
+    @DisplayName("Negative test for delete expense that does not exist")
+    void deleteExpense_shouldThrow() throws Exception {
+        // given
+        long invalidExpenseId = -1L;
+
+        // when
+        MvcResult deleteResult = mockMvc.perform(delete(BASE_URI + "/" + invalidExpenseId)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andReturn();
+        MockHttpServletResponse deleteResultResponse = deleteResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertThat(deleteResultResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value())
         );
     }
 
