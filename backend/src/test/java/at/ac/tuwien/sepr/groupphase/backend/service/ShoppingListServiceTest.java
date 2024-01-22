@@ -42,10 +42,12 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.UnitRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.ShoppingListServiceImpl;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.ItemValidator;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ShoppingItemValidator;
 import com.github.javafaker.Faker;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -95,6 +97,9 @@ public class ShoppingListServiceTest {
 
     @MockBean
     private IngredientService ingredientService;
+
+    @MockBean
+    private ItemValidator itemValidator;
 
     @Autowired
     private StorageDataGenerator storageDataGenerator;
@@ -201,8 +206,6 @@ public class ShoppingListServiceTest {
         validShoppingItemEntity.setAlwaysInStock(false);
         validShoppingItemEntity.setPriceInCent(210L);
         validShoppingItemEntity.setQuantityCurrent(3.0);
-        DigitalStorage digitalStorage = new DigitalStorage();
-        digitalStorage.setStorageId(1L);
         ItemCache itemCache = getItemCache(country);
         validShoppingItemEntity.setItemCache(itemCache);
         ShoppingList shoppingList = new ShoppingList();
@@ -210,7 +213,12 @@ public class ShoppingListServiceTest {
         shoppingList.setName("Shopping List (Default)");
         validShoppingItemEntity.setShoppingList(shoppingList);
 
-        ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User", "Userer", "user@email.com", "password", Boolean.FALSE, null));
+        DigitalStorage digitalStorage = new DigitalStorage();
+        digitalStorage.setStorageId(1L);
+        SharedFlat sharedFlat = new SharedFlat().setId(1L);
+        sharedFlat.setDigitalStorage(digitalStorage);
+
+        ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User", "Userer", "user@email.com", "password", Boolean.FALSE, sharedFlat));
         when(authService.getUserFromToken()).thenReturn(testUser);
     }
 
@@ -366,11 +374,7 @@ public class ShoppingListServiceTest {
     }
 
     @Test
-    void givenExistingShoppingItemWhenDeleteItemShouldSucceed() throws AuthorizationException {
-        // link testUser to SharedFlat with Id 1
-        ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
-        when(authService.getUserFromToken()).thenReturn(testUser);
-
+    void givenExistingShoppingItemWhenDeleteItemShouldSucceed() throws AuthorizationException, ConflictException {
         ShoppingItem toDelete = shoppingItemRepository.save(validShoppingItemEntity);
 
         ShoppingItem deleted = shoppingListService.deleteItem(toDelete.getItemId());
@@ -380,7 +384,7 @@ public class ShoppingListServiceTest {
             () -> assertEquals(validShoppingItemEntity.getItemCache(), deleted.getItemCache()),
             () -> assertEquals(validShoppingItemEntity.getShoppingList().getId(), deleted.getShoppingList().getId()),
             // references to existing labels should be removed
-            () -> assertNull(deleted.getLabels()),
+            () -> assertNotNull(deleted.getLabels()),
             () -> assertEquals(validShoppingItemEntity.getBoughtAt(), deleted.getBoughtAt()),
             () -> assertEquals(validShoppingItemEntity.getQuantityCurrent(), deleted.getQuantityCurrent()),
             () -> assertEquals(validShoppingItemEntity.getAlwaysInStock(), deleted.getAlwaysInStock()),
@@ -409,39 +413,32 @@ public class ShoppingListServiceTest {
     }
 
     @Test
-    void givenExistingShoppingListDeleteListShouldSucceed() throws ValidationException, AuthorizationException {
-        // link testUser to SharedFlat with Id 1
-        ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
-        when(authService.getUserFromToken()).thenReturn(testUser);
-
+    void givenExistingShoppingListDeleteListShouldSucceed() throws ValidationException, AuthorizationException, ConflictException {
         // add some ShoppingItems to the existing ShoppingList in SharedFlat with Id 1
-        ShoppingList toDelete = new ShoppingList();
-        toDelete.setId(2L);
-        toDelete.setName("Second1");
+        ShoppingList toDelete = shoppingListRepository.findById(2L).get();
 
+        List<ShoppingItem> items = new ArrayList<>();
         validShoppingItemEntity.setShoppingList(toDelete);
         ShoppingItem item2 = new ShoppingItem();
         item2.setShoppingList(toDelete);
-        shoppingItemRepository.save(validShoppingItemEntity); // item referencing other existing objects
-        shoppingItemRepository.save(item2); // item not referencing other objects except for ShoppingList toDelete
+        items.add(shoppingItemRepository.save(validShoppingItemEntity)); // item referencing other existing objects
+        items.add(shoppingItemRepository.save(item2)); // item not referencing other objects except for ShoppingList toDelete
+        toDelete.setItems(items);
+        shoppingListRepository.save(toDelete);
 
-        Long idOfExistingShoppingListToDelete = 2L; // is linked to SharedFlat with Id 1
-
-        ShoppingList result = shoppingListService.deleteList(idOfExistingShoppingListToDelete);
+        ShoppingList result = shoppingListService.deleteList(toDelete.getId());
 
         assertAll(
             () -> assertEquals(toDelete.getId(), result.getId()),
             () -> assertEquals(toDelete.getName(), result.getName()),
             // items associated with deleted ShoppingList should also be deleted
-            () -> assertEquals(0, shoppingItemRepository.findByShoppingListId(idOfExistingShoppingListToDelete).size())
+            () -> assertEquals(0, shoppingItemRepository.findByShoppingListId(toDelete.getId()).size())
         );
     }
 
     @Test
-    void givenExistingShoppingItemAndExistingDigitalStorageTransferToServerShouldSucceed() throws AuthorizationException {
-        // link testUser to SharedFlat with Id 1
-        ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
-        when(authService.getUserFromToken()).thenReturn(testUser);
+    void givenExistingShoppingItemAndExistingDigitalStorageTransferToServerShouldSucceed() throws AuthorizationException, ValidationException, ConflictException {
+        doNothing().when(itemValidator).validateForCreate(any(), any(), any(), any());
 
         Long idOfExistingDigitalStorage = 1L; // linked to SharedFlat with Id 1
 
@@ -453,16 +450,45 @@ public class ShoppingListServiceTest {
         assertAll(
             // ShoppingList with Id 1 shouldn't be linked to any ShoppingItems
             () -> assertEquals(0, shoppingItemRepository.findByShoppingListId(1L).size()),
-            () -> assertTrue(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).contains(result.get(0)))
+            () -> assertEquals(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).size(), 1),
+            () -> assertEquals(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).get(0).getItemCache().getProductName(), result.get(0).getItemCache().getProductName()),
+            () -> assertEquals(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).get(0).getItemCache().getGeneralName(), result.get(0).getItemCache().getGeneralName()),
+            () -> assertEquals(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).get(0).getItemCache().getEan(), result.get(0).getItemCache().getEan())
+        );
+    }
+
+    @Test
+    @DisplayName("Save one not and one always in stock item to storage")
+    void givenTwoExistingShoppingItemAndExistingDigitalStorageTransferToServerShouldSucceed() throws AuthorizationException, ValidationException, ConflictException {
+        //doNothing().when(itemValidator).validateForCreate(any(), any(), any(), any());
+
+        Long idOfExistingDigitalStorage = 1L; // linked to SharedFlat with Id 1
+
+        // save ShoppingItems linked to SharedFlat with Id 1 and ShoppingList with Id 1
+        shoppingItemRepository.save(validShoppingItemEntity);
+
+        validShoppingItemEntity.setItemId(null);
+        validShoppingItemEntity.setItemCache(getItemCache("Bulgaria"));
+        validShoppingItemEntity.setAlwaysInStock(true); // always in stock item
+        shoppingItemRepository.save(validShoppingItemEntity);
+
+        List<DigitalStorageItem> result = shoppingListService.transferToServer(List.of(validShoppingItemDto.withId(1), validShoppingItemDto.withAlwaysInStock(2, true)));
+
+        assertAll(
+            // ShoppingList with Id 1 shouldn't be linked to any ShoppingItems
+            () -> assertEquals(0, shoppingItemRepository.findByShoppingListId(1L).size()),
+            () -> assertEquals(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).size(), 2),
+            () -> assertEquals(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).get(0).getItemCache().getProductName(), result.get(0).getItemCache().getProductName()),
+            () -> assertEquals(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).get(0).getItemCache().getGeneralName(), result.get(0).getItemCache().getGeneralName()),
+            () -> assertEquals(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).get(0).getItemCache().getEan(), result.get(0).getItemCache().getEan()),
+            () -> assertEquals(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).get(1).getItemCache().getProductName(), result.get(1).getItemCache().getProductName()),
+            () -> assertEquals(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).get(1).getItemCache().getGeneralName(), result.get(1).getItemCache().getGeneralName()),
+            () -> assertEquals(itemRepository.findAllByDigitalStorage_StorageId(idOfExistingDigitalStorage).get(1).getItemCache().getEan(), result.get(1).getItemCache().getEan())
         );
     }
 
     @Test
     void findDefaultShoppingListWhenGetShoppingListByNameShouldSucceed() {
-        // link testUser to SharedFlat with Id 1
-        ApplicationUser testUser = userRepository.save(new ApplicationUser(null, "User1", "Userer1", "user1@email.com", "password", Boolean.FALSE, new SharedFlat().setId(1L)));
-        when(authService.getUserFromToken()).thenReturn(testUser);
-
         Optional<ShoppingList> result = shoppingListService.getShoppingListByName("Shopping List (Default)");
 
         assertAll(

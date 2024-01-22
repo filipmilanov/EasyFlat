@@ -15,20 +15,11 @@ import {ShoppingListDto} from "../../dtos/shoppingList";
 })
 export class HeaderComponent implements OnInit {
 
-  isChoresDropdownOpen = false;
-  showDropdown: boolean = false;
-
-
   constructor(public authService: AuthService, private sharedFlatService: SharedFlatService, private httpClient: HttpClient,
-              private shoppingService: ShoppingListService, private router: Router) {
+              private router: Router) {
   }
 
   ngOnInit() {
-  }
-
-  toggleDropdown(event: Event) {
-    event.stopPropagation(); // Prevents the dropdown from closing immediately after opening
-    this.showDropdown = !this.showDropdown;
   }
 
   isInWg() {
@@ -40,28 +31,4 @@ export class HeaderComponent implements OnInit {
     this.authService.logoutUser();
   }
 
-  navigateToAllChores() {
-    this.router.navigate(['/chores/all']);
-  }
-
-  navigateToMyChores() {
-    this.router.navigate(['/chores/my']);
-  }
-
-  navigateToPreference() {
-    this.router.navigate(['/chores/preference']);
-  }
-
-  navigateToNewChore() {
-    this.router.navigate(['/chores/add'])
-  }
-
-  toggleChoresDropdown(event: Event) {
-    event.preventDefault();
-    this.isChoresDropdownOpen = !this.isChoresDropdownOpen;
-  }
-
-  navigateToLeaderboard() {
-    this.router.navigate(['/chores/leaderboard']);
-  }
 }

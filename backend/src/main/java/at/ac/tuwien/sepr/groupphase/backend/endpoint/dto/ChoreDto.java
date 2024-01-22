@@ -19,10 +19,10 @@ public record ChoreDto(
     Long id,
 
     @NotNull(message = "The name cannot be empty")
-    @Size(max = 200, message = "The name is too long")
+    @Size(max = 40, message = "The name is too long")
     String name,
 
-    @Size(max = 200, message = "The description is too long")
+    @Size(max = 100, message = "The description is too long")
     String description,
 
     LocalDate endDate,

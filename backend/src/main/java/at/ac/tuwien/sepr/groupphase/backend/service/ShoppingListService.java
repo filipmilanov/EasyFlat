@@ -6,7 +6,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
-import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -76,7 +75,7 @@ public interface ShoppingListService {
      * @return the deleted ShoppingItem
      * @throws AuthorizationException if the user is not authorized to access a resource
      */
-    ShoppingItem deleteItem(Long itemId) throws AuthorizationException;
+    ShoppingItem deleteItem(Long itemId) throws AuthorizationException, ConflictException;
 
     /**
      * Delete a ShoppingList from the db based on its ID.
@@ -84,7 +83,7 @@ public interface ShoppingListService {
      * @param shopId a valid ID of a ShoppingList
      * @return the deleted ShoppingList
      */
-    ShoppingList deleteList(Long shopId) throws ValidationException, AuthorizationException;
+    ShoppingList deleteList(Long shopId) throws ValidationException, AuthorizationException, ConflictException;
 
     /**
      * Get all ShoppingLists from the db filtered by search parameters.
@@ -101,7 +100,7 @@ public interface ShoppingListService {
      * @param items a List of ShoppingItemDto to be transferred
      * @return a List of DigitalStorageItem objects
      */
-    List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) throws AuthorizationException;
+    List<DigitalStorageItem> transferToServer(List<ShoppingItemDto> items) throws AuthorizationException, ValidationException, ConflictException;
 
     /**
      * Validates and Updates a new {@link ShoppingItem} in the db.
@@ -114,5 +113,13 @@ public interface ShoppingListService {
      */
     ShoppingItem updateShoppingItem(ShoppingItemDto shoppingItemDto)
         throws ConflictException, ValidationException, AuthorizationException;
+
+    /**
+     * Deletes the specified chores.
+     *
+     * @param itemIds List of chore IDs to be deleted.
+     * @return List of remaining chores after deletion.
+     */
+    List<ShoppingItem> deleteShoppingItems(List<Long> itemIds) throws AuthorizationException, ConflictException;
 }
 

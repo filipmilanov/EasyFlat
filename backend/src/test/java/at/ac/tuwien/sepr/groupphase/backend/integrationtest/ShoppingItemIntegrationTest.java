@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DigitalStorageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemLabelDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
@@ -178,7 +177,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
     @BeforeEach
     public void testUpdateValidShoppingItem_then200() throws Exception {
         createValidUserAndValidShoppingList();
-        ShoppingItem saved = shoppingItemRepository.save(itemMapper.dtoToShopping(validShoppingItemDto, null));
+        ShoppingItem saved = shoppingItemRepository.save(itemMapper.shoppingItemDtoToShoppingItemEntity(validShoppingItemDto, null));
         ShoppingItemDto updated = new ShoppingItemDto(
             saved.getItemId(),
             "1234567890123",
@@ -215,7 +214,7 @@ public class ShoppingItemIntegrationTest implements TestData  {
     @BeforeEach
     public void updateInvalidShoppingItem_then409() throws Exception {
         createValidUserAndValidShoppingList();
-        ShoppingItem saved = shoppingItemRepository.save(itemMapper.dtoToShopping(validShoppingItemDto, null));
+        ShoppingItem saved = shoppingItemRepository.save(itemMapper.shoppingItemDtoToShoppingItemEntity(validShoppingItemDto, null));
         ShoppingItemDto updated = new ShoppingItemDto(
             saved.getItemId(),
             "1234567890123",

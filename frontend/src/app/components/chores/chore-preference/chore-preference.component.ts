@@ -67,25 +67,18 @@ export class ChorePreferenceComponent implements OnInit {
       observable.subscribe({
         next: data => {
           this.notification.success(`Preferences successfully changed.`, "Success");
-          console.log('Preferences updated successfully:', data);
 
           // Fetch the updated preference after editing
           this.preferenceService.getLastPreference().subscribe({
             next: (lastPref: Preference) => {
               if (lastPref) {
                 this.oldPreference = lastPref;
-                console.log(lastPref.first)
-                console.log('Updated oldPreference:', this.oldPreference);
               }
-            },
-            error: (error) => {
-              console.error('Error fetching last preference:', error);
             }
           });
           this.router.navigate(['/chores/all']);
         },
         error: error => {
-          console.error(`Error preferences were not changed`);
           this.notification.error("Preferences were not changed");
         }
       });
@@ -101,7 +94,7 @@ export class ChorePreferenceComponent implements OnInit {
       next: (lastPreference: Preference) => {
         if (lastPreference) {
           this.oldPreference = lastPreference;
-          console.log('lastPref', lastPreference);
+          this.preference = lastPreference;
         }
 
         // Rest of your code...
@@ -113,23 +106,13 @@ export class ChorePreferenceComponent implements OnInit {
             this.filteredChores[1] = this.chores.slice(); // Create a copy to avoid modifying the original array
             this.filteredChores[2] = this.chores.slice();
             this.filteredChores[3] = this.chores.slice();
-            console.log('chores', this.chores)
-          },
-          error: (error: any) => {
-            console.error('Error fetching chores:', error);
           }
         });
       },
       error: (error: any) => {
-        console.error('Error fetching last preference:', error);
-
         this.choreService.getUnassignedChores().subscribe({
           next: (chores: any[]) => {
             this.chores = chores;
-
-          },
-          error: (choreError: any) => {
-            console.error('Error fetching chores:', choreError);
           }
         });
       }

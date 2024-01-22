@@ -12,7 +12,7 @@ public record ItemLabelDto(
     Long labelId,
     @NotNull(message = "The label text cannot be empty")
     @NotBlank(message = "The label text cannot be blank")
-    @Size(max = 30, message = "The label text cannot have more than 30 characters")
+    @Size(max = 10, message = "The label text cannot have more than 10 characters")
     String labelValue,
     String labelColour
 ) {

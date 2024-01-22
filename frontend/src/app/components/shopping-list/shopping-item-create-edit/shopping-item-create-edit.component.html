@@ -1,8 +1,31 @@
 <div class="container">
-  <h1 class="display-4">{{ heading }}</h1>
-  <div style="width: 100%; height: 100%; border: 1px black solid"></div>
 
-  <form #form="ngForm" (submit)="onSubmit(form)">
+  <div class="row mb-2 mb-md-0">
+    <div class="col col-9">
+      <h1 class="display-4">{{ heading }}</h1>
+    </div>
+    <div class="col mt-4 text-end">
+      <button type="submit"
+              class="btn btn-secondary ms-auto me-2 bi-ban"
+              [routerLink]="['/shopping-lists/list/' + item.shoppingList.id]"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <div class="custom-header-border"></div>
+
+  <form #form="ngForm" (keydown.enter)="$event.preventDefault()" (submit)="onSubmit(form)">
+
+    <div class="col-md-5 mb-3 mt-3 col-lg-auto text-end">
+      <button type="submit"
+              class="btn btn-primary me-2"
+      >
+        <i class="bi" [class.bi-plus-square]="modeIsCreate" [class.bi-pencil]="!modeIsCreate"></i>
+        {{ submitButtonText }}
+      </button>
+    </div>
 
     <div class="row row-cols-1">
 
@@ -18,7 +41,7 @@
                  id="productName"
                  name="productName"
                  [(ngModel)]="item.productName"
-                 required>
+                 >
         </div>
       </div>
 
@@ -35,7 +58,7 @@
                  name="generalName"
                  placeholder="e.g. fruit"
                  [(ngModel)]="item.generalName"
-                 required>
+                 >
         </div>
       </div>
 
@@ -51,7 +74,7 @@
                  id="totalQuantityAndUnit"
                  name="totalQuantityAndUnit"
                  [(ngModel)]="item.quantityTotal"
-                 required>
+                 >
         </div>
         <div class="col-md-2 col-lg-2 mt-2">
           <select class="form-select form-select-md"
@@ -78,23 +101,6 @@
                  id="brand"
                  name="brand"
                  [(ngModel)]="item.brand">
-        </div>
-      </div>
-
-      <div class="row p-2"
-           *ngIf="modeIsEdit">
-        <label for="description"
-               class="col-form-label text-muted col-md-2 col-lg-4"
-        >
-          Description
-        </label>
-        <div class="col-md-10 col-lg-8">
-          <input type="textfield"
-                 class="form-control"
-                 id="description"
-                 name="description"
-                 placeholder="Description"
-                 [(ngModel)]="item.description">
         </div>
       </div>
 
@@ -145,15 +151,7 @@
           </div>
         </div>
       </div>
-
     </div>
-    <button type="submit"
-            class="btn btn-primary float-end p-2"
-            [disabled]="!form.valid"
-    >
-      {{ submitButtonText }}
-    </button>
-
   </form>
 </div>
 
