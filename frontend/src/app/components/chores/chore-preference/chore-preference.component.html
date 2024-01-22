@@ -1,4 +1,19 @@
-<h1 class="display-4">Edit Chore Preference List</h1>
+<div class="container">
+
+  <div class="row mb-2 mb-md-0">
+    <div class="col col-9">
+      <h1 class="display-4">Edit Chore Preference List</h1>
+    </div>
+    <div class="col mt-4 text-end">
+      <button type="submit"
+              class="btn btn-secondary ms-auto me-2 bi-ban float-end"
+              [routerLink]="['/chores/all']"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+
 <div class="custom-header-border"></div>
 
 <div class="ms-1" style="margin-bottom: 20px">
@@ -14,12 +29,6 @@
     </button>
     <button class="btn btn-warning" style="margin-right: 4px;" (click)="navigateToLeaderboard()">
       Leaderboard
-    </button>
-    <button type="submit"
-            class="btn btn-secondary ms-auto me-2 bi-ban float-end"
-            [routerLink]="['/chores/all']"
-    >
-      Cancel
     </button>
   </div>
 
@@ -116,3 +125,4 @@
   </div>
 </div>
 
+</div>
