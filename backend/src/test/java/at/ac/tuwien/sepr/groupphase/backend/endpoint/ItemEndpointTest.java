@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
@@ -36,6 +37,7 @@ import java.util.List;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemDto;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemId;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidUpdatedItemDto;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.itemDtoWithInvalidDigitalStorage;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validItemDto;
@@ -43,7 +45,9 @@ import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validUpdate
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -671,6 +675,42 @@ class ItemEndpointTest {
                 String[] errors = content.split(",");
                 assertEquals(2, errors.length);
             }
+        );
+    }
+
+    @Test
+    @DisplayName("Deleting an existing item should be possible")
+    void givenItemWhenDeleteItemThenItemIsDeleted() throws Exception {
+        // given
+        DigitalStorageItem createdItem = itemService.create(validItemDto);
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(delete(BASE_URI + "/" + createdItem.getItemId())
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse deleteResponse = mvcResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertThat(deleteResponse.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+            () -> assertThrows(NotFoundException.class, () -> itemService.findById(createdItem.getItemId()))
+        );
+    }
+
+    @Test
+    @DisplayName("Deleting a non existent item should not be possible")
+    void givenInvalidIdWhenDeleteThrowsNotFoundException() throws Exception {
+        // when
+        MvcResult mvcResult = mockMvc.perform(delete(BASE_URI + "/" + invalidItemId)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse deleteResponse = mvcResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertThat(deleteResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value())
         );
     }
 }
