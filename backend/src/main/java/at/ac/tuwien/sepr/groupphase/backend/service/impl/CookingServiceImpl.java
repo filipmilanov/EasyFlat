@@ -776,6 +776,7 @@ public class CookingServiceImpl implements CookingService {
         return newReqString;
     }
 
+    // The number of recipes can be adjusted here.
     private String getRequestStringForRecipeSearch(List<ItemDto> items) throws
         DeepLException, InterruptedException {
         translator = new Translator(translateKey);
