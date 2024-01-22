@@ -82,11 +82,9 @@ public record ItemDto(
             return true;
         }
 
-        int maximumDecimalPlaces = 2;
-
         String valueString = this.quantityCurrent.toString();
 
-        String regex = "^\\d+(\\.\\d{1," + maximumDecimalPlaces + "})?$";
+        String regex = "^[0-9]*(?:\\.[0-9]{1,2})?$";
         // fully qualified name necessary due to conflict with Jakarta Pattern
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
 
@@ -106,11 +104,9 @@ public record ItemDto(
             return true;
         }
 
-        int maximumDecimalPlaces = 2;
-
         String valueString = this.quantityTotal.toString();
 
-        String regex = "^\\d+(\\.\\d{1," + maximumDecimalPlaces + "})?$";
+        String regex = "^[0-9]*(?:\\.[0-9]{1,2})?$";
         // fully qualified name necessary due to conflict with Jakarta Pattern
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
 
