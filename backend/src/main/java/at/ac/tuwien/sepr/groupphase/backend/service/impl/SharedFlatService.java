@@ -82,7 +82,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
         //validator.validateForCreate(sharedFlat);
         SharedFlat existingSharedFlat = sharedFlatRepository.findFirstByName(wgDetailDto.getName());
         if (existingSharedFlat != null) {
-            throw new ConflictException("A flat with this name already exists.");
+            throw new ConflictException("A flat with this name already exists");
         }
 
         SharedFlat newSharedFlat = new SharedFlat();

@@ -1,7 +1,9 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
 
@@ -10,9 +12,12 @@ public class WgDetailDto {
     private Long id;
 
     @NotEmpty(message = "Name must not be empty")
+    @Size(max = 100, message = "Name cannot be larger than 100 characters")
     private String name;
 
-    @NotEmpty(message = "Password must not be empty")
+    @NotBlank(message = "Password cannot be empty")
+    @Size(min = 8, message = "The password must be at least 8 characters")
+    @Size(max = 100, message = "The password cannot be larger than 100 characters")
     private String password;
 
     public Long getId() {
