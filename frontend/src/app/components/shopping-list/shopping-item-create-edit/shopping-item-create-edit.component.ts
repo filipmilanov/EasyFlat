@@ -1,19 +1,13 @@
-import {Component, OnInit, SecurityContext} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {Observable, of} from "rxjs";
-import {ItemDto, ShoppingItemDto} from "../../../dtos/item";
-import {DigitalStorageDto} from "../../../dtos/digitalStorageDto";
-import {ItemCreateEditMode} from "../../digital-storage/item-create-edit/item-create-edit.component";
-import {ItemService} from "../../../services/item.service";
-import {StorageService} from "../../../services/storage.service";
+import {ShoppingItemDto} from "../../../dtos/item";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {ShoppingListService} from "../../../services/shopping-list.service";
-import {switchMap} from 'rxjs/operators';
 import {Unit} from "../../../dtos/unit";
 import {UnitService} from "../../../services/unit.service";
 import {ShoppingListDto} from "../../../dtos/shoppingList";
-import {DomSanitizer} from "@angular/platform-browser";
 import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 export enum ShoppingItemCreateEditMode {
@@ -169,8 +163,13 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   }
 
   addLabel(label: string, selectedLabelColor: string): void {
-    if (label == undefined || label.length == 0) {
-      return
+    if (!label || label.trim().length === 0) {
+      this.notification.error("The label text cannot be blank", 'Error')
+      return;
+    }
+    if (label.length > 10) {
+      this.notification.error("The label text cannot have more than 10 characters", 'Error')
+      return;
     }
     if (this.item.labels === undefined) {
       this.item.labels = [{
