@@ -57,7 +57,6 @@ export class AccountComponent implements OnInit {
   }
 
   openAdminSelectionModal(): void {
-    // Check if the user is an admin before opening the modal
     console.log(this.users);
     if (this.users.length == 0) {
         this.signOut();
@@ -84,17 +83,10 @@ export class AccountComponent implements OnInit {
               console.log('Admin setting complete');
             }
           });
-
           console.log('Admin is set')
-
-          // Show a confirmation dialog if you want
-
             this.signOut();
-
         });
       } else {
-        // If the user is not an admin, directly proceed to sign out
-
           this.signOut();
 
       }

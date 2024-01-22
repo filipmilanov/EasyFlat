@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
 
 @Profile({"generateData", "test", "unitTest"})
 @Component("ChoreDataGenerator")
@@ -35,11 +36,17 @@ public class ChoreDataGenerator {
             for (int i = 1; i <= NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
                 Chore chore = new Chore();
                 chore.setName("Chore" + ((flatId - 1) * NUMBER_OF_ENTITIES_TO_GENERATE + i));
+                chore.setDescription("This is description for " + chore.getName());
+                chore.setPoints(i * 3);
+                chore.setEndDate(LocalDate.now().plusDays(i));
                 chore.setSharedFlat(sharedFlat);
                 choreRepository.save(chore);
             }
         }
     }
+
+
+
 
 
 

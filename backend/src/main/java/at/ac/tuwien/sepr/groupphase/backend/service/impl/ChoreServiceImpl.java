@@ -122,7 +122,7 @@ public class ChoreServiceImpl implements ChoreService {
         sortUsersByPoints(users);
         List<ApplicationUser> notAssignedUsers = new ArrayList<>();
         //5-5 or 5-6
-        if (chores.size() >= users.size() && (chores.size() - choresAfterAssign.size()) % users.size() == 0) {
+        if (chores.size() >= users.size() && (choresAfterAssign.size() % users.size() == 0)) {
             for (int i = users.size() - choresAfterAssign.size(); i < users.size(); i++) {
                 Chore toAssign = getRandomChore(choresAfterAssign);
                 toAssign.setUser(users.get(i));
