@@ -11,7 +11,6 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ChoreRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.DebitRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PreferenceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SharedFlatRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
@@ -46,7 +45,6 @@ public class CustomUserDetailService implements UserService {
     private final JwtTokenizer jwtTokenizer;
     private final UserMapper userMapper;
     private final UserValidator userValidator;
-    private final DebitRepository debitRepo;
 
     private final PreferenceRepository preferenceRepository;
 
@@ -55,8 +53,7 @@ public class CustomUserDetailService implements UserService {
     @Autowired
     public CustomUserDetailService(UserRepository userRepository, SharedFlatRepository sharedFlatRepository, PasswordEncoder passwordEncoder,
                                    JwtTokenizer jwtTokenizer,
-                                   UserMapper userMapper, UserValidator userValidator, PreferenceRepository preferenceRepository, ChoreRepository choreRepository,
-                                   DebitRepository debitRepo) {
+                                   UserMapper userMapper, UserValidator userValidator, PreferenceRepository preferenceRepository, ChoreRepository choreRepository) {
         this.userRepository = userRepository;
         this.sharedFlatRepository = sharedFlatRepository;
         this.passwordEncoder = passwordEncoder;
@@ -65,7 +62,6 @@ public class CustomUserDetailService implements UserService {
         this.userValidator = userValidator;
         this.preferenceRepository = preferenceRepository;
         this.choreRepository = choreRepository;
-        this.debitRepo = debitRepo;
     }
 
     @Override
@@ -193,12 +189,6 @@ public class CustomUserDetailService implements UserService {
                     choreRepository.save(chore);
                 }
             }
-            var debitsToDelete = debitRepo.findAllById_User(deletedUser);
-            var log2 = debitsToDelete.stream().map(debit -> debit.getId().getUser().getId()).toList();
-            LOGGER.info("found2: {}", log2);
-            debitRepo.deleteAll(debitsToDelete);
-            var log = debitRepo.findAll().stream().map(debit -> debit.getId().getUser().getId()).toList();
-            LOGGER.info("found: {}", log);
             userRepository.delete(deletedUser);
             return userMapper.entityToUserDetailDto(deletedUser);
         }
