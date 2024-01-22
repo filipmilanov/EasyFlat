@@ -253,6 +253,38 @@ class ItemEndpointTest {
         );
     }
 
+
+    @Test
+    @DisplayName("Given valid item name, then findByName returns non-empty list")
+    void givenValidItemNameThanFindByNameReturnsNonEmptyList() throws Exception {
+
+        DigitalStorageItem validItem= itemService.findById(1L);
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/name/" + validItem.getItemCache().getProductName())
+                .param("unitName", validItem.getItemCache().getUnit().getName())
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> {
+                String content = response.getContentAsString();
+                List<ItemDto> foundItems = objectMapper.readValue(content, new TypeReference<>() {
+                });
+                assertAll(
+                    () ->assertThat(foundItems.size()).isNotEqualTo(0),
+                    () ->assertThat(foundItems.get(0).productName()).isEqualTo(validItem.getItemCache().getProductName())
+                );
+
+            }
+
+        );
+    }
+
     @Test
     @DisplayName("Does findById delivers item")
     public void doesFindByIdDeliversItem() throws Exception {
