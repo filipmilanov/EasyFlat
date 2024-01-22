@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Preference;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -197,13 +198,12 @@ public class CustomUserDetailService implements UserService {
 
     @Override
     @Transactional
-    public UserDetailDto signOut(String flatName, String authToken) {
+    public UserDetailDto signOut(String flatName, long userId) throws AuthorizationException {
         LOGGER.trace("signOut({})", flatName);
-        String email = jwtTokenizer.getEmailFromToken(authToken);
-        ApplicationUser user = findApplicationUserByEmail(email);
+        ApplicationUser user = userRepository.findApplicationUserById(userId);
         SharedFlat userFlat = user.getSharedFlat();
         if (userFlat == null) {
-            throw new BadCredentialsException("");
+            throw new NotFoundException("Shared flat doesn't exist");
         }
         if (userFlat.getName().equals(flatName)) {
             user.setSharedFlat(null);
@@ -236,16 +236,15 @@ public class CustomUserDetailService implements UserService {
             }
             return userMapper.entityToUserDetailDto(updatedUser);
         }
-        throw new BadCredentialsException("");
+        throw new AuthorizationException("Authorization Error: ", List.of("User has no access to the shared flat"));
 
     }
 
 
     @Override
-    public List<UserDetailDto> getAllOtherUsers(String authToken) {
+    public List<UserDetailDto> getAllOtherUsers(long userId) {
         LOGGER.trace("getAllOtherUsers()");
-        String email = jwtTokenizer.getEmailFromToken(authToken);
-        ApplicationUser user = userRepository.findUserByEmail(email);
+        ApplicationUser user = userRepository.findApplicationUserById(userId);
         if (user.getSharedFlat() == null) {
             return new ArrayList<>();
         }
@@ -259,7 +258,7 @@ public class CustomUserDetailService implements UserService {
     public UserDetailDto setAdminToTheFlat(Long selectedUserId) {
         LOGGER.trace("setAdminToTheFlat({})", selectedUserId);
         if (selectedUserId == null) {
-            throw new BadCredentialsException("");
+            throw new NotFoundException("User doesn't exist");
         }
         ApplicationUser user = userRepository.findApplicationUserById(selectedUserId);
         if (user != null) {

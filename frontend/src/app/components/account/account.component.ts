@@ -57,7 +57,7 @@ export class AccountComponent implements OnInit {
   }
 
   openAdminSelectionModal(): void {
-    console.log(this.users);
+    console.log(this.users.length);
     if (this.users.length == 0) {
         this.signOut();
     } else {
@@ -108,20 +108,21 @@ export class AccountComponent implements OnInit {
           flatName: this.user.flatName,
           admin: this.user.admin
         });
+        // Fetch all other users
+        this.authService.getUsers(this.user.id).subscribe({
+          next: (users) => {
+            console.log(users)
+            this.users = users;
+          },
+          error: (error) => {
+            console.error('Error fetching users:', error);
+          }
+        });
       },
       (error) => {
         console.error('Error fetching user:', error);
       }
     );
-    // Fetch all users
-    this.authService.getUsers(this.authService.getToken()).subscribe({
-      next: (users) => {
-        this.users = users;
-      },
-      error: (error) => {
-        console.error('Error fetching users:', error);
-      }
-    });
   }
 
   update(): void {
@@ -169,7 +170,7 @@ export class AccountComponent implements OnInit {
   }
 
   signOut() {
-    this.authService.signOut(this.accountForm.controls.flatName.value, this.authService.getToken()).subscribe({
+    this.authService.signOut(this.accountForm.controls.flatName.value, this.user.id).subscribe({
       next: () => {
         this.router.navigate(['']);
         this.notification.success("You have successfully signed out" , "Success");
