@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DebitMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
@@ -21,6 +22,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,6 +76,9 @@ class ExpenseEndpointTest {
 
     @Autowired
     private DebitMapper debitMapper;
+
+    @Autowired
+    private ExpenseMapper expenseMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -159,6 +164,36 @@ class ExpenseEndpointTest {
         // then
         assertAll(
             () -> assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatus())
+        );
+    }
+
+    @Test
+    @DisplayName("Test if findAll returns all expenses that belong to the current users flat")
+    void findAll() throws Exception {
+        // given
+        Long currentFlatId = applicationUser.getSharedFlat().getId();
+
+        List<Expense> expectedExpenseList = expenseRepository.findAll().stream()
+            .filter(expense -> expense.getPaidBy().getSharedFlat().getId().equals(currentFlatId))
+            .toList();
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URI)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, ExpenseDto.class);
+        List<ExpenseDto> actualExpenseDtoList = objectMapper.readValue(response.getContentAsString(), type);
+
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType()),
+            () -> assertThat(actualExpenseDtoList).hasSameSizeAs(expectedExpenseList),
+            () -> assertThat(actualExpenseDtoList).containsExactlyInAnyOrderElementsOf(
+                expectedExpenseList.stream().map(expenseMapper::entityToExpenseDto).collect(Collectors.toList()))
         );
     }
 
