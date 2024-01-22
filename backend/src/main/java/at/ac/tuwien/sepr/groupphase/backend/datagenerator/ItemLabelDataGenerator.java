@@ -30,7 +30,7 @@ public class ItemLabelDataGenerator {
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             ItemLabel itemLabel = new ItemLabel();
             String labelValue = faker.company().name();
-            itemLabel.setLabelValue(labelValue.length() > 20 ? labelValue.substring(0, 20) : labelValue);
+            itemLabel.setLabelValue(labelValue.length() > 10 ? labelValue.substring(0, 10) : labelValue);
             itemLabel.setLabelColour(faker.color().hex());
             labelRepository.save(itemLabel);
         }

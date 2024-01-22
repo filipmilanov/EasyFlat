@@ -415,25 +415,24 @@ public class ShoppingListServiceTest {
     @Test
     void givenExistingShoppingListDeleteListShouldSucceed() throws ValidationException, AuthorizationException, ConflictException {
         // add some ShoppingItems to the existing ShoppingList in SharedFlat with Id 1
-        ShoppingList toDelete = new ShoppingList();
-        toDelete.setId(2L);
-        toDelete.setName("Second1");
+        ShoppingList toDelete = shoppingListRepository.findById(2L).get();
 
+        List<ShoppingItem> items = new ArrayList<>();
         validShoppingItemEntity.setShoppingList(toDelete);
         ShoppingItem item2 = new ShoppingItem();
         item2.setShoppingList(toDelete);
-        shoppingItemRepository.save(validShoppingItemEntity); // item referencing other existing objects
-        shoppingItemRepository.save(item2); // item not referencing other objects except for ShoppingList toDelete
+        items.add(shoppingItemRepository.save(validShoppingItemEntity)); // item referencing other existing objects
+        items.add(shoppingItemRepository.save(item2)); // item not referencing other objects except for ShoppingList toDelete
+        toDelete.setItems(items);
+        shoppingListRepository.save(toDelete);
 
-        Long idOfExistingShoppingListToDelete = 2L; // is linked to SharedFlat with Id 1
-
-        ShoppingList result = shoppingListService.deleteList(idOfExistingShoppingListToDelete);
+        ShoppingList result = shoppingListService.deleteList(toDelete.getId());
 
         assertAll(
             () -> assertEquals(toDelete.getId(), result.getId()),
             () -> assertEquals(toDelete.getName(), result.getName()),
             // items associated with deleted ShoppingList should also be deleted
-            () -> assertEquals(0, shoppingItemRepository.findByShoppingListId(idOfExistingShoppingListToDelete).size())
+            () -> assertEquals(0, shoppingItemRepository.findByShoppingListId(toDelete.getId()).size())
         );
     }
 
