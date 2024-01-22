@@ -113,6 +113,22 @@ public record ItemDto(
         return pattern.matcher(valueString).matches();
     }
 
+    @AssertTrue(message = "The minimum quantity cannot have more than 2 decimal places")
+    private boolean isMinimumQuantityValidDecimalPlaces() {
+
+        if (this.alwaysInStock == null || this.minimumQuantity == null || this.minimumQuantity > 5000  || this.minimumQuantity < 0) {
+            return true;
+        }
+
+        String valueString = this.minimumQuantity.toString();
+
+        String regex = "^[0-9]*(?:\\.[0-9]{1,2})?$";
+        // fully qualified name necessary due to conflict with Jakarta Pattern
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
+
+        return pattern.matcher(valueString).matches();
+    }
+
     public ItemDto withId(long newId) {
         return new ItemDto(
             newId,
