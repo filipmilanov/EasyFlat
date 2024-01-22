@@ -32,7 +32,9 @@ import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -467,7 +469,7 @@ public class ChoreServiceImpl implements ChoreService {
             if (value.getDescription() != null) {
                 htmlContent.append("<p><strong>Description:</strong> ").append(value.getDescription()).append("</p>");
             }
-            htmlContent.append("<p><strong>Deadline:</strong> ").append(value.getEndDate().toString()).append("</p>");
+            htmlContent.append("<p><strong>Deadline:</strong> ").append(formatDate(value.getEndDate(), "dd/MM/yyyy")).append("</p>");
             htmlContent.append("<p><strong>Responsible Person:</strong> ").append(value.getUser() != null ? value.getUser().getFirstName() + " " + value.getUser().getLastName() : "None").append("</p>");
             htmlContent.append("</div>");
             htmlContent.append("</div>");
@@ -478,6 +480,11 @@ public class ChoreServiceImpl implements ChoreService {
 
         return htmlContent.toString();
 
+    }
+
+    private static String formatDate(LocalDate date, String pattern) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        return date.format(formatter);
     }
 }
 
