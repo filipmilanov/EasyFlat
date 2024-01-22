@@ -42,6 +42,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ShoppingListServiceImpl implements ShoppingListService {
@@ -241,7 +242,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         LOGGER.trace("transferToServer({})", items);
         ApplicationUser applicationUser = authService.getUserFromToken();
         List<DigitalStorage> storage = digitalStorageRepository.findBySharedFlatIs(applicationUser.getSharedFlat());
-        List<DigitalStorageItem> itemsList = new ArrayList<>();
+        List<DigitalStorageItem> ret = new ArrayList<>();
         for (ShoppingItemDto itemDto : items) {
             DigitalStorageItem item;
             if (itemDto.alwaysInStock() != null && itemDto.alwaysInStock()) {
@@ -250,10 +251,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 item = shoppingListMapper.shoppingItemDtoToItemEntity(itemDto, ingredientMapper.dtoListToEntityList(itemDto.ingredients()), storage.get(0));
             }
             itemService.create(itemMapper.entityToDto(item));
-            this.deleteItem(itemDto.itemId());
-            itemsList.add(item);
+            ret.add(item);
         }
-        return itemsList;
+        this.deleteShoppingItems(items.stream()
+            .map(ShoppingItemDto::itemId)
+            .collect(Collectors.toList()));
+        return ret;
     }
 
     @Override
