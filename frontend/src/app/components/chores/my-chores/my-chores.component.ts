@@ -18,6 +18,7 @@ export class MyChoresComponent {
   completedChores: ChoresDto[] = [];
   private searchParams: string;
   message: string;
+  truncate: boolean = true;
 
   constructor(private router: Router,
               private choreService: ChoreService,
@@ -129,6 +130,9 @@ export class MyChoresComponent {
 
   navigateToLeaderboard() {
     this.router.navigate(['/chores/leaderboard']);
+  }
 
+  toggleTruncate() {
+    this.truncate = !this.truncate;
   }
 }

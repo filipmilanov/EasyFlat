@@ -20,6 +20,8 @@ export class AllChoreComponent {
     userName: '',
     endDate: null,
   };
+  truncateAssigned: boolean = true;
+  truncateUnassigned: boolean = true;
 
   constructor(private router: Router,
               private choreService: ChoreService,
@@ -92,5 +94,13 @@ export class AllChoreComponent {
 
   navigateToLeaderboard() {
     this.router.navigate(['/chores/leaderboard']);
+  }
+
+  toggleTruncateAssigned() {
+    this.truncateAssigned = !this.truncateAssigned;
+  }
+
+  toggleTruncateUnassigned() {
+    this.truncateUnassigned = !this.truncateUnassigned;
   }
 }
