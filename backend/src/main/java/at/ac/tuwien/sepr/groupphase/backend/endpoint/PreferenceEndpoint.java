@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.PreferenceMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Preference;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ChoreService;
 import at.ac.tuwien.sepr.groupphase.backend.service.PreferenceService;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class PreferenceEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping()
-    public PreferenceDto updatePreference(@RequestBody PreferenceDto preferenceDto) throws AuthenticationException {
+    public PreferenceDto updatePreference(@RequestBody PreferenceDto preferenceDto) throws AuthenticationException, ValidationException {
         LOGGER.info("updatePreference({})", preferenceDto);
         return preferenceService.update(preferenceDto);
     }

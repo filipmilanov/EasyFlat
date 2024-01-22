@@ -109,18 +109,16 @@ export class ShoppingListComponent implements OnInit {
       this.notification.info('Please, mark the items you want to delete');
       return;
     }
+    this.shoppingListService.deleteItems(checkedItems).subscribe({
+      next: () => {
+        this.notification.success("Items were successfully deleted from the list", "Success");
+        this.ngOnInit();
+      },
+      error: error => {
+        this.errorHandler.handleErrors(error, "shopping item", 'delete');
+      }
+    });
 
-    if (confirm("Are you sure you want to delete the checked items?")) {
-      this.shoppingListService.deleteItems(checkedItems).subscribe({
-        next: () => {
-          this.notification.success("Items were successfully deleted from the list", "Success");
-          this.ngOnInit();
-        },
-        error: error => {
-          this.errorHandler.handleErrors(error, "shopping item", 'delete');
-        }
-      });
-    }
   }
 
   onShoppingListChange() {
@@ -173,17 +171,17 @@ export class ShoppingListComponent implements OnInit {
   }
 
   getIdFormatForDeleteModalForChecked(checkedItems: ShoppingItemDto[]) {
-    return checkedItems.toString().replace(/[^a-zA-Z0-9]+/g, '');
+    return `items${this.items[0].itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 
   truncateString(input: string, maxLength: number): string {
     console.log(input)
     if (input.length <= maxLength) {
-      console.log("njionjoij")
       return input;
     }
 
     const truncated = input.substring(0, maxLength - 3);
     return truncated + '...';
   }
+
 }

@@ -38,37 +38,28 @@
 <div class="container">
   <div class="row">
     <div class="col-md-6">
-      <form #form="ngForm" [class.was-validated]="form.submitted" (submit)="onSubmit(form)">
+      <form #form="ngForm" (submit)="onSubmit(form)">
         <!-- First Chore -->
-        <div class="row p-2">
-          <label class="col-form-label text-muted col-md-2 col-lg-4">First Chore</label>
-          <div class="form-elements">
-            <div class="col-md-2 col-lg-2 mt-2">
-              <select style="width: 250px" class="form-select form-select-md" name="selectedChore"
-                      [(ngModel)]="preference.first">
-                <option
-                  *ngFor="let chore of filterChores(chores, [preference.second, preference.third, preference.fourth])"
-                  [ngValue]="chore">
-                  {{ chore.name }}
-                </option>
-                <option [ngValue]="null">No Chore</option>
-              </select>
-            </div>
+        <div class="row p-2" >
+        <label class="col-form-label text-muted col-md-2 col-lg-4">First Chore</label>
+        <div class="form-elements">
+          <div class="col-md-2 col-lg-2 mt-2">
+            <select style="width: 250px" class="form-select form-select-md" name="first" [(ngModel)]="preference.first" >
+              <option *ngFor="let chore of filterChores(chores, [preference.second, preference.third, preference.fourth])" [ngValue]="chore">{{ chore.name }}</option>
+              <option [ngValue]="null">No Chore</option>
+            </select>
           </div>
         </div>
+      </div>
 
 
         <!-- Second Chore -->
-        <div class="row p-2">
+        <div class="row p-2" >
           <label class="col-form-label text-muted col-md-2 col-lg-4">Second Chore</label>
           <div class="form-elements">
             <div class="col-md-2 col-lg-2 mt-2">
-              <select style="width: 250px" class="form-select form-select-md" name="selectedShoppingList"
-                      [(ngModel)]="preference.second">
-                <option
-                  *ngFor="let chore of filterChores(chores, [preference.first, preference.third, preference.fourth])"
-                  [ngValue]="chore">{{ chore.name }}
-                </option>
+              <select style="width: 250px" class="form-select form-select-md" name="second" [(ngModel)]="preference.second" >
+                <option *ngFor="let chore of filterChores(chores, [preference.first, preference.third, preference.fourth])" [ngValue]="chore">{{ chore.name }}</option>
                 <option [ngValue]="null">No Chore</option>
               </select>
             </div>
@@ -76,15 +67,12 @@
         </div>
 
         <!-- Third Chore -->
-        <div class="row p-2">
+        <div class="row p-2" >
           <label class="col-form-label text-muted col-md-2 col-lg-4">Third Chore</label>
           <div class="form-elements">
             <div class="col-md-2 col-lg-2 mt-2">
-              <select style="width: 250px" class="form-select form-select-md" name="selectedShoppingList"
-                      [(ngModel)]="preference.third">
-                <option [attr.selected]="preference.third.name"
-                        *ngFor="let chore of filterChores(chores, [preference.first, preference.second, preference.fourth])"
-                        [ngValue]="chore">{{ chore.name }}</option>
+              <select style="width: 250px" class="form-select form-select-md" name="third" [(ngModel)]="preference.third"  >
+                <option *ngFor="let chore of filterChores(chores, [preference.first, preference.second, preference.fourth])" [ngValue]="chore">{{ chore.name }}</option>
                 <option [ngValue]="null">No Chore</option>
               </select>
             </div>
@@ -92,20 +80,18 @@
         </div>
 
         <!-- Fourth Chore -->
-        <div class="row p-2">
+        <div class="row p-2" >
           <label class="col-form-label text-muted col-md-2 col-lg-4">Fourth Chore</label>
           <div class="form-elements">
             <div class="col-md-2 col-lg-2 mt-2">
-              <select style="width: 250px" class="form-select form-select-md" name="selectedShoppingList"
-                      [(ngModel)]="preference.fourth">
-                <option
-                  *ngFor="let chore of filterChores(chores, [preference.first, preference.second, preference.third])"
-                  [ngValue]="chore">{{ chore.name }}</option>
+              <select style="width: 250px" class="form-select form-select-md" name="fourth" [(ngModel)]="preference.fourth" >
+                <option *ngFor="let chore of filterChores(chores, [preference.first, preference.second, preference.third])" [ngValue]="chore">{{ chore.name }}</option>
                 <option [ngValue]="null">No Chore</option>
               </select>
             </div>
           </div>
         </div>
+
 
 
         <button type="submit" class="btn btn-primary p-2" style="margin: 10px;" [disabled]="!form.valid">Save</button>
