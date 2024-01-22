@@ -674,5 +674,38 @@ class ItemServiceTest {
         assertThat(result.size()).isEqualTo(5);
     }
 
+    @Test
+    @DisplayName("Given valid item name, then findByName returns valid items")
+    void givenValidItemNameThanFindByNameReturnsValidItems() {
+
+        List<DigitalStorageItem> result = service.findAll(1);
+        DigitalStorageItem resItem = result.get(0);
+        String itemName = resItem.getItemCache().getProductName();
+        String unitName = resItem.getItemCache().getUnit().getName();
+        //when
+        List<DigitalStorageItem> foundItems = service.findByName(itemName,unitName);
+
+        //then
+        assertAll(
+            () -> assertThat(foundItems).isNotEmpty(),
+            () -> assertThat(foundItems.get(0).getItemCache().getProductName()).isEqualTo(itemName),
+            () -> assertThat(foundItems.get(0).getItemCache().getUnit().getName()).isEqualTo(unitName)
+        );
+
+    }
+
+    @Test
+    @DisplayName("Given invalid item name, then findByName returns empty list")
+    void givenInValidItemNameThanFindByNameReturnsEmptyList() {
+        String itemName = "Invalid Product Name";
+        String unitName = "pcs";
+
+        //when
+        List<DigitalStorageItem> foundItems = service.findByName(itemName, unitName);
+
+        //then
+        assertThat(foundItems).isEmpty();
+    }
+
 
 }
