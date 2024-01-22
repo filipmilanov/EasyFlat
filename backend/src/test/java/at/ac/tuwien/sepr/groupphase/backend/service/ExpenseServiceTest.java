@@ -189,13 +189,12 @@ class ExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("Can all expenses be found by title?")
+    @DisplayName("Can an expense be created using valid values?")
     void givenValidExpenseWhenCreateThenExpenseIsPersistedWithId() throws ValidationException, ConflictException, AuthorizationException {
         // given
         double totalAmount = 100;
         WgDetailDto sharedFlat = new WgDetailDto();
         sharedFlat.setId(1L);
-
 
         List<DebitDto> debitUsers = new ArrayList<>();
         Set<ApplicationUser> usersOfFlat = sharedFlatRepository.findById(sharedFlat.getId()).orElseThrow().getUsers();
@@ -361,7 +360,8 @@ class ExpenseServiceTest {
     @DisplayName("Can an expense be created with different split strategies?")
     @MethodSource("data")
     void givenExpenseWithCertainSplitByWhenCreateThenAmountIsSplitCorrectly(List<DebitDto> debitDtos,
-                                                                            List<Double> expected) throws ValidationException, ConflictException, AuthorizationException {
+                                                                            List<Double> expected)
+        throws ValidationException, ConflictException, AuthorizationException {
         // given
         double totalAmount = 100L;
         WgDetailDto sharedFlat = new WgDetailDto();
