@@ -1,5 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDtoBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
@@ -30,18 +32,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -51,6 +59,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -96,6 +107,9 @@ public class CookingEndpointTest {
 
     @Autowired
     private UnitRepository unitRepository;
+
+    @MockBean
+    private RestTemplate restTemplate;
 
     @BeforeEach
     public void cleanUp() throws ValidationException, ConflictException {
@@ -234,14 +248,13 @@ public class CookingEndpointTest {
     }
 
     @Test
-    @Disabled
     void testGetRecipeSuggestions() throws Exception {
         // given
-        String type = "breakfast"; // specify a valid type
 
+       mockAPIResponse();
         // when
         MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI)
-                .param("type", type)
+                .param("type", "")
                 .header(HttpHeaders.AUTHORIZATION, jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();
@@ -502,5 +515,102 @@ public class CookingEndpointTest {
 
     }
 
+
+
+    private void mockAPIResponse() {
+        List<RecipeDto> mockedRecipesDtos = getRecipeDtos();
+        RecipeSuggestionDto mockedRecipeSuggestionDto = getRecipeSuggestionDtoWithoutUnits();
+
+
+        ParameterizedTypeReference<List<RecipeDto>> ref = new ParameterizedTypeReference<List<RecipeDto>>() {
+        };
+        ParameterizedTypeReference<RecipeSuggestionDto> ref2 = new ParameterizedTypeReference<RecipeSuggestionDto>() {
+        };
+
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ref)))
+            .thenReturn(ResponseEntity.ok(mockedRecipesDtos));
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ref2)))
+            .thenReturn(ResponseEntity.ok(mockedRecipeSuggestionDto));
+        ;
+
+    }
+    private List<RecipeDto> getRecipeDtos() {
+        RecipeDto mockedRecipe1 = RecipeDtoBuilder.builder()
+            .id(1L)
+            .title("Pasta Carbonara")
+            .description("Classic Italian pasta dish with eggs, cheese, pancetta, and black pepper.")
+            .image("image1.jpg")
+            .missedIngredients(List.of(
+                RecipeIngredientDtoBuilder.builder()
+                    .id(1L)
+                    .name("Ingredient 1")
+                    .unit("unit1")
+                    .unitEnum(null)
+                    .amount(100.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Real Ingredient 1")
+                    .matchedItem(null)
+                    .build()
+            ))
+            .build();
+        List<RecipeDto> toReturn = new LinkedList<>();
+        toReturn.add(mockedRecipe1);
+        return toReturn;
+    }
+    private RecipeSuggestionDto getRecipeSuggestionDtoWithoutUnits() {
+        RecipeSuggestionDto recipeDto2 = RecipeSuggestionDtoBuilder.builder()
+            .id(123123L)
+            .title("Pasta Carbonara")
+            .servings(4)
+            .readyInMinutes(25)
+            .summary("Classic Italian pasta dish with eggs, cheese, pancetta, and black pepper.")
+            .extendedIngredients(List.of(
+                RecipeIngredientDtoBuilder.builder()
+                    .id(4L)
+                    .name("Spaghetti")
+                    .unit("g")
+                    .amount(400.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Spaghetti")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(5L)
+                    .name("Pancetta")
+                    .unit("g")
+                    .amount(150.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Pancetta")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(6L)
+                    .name("Eggs")
+                    .unit("pcs")
+                    .amount(3.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Eggs")
+                    .matchedItem(null)
+                    .build(),
+                RecipeIngredientDtoBuilder.builder()
+                    .id(7L)
+                    .name("Parmesan cheese")
+                    .unit("g")
+                    .amount(100.0)
+                    .matched(true)
+                    .autoMatched(false)
+                    .realName("Parmesan cheese")
+                    .matchedItem(null)
+                    .build()
+            ))
+            .build();
+
+
+        return recipeDto2;
+    }
 
 }
