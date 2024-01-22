@@ -371,7 +371,7 @@ public class CookingServiceTest {
         //then
         RecipeSuggestionDto createdRecipeSuggestion = getExpectedRecipeSuggestionDtoWithUnits();
         List<RecipeSuggestionDto> recipeSuggestionDtos = cookingService.getCookbook();
-        RecipeSuggestionDto fromCookBook = recipeSuggestionDtos.get(recipeSuggestionDtos.size()-1);
+        RecipeSuggestionDto fromCookBook = recipeSuggestionDtos.get(recipeSuggestionDtos.size() - 1);
 
         assertAll(
             () -> assertThat(fromCookBook.title()).isEqualTo(createdRecipeSuggestion.title()),
@@ -1312,14 +1312,14 @@ public class CookingServiceTest {
 
     private RecipeDetailDto getRecipeDetailDtoWithoutUnitsAndSteps() {
         RecipeDetailDto recipeDetailDto = RecipeDetailDtoBuilder.builder()
-            .id(121212L)
+            .id(1L)
             .title("Pasta Carbonara")
             .servings(4)
             .readyInMinutes(25)
             .summary("Classic Italian pasta dish with eggs, cheese, pancetta, and black pepper.")
             .extendedIngredients(List.of(
                 RecipeIngredientDtoBuilder.builder()
-                    .id(-4L)
+                    .id(4L)
                     .name("Spaghetti")
                     .unit("g")
                     .unitEnum(UnitDtoBuilder.builder().name("g").build())
@@ -1330,7 +1330,7 @@ public class CookingServiceTest {
                     .matchedItem(null)
                     .build(),
                 RecipeIngredientDtoBuilder.builder()
-                    .id(-5L)
+                    .id(5L)
                     .name("Pancetta")
                     .unit("g")
                     .unitEnum(UnitDtoBuilder.builder().name("g").build())
@@ -1341,7 +1341,7 @@ public class CookingServiceTest {
                     .matchedItem(null)
                     .build(),
                 RecipeIngredientDtoBuilder.builder()
-                    .id(-6L)
+                    .id(6L)
                     .name("Eggs")
                     .unit("pcs")
                     .unitEnum(UnitDtoBuilder.builder().name("unit").build())
@@ -1352,7 +1352,7 @@ public class CookingServiceTest {
                     .matchedItem(null)
                     .build(),
                 RecipeIngredientDtoBuilder.builder()
-                    .id(-7L)
+                    .id(7L)
                     .name("Parmesan cheese")
                     .unit("g")
                     .unitEnum(UnitDtoBuilder.builder().name("g").build())
@@ -1369,7 +1369,7 @@ public class CookingServiceTest {
 
     private RecipeDetailDto getRecipeDetailDtoWithoutUnitsAndStepsWithIngredientIDsNull() {
         RecipeDetailDto recipeDetailDto = RecipeDetailDtoBuilder.builder()
-            .id(121212L)
+            .id(1L)
             .title("Pasta Carbonara")
             .servings(4)
             .readyInMinutes(25)
@@ -1453,7 +1453,7 @@ public class CookingServiceTest {
 
 
         RecipeDetailDto recipeDetailDto = RecipeDetailDtoBuilder.builder()
-            .id(121212L)
+            .id(1L)
             .title("Pasta Carbonara")
             .servings(4)
             .readyInMinutes(25)

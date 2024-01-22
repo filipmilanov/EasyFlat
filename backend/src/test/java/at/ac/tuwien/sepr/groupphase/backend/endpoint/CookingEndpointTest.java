@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.cooking.RecipeDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.repository.RecipeIngredientRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
@@ -107,6 +108,9 @@ public class CookingEndpointTest {
 
     @Autowired
     private UnitRepository unitRepository;
+
+    @Autowired
+    private RecipeIngredientRepository recipeIngredientRepository;
 
     @MockBean
     private RestTemplate restTemplate;
@@ -251,7 +255,7 @@ public class CookingEndpointTest {
     void testGetRecipeSuggestions() throws Exception {
         // given
 
-       mockAPIResponse();
+        mockAPIResponse();
         // when
         MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI)
                 .param("type", "")
@@ -397,14 +401,14 @@ public class CookingEndpointTest {
         Unit unit = unitRepository.findByName("kg").orElseThrow();
 
         RecipeIngredient ingredient1 = new RecipeIngredient();
-        ingredient1.setName("Banana " +  (1));
+        ingredient1.setName("Banana " + (1));
         ingredient1.setAmount(1);
         ingredient1.setUnit(unit.getName());
         ingredient1.setUnitEnum(unit);
         ingredients.add(ingredientMapper.entityToDto(ingredient1));
 
         RecipeIngredient ingredient2 = new RecipeIngredient();
-        ingredient2.setName("Apple " +  (2));
+        ingredient2.setName("Apple " + (2));
         ingredient2.setAmount(1);
         ingredient2.setUnit(unit.getName());
         ingredient2.setUnitEnum(unit);
@@ -429,7 +433,7 @@ public class CookingEndpointTest {
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
 
-        RecipeSuggestionDto recipeWithMissing = objectMapper.readValue(response.getContentAsString(),RecipeSuggestionDto.class);
+        RecipeSuggestionDto recipeWithMissing = objectMapper.readValue(response.getContentAsString(), RecipeSuggestionDto.class);
 
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
@@ -457,7 +461,8 @@ public class CookingEndpointTest {
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
 
-        List<RecipeSuggestionDto> recipes = objectMapper.readValue(response.getContentAsString(), new TypeReference<List<RecipeSuggestionDto>>() {});
+        List<RecipeSuggestionDto> recipes = objectMapper.readValue(response.getContentAsString(), new TypeReference<List<RecipeSuggestionDto>>() {
+        });
 
         assertThat(recipes.size()).isEqualTo(5);
     }
@@ -470,14 +475,14 @@ public class CookingEndpointTest {
         Unit unit = unitRepository.findByName("kg").orElseThrow();
 
         RecipeIngredient ingredient1 = new RecipeIngredient();
-        ingredient1.setName("Banana " +  (1));
+        ingredient1.setName("Banana " + (1));
         ingredient1.setAmount(1);
         ingredient1.setUnit(unit.getName());
         ingredient1.setUnitEnum(unit);
         ingredients.add(ingredientMapper.entityToDto(ingredient1));
 
         RecipeIngredient ingredient2 = new RecipeIngredient();
-        ingredient2.setName("Apple " +  (2));
+        ingredient2.setName("Apple " + (2));
         ingredient2.setAmount(1);
         ingredient2.setUnit(unit.getName());
         ingredient2.setUnitEnum(unit);
@@ -502,7 +507,7 @@ public class CookingEndpointTest {
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
 
-        RecipeSuggestionDto recipe = objectMapper.readValue(response.getContentAsString(),RecipeSuggestionDto.class);
+        RecipeSuggestionDto recipe = objectMapper.readValue(response.getContentAsString(), RecipeSuggestionDto.class);
 
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
@@ -515,6 +520,23 @@ public class CookingEndpointTest {
 
     }
 
+    @Test
+    void unMatchIngredientShouldReturnStatus200() throws Exception {
+
+
+        // given
+        String ingredientName = recipeIngredientRepository.findAll().get(0).getName();
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(put(BASE_URI + "/unmatchitems")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ingredientName)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andReturn();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
+    }
 
 
     private void mockAPIResponse() {
@@ -534,6 +556,7 @@ public class CookingEndpointTest {
         ;
 
     }
+
     private List<RecipeDto> getRecipeDtos() {
         RecipeDto mockedRecipe1 = RecipeDtoBuilder.builder()
             .id(1L)
@@ -558,6 +581,7 @@ public class CookingEndpointTest {
         toReturn.add(mockedRecipe1);
         return toReturn;
     }
+
     private RecipeSuggestionDto getRecipeSuggestionDtoWithoutUnits() {
         RecipeSuggestionDto recipeDto2 = RecipeSuggestionDtoBuilder.builder()
             .id(123123L)
