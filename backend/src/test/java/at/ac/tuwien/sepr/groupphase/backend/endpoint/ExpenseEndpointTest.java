@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.ExpenseDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.finance.UserValuePairDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.DebitMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ExpenseMapper;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Expense;
@@ -21,6 +22,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,8 +53,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @ExtendWith(SpringExtension.class)
@@ -72,6 +76,9 @@ class ExpenseEndpointTest {
 
     @Autowired
     private DebitMapper debitMapper;
+
+    @Autowired
+    private ExpenseMapper expenseMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -157,6 +164,36 @@ class ExpenseEndpointTest {
         // then
         assertAll(
             () -> assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatus())
+        );
+    }
+
+    @Test
+    @DisplayName("Test if findAll returns all expenses that belong to the current users flat")
+    void findAll() throws Exception {
+        // given
+        Long currentFlatId = applicationUser.getSharedFlat().getId();
+
+        List<Expense> expectedExpenseList = expenseRepository.findAll().stream()
+            .filter(expense -> expense.getPaidBy().getSharedFlat().getId().equals(currentFlatId))
+            .toList();
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get(BASE_URI)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, ExpenseDto.class);
+        List<ExpenseDto> actualExpenseDtoList = objectMapper.readValue(response.getContentAsString(), type);
+
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType()),
+            () -> assertThat(actualExpenseDtoList).hasSameSizeAs(expectedExpenseList),
+            () -> assertThat(actualExpenseDtoList).containsExactlyInAnyOrderElementsOf(
+                expectedExpenseList.stream().map(expenseMapper::entityToExpenseDto).collect(Collectors.toList()))
         );
     }
 
@@ -373,7 +410,127 @@ class ExpenseEndpointTest {
     }
 
     @Test
-    void update() {
+    @DisplayName("Update expense with debits")
+    void update() throws Exception {
+        // given
+        ExpenseDto expenseDto = this.generateExpenseDto();
+
+        String createExpenseBody = objectMapper.writeValueAsString(expenseDto);
+
+        MvcResult createResult = mockMvc.perform(post(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createExpenseBody)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andReturn();
+        MockHttpServletResponse createResponse = createResult.getResponse();
+        ExpenseDto createdExpenseDto = objectMapper.readValue(createResponse.getContentAsString(), ExpenseDto.class);
+
+        // when
+        ExpenseDto expectedExpenseDto = this.generateUpdatedExpenseDto();
+
+        String updateExpenseBody = objectMapper.writeValueAsString(expectedExpenseDto);
+
+        MvcResult mvcResult = mockMvc.perform(put(BASE_URI + "/" + createdExpenseDto.id())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateExpenseBody)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse updateResponse = mvcResult.getResponse();
+        ExpenseDto actualExpenseDto = objectMapper.readValue(updateResponse.getContentAsString(), ExpenseDto.class);
+
+        // then
+        assertAll(
+            () -> assertThat(updateResponse.getStatus()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(updateResponse.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE),
+            () -> assertThat(actualExpenseDto).isEqualTo(expectedExpenseDto.withId(createdExpenseDto.id()))
+        );
+    }
+
+    @Test
+    @DisplayName("Negative test for updating expense")
+    void update_shouldThrow() throws Exception {
+        // given
+        ExpenseDto expenseDto = this.generateExpenseDto();
+
+        String createExpenseBody = objectMapper.writeValueAsString(expenseDto);
+
+        MvcResult createResult = mockMvc.perform(post(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createExpenseBody)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andReturn();
+        MockHttpServletResponse createResponse = createResult.getResponse();
+        ExpenseDto createdExpenseDto = objectMapper.readValue(createResponse.getContentAsString(), ExpenseDto.class);
+
+        // when
+        ExpenseDto incorrectExpenseDto = this.generateWrongUpdatedExpenseDto();
+
+        String incorrectUpdateExpenseBody = objectMapper.writeValueAsString(incorrectExpenseDto);
+
+        MvcResult mvcResult = mockMvc.perform(put(BASE_URI + "/" + createdExpenseDto.id())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(incorrectUpdateExpenseBody)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse updateResponse = mvcResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertThat(updateResponse.getStatus()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value()),
+            () -> assertThat(updateResponse.getContentType()).contains(MediaType.TEXT_PLAIN_VALUE),
+            () -> assertThat(updateResponse.getContentAsString()).contains(
+                "amount",
+                "positive"
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Delete existing expense with debits")
+    void deleteExpense() throws Exception {
+        // given
+        ExpenseDto expenseDto = this.generateExpenseDto();
+
+        String createExpenseBody = objectMapper.writeValueAsString(expenseDto);
+
+        MvcResult createResult = mockMvc.perform(post(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createExpenseBody)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andReturn();
+        MockHttpServletResponse createResponse = createResult.getResponse();
+        ExpenseDto createdExpenseDto = objectMapper.readValue(createResponse.getContentAsString(), ExpenseDto.class);
+
+        // when
+        MvcResult deleteResult = mockMvc.perform(delete(BASE_URI + "/" + createdExpenseDto.id())
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andReturn();
+        MockHttpServletResponse deleteResultResponse = deleteResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertThat(deleteResultResponse.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value())
+        );
+    }
+
+    @Test
+    @DisplayName("Negative test for delete expense that does not exist")
+    void deleteExpense_shouldThrow() throws Exception {
+        // given
+        long invalidExpenseId = -1L;
+
+        // when
+        MvcResult deleteResult = mockMvc.perform(delete(BASE_URI + "/" + invalidExpenseId)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andReturn();
+        MockHttpServletResponse deleteResultResponse = deleteResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertThat(deleteResultResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value())
+        );
     }
 
     private ExpenseDto generateWrongExpenseDto() {
@@ -398,6 +555,38 @@ class ExpenseEndpointTest {
         return ExpenseDtoBuilder.builder()
             .title("Next Expense")
             .description("Random desc")
+            .amountInCents(totalAmount)
+            .createdAt(LocalDateTime.now())
+            .paidBy(flatUsers.get(0))
+            .debitUsers(debitDtos)
+            .isRepeating(false)
+            .build();
+    }
+
+    private ExpenseDto generateUpdatedExpenseDto() {
+        double totalAmount = 600.0;
+        List<UserListDto> flatUsers = this.generateListOfUserListDtoInFlat();
+        List<DebitDto> debitDtos = this.generateDebitUsers(totalAmount);
+
+        return ExpenseDtoBuilder.builder()
+            .title("Updated Expense")
+            .description("This is an updated description")
+            .amountInCents(totalAmount)
+            .createdAt(LocalDateTime.now())
+            .paidBy(flatUsers.get(0))
+            .debitUsers(debitDtos)
+            .isRepeating(false)
+            .build();
+    }
+
+    private ExpenseDto generateWrongUpdatedExpenseDto() {
+        double totalAmount = -1;
+        List<UserListDto> flatUsers = this.generateListOfUserListDtoInFlat();
+        List<DebitDto> debitDtos = this.generateDebitUsers(totalAmount);
+
+        return ExpenseDtoBuilder.builder()
+            .title("Updated Expense")
+            .description("This is an updated description")
             .amountInCents(totalAmount)
             .createdAt(LocalDateTime.now())
             .paidBy(flatUsers.get(0))

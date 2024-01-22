@@ -79,7 +79,13 @@ export class ChorePreferenceComponent implements OnInit {
           this.router.navigate(['/chores/all']);
         },
         error: error => {
-          this.notification.error("Preferences were not changed");
+          let firstBracket = error.error.indexOf('[');
+          let lastBracket = error.error.indexOf(']');
+          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+          let errorDescription = error.error.substring(0, firstBracket);
+          errorMessages.forEach(message => {
+            this.notification.error(errorMessages)
+          });
         }
       });
     }
@@ -88,15 +94,11 @@ export class ChorePreferenceComponent implements OnInit {
 
   ngOnInit(): void {
     console.log(this.oldPreference);
-
-
     this.preferenceService.getLastPreference().subscribe({
       next: (lastPreference: Preference) => {
         if (lastPreference) {
           this.oldPreference = lastPreference;
-          this.preference = lastPreference;
         }
-
         // Rest of your code...
         this.choreService.getUnassignedChores().subscribe({
           next: (chores: any[]) => {
