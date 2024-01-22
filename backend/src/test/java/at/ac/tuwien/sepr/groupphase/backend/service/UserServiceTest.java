@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
+import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -19,10 +20,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -45,6 +51,9 @@ public class UserServiceTest implements TestData {
 
     @Autowired
     private TestDataGenerator testDataGenerator;
+
+    @MockBean
+    private JwtTokenizer jwtTokenizer;
 
     @MockBean
     private AuthService authService;
@@ -116,6 +125,21 @@ public class UserServiceTest implements TestData {
 
         ApplicationUser deletedUserFromDB = userRepository.findUserByEmail(applicationUser.getEmail());
         assertNull(deletedUserFromDB, "Deleted user should not be found");
+    }
+
+    @Test
+    @DisplayName("finding All flatmates")
+    public void findFlatmates() {
+        // given
+        when(jwtTokenizer.getEmailFromToken(any())).thenReturn(applicationUser.getEmail());
+        // when
+        List<ApplicationUser> flatmates = userService.findFlatmates("jwt");
+
+        // then
+        assertAll(
+            () -> assertThat(flatmates.size()).isEqualTo(5),
+            () -> assertThat(flatmates.stream().map(user -> user.getId())).contains(1L, 6L, 11L, 16L, 21L)
+        );
     }
 
 }
