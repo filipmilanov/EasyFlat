@@ -187,7 +187,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             if (!toDelete.getShoppingList().getSharedFlat().equals(applicationUser.getSharedFlat())) {
                 throw new AuthorizationException("Authorization failed", List.of("User has no access to this shopping item and can not delete it!"));
             }
-            //shoppingItemToDelete.getShoppingList().getItems().remove(shoppingItemToDelete);
             shoppingItemRepository.delete(toDelete);
             return toDelete;
         } else {
@@ -213,9 +212,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         Optional<ShoppingList> deletedListOptional = shoppingListRepository.findById(shopId);
         if (deletedListOptional.isPresent()) {
             ShoppingList deletedList = deletedListOptional.get();
-            for (int i = 0; i < deletedList.getItems().size(); i++) {
-                this.deleteItem(deletedList.getItems().get(i).getItemId());
-            }
+            this.deleteShoppingItems(itemMapper.shoppingItemEntityListToShoppingItemDtoList(deletedList.getItems())
+                .stream()
+                .map(ShoppingItemDto::itemId)
+                .collect(Collectors.toList()));
             shoppingListRepository.deleteById(shopId);
             return deletedList;
         } else {
