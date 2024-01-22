@@ -212,7 +212,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         Optional<ShoppingList> deletedListOptional = shoppingListRepository.findById(shopId);
         if (deletedListOptional.isPresent()) {
             ShoppingList deletedList = deletedListOptional.get();
-            if (deletedList.getItems().size() != 0) {
+            if (!deletedList.getItems().isEmpty()) {
                 this.deleteShoppingItems(itemMapper.shoppingItemEntityListToShoppingItemDtoList(deletedList.getItems())
                     .stream()
                     .map(ShoppingItemDto::itemId)
@@ -303,6 +303,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ShoppingList shoppingList = toDelete.get(0).getShoppingList();
         for (ShoppingItem shoppingItem : toDelete) {
             shoppingList.getItems().remove(shoppingItem);
+            if (!shoppingItem.getLabels().isEmpty()) {
+                shoppingItem.setLabels(new ArrayList<>());
+                shoppingItemRepository.save(shoppingItem);
+            }
         }
         shoppingListRepository.save(shoppingList);
         shoppingItemRepository.deleteAllById(itemIds);

@@ -16,7 +16,7 @@ import java.util.Random;
 @Component("ItemLabelDataGenerator")
 public class ItemLabelDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 5;
+    private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 10;
     private final LabelRepository labelRepository;
     private final Faker faker = new Faker(new Random(24012024));
 
@@ -29,8 +29,12 @@ public class ItemLabelDataGenerator {
         LOGGER.debug("generating {} ItemLabels", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
             ItemLabel itemLabel = new ItemLabel();
-            String labelValue = faker.company().name();
-            itemLabel.setLabelValue(labelValue.length() > 10 ? labelValue.substring(0, 10) : labelValue);
+            String labelValue = faker.funnyName().name();
+            if (labelValue.length() > 10) {
+                i--;
+                continue;
+            }
+            itemLabel.setLabelValue(labelValue);
             itemLabel.setLabelColour(faker.color().hex());
             labelRepository.save(itemLabel);
         }

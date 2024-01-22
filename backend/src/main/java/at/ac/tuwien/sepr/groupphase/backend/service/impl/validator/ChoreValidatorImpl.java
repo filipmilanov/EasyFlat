@@ -100,15 +100,14 @@ public class ChoreValidatorImpl implements ChoreValidator {
     }
 
     private static boolean isNotNumeric(String str) {
-        // Allow whole numbers (positive or negative) with optional decimal places
-        String regex = "-?\\d+(\\.\\d+)?";
+        String regexNumeric = "-?\\d*(\\.\\d+)?";
 
-        return !Pattern.matches(regex, str);
+        return !Pattern.matches(regexNumeric, str);
     }
 
     private static boolean isValidInteger(String valueString) {
-        // Allow only whole numbers (no decimal places)
         String regex = "^-?\\d+$";
+
         return Pattern.matches(regex, valueString);
     }
 }

@@ -41,7 +41,7 @@ public record ShoppingItemDto(
     Double minimumQuantity,
     String boughtAt,
     List<IngredientDto> ingredients,
-    @Size(max = 3)
+    @Size(max = 3, message = "The labels count can be at most 3")
     List<ItemLabelDto> labels,
     ShoppingListDto shoppingList
 ) {

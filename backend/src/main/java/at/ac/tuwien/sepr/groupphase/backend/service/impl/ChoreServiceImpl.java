@@ -469,7 +469,7 @@ public class ChoreServiceImpl implements ChoreService {
             if (value.getDescription() != null) {
                 htmlContent.append("<p><strong>Description:</strong> ").append(value.getDescription()).append("</p>");
             }
-            htmlContent.append("<p><strong>Deadline:</strong> ").append(formatDate(value.getEndDate(), "dd/MM/yyyy")).append("</p>");
+            htmlContent.append("<p><strong>Deadline:</strong> ").append(formatDate(value.getEndDate(), "dd.MM.yyyy")).append("</p>");
             htmlContent.append("<p><strong>Responsible Person:</strong> ").append(value.getUser() != null ? value.getUser().getFirstName() + " " + value.getUser().getLastName() : "None").append("</p>");
             htmlContent.append("</div>");
             htmlContent.append("</div>");
