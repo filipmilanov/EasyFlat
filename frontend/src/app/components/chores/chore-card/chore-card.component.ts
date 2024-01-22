@@ -14,6 +14,7 @@ export class ChoreCardComponent {
   @Input() user: string;
   @Input() completed: boolean;
   @Input() mode: number;
+  @Input() truncated: boolean;
 
   getColorBasedOnDeadline(): string {
     let daysForWarning: number = 3;
@@ -31,8 +32,12 @@ export class ChoreCardComponent {
   }
 
   getTruncated(text: string, maxLength: number) {
+    if (this.truncated) {
     return text.length > maxLength ?
       text.slice(0, maxLength) + '...' :
       text;
+    } else {
+      return text;
+    }
   }
 }

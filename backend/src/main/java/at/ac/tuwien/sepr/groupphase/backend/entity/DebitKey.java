@@ -2,6 +2,8 @@ package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.ManyToOne;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -13,6 +15,7 @@ public class DebitKey implements Serializable {
     private Expense expense;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ApplicationUser user;
 
     public DebitKey() {

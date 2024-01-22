@@ -162,8 +162,6 @@ public class ShoppingListEndpoint {
             .map(Long::valueOf)
             .collect(Collectors.toList());
         List<ShoppingItem> ret = shoppingService.deleteShoppingItems(itemIds);
-        List<ShoppingItemDto> retDto = new ArrayList<>();
-
         return itemMapper.shoppingItemEntityListToShoppingItemDtoList(ret);
     }
 }

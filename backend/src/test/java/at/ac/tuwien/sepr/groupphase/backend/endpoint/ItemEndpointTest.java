@@ -478,7 +478,7 @@ class ItemEndpointTest {
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/search")
-                .param("brand", "Test")
+                .param("generalName", "Test")
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();

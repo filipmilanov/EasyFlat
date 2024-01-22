@@ -16,7 +16,6 @@ import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,7 +134,6 @@ public class UserServiceTest implements TestData {
 
     @Test
     @DisplayName("Positive test for deleting an existing user")
-    @Disabled
     public void deleteExistingUserAndEnsureDeletion() {
         ApplicationUser user = userRepository.findUserByEmail(applicationUser.getEmail());
 

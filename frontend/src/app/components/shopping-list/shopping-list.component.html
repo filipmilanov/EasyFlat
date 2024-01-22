@@ -81,13 +81,13 @@
     <tr *ngFor="let item of items">
       <td>{{ item.productName}}</td>
       <td>{{ item.generalName}}</td>
-      <td>
+      <td class="d-none d-md-table-cell">
         <span *ngFor="let label of item.labels; let isLast = last">
           <span style="font-weight: bold" [style.color]="label.labelColour">{{ label.labelValue }}</span>
           <ng-container *ngIf="!isLast">, </ng-container>
         </span>
       </td>
-      <td>{{ item.quantityCurrent}} {{item.unit?.name}}</td>
+      <td class="d-none d-md-table-cell">{{ item.quantityCurrent}} {{item.unit?.name}}</td>
       <td>
         <a *ngIf="item.productName !== null" (click)="navigateToEditItem(item.itemId + '')"
            class="btn btn-sm btn-warning">
@@ -98,6 +98,7 @@
         <input type="checkbox" [checked]="item.check" (change)="updateCheckedItems(item)">
       </td>
     </tr>
+
     <td colspan="6" *ngIf="items.length === 0" style="text-align: center;">
       <h3>No shopping items found!</h3>
     </td>
@@ -146,9 +147,8 @@
   <app-confirm-delete-dialog
     [deleteInfo]="'checked'"
     [deleteName]="'items'"
-    [deleteId]="items[0].itemId.toString()"
+    [deleteId]="'-1243'"
     (confirm)="deleteCheckedItems()"
   ></app-confirm-delete-dialog>
-
 
 </div>
