@@ -49,7 +49,7 @@ export class AllChoreComponent {
         let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
         let errorDescription = error.error.substring(0, firstBracket);
         errorMessages.forEach(message => {
-          this.notification.error(message, errorDescription);
+          this.notification.error("Error loading chores", 'Error')
         });
       }
     });

@@ -3,9 +3,9 @@ import {Router} from "@angular/router";
 import {ChoreService} from "../../../services/chore.service";
 import {ToastrService} from "ngx-toastr";
 import {ChoresDto} from "../../../dtos/chores";
-import {AuthService} from "../../../services/auth.service";
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ChoreConfirmationModalComponent} from "./chore-confirmation-modal/chore-confirmation-modal.component";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 
 @Component({
@@ -22,7 +22,8 @@ export class MyChoresComponent {
   constructor(private router: Router,
               private choreService: ChoreService,
               private notification: ToastrService,
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private errorHandler: ErrorHandlerService) {
   }
 
   showConfirmationModal() {
@@ -40,13 +41,7 @@ export class MyChoresComponent {
               this.notification.success("Chores are repeated.", "Success");
             },
             error: (error) => {
-              let firstBracket = error.error.indexOf('[');
-              let lastBracket = error.error.indexOf(']');
-              let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-              let errorDescription = error.error.substring(0, firstBracket);
-              errorMessages.forEach(message => {
-                this.notification.error(message, errorDescription);
-              });
+              this.errorHandler.handleErrors(error, "chore", 'delete');
             }
           });
         }
@@ -68,13 +63,7 @@ export class MyChoresComponent {
         }
       },
       error: error => {
-        let firstBracket = error.error.indexOf('[');
-        let lastBracket = error.error.indexOf(']');
-        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-        let errorDescription = error.error.substring(0, firstBracket);
-        errorMessages.forEach(message => {
-          this.notification.error(message, errorDescription);
-        });
+        this.notification.error("Failed to load chores", 'Error')
       }
     });
   }
@@ -87,7 +76,6 @@ export class MyChoresComponent {
       }
     }
     this.completedChores = this.chores.filter(chore => chore.completed);
-    console.log(this.completedChores)
   }
 
   completedChoresIsEmpty() {
@@ -110,8 +98,8 @@ export class MyChoresComponent {
           }
           this.notification.success("Chores completed and points awarded.", "Success");
         },
-        error: err => {
-          console.error("Chores could not be deleted", err);
+        error: error => {
+          this.errorHandler.handleErrors(error, "chore", 'delete');
         }
       });
     }
@@ -125,7 +113,7 @@ export class MyChoresComponent {
         next: () => {
         },
         error: err => {
-          console.error("Application users could not be updated", err);
+          console.error("Application users could not be updated", 'Error');
         }
       });
     }

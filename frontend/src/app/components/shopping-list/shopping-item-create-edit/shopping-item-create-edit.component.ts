@@ -14,6 +14,7 @@ import {Unit} from "../../../dtos/unit";
 import {UnitService} from "../../../services/unit.service";
 import {ShoppingListDto} from "../../../dtos/shoppingList";
 import {DomSanitizer} from "@angular/platform-browser";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 export enum ShoppingItemCreateEditMode {
   create,
@@ -27,7 +28,7 @@ export enum ShoppingItemCreateEditMode {
 })
 export class ShoppingItemCreateEditComponent implements OnInit {
 
-  mode: ItemCreateEditMode = ItemCreateEditMode.create;
+  mode: ShoppingItemCreateEditMode = ShoppingItemCreateEditMode.create;
   item: ShoppingItemDto = {
     shoppingList: new ShoppingListDto(null, null, null),
     alwaysInStock: false,
@@ -43,14 +44,15 @@ export class ShoppingItemCreateEditComponent implements OnInit {
     private route: ActivatedRoute,
     private notification: ToastrService,
     private unitService: UnitService,
+    private errorHandler: ErrorHandlerService
   ) {
   }
 
   public get heading(): string {
     switch (this.mode) {
-      case ItemCreateEditMode.create:
+      case ShoppingItemCreateEditMode.create:
         return 'Create New Shopping Item';
-      case ItemCreateEditMode.edit:
+      case ShoppingItemCreateEditMode.edit:
         return 'Editing Shopping Item';
       default:
         return '?';
@@ -59,9 +61,9 @@ export class ShoppingItemCreateEditComponent implements OnInit {
 
   public get submitButtonText(): string {
     switch (this.mode) {
-      case ItemCreateEditMode.create:
+      case ShoppingItemCreateEditMode.create:
         return 'Create';
-      case ItemCreateEditMode.edit:
+      case ShoppingItemCreateEditMode.edit:
         return 'Update';
       default:
         return '?';
@@ -69,18 +71,18 @@ export class ShoppingItemCreateEditComponent implements OnInit {
   }
 
   get modeIsCreate(): boolean {
-    return this.mode === ItemCreateEditMode.create;
+    return this.mode === ShoppingItemCreateEditMode.create;
   }
 
   get modeIsEdit(): boolean {
-    return this.mode === ItemCreateEditMode.edit;
+    return this.mode === ShoppingItemCreateEditMode.edit;
   }
 
   private get modeActionFinished(): string {
     switch (this.mode) {
-      case ItemCreateEditMode.create:
+      case ShoppingItemCreateEditMode.create:
         return 'created';
-      case ItemCreateEditMode.edit:
+      case ShoppingItemCreateEditMode.edit:
         return 'updated';
       default:
         return '?';
@@ -99,7 +101,6 @@ export class ShoppingItemCreateEditComponent implements OnInit {
             this.item.shoppingList = res;
           }
         });
-
       });
     });
 
@@ -109,13 +110,10 @@ export class ShoppingItemCreateEditComponent implements OnInit {
           return unit.name === "g" || unit.name === "kg" || unit.name === "ml" || unit.name === "l" || unit.name === "pcs" || unit.name === "pound" || unit.name === "gallon";
         });
         this.item.unit = this.availableUnits[0];
-      },
-      error: err => {
-        this.notification.error('Failed to load Units', "Error");
       }
     });
 
-    if (this.mode === ItemCreateEditMode.edit) {
+    if (this.mode === ShoppingItemCreateEditMode.edit) {
       this.route.params.subscribe({
         next: params => {
           const itemId = params.id;
@@ -123,17 +121,14 @@ export class ShoppingItemCreateEditComponent implements OnInit {
             next: res => {
               this.item = res;
               this.unitName = res.unit.name;
-              console.log(this.item.unit)
             },
             error: error => {
-              console.error(`Item could not be retrieved from the backend: ${error}`);
               this.router.navigate(['shopping-lists', 'list' + this.item.shoppingList.id]);
               this.notification.error('Item could not be retrieved', "Error");
             }
           })
         },
         error: error => {
-          console.error(`Item could not be retrieved using the ID from the URL: ${error}`);
           this.router.navigate(['shopping-lists', 'list' + this.item.shoppingList.id]);
           this.notification.error('No item provided for editing', "Error");
         }
@@ -148,13 +143,13 @@ export class ShoppingItemCreateEditComponent implements OnInit {
       let observable: Observable<ShoppingItemDto>;
       this.item.quantityCurrent = this.item.quantityTotal;
       switch (this.mode) {
-        case ItemCreateEditMode.create:
+        case ShoppingItemCreateEditMode.create:
           if (this.item.generalName == null) {
             this.item.generalName = this.item.productName;
           }
           observable = this.shoppingService.createItem(this.item);
           break;
-        case ItemCreateEditMode.edit:
+        case ShoppingItemCreateEditMode.edit:
           observable = this.shoppingService.updateItem(this.item);
           break;
         default:
@@ -167,14 +162,7 @@ export class ShoppingItemCreateEditComponent implements OnInit {
           this.router.navigate(['shopping-lists', 'list', this.item.shoppingList.id]);
         },
         error: error => {
-          console.log(error)
-          let firstBracket = error.error.indexOf('[');
-          let lastBracket = error.error.indexOf(']');
-          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-          let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach(message => {
-            this.notification.error(message, errorDescription);
-          });
+          this.errorHandler.handleErrors(error, "shopping item", this.modeActionFinished);
         }
       });
     }

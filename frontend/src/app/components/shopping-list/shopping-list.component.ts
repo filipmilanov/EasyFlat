@@ -1,14 +1,10 @@
-import {Component, ElementRef, NgIterable, OnInit} from '@angular/core';
-import {DefaultGlobalConfig, ToastrService} from "ngx-toastr";
+import {Component, OnInit} from '@angular/core';
+import {ToastrService} from "ngx-toastr";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ItemDto, ShoppingItemDto, ShoppingItemSearchDto} from "../../dtos/item";
-import {ItemService} from "../../services/item.service";
 import {ShoppingListService} from "../../services/shopping-list.service";
 import {ShoppingListDto} from "../../dtos/shoppingList";
-import {SharedFlat} from "../../dtos/sharedFlat";
-import {Observable} from "rxjs";
 import {ErrorHandlerService} from "../../services/util/error-handler.service";
-import {forEach} from "lodash";
 
 @Component({
   selector: 'app-shopping-list',
@@ -56,38 +52,16 @@ export class ShoppingListComponent implements OnInit {
                 this.getItems();
               },
               error: (error: any) => {
-                let firstBracket = error.error.indexOf('[');
-                let lastBracket = error.error.indexOf(']');
-                let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-                let errorDescription = error.error.substring(0, firstBracket);
-                errorMessages.forEach(message => {
-                  this.notification.error(message, errorDescription);
-                });
+                this.notification.error("Failed to load shopping list", 'Error')
               }
-            });
-          },
-          error: error => {
-            let firstBracket = error.error.indexOf('[');
-            let lastBracket = error.error.indexOf(']');
-            let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-            let errorDescription = error.error.substring(0, firstBracket);
-            errorMessages.forEach(message => {
-              this.notification.error(message, errorDescription);
             });
           }
         });
       },
       error: error => {
-        let firstBracket = error.error.indexOf('[');
-        let lastBracket = error.error.indexOf(']');
-        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-        let errorDescription = error.error.substring(0, firstBracket);
-        errorMessages.forEach(message => {
-          this.notification.error(message, errorDescription);
-        });
+        this.notification.error("Failed to load shopping lista", 'Error')
       }
     });
-
     this.checkedItems = [];
   }
 
@@ -95,16 +69,9 @@ export class ShoppingListComponent implements OnInit {
     this.shoppingListService.getItemsWithShopId(this.shopId, this.searchParams).subscribe({
       next: res => {
         this.items = res;
-        console.log(this.items)
       },
       error: error => {
-        let firstBracket = error.error.indexOf('[');
-        let lastBracket = error.error.indexOf(']');
-        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-        let errorDescription = error.error.substring(0, firstBracket);
-        errorMessages.forEach(message => {
-          this.notification.error(message, errorDescription);
-        });
+        this.notification.error("Failed to load shopping items", 'Error')
       }
     });
   }
@@ -118,16 +85,10 @@ export class ShoppingListComponent implements OnInit {
     this.shoppingListService.deleteList(this.shopId).subscribe({
       next: (deletedList: ShoppingListDto) => {
         this.router.navigate(['shopping-lists']);
-        this.notification.success(deletedList.name + " was successfully deleted.", "Success");
+        this.notification.success('Shopping list ' + deletedList.name + " was successfully deleted.", "Success");
       },
       error: error => {
-        let firstBracket = error.error.indexOf('[');
-        let lastBracket = error.error.indexOf(']');
-        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-        let errorDescription = error.error.substring(0, firstBracket);
-        errorMessages.forEach(message => {
-          this.notification.error(message, errorDescription);
-        });
+        this.errorHandler.handleErrors(error, "shopping list", 'delete');
       }
     });
   }
@@ -135,7 +96,6 @@ export class ShoppingListComponent implements OnInit {
   updateCheckedItems(item: ShoppingItemDto) {
     item.check = !item.check;
     this.checkedItems = this.getCheckedItems();
-    console.log('Checked Items:', this.checkedItems);
   }
 
   getCheckedItems(): ShoppingItemDto[] {
@@ -157,13 +117,7 @@ export class ShoppingListComponent implements OnInit {
           this.ngOnInit();
         },
         error: error => {
-          let firstBracket = error.error.indexOf('[');
-          let lastBracket = error.error.indexOf(']');
-          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-          let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach(message => {
-            this.notification.error(message, errorDescription);
-          });
+          this.errorHandler.handleErrors(error, "shopping item", 'delete');
         }
       });
     }
@@ -177,9 +131,6 @@ export class ShoppingListComponent implements OnInit {
           this.shopId = res.id + '';
           this.getItems();
           this.router.navigate([this.baseUri, this.shopId]);
-        },
-        error: err => {
-          console.error('Error fetching shopping list:', err);
         }
       });
     }
@@ -194,7 +145,7 @@ export class ShoppingListComponent implements OnInit {
         error: err => {
           this.errorHandler.handleErrors(err, "shopping-item", "created");
           if (err.status === 409) {
-            this.notification.error("Either change the unit or the category")
+            this.notification.error("Either change the unit or the category", 'Error');
           }
         }
       }

@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ShoppingListService} from "../../../services/shopping-list.service";
 import {ShoppingListDto} from "../../../dtos/shoppingList";
-import {error} from "@angular/compiler-cli/src/transformers/util";
 import {ToastrService} from "ngx-toastr";
 
 @Component({
@@ -18,7 +17,6 @@ export class ShoppingListsComponent implements OnInit{
               private notification: ToastrService) {
   }
 
-
   openInput() {
     this.showInput = true;
   }
@@ -31,11 +29,9 @@ export class ShoppingListsComponent implements OnInit{
     this.shoppingService.getShoppingLists(this.searchParams).subscribe({
       next: res => {
         this.lists = res;
-        console.log(this.lists)
       },
       error: err => {
-        console.error("Error fetching shopping lists", err);
-        this.notification.error("Error loading shopping lists")
+        this.notification.error("Failed to loading shopping lists", 'Error')
       }
     })
   }
