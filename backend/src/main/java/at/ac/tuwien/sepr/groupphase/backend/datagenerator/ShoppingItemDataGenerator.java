@@ -54,7 +54,8 @@ public class ShoppingItemDataGenerator {
     private ItemLabel label10;
 
 
-    public ShoppingItemDataGenerator(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository, LabelRepository itemLabelRepository, UnitRepository unitRepository, IngredientRepository ingredientRepository) {
+    public ShoppingItemDataGenerator(ShoppingItemRepository shoppingItemRepository, ShoppingListRepository shoppingListRepository,
+                                     LabelRepository itemLabelRepository, UnitRepository unitRepository, IngredientRepository ingredientRepository) {
         this.shoppingItemRepository = shoppingItemRepository;
         this.shoppingListRepository = shoppingListRepository;
         this.itemLabelRepository = itemLabelRepository;
@@ -62,7 +63,6 @@ public class ShoppingItemDataGenerator {
         this.ingredientRepository = ingredientRepository;
     }
 
-    @SuppressWarnings("checkstyle:VariableDeclarationUsageDistance")
     @PostConstruct
     public void generateShoppingItems() {
         LOGGER.info("generateShoppingItems()");
@@ -71,7 +71,6 @@ public class ShoppingItemDataGenerator {
         homeImprovements = shoppingListRepository.findById(3L).orElseThrow();
         foodstuff = shoppingListRepository.findById(4L).orElseThrow();
 
-        // Assuming you have some predefined units and labels
         gram = unitRepository.findByName("g").orElseThrow();
         kg = unitRepository.findByName("kg").orElseThrow();
         pcs = unitRepository.findByName("pcs").orElseThrow();

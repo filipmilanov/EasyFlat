@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.datagenerator.IngredientsDataGenerat
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ItemDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.RecipeDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.SharedFlatDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ShoppingItemDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ShoppingListDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.StorageDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.datagenerator.UnitDataGenerator;
@@ -33,6 +34,7 @@ public class TestDataGenerator {
     private final UnitDataGenerator unitDataGenerator;
     private final ExpenseDataGenerator expenseDataGenerator;
     private final ShoppingListDataGenerator shoppingListDataGenerator;
+    private final ShoppingItemDataGenerator shoppingItemDataGenerator;
 
     public TestDataGenerator(StorageDataGenerator digitalStorageDataGenerator,
                              IngredientsDataGenerator ingredientsDataGenerator,
@@ -45,7 +47,7 @@ public class TestDataGenerator {
                              RecipeDataGenerator recipeDataGenerator,
                              CookbookDataGenerator cookbookDataGenerator,
                              EventDataGenerator eventDataGenerator,
-                             ShoppingListDataGenerator shoppingListDataGenerator1) {
+                             ShoppingListDataGenerator shoppingListDataGenerator1, ShoppingItemDataGenerator shoppingItemDataGenerator) {
         this.digitalStorageDataGenerator = digitalStorageDataGenerator;
         this.ingredientsDataGenerator = ingredientsDataGenerator;
         this.itemDataGenerator = itemDataGenerator;
@@ -58,6 +60,7 @@ public class TestDataGenerator {
         this.eventDataGenerator = eventDataGenerator;
         this.expenseDataGenerator = expenseDataGenerator;
         this.shoppingListDataGenerator = shoppingListDataGenerator1;
+        this.shoppingItemDataGenerator = shoppingItemDataGenerator;
     }
 
     public void cleanUp() throws ValidationException, ConflictException {
@@ -67,6 +70,7 @@ public class TestDataGenerator {
         applicationUserDataGenerator.generateApplicationUsers();
         digitalStorageDataGenerator.generateDigitalStorages();
         shoppingListDataGenerator.generateShoppingLists();
+        shoppingItemDataGenerator.generateShoppingItems();
         cookbookDataGenerator.generateCookbooks();
         recipeDataGenerator.generateItems();
         eventDataGenerator.generateEvents();

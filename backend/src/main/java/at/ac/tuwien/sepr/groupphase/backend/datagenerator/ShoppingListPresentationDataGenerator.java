@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
-@Profile({"generateData", "test", "unitTest"})
+@Profile({"generateData"})
 @Component("ShoppingListDataGenerator")
 @DependsOn({"CleanDatabase"})
 public class ShoppingListPresentationDataGenerator {
@@ -45,7 +45,7 @@ public class ShoppingListPresentationDataGenerator {
 
         // ShoppingList 2: Home Improvements
         SharedFlat sharedFlat2 = new SharedFlat();
-        sharedFlat1.setId(2L);
+        sharedFlat2.setId(2L);
         ShoppingList homeImprovementsList = new ShoppingList();
         homeImprovementsList.setName("Home Improvements");
         homeImprovementsList.setSharedFlat(sharedFlat2);

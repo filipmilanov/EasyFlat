@@ -11,6 +11,12 @@ public record ShoppingListDto(
     @Size(max = 40, message = "The name of the shopping list cannot have more than 40 characters")
     String name,
     Integer itemsCount
-
 ) {
+    public ShoppingListDto withId(long newId) {
+        return new ShoppingListDto(
+            newId,
+            name,
+            itemsCount
+        );
+    }
 }
