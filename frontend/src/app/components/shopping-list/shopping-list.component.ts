@@ -171,15 +171,13 @@ export class ShoppingListComponent implements OnInit {
   }
 
   getIdFormatForDeleteModalForChecked(checkedItems: ShoppingItemDto[]) {
-    return `items${this.items[0].itemId.toString()}`.replace(/[^a-zA-Z0-9]+/g, '');
+    return `items-1243`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 
   truncateString(input: string, maxLength: number): string {
-    console.log(input)
     if (input.length <= maxLength) {
       return input;
     }
-
     const truncated = input.substring(0, maxLength - 3);
     return truncated + '...';
   }
