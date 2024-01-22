@@ -189,13 +189,12 @@ class ExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("Can all expenses be found by title?")
+    @DisplayName("Can an expense be created using valid values?")
     void givenValidExpenseWhenCreateThenExpenseIsPersistedWithId() throws ValidationException, ConflictException, AuthorizationException {
         // given
         double totalAmount = 100;
         WgDetailDto sharedFlat = new WgDetailDto();
         sharedFlat.setId(1L);
-
 
         List<DebitDto> debitUsers = new ArrayList<>();
         Set<ApplicationUser> usersOfFlat = sharedFlatRepository.findById(sharedFlat.getId()).orElseThrow().getUsers();
@@ -361,7 +360,8 @@ class ExpenseServiceTest {
     @DisplayName("Can an expense be created with different split strategies?")
     @MethodSource("data")
     void givenExpenseWithCertainSplitByWhenCreateThenAmountIsSplitCorrectly(List<DebitDto> debitDtos,
-                                                                            List<Double> expected) throws ValidationException, ConflictException, AuthorizationException {
+                                                                            List<Double> expected)
+        throws ValidationException, ConflictException, AuthorizationException {
         // given
         double totalAmount = 100L;
         WgDetailDto sharedFlat = new WgDetailDto();
@@ -537,6 +537,155 @@ class ExpenseServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("Can an existing expense be updated using valid values?")
+    void givenValidExpenseWhenUpdateThenExpenseIsUpdated() throws ValidationException, ConflictException, AuthorizationException {
+        // given
+        double initialTotalAmount = 100.0;
+        String initialTitle = "Test Expense";
+        String initialDescription = "Test Description";
+
+        WgDetailDto sharedFlat = new WgDetailDto();
+        sharedFlat.setId(1L);
+
+        List<DebitDto> debitUsers = new ArrayList<>();
+        Set<ApplicationUser> usersOfFlat = sharedFlatRepository.findById(sharedFlat.getId()).orElseThrow().getUsers();
+        usersOfFlat.forEach(user -> {
+            UserListDto userDetailDto = UserListDtoBuilder.builder()
+                .id(user.getId())
+                .build();
+            DebitDto debitDto = DebitDtoBuilder.builder()
+                .user(userDetailDto)
+                .splitBy(SplitBy.EQUAL)
+                .value(initialTotalAmount / usersOfFlat.size())
+                .build();
+            debitUsers.add(debitDto);
+        });
+
+        UserListDto paidBy = UserListDtoBuilder.builder()
+            .id(usersOfFlat.stream().findAny().orElseThrow().getId())
+            .build();
+
+        ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
+            .title(initialTitle)
+            .description(initialDescription)
+            .amountInCents(initialTotalAmount)
+            .createdAt(LocalDateTime.now())
+            .paidBy(paidBy)
+            .debitUsers(debitUsers)
+            .build();
+
+        Expense actual = service.create(expenseDto);
+
+        double updatedTotalAmount = 160.0;
+        String updatedTitle = "Test Expense Updated";
+        String updatedDescription = "Test Description Updated";
+
+        List<DebitDto> updatedDebitUsers = new ArrayList<>();
+        usersOfFlat.forEach(user -> {
+            UserListDto userDetailDto = UserListDtoBuilder.builder()
+                .id(user.getId())
+                .build();
+            DebitDto debitDto = DebitDtoBuilder.builder()
+                .user(userDetailDto)
+                .splitBy(SplitBy.EQUAL)
+                .value(updatedTotalAmount / usersOfFlat.size())
+                .build();
+            updatedDebitUsers.add(debitDto);
+        });
+
+        ExpenseDto updatedExpenseDto = ExpenseDtoBuilder.builder()
+            .id(actual.getId())
+            .title(updatedTitle)
+            .description(updatedDescription)
+            .amountInCents(updatedTotalAmount)
+            .createdAt(LocalDateTime.now())
+            .paidBy(paidBy)
+            .debitUsers(updatedDebitUsers)
+            .build();
+
+        // when
+        service.update(updatedExpenseDto);
+
+        // then
+        Expense updatedItem = service.findById(actual.getId());
+
+        assertThat(updatedItem.getDebitUsers()).hasSize(expenseDto.debitUsers().size());
+
+        assertAll(
+            () -> assertThat(updatedItem.getId()).isNotNull(),
+            () -> assertThat(updatedItem)
+                .extracting(
+                    Expense::getTitle,
+                    Expense::getDescription,
+                    Expense::getAmountInCents
+                ).contains(
+                    updatedExpenseDto.title(),
+                    updatedExpenseDto.description(),
+                    updatedExpenseDto.amountInCents()
+                ),
+            () -> assertThat(updatedItem.getPaidBy().getId()).isEqualTo(updatedExpenseDto.paidBy().id()),
+            () -> assertThat(updatedItem.getDebitUsers()).hasSize(updatedExpenseDto.debitUsers().size())
+        );
+    }
+
+    @Test
+    @DisplayName("Can an existing expense be updated with invalid debit distribution?")
+    void givenInvalidExpenseWhenUpdateThenValidationExceptionIsThrown() throws ValidationException, ConflictException, AuthorizationException {
+        // given
+        double totalAmount = 100;
+        WgDetailDto sharedFlat = new WgDetailDto();
+        sharedFlat.setId(1L);
+
+        List<DebitDto> debitUsers = new ArrayList<>();
+        Set<ApplicationUser> usersOfFlat = sharedFlatRepository.findById(sharedFlat.getId()).orElseThrow().getUsers();
+        usersOfFlat.forEach(user -> {
+            UserListDto userDetailDto = UserListDtoBuilder.builder()
+                .id(user.getId())
+                .build();
+            DebitDto debitDto = DebitDtoBuilder.builder()
+                .user(userDetailDto)
+                .splitBy(SplitBy.EQUAL)
+                .value(totalAmount / usersOfFlat.size())
+                .build();
+            debitUsers.add(debitDto);
+        });
+
+        UserListDto paidBy = UserListDtoBuilder.builder()
+            .id(usersOfFlat.stream().findAny().orElseThrow().getId())
+            .build();
+
+        ExpenseDto expenseDto = ExpenseDtoBuilder.builder()
+            .title("Test Expense")
+            .description("Test Description")
+            .amountInCents(100.0)
+            .createdAt(LocalDateTime.now())
+            .paidBy(paidBy)
+            .debitUsers(debitUsers)
+            .build();
+
+        Expense actual = service.create(expenseDto);
+
+        ExpenseDto updatedExpenseDto = ExpenseDtoBuilder.builder()
+            .id(actual.getId())
+            .title("Test Expense Updated")
+            .description("Test Description Updated")
+            .amountInCents(160.0)
+            .createdAt(LocalDateTime.now())
+            .paidBy(paidBy)
+            .debitUsers(debitUsers)
+            .build();
+
+        // when + then
+        String message = assertThrows(ValidationException.class, () -> service.update(updatedExpenseDto)).getMessage();
+        assertThat(message)
+            .contains(
+                "sum",
+                "users",
+                "equal",
+                "total amount"
+            );
+    }
 
     @Test
     @DisplayName("Are debits calculated right, so that after paying the expense, the balance is 0?")

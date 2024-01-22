@@ -80,5 +80,7 @@ this.type = "all types"
     this.notification.success(`Recipe ${recipeTitle} successfully added to the cookbook.`, "Success");
   }
 
-
+  makeEmptyTrue(){
+    this.empty = true;
+  }
 }

@@ -58,6 +58,12 @@ public class SharedFlatValidatorImpl implements SharedFlatValidator {
                 errors.add("Flat name is too long");
             }
         }
+        if (sharedFlat.getPassword() == null) {
+            errors.add("Password is not given");
+        }
+        if (sharedFlat.getPassword().length() > 30) {
+            errors.add("Password is too long");
+        }
         if (sharedFlat.getId() != null) {
             errors.add("The Id must be null");
         }

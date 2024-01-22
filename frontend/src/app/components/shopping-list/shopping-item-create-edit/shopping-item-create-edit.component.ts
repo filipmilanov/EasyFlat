@@ -164,11 +164,11 @@ export class ShoppingItemCreateEditComponent implements OnInit {
 
   addLabel(label: string, selectedLabelColor: string): void {
     if (!label || label.trim().length === 0) {
-      this.notification.error("The label text cannot be blank", 'Error')
+      this.notification.error("The label text cannot be blank", 'The data is not valid')
       return;
     }
     if (label.length > 10) {
-      this.notification.error("The label text cannot have more than 10 characters", 'Error')
+      this.notification.error("The label text cannot have more than 10 characters", 'Tha data is not valid')
       return;
     }
     if (this.item.labels === undefined) {

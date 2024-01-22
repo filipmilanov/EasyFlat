@@ -7,7 +7,7 @@ export class ChoresDto {
   name: string;
   description: string;
   endDate: Date;
-  points: number;
+  points: string;
   user: UserDetail;
   sharedFlat: SharedFlat;
   completed: boolean;

@@ -57,8 +57,7 @@ export class ChoreService {
   }
 
   updatePoints(points: number, userId: string) {
-    const requestBody = { points: points };  // Assuming UserDetail has a 'points' property
-    console.log(requestBody);
+    const requestBody = { points: points };
     return this.httpClient.patch<UserDetail>(this.choreBaseUri + '/' + userId, requestBody);
   }
 
