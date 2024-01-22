@@ -73,6 +73,12 @@ public record ExpenseDto(
             || debitUsers.stream().map(DebitDto::splitBy).distinct().count() == 1;
     }
 
+    @AssertTrue(message = "The sum of the debit values must be at least 1")
+    public boolean isSumAtLeast1() {
+        double sum = debitUsers.stream().mapToDouble(DebitDto::value).sum();
+        return sum >= 1;
+    }
+
     public ExpenseDto withId(long newId) {
         return new ExpenseDto(
             newId,
