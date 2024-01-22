@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -13,12 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class ChoreValidatorImpl implements ChoreValidator {
@@ -39,23 +38,6 @@ public class ChoreValidatorImpl implements ChoreValidator {
         checkConflictForCreate(chore);
     }
 
-    @Override
-    public void validateForUpdate(Chore chore) throws ValidationException, ConflictException {
-        LOGGER.trace("validateForUpdate({})", chore);
-        List<String> errors = new ArrayList<>();
-        if (chore.getId() == null) {
-            errors.add("The id must not be null");
-        }
-        if (chore.getEndDate().isBefore(LocalDate.now())) {
-            errors.add("You can not create a chore with expired date");
-        }
-
-        if (!errors.isEmpty()) {
-            throw new ConflictException("Not valid data", errors);
-        }
-
-    }
-
     private void checkConflictForCreate(ChoreDto chore) throws ConflictException {
         LOGGER.trace("checkConflictForCreate({})", chore);
 
@@ -64,30 +46,69 @@ public class ChoreValidatorImpl implements ChoreValidator {
             errors.add("The id must be null");
         }
 
-        if (chore.name() == null || chore.name().trim().isEmpty()) {
-            if (chore.name().isBlank()) {
-                errors.add("The given name can not be blank");
-            }
-        }
-        if (chore.endDate().isBefore(LocalDate.now())) {
-            errors.add("You can not create a chore with expired date");
-        }
-        if (chore.description() != null && !chore.description().trim().isEmpty()) {
-            if (chore.description().isBlank()) {
-                errors.add("The description can not be blank");
-            }
-        }
-
         if (!errors.isEmpty()) {
-            throw new ConflictException("Not valid data", errors);
+            throw new ConflictException("There is a conflict with persisted data", errors);
         }
     }
 
     private void checkValidationForCreate(ChoreDto chore) throws ValidationException {
         LOGGER.trace("checkValidationForCreate({})", chore);
         Set<ConstraintViolation<ChoreDto>> validationViolations = validator.validate(chore);
-        if (!validationViolations.isEmpty()) {
-            throw new ValidationException("Not valid data", validationViolations.stream().map(ConstraintViolation::getMessage).toList());
+
+        List<String> violations = new ArrayList<>();
+        if (chore.points() != null) {
+            if (chore.points().isBlank() || isNotNumeric(chore.points())) {
+                violations.add("The points must be a number");
+            } else {
+                if (!isValidInteger(chore.points())) {
+                    violations.add("The points cannot have any decimal places");
+                    if (Float.parseFloat(chore.points()) < 0) {
+                        violations.add("The points must be a positive number");
+                    }
+                } else {
+                    if (Integer.parseInt(chore.points()) < 0) {
+                        violations.add("The points must be a positive number");
+                    } else if (Integer.parseInt(chore.points()) > 100) {
+                        violations.add("The points cannot be greater than 100");
+                    }
+                }
+            }
         }
+
+        List<String> errorMessages = Stream.concat(
+                validationViolations.stream().map(ConstraintViolation::getMessage),
+                violations.stream()
+            )
+            .collect(Collectors.toList());
+
+        if (!errorMessages.isEmpty()) {
+            throw new ValidationException("Not valid data", errorMessages);
+        }
+    }
+
+    @Override
+    public void validateForUpdate(Chore chore) throws ValidationException, ConflictException {
+        LOGGER.trace("validateForUpdate({})", chore);
+        List<String> errors = new ArrayList<>();
+        if (chore.getId() == null) {
+            errors.add("The id must not be null");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ValidationException("Not valid data", errors);
+        }
+    }
+
+    private static boolean isNotNumeric(String str) {
+        // Allow whole numbers (positive or negative) with optional decimal places
+        String regex = "-?\\d+(\\.\\d+)?";
+
+        return !Pattern.matches(regex, str);
+    }
+
+    private static boolean isValidInteger(String valueString) {
+        // Allow only whole numbers (no decimal places)
+        String regex = "^-?\\d+$";
+        return Pattern.matches(regex, valueString);
     }
 }
