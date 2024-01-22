@@ -27,7 +27,7 @@ export class ErrorHandlerService {
     // 502 - Bad Gateway (If API could not be reached)
 
     if (error.status === 400) {
-      this.handleErrorMessages(error);
+      this.notification.error("There was an error with the request.", "Error");
     } else if (error.status === 403) {
       this.notification.error(`You do not have permission to access to this ${entityType}.`, "Error");
     } else if (error.status === 404) {
@@ -48,25 +48,30 @@ export class ErrorHandlerService {
   }
 
   private handleErrorMessages(error: any) {
-    let firstBracket = error.error.indexOf('[');
-    let lastBracket = error.error.lastIndexOf(']'); // Use lastIndexOf in case there are multiple brackets
+    if(typeof error.error === 'string'){
+      let firstBracket = error.error.indexOf('[');
+      let lastBracket = error.error.lastIndexOf(']'); // Use lastIndexOf in case there are multiple brackets
 
-    if (firstBracket === -1) {
-      if (error.error.length > 0){
-        this.notification.error(error.error, "Error");
+      if (firstBracket === -1) {
+        if (error.error.length > 0){
+          this.notification.error(error.error, "Error");
+        } else {
+          this.notification.error("An error occurred." , "Error");
+        }
       } else {
-        this.notification.error("An error occurred." , "Error");
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket - 2);
+        if (!(errorMessages.length === 1 && errorMessages[0] === '')) {
+          errorMessages.forEach(message => {
+            this.notification.error(message.trim(), errorDescription);
+          });
+        } else {
+          this.notification.error("An error occurred." , "Error");
+        }
       }
     } else {
-      let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-      let errorDescription = error.error.substring(0, firstBracket - 2);
-      if (!(errorMessages.length === 1 && errorMessages[0] === '')) {
-        errorMessages.forEach(message => {
-          this.notification.error(message.trim(), errorDescription);
-        });
-      } else {
-        this.notification.error("An error occurred." , "Error");
-      }
+      this.notification.error("An error occurred.", "Error");
     }
+
   }
 }
