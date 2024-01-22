@@ -6,7 +6,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.OpenFoodFactsItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.openfoodfactsapi.OpenFoodFactsIngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.openfoodfactsapi.OpenFoodFactsResponseDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.service.IngredientService;
@@ -28,13 +27,16 @@ public class ItemFromOpenFoodFactsApiMapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final IngredientService ingredientService;
     private final UnitService unitService;
+    private final IngredientMapper ingredientMapper;
     private final UnitMapper unitMapper;
 
     public ItemFromOpenFoodFactsApiMapper(IngredientService ingredientService,
                                           UnitService unitService,
+                                          IngredientMapper ingredientMapper,
                                           UnitMapper unitMapper) {
         this.ingredientService = ingredientService;
         this.unitService = unitService;
+        this.ingredientMapper = ingredientMapper;
         this.unitMapper = unitMapper;
     }
 
@@ -76,7 +78,7 @@ public class ItemFromOpenFoodFactsApiMapper {
                 final String boughtAt = openFoodFactsResponseDto.product().boughtAt();
                 List<OpenFoodFactsIngredientDto> ingredientList = openFoodFactsResponseDto.product().ingredients();
 
-                List<Ingredient> ingredients = null;
+                List<IngredientDto> ingredients = null;
 
                 if (ingredientList != null && !ingredientList.isEmpty()) {
                     // Create a pattern to match non-letter characters - because every ingredient should only consist of letters
@@ -90,7 +92,7 @@ public class ItemFromOpenFoodFactsApiMapper {
                             .build())
                         .collect(Collectors.toList());
 
-                    ingredients = ingredientService.findIngredientsAndCreateMissing(ingredientDtoList);
+                    ingredients = ingredientMapper.entityListToDtoList(ingredientService.findIngredientsAndCreateMissing(ingredientDtoList));
                 }
 
                 UnitDto unitDto = null;

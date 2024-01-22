@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.Ingredient;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 import java.util.List;
@@ -15,6 +14,6 @@ public record OpenFoodFactsItemDto(
     UnitDto unit,
     String description,
     String boughtAt,
-    List<Ingredient> ingredients
+    List<IngredientDto> ingredients
 ) {
 }
