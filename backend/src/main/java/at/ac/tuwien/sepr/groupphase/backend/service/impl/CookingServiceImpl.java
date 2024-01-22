@@ -228,6 +228,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public List<Cookbook> findAllCookbooks() {
+        LOGGER.trace("findAllCookbooks");
         ApplicationUser applicationUser = this.authService.getUserFromToken();
 
         return cookbookRepository.findBySharedFlatIs(applicationUser.getSharedFlat());
@@ -235,6 +236,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public List<RecipeSuggestionDto> getCookbook() throws ValidationException, AuthorizationException {
+        LOGGER.trace("getCookbook");
         List<RecipeSuggestionDto> recipesDto = new LinkedList<>();
         Long cookbookId = this.getCookbookIdForUser();
         Cookbook cookbook = cookbookRepository.findById(cookbookId).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
@@ -252,6 +254,7 @@ public class CookingServiceImpl implements CookingService {
     @Override
     @Transactional
     public RecipeSuggestion createCookbookRecipe(RecipeSuggestionDto recipe) throws AuthorizationException, ConflictException, ValidationException {
+        LOGGER.trace("createCookbookRecipe : {}", recipe);
         if (recipe.id() != null) {
             RecipeDetailDto recipeWithSteps = getRecipeDetails(recipe.id());
             StringBuilder summary = new StringBuilder(recipe.summary());
@@ -281,6 +284,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestionDto getCookbookRecipe(Long id) {
+        LOGGER.trace("getCookbookRecipe with id: {}", id);
         if (id == null) {
             return null;
         }
@@ -294,6 +298,7 @@ public class CookingServiceImpl implements CookingService {
     @Override
     @Transactional
     public RecipeSuggestion updateCookbookRecipe(RecipeSuggestionDto recipe) throws ValidationException, AuthorizationException {
+        LOGGER.trace("updateCookbookRecipe: {}", recipe);
         recipeValidator.validateForUpdate(recipe);
         RecipeSuggestion oldRecipe = repository.findById(recipe.id()).orElseThrow(() -> new NotFoundException("Given Id does not exist in the Database!"));
 
@@ -320,6 +325,7 @@ public class CookingServiceImpl implements CookingService {
     @Override
     @Transactional
     public RecipeSuggestion deleteCookbookRecipe(Long id) throws AuthorizationException {
+        LOGGER.trace("deleteCookbookRecipe with id: {}", id);
         RecipeSuggestionDto deletedRecipe = this.getCookbookRecipe(id);
         this.getCookbookIdForUser();
         RecipeSuggestion toDelete = recipeMapper.dtoToEntity(deletedRecipe, recipeIngredientMapper.dtoListToEntityList(deletedRecipe.extendedIngredients()));
@@ -330,6 +336,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestionDto getMissingIngredients(Long id) {
+        LOGGER.trace("getMissingIngredients for recipe with id: {}", id);
         ApplicationUser user = this.authService.getUserFromToken();
         DigitalStorage digitalStorageOfUser = user.getSharedFlat().getDigitalStorage();
         boolean fromApi = false;
@@ -422,6 +429,8 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeSuggestionDto cookRecipe(RecipeSuggestionDto recipeToCook) throws ValidationException, ConflictException, AuthorizationException {
+        LOGGER.trace("cookRecipe: {}", recipeToCook);
+
         recipeValidator.validateForCook(recipeToCook);
         ApplicationUser user = authService.getUserFromToken();
         Long storageId = user.getSharedFlat().getDigitalStorage().getStorageId();
@@ -466,6 +475,7 @@ public class CookingServiceImpl implements CookingService {
     @Override
     public RecipeSuggestionDto addToShoppingList(RecipeSuggestionDto recipeToCook)
         throws AuthenticationException, ValidationException, ConflictException, AuthorizationException {
+        LOGGER.trace("addToShoppingList: {}", recipeToCook);
         ShoppingList shoppingList = shoppingListService.getShoppingListByName("Shopping List (Default)").orElseThrow(() -> new NotFoundException("Given Id does not exists in the Database!"));
         ShoppingListDto shoppingListDto = shoppingListMapper.entityToDto(shoppingList);
         Long storageId = this.getStorageIdForUser();
@@ -482,6 +492,7 @@ public class CookingServiceImpl implements CookingService {
 
     @Override
     public RecipeIngredientDto unMatchIngredient(String ingredientName) {
+        LOGGER.trace("unMatchIngredient with name: {}", ingredientName);
         return ingredientService.unMatchIngredient(ingredientName);
     }
 

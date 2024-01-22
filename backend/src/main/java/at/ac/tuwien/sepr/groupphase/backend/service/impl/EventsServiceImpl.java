@@ -58,6 +58,7 @@ public class EventsServiceImpl implements EventsService {
     @Override
     @Transactional
     public EventDto create(EventDto event) throws ValidationException {
+        LOGGER.trace("create({})", event);
         eventValidator.validate(event);
         ApplicationUser user = authService.getUserFromToken();
         List<EventLabel> labels = this.findLabelsAndCreateMissing(event.labels());
@@ -70,6 +71,7 @@ public class EventsServiceImpl implements EventsService {
     @Override
     @Transactional
     public EventDto update(EventDto event) throws AuthorizationException, ValidationException {
+        LOGGER.trace("update({})", event);
         eventValidator.validate(event);
         Optional<Event> existingEventOptional = eventsRepository.findById(event.id());
 
@@ -106,6 +108,7 @@ public class EventsServiceImpl implements EventsService {
     @Override
     @Transactional
     public EventDto delete(Long id) throws AuthorizationException {
+        LOGGER.trace("delete(id: {})", id);
         Optional<Event> existingEventOptional = eventsRepository.findById(id);
 
         if (existingEventOptional.isPresent()) {
@@ -127,6 +130,7 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public List<EventDto> findAll() {
+        LOGGER.trace("findAll");
         ApplicationUser user = authService.getUserFromToken();
 
         return eventsRepository.getBySharedFlatIs(user.getSharedFlat()).stream().map(event -> eventMapper.entityToDto(event, sharedFlatMapper.entityToWgDetailDto(user.getSharedFlat()))).toList();
@@ -134,6 +138,7 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public EventDto getEventWithId(Long id) throws AuthorizationException {
+        LOGGER.trace("getEventWithId(id: {})", id);
         Optional<Event> eventOptional = eventsRepository.findById(id);
 
         if (eventOptional.isPresent()) {
@@ -153,6 +158,7 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public List<EventDto> findEventsByLabel(String labelName) throws AuthorizationException {
+        LOGGER.trace(" findEventsByLabel({})", labelName);
         ApplicationUser user = authService.getUserFromToken();
 
         if (user == null) {
@@ -175,6 +181,7 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public String exportAll() {
+        LOGGER.trace("exportAll");
         ApplicationUser user = authService.getUserFromToken();
 
         StringBuilder icsContent = new StringBuilder();
@@ -218,6 +225,7 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public String exportEvent(Long id) throws AuthorizationException {
+        LOGGER.trace("exportEvent");
         Optional<Event> eventOptional = eventsRepository.findById(id);
 
         if (eventOptional.isPresent()) {
