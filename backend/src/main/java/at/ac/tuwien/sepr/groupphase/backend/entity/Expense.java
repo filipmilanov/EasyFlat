@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,9 +46,11 @@ public class Expense {
     private Boolean addedViaStorage;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ApplicationUser paidBy;
 
-    @OneToMany(mappedBy = "id.expense", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id.expense", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Debit> debitUsers = new ArrayList<>();
 
     @ManyToOne
