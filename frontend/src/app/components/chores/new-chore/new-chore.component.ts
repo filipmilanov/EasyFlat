@@ -22,6 +22,7 @@ export class NewChoreComponent {
     sharedFlat: null,
     completed: false
   };
+  userInput: string = null;
   constructor(
     private choreService: ChoreService,
     private router: Router,
@@ -31,8 +32,11 @@ export class NewChoreComponent {
   }
 
   onSubmit() {
-    if (this.chore.points === null) {
+    if (this.userInput === null) {
       this.chore.points = '0';
+    } else if (this.userInput === '') {
+      this.chore.points = 'a';
+      this.userInput = null;
     }
     console.log(this.chore)
     this.choreService.createChore(this.chore).subscribe({
@@ -48,7 +52,6 @@ export class NewChoreComponent {
   }
 
   onPointsInputChange(event: any): void {
-    // You can implement a custom parsing logic here
-    this.chore.points = event.target.value;
+    this.userInput = event.target.value;
   }
 }
