@@ -5,11 +5,13 @@ import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import at.ac.tuwien.sepr.groupphase.backend.service.ItemService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -70,6 +72,9 @@ class ItemEndpointTest {
 
     @MockBean
     private AuthService authService;
+
+    @Autowired
+    private ItemService itemService;
 
     private final String BASE_URI = "/api/v1/item";
     private ApplicationUser applicationUser;
@@ -247,5 +252,303 @@ class ItemEndpointTest {
             }
         );
     }
+
+    @Test
+    @DisplayName("Does findById delivers item")
+    public void doesFindByIdDeliversItem() throws Exception {
+        // given
+        DigitalStorageItem item = itemService.create(validItemDto);
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/" + item.getItemId())
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+
+        MockHttpServletResponse response = mvcResult.getResponse();
+        String content = response.getContentAsString();
+        ItemDto item2 = objectMapper.readValue(content, ItemDto.class);
+        // then
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertThat(item2.itemId()).isEqualTo(item.getItemId()),
+            () -> assertThat(item2).extracting(
+                ItemDto::ean,
+                ItemDto::generalName,
+                ItemDto::productName,
+                ItemDto::brand,
+                ItemDto::quantityCurrent,
+                ItemDto::quantityTotal,
+                ItemDto::unit,
+                ItemDto::expireDate,
+                ItemDto::description,
+                ItemDto::priceInCent,
+                (i) -> i.digitalStorage().storageId(),
+                ItemDto::boughtAt
+            ).containsExactly(
+                validItemDto.ean(),
+                validItemDto.generalName(),
+                validItemDto.productName(),
+                validItemDto.brand(),
+                validItemDto.quantityCurrent(),
+                validItemDto.quantityTotal(),
+                validItemDto.unit(),
+                validItemDto.expireDate(),
+                validItemDto.description(),
+                validItemDto.priceInCent(),
+                validItemDto.digitalStorage().storageId(),
+                validItemDto.boughtAt()
+            ),
+            () -> assertThat(
+                item2.ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            ).isEqualTo(
+                validItemDto.ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Does findByField boughtAt delivers relevant items")
+    public void doesFindByFieldDeliversRelevantItems() throws Exception {
+        // given
+        itemService.create(validItemDto);
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/search")
+                .param("boughtAt", "Hofer")
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+
+        MockHttpServletResponse response = mvcResult.getResponse();
+        String content = response.getContentAsString();
+        List<ItemDto> items = objectMapper.readValue(content, new TypeReference<>() {
+        });
+        // then
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.get(0)).extracting(
+                ItemDto::ean,
+                ItemDto::generalName,
+                ItemDto::productName,
+                ItemDto::brand,
+                ItemDto::quantityCurrent,
+                ItemDto::quantityTotal,
+                ItemDto::unit,
+                ItemDto::expireDate,
+                ItemDto::description,
+                ItemDto::priceInCent,
+                (i) -> i.digitalStorage().storageId(),
+                ItemDto::boughtAt
+            ).containsExactly(
+                validItemDto.ean(),
+                validItemDto.generalName(),
+                validItemDto.productName(),
+                validItemDto.brand(),
+                validItemDto.quantityCurrent(),
+                validItemDto.quantityTotal(),
+                validItemDto.unit(),
+                validItemDto.expireDate(),
+                validItemDto.description(),
+                validItemDto.priceInCent(),
+                validItemDto.digitalStorage().storageId(),
+                validItemDto.boughtAt()
+            ),
+            () -> assertThat(
+                items.get(0).ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            ).isEqualTo(
+                validItemDto.ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Does findByField brand delivers relevant items")
+    public void doesFindByFieldDeliversRelevantItemsBrand() throws Exception {
+        // given
+        itemService.create(validItemDto);
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/search")
+                .param("brand", "Hofer")
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+
+        MockHttpServletResponse response = mvcResult.getResponse();
+        String content = response.getContentAsString();
+        List<ItemDto> items = objectMapper.readValue(content, new TypeReference<>() {
+        });
+        // then
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.get(0)).extracting(
+                ItemDto::ean,
+                ItemDto::generalName,
+                ItemDto::productName,
+                ItemDto::brand,
+                ItemDto::quantityCurrent,
+                ItemDto::quantityTotal,
+                ItemDto::unit,
+                ItemDto::expireDate,
+                ItemDto::description,
+                ItemDto::priceInCent,
+                (i) -> i.digitalStorage().storageId(),
+                ItemDto::boughtAt
+            ).containsExactly(
+                validItemDto.ean(),
+                validItemDto.generalName(),
+                validItemDto.productName(),
+                validItemDto.brand(),
+                validItemDto.quantityCurrent(),
+                validItemDto.quantityTotal(),
+                validItemDto.unit(),
+                validItemDto.expireDate(),
+                validItemDto.description(),
+                validItemDto.priceInCent(),
+                validItemDto.digitalStorage().storageId(),
+                validItemDto.boughtAt()
+            ),
+            () -> assertThat(
+                items.get(0).ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            ).isEqualTo(
+                validItemDto.ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Does findByField generalName delivers relevant items")
+    public void doesFindByFieldDeliversRelevantItemsGeneralName() throws Exception {
+        // given
+        itemService.create(validItemDto);
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/search")
+                .param("brand", "Test")
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+
+        MockHttpServletResponse response = mvcResult.getResponse();
+        String content = response.getContentAsString();
+        List<ItemDto> items = objectMapper.readValue(content, new TypeReference<>() {
+        });
+        // then
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.get(0)).extracting(
+                ItemDto::ean,
+                ItemDto::generalName,
+                ItemDto::productName,
+                ItemDto::brand,
+                ItemDto::quantityCurrent,
+                ItemDto::quantityTotal,
+                ItemDto::unit,
+                ItemDto::expireDate,
+                ItemDto::description,
+                ItemDto::priceInCent,
+                (i) -> i.digitalStorage().storageId(),
+                ItemDto::boughtAt
+            ).containsExactly(
+                validItemDto.ean(),
+                validItemDto.generalName(),
+                validItemDto.productName(),
+                validItemDto.brand(),
+                validItemDto.quantityCurrent(),
+                validItemDto.quantityTotal(),
+                validItemDto.unit(),
+                validItemDto.expireDate(),
+                validItemDto.description(),
+                validItemDto.priceInCent(),
+                validItemDto.digitalStorage().storageId(),
+                validItemDto.boughtAt()
+            ),
+            () -> assertThat(
+                items.get(0).ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            ).isEqualTo(
+                validItemDto.ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Does findByGeneralName delivers correct results")
+    public void doesFindByGeneralNameDeliversCorrectResults() throws Exception {
+        // given
+        itemService.create(validItemDto);
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/general-name/Test")
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+
+        MockHttpServletResponse response = mvcResult.getResponse();
+        String content = response.getContentAsString();
+        List<ItemDto> items = objectMapper.readValue(content, new TypeReference<>() {
+        });
+        // then
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.get(0)).extracting(
+                ItemDto::ean,
+                ItemDto::generalName,
+                ItemDto::productName,
+                ItemDto::brand,
+                ItemDto::quantityCurrent,
+                ItemDto::quantityTotal,
+                ItemDto::unit,
+                ItemDto::expireDate,
+                ItemDto::description,
+                ItemDto::priceInCent,
+                (i) -> i.digitalStorage().storageId(),
+                ItemDto::boughtAt
+            ).containsExactly(
+                validItemDto.ean(),
+                validItemDto.generalName(),
+                validItemDto.productName(),
+                validItemDto.brand(),
+                validItemDto.quantityCurrent(),
+                validItemDto.quantityTotal(),
+                validItemDto.unit(),
+                validItemDto.expireDate(),
+                validItemDto.description(),
+                validItemDto.priceInCent(),
+                validItemDto.digitalStorage().storageId(),
+                validItemDto.boughtAt()
+            ),
+            () -> assertThat(
+                items.get(0).ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            ).isEqualTo(
+                validItemDto.ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            )
+        );
+    }
+
 
 }
