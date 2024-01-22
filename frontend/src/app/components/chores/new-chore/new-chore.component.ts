@@ -1,14 +1,10 @@
 import {Component} from '@angular/core';
 import {ChoresDto} from "../../../dtos/chores";
 import {NgForm} from "@angular/forms";
-import {ShoppingItemDto} from "../../../dtos/item";
-import {ItemCreateEditMode} from "../../digital-storage/item-create-edit/item-create-edit.component";
 import {ChoreService} from "../../../services/chore.service";
-import {Observable} from "rxjs";
-import {ShoppingListService} from "../../../services/shopping-list.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
-import {UnitService} from "../../../services/unit.service";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 @Component({
   selector: 'app-new-chore',
@@ -30,8 +26,8 @@ export class NewChoreComponent {
   constructor(
     private choreService: ChoreService,
     private router: Router,
-    private route: ActivatedRoute,
     private notification: ToastrService,
+    private errorHandler: ErrorHandlerService
   ) {
   }
 
@@ -49,14 +45,7 @@ export class NewChoreComponent {
         this.router.navigate(['/chores', 'all']);
       },
       error: error => {
-        console.log(error);
-        let firstBracket = error.error.indexOf('[');
-        let lastBracket = error.error.indexOf(']');
-        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-        let errorDescription = error.error.substring(0, firstBracket);
-        errorMessages.forEach(message => {
-          this.notification.error(message, errorDescription);
-        });
+        this.errorHandler.handleErrors(error, "chore", 'create');
       }
     });
   }

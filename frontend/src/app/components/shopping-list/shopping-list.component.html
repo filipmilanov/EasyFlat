@@ -82,9 +82,10 @@
       <td>{{ item.productName}}</td>
       <td>{{ item.generalName}}</td>
       <td>
-            <span *ngFor="let label of item.labels; let isLast = last" style="font-weight: bold"
-                  [style.color]="label.labelColour">{{ label.labelValue }}{{ isLast ? '' : ',' }}
-            </span>
+        <span *ngFor="let label of item.labels; let isLast = last">
+          <span style="font-weight: bold" [style.color]="label.labelColour">{{ label.labelValue }}</span>
+          <ng-container *ngIf="!isLast">, </ng-container>
+        </span>
       </td>
       <td>{{ item.quantityCurrent}} {{item.unit?.name}}</td>
       <td>
@@ -100,7 +101,6 @@
     <td colspan="6" *ngIf="items.length === 0" style="text-align: center;">
       <h3>No shopping items found!</h3>
     </td>
-
 
     </tbody>
   </table>
@@ -127,14 +127,14 @@
           (click)="transferToStorage()">Bought
   </button>
 
-<button *ngIf="!checkIsEmpty()"
-        data-bs-toggle="modal"
-        [attr.data-bs-target]="'#createExpenseFromShopModal'"
-        style="margin-top: 30px; margin-right: 20px;" type="button" class="btn btn-success  m-3">
-  Add to finance
-</button>
+  <button *ngIf="!checkIsEmpty()"
+          data-bs-toggle="modal"
+          [attr.data-bs-target]="'#createExpenseFromShopModal'"
+          style="margin-top: 30px; margin-right: 20px;" type="button" class="btn btn-success  m-3">
+    Add to finance
+  </button>
 
-<app-create-expense-from-shop [checkedShoppingItems]="checkedItems"></app-create-expense-from-shop>
+  <app-create-expense-from-shop [checkedShoppingItems]="checkedItems"></app-create-expense-from-shop>
 
   <app-confirm-delete-dialog
     [deleteInfo]="'Shopping List'"

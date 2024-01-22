@@ -21,7 +21,6 @@
     <div class="col-md-5 mb-3 mt-3 col-lg-auto text-end">
       <button type="submit"
               class="btn btn-primary me-2"
-              [disabled]="!form.valid"
       >
         <i class="bi" [class.bi-plus-square]="modeIsCreate" [class.bi-pencil]="!modeIsCreate"></i>
         {{ submitButtonText }}
@@ -42,7 +41,7 @@
                  id="productName"
                  name="productName"
                  [(ngModel)]="item.productName"
-                 required>
+                 >
         </div>
       </div>
 
@@ -59,7 +58,7 @@
                  name="generalName"
                  placeholder="e.g. fruit"
                  [(ngModel)]="item.generalName"
-                 required>
+                 >
         </div>
       </div>
 
@@ -75,7 +74,7 @@
                  id="totalQuantityAndUnit"
                  name="totalQuantityAndUnit"
                  [(ngModel)]="item.quantityTotal"
-                 required>
+                 >
         </div>
         <div class="col-md-2 col-lg-2 mt-2">
           <select class="form-select form-select-md"
@@ -152,10 +151,7 @@
           </div>
         </div>
       </div>
-
     </div>
-
-
   </form>
 </div>
 
