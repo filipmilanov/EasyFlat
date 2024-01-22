@@ -16,13 +16,12 @@ export class NewChoreComponent {
     id: null,
     name: '',
     description: null,
-    endDate: new Date(),
+    endDate: null,
     points: null,
     user: null,
     sharedFlat: null,
     completed: false
   };
-
   constructor(
     private choreService: ChoreService,
     private router: Router,
@@ -31,13 +30,11 @@ export class NewChoreComponent {
   ) {
   }
 
-  onSubmit(form: NgForm) {
-    if (!this.chore.points) {
-      this.chore.points = 0;
+  onSubmit() {
+    if (this.chore.points === null) {
+      this.chore.points = '0';
     }
-    if (this.chore.points > 100) {
-      this.notification.error("Points can be at most 100")
-    }
+    console.log(this.chore)
     this.choreService.createChore(this.chore).subscribe({
       next: data => {
         this.chore = data;
@@ -48,5 +45,10 @@ export class NewChoreComponent {
         this.errorHandler.handleErrors(error, "chore", 'create');
       }
     });
+  }
+
+  onPointsInputChange(event: any): void {
+    // You can implement a custom parsing logic here
+    this.chore.points = event.target.value;
   }
 }

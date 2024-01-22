@@ -212,10 +212,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         Optional<ShoppingList> deletedListOptional = shoppingListRepository.findById(shopId);
         if (deletedListOptional.isPresent()) {
             ShoppingList deletedList = deletedListOptional.get();
-            this.deleteShoppingItems(itemMapper.shoppingItemEntityListToShoppingItemDtoList(deletedList.getItems())
-                .stream()
-                .map(ShoppingItemDto::itemId)
-                .collect(Collectors.toList()));
+            if (deletedList.getItems().size() != 0) {
+                this.deleteShoppingItems(itemMapper.shoppingItemEntityListToShoppingItemDtoList(deletedList.getItems())
+                    .stream()
+                    .map(ShoppingItemDto::itemId)
+                    .collect(Collectors.toList()));
+            }
             shoppingListRepository.deleteById(shopId);
             return deletedList;
         } else {

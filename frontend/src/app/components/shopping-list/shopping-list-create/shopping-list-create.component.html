@@ -22,7 +22,6 @@
       <button type="submit"
               class="btn btn-primary ms-auto me-2"
               style="margin-top: 10px"
-              [disabled]="!form.valid"
       >
         <i class="bi bi-plus-square"></i>
         Create
@@ -43,8 +42,7 @@
                  id="listName"
                  name="listName"
                  placeholder="List Name"
-                 [(ngModel)]="list.name"
-                 required>
+                 [(ngModel)]="list.name">
         </div>
       </div>
     </div>

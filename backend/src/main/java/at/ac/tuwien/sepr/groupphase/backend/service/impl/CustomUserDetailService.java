@@ -207,6 +207,7 @@ public class CustomUserDetailService implements UserService {
         }
         if (userFlat.getName().equals(flatName)) {
             user.setSharedFlat(null);
+            user.setPoints(0);
             user.setAdmin(false);
             ApplicationUser updatedUser = userRepository.save(user);
             boolean exist = userRepository.existsBySharedFlat(userFlat);

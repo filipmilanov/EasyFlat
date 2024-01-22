@@ -105,7 +105,7 @@ public class ChoreServiceTest {
             "Chore 1",
             "Description for Chore 1",
             LocalDate.of(2022, 8, 18),
-            5,
+            "5",
             null
         );
         invalidChoreDto = new ChoreDto(
@@ -113,7 +113,7 @@ public class ChoreServiceTest {
             "Chore 2",
             "Description for Chore 2",
             LocalDate.of(2022, 8, 18),
-            -5,
+            "-5",
             null
         );
     }

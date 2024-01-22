@@ -80,7 +80,7 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
         }
 
         if (!errors.isEmpty()) {
-            throw new ConflictException("The data is not valid", errors);
+            throw new ConflictException("There is a conflict with persisted data", errors);
         }
     }
 
@@ -129,16 +129,12 @@ public class ShoppingItemValidatorImpl implements ShoppingItemValidator {
             errors.add("The item is not linked to a digital storage");
         }
 
-        if (itemDto.alwaysInStock() && itemDto.minimumQuantity() == null) {
-            errors.add("There is no minimumQuantity defined");
-        }
-
         if (unitList.stream().map(Unit::getName).noneMatch(name -> name.equals(itemDto.unit().name()))) {
             errors.add("The given unit does not exists");
         }
 
         if (!errors.isEmpty()) {
-            throw new ConflictException("The data is not valid", errors);
+            throw new ConflictException("There is a conflict with persisted data", errors);
         }
     }
 

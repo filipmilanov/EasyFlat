@@ -105,7 +105,7 @@ public record ShoppingItemDto(
 
         String valueString = this.quantityCurrent.toString();
 
-        String regex = "^\\d+(\\.\\d{1," + maximumDecimalPlaces + "})?$";
+        String regex = "^-?\\d+(\\.\\d{1," + maximumDecimalPlaces + "})?$";
         // fully qualified name necessary due to conflict with Jakarta Pattern
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
 

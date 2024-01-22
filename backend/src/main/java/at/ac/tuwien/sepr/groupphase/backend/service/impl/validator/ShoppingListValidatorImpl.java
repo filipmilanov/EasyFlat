@@ -1,10 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl.validator;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
-
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.validator.interfaces.ShoppingListValidator;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -53,7 +51,7 @@ public class ShoppingListValidatorImpl implements ShoppingListValidator {
         }
 
         if (!errors.isEmpty()) {
-            throw new ConflictException("Your input is not valid", errors);
+            throw new ConflictException("There is a conflict with persisted data", errors);
         }
     }
 

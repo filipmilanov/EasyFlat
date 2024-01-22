@@ -167,6 +167,7 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
                         }
                         us.setPreference(null);
                         us.setSharedFlat(null);
+                        us.setPoints(0);
                         us.setAdmin(false);
                         userRepository.save(us);
                     }
@@ -175,6 +176,10 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
                 if (!chores.isEmpty()) {    //are there chores
                     choreRepository.deleteAll(chores);
                 }
+                user.setPoints(0);
+                user.setSharedFlat(null);
+                user.setAdmin(null);
+                userRepository.save(user);
                 sharedFlatRepository.deleteById(deletedFlatId);
                 return sharedFlatMapper.entityToWgDetailDto(flat);
             }

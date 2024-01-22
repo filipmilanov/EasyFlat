@@ -83,40 +83,40 @@ export class MyChoresComponent {
   }
 
   deleteCompletedChores() {
-    if (confirm("Are you sure you want to delete this item?")) {
-      return this.choreService.deleteChores(this.completedChores).subscribe({
-        next: res => {
+    return this.choreService.deleteChores(this.completedChores).subscribe({
+      next: res => {
 
-          for (let i = 0; i < res.length; i++) {
-            this.chores = this.chores.filter(chore => chore.id !== res[i].id);
-          }
-
-          this.awardPoints();
-          this.completedChores = [];
-          if (this.chores.length === 0) {
-            this.message = 'Good Job! You have completed all of your chores.';
-          }
-          this.notification.success("Chores completed and points awarded.", "Success");
-        },
-        error: error => {
-          this.errorHandler.handleErrors(error, "chore", 'delete');
+        for (let i = 0; i < res.length; i++) {
+          this.chores = this.chores.filter(chore => chore.id !== res[i].id);
         }
-      });
-    }
+
+        this.awardPoints();
+        this.completedChores = [];
+        if (this.chores.length === 0) {
+          this.message = 'Good Job! You have completed all of your chores.';
+        }
+        this.notification.success("Chores completed and points awarded.", "Success");
+      },
+      error: error => {
+        this.errorHandler.handleErrors(error, "chore", 'delete');
+      }
+    });
   }
 
   awardPoints() {
+    let points = this.completedChores[0].user.points;
     for (let i = 0; i < this.completedChores.length; i++) {
       let curr = this.completedChores[i];
-      let points = curr.points + curr.user.points;
-      this.choreService.updatePoints(points, curr.user.id).subscribe({
-        next: () => {
-        },
-        error: err => {
-          console.error("Application users could not be updated", 'Error');
-        }
-      });
+      points += parseInt(curr.points);
     }
+
+    this.choreService.updatePoints(points, this.completedChores[0].user.id).subscribe({
+      next: () => {
+      },
+      error: err => {
+        this.notification.error("Points could not be awarded", 'Error');
+      }
+    });
   }
 
   navigateToAllChores() {

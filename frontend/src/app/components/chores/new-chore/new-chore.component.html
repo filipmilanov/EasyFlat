@@ -16,13 +16,12 @@
 
   <div class="custom-header-border"></div>
 
-  <form #form="ngForm" (keydown.enter)="$event.preventDefault()" (submit)="onSubmit(form)">
+  <form #form="ngForm" (keydown.enter)="$event.preventDefault()" (submit)="onSubmit()">
 
     <div class="col-md-5 mb-3 mt-3 col-lg-auto text-end">
       <button type="submit"
               class="btn btn-primary ms-auto me-2"
               style="margin-top: 10px"
-              [disabled]="!form.valid"
       >
         <i class="bi bi-plus-square"></i>
         Create
@@ -43,8 +42,7 @@
                  id="choreName"
                  name="choreName"
                  placeholder="Chore Name"
-                 [(ngModel)]="chore.name"
-                 required>
+                 [(ngModel)]="chore.name">
         </div>
       </div>
 
@@ -68,7 +66,7 @@
         <label for="endDate"
                class="col-form-label text-muted col-md-2 col-lg-4"
         >
-          Deadline
+          Deadline<span style="color: red">*</span>
         </label>
         <div class="col-md-10 col-lg-8">
           <input type="date"
@@ -92,7 +90,7 @@
                  name="points"
                  placeholder="Points"
                  [(ngModel)]="chore.points"
-                 min="0">
+                 (input)="onPointsInputChange($event)">
         </div>
       </div>
     </div>
