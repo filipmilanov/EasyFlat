@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -53,9 +54,9 @@ public interface UserService extends UserDetailsService {
 
     UserDetailDto delete(Long id);
 
-    UserDetailDto signOut(String flatName, String authToken);
+    UserDetailDto signOut(String flatName, long userId) throws AuthorizationException;
 
-    List<UserDetailDto> getAllOtherUsers(String authToken);
+    List<UserDetailDto> getAllOtherUsers(long userId);
 
     UserDetailDto setAdminToTheFlat(Long selectedUserId);
 

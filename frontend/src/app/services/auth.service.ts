@@ -105,19 +105,13 @@ export class AuthService {
     return date;
   }
 
-  signOut(flatName: string, authToken: string): Observable<string>{
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${authToken}`
-    });
-    return this.httpClient.put<string>(this.authBaseUri + "/signOut", flatName, {headers});
+  signOut(flatName: string, userId: string): Observable<string>{
+    return this.httpClient.put<string>(this.authBaseUri + "/signOut/" + userId, flatName);
   }
 
 
-  getUsers(authToken: string): Observable<UserDetail[]> {
-    const headers = new HttpHeaders({
-    'Authorization': `Bearer ${authToken}`
-  });
-    return this.httpClient.get<UserDetail[]>(this.authBaseUri + "/users", {headers});
+  getUsers(userId: string): Observable<UserDetail[]> {
+    return this.httpClient.get<UserDetail[]>(this.authBaseUri + "/users/" + userId);
   }
 
   setAdmin(selectedUserId): Observable<UserDetail> {

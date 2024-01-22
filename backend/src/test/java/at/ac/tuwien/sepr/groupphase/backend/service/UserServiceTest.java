@@ -2,14 +2,19 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ChoreDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.datagenerator.SharedFlatDataGenerator;
+import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ShoppingListDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -30,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -52,6 +58,15 @@ public class UserServiceTest implements TestData {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
+    @Autowired
+    private ChoreDataGenerator choreDataGenerator;
+
+    @Autowired
+    private ShoppingListDataGenerator shoppingListDataGenerator;
+
+    @Autowired
+    private SharedFlatDataGenerator sharedFlatDataGenerator;
+
     @MockBean
     private JwtTokenizer jwtTokenizer;
 
@@ -61,7 +76,9 @@ public class UserServiceTest implements TestData {
     @BeforeEach
     public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
-
+        sharedFlatDataGenerator.generateSharedFlats();
+        shoppingListDataGenerator.generateShoppingLists();
+        choreDataGenerator.generateChores();
         applicationUser = userRepository.findById(1L).orElseThrow();
         when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
@@ -82,7 +99,7 @@ public class UserServiceTest implements TestData {
         assertEquals("John", registeredUser.getFirstName());
         assertEquals("Doe", registeredUser.getLastName());
         assertEquals("john.doe@example.com", registeredUser.getEmail());
-        assertEquals(passwordEncoder.matches("password",registeredUser.getPassword()),true );
+        assertEquals(passwordEncoder.matches("password", registeredUser.getPassword()), true);
         assertNotNull(authToken);
     }
 
@@ -112,7 +129,7 @@ public class UserServiceTest implements TestData {
         assertNotNull(fetchedUser);
         assertEquals("UpdatedFirstName", fetchedUser.getFirstName());
         assertEquals("UpdatedLastName", fetchedUser.getLastName());
-        assertEquals(passwordEncoder.matches("newpassword123",fetchedUser.getPassword()),true );
+        assertEquals(passwordEncoder.matches("newpassword123", fetchedUser.getPassword()), true);
     }
 
     @Test
@@ -125,6 +142,44 @@ public class UserServiceTest implements TestData {
 
         ApplicationUser deletedUserFromDB = userRepository.findUserByEmail(applicationUser.getEmail());
         assertNull(deletedUserFromDB, "Deleted user should not be found");
+    }
+
+    @Test
+    void signOutWithManzObjectsShouldSucceed() throws AuthorizationException {
+        ApplicationUser testUser = userRepository.findApplicationUserById(1L);
+        userService.signOut(testUser.getSharedFlat().getName(), testUser.getId());
+
+        assertAll(
+            () -> assertNull(userRepository.findApplicationUserById(1L).getSharedFlat())
+        );
+    }
+
+    @Test
+    void signOutShouldFailWithAuthorizationException() {
+        ApplicationUser testUser = userRepository.findApplicationUserById(1L);
+        assertAll(
+            () -> assertThrows(AuthorizationException.class, () -> userService.signOut(userRepository.findApplicationUserById(2L).getSharedFlat().getName(), testUser.getId()))
+        );
+    }
+
+    @Test
+    void getAllOtherUsersShouldSucceed() {
+        ApplicationUser testUser = userRepository.findApplicationUserById(1L);
+        List<UserDetailDto> users = userService.getAllOtherUsers(testUser.getId());
+
+        assertAll(
+            () -> assertEquals(userRepository.findAllBySharedFlat(testUser.getSharedFlat()).size() - 1, users.size())
+        );
+    }
+
+    @Test
+    void setAdminToTheFlatShouldSucceed() {
+        ApplicationUser testUser = userRepository.findApplicationUserById(1L);
+        this.userService.setAdminToTheFlat(testUser.getId());
+
+        assertAll(
+            () -> Assertions.assertTrue(testUser.getAdmin())
+        );
     }
 
     @Test

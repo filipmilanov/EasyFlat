@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
@@ -64,19 +65,20 @@ public class LoginEndpoint {
     }
 
 
-    @PutMapping("/signOut")
-    public UserDetailDto signOut(@RequestBody String flatName, @RequestHeader("Authorization") String authToken) {
-        LOGGER.trace("signOut({})", flatName);
-        return userService.signOut(flatName, authToken);
+    @PutMapping("/signOut/{userId}")
+    public UserDetailDto signOut(@RequestBody String flatName, @PathVariable long userId) throws AuthorizationException {
+        LOGGER.trace("signOut({},{})", flatName, userId);
+        return userService.signOut(flatName, userId);
     }
 
-    @GetMapping("/users")
-    public List<UserDetailDto> getUsers(@RequestHeader("Authorization") String authToken) {
-        LOGGER.trace("getUsers()");
-        return userService.getAllOtherUsers(authToken);
+    @GetMapping("/users/{userId}")
+    public List<UserDetailDto> getUsers(@PathVariable long userId) {
+        LOGGER.trace("getUsers({})", userId);
+        return userService.getAllOtherUsers(userId);
     }
 
     @PutMapping("/admin")
+    @Secured("ROLE_ADMIN")
     public UserDetailDto setAdmin(@RequestBody Long selectedUserId) {
         LOGGER.trace("setAdmin({})", selectedUserId);
         return userService.setAdminToTheFlat(selectedUserId);
