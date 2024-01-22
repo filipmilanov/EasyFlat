@@ -10,7 +10,4 @@ public record OpenFoodFactsResponseDto(
     OpenFoodFactsProductDto product,
     boolean status
 ) {
-
-
-
 }

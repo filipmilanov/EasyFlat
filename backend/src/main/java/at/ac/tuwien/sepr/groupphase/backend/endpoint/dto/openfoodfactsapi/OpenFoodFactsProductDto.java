@@ -31,5 +31,4 @@ public record OpenFoodFactsProductDto(
     String boughtAt
 
 ) {
-
 }

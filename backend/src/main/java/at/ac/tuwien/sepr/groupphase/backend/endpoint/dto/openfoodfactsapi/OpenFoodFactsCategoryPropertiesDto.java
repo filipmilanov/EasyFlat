@@ -8,5 +8,4 @@ public record OpenFoodFactsCategoryPropertiesDto(
     @JsonProperty("ciqual_food_name:en")
     String description
 ) {
-
 }
