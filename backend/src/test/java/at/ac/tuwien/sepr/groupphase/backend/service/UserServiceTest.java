@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -33,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 
@@ -67,7 +68,7 @@ public class UserServiceTest implements TestData {
     @Autowired
     private SharedFlatDataGenerator sharedFlatDataGenerator;
 
-    @MockBean
+    @SpyBean
     private JwtTokenizer jwtTokenizer;
 
     @MockBean
@@ -186,7 +187,8 @@ public class UserServiceTest implements TestData {
     @DisplayName("finding All flatmates")
     public void findFlatmates() {
         // given
-        when(jwtTokenizer.getEmailFromToken(any())).thenReturn(applicationUser.getEmail());
+        doReturn(applicationUser.getEmail()).when(jwtTokenizer).getEmailFromToken("jwt");
+
         // when
         List<ApplicationUser> flatmates = userService.findFlatmates("jwt");
 

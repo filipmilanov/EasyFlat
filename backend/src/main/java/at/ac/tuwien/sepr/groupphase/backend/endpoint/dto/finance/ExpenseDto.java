@@ -37,6 +37,7 @@ public record ExpenseDto(
     @NotNull(message = "A finance entry must have a payer")
     UserListDto paidBy,
     @Valid
+    @NotNull(message = "A finance entry must have at least one debit user")
     List<DebitDto> debitUsers,
     List<ItemDto> items,
     Boolean isRepeating,
@@ -75,6 +76,9 @@ public record ExpenseDto(
 
     @AssertTrue(message = "The sum of the debit values must be at least 1")
     public boolean isSumAtLeast1() {
+        if (debitUsers == null) {
+            return true;
+        }
         double sum = debitUsers.stream().mapToDouble(DebitDto::value).sum();
         return sum >= 1;
     }
