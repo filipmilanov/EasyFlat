@@ -20,12 +20,12 @@ public record ItemDto(
     @Pattern(regexp = "^\\d{13}$", message = "The EAN number has to be exactly 13 numbers long")
     String ean,
     @NotBlank(message = "The product category cannot be empty")
-    @Size(max = 30, message = "The product category cannot have more than 30 characters")
+    @Size(max = 50, message = "The product category cannot have more than 50 characters")
     String generalName,
     @NotBlank(message = "The product name cannot be empty")
-    @Size(max = 40, message = "The product name cannot have more than 40 characters")
+    @Size(max = 50, message = "The product name cannot have more than 50 characters")
     String productName,
-    @Size(max = 30, message = "The brand name cannot have more than 30 characters")
+    @Size(max = 50, message = "The brand name cannot have more than 50 characters")
     String brand,
     @NotNull(message = "The current quantity cannot be empty and needs to be a number")
     @Min(value = 0, message = "The current quantity must be at least 0")
@@ -48,7 +48,7 @@ public record ItemDto(
     @Min(value = 0, message = "The minimum quantity must be at least 0 and needs to be a number")
     @Max(value = 5000, message = "The minimum quantity cannot be greater than 5000")
     Long minimumQuantity,
-    @Size(max = 30, message = "The store name cannot have more than 30 characters")
+    @Size(max = 50, message = "The store name cannot have more than 50 characters")
     String boughtAt,
     @NotNull(message = "An item needs to be linked to a storage")
     DigitalStorageDto digitalStorage,
