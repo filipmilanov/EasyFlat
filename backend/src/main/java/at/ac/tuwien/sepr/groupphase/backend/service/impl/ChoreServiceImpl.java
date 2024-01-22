@@ -452,7 +452,7 @@ public class ChoreServiceImpl implements ChoreService {
         htmlContent.append("h1 { text-align: center; }");
         htmlContent.append("hr { border: 1px solid #ddd; }");
         htmlContent.append(".row { display: flex; flex-wrap: wrap; justify-content: space-between; margin-bottom: 20px; }");
-        htmlContent.append(".chore-card { width: calc(25% - 1em); margin: 0.5em; padding: 1em; box-sizing: border-box; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }");
+        htmlContent.append(".chore-card { width: calc(25% - 1em); margin: 0.5em; padding: 1em; box-sizing: border-box; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); page-break-inside: avoid;}");
         htmlContent.append(".chore-card h2 { margin-top: 0; }");
         htmlContent.append(".chore-card p { margin: 0.5em 0; }");
         htmlContent.append("</style>");

@@ -109,7 +109,7 @@
           type="button"
           class="btn btn-danger"
           data-bs-toggle="modal"
-          [attr.data-bs-target]="'#confirm-delete-modal' "
+          [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModalForList(shoppingList) "
   >
     <i class="bi bi-trash"></i>
     Delete List
@@ -119,7 +119,7 @@
           data-bs-toggle="modal"
           [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteModalForChecked(this.checkedItems)"
           style="margin-top: 30px; margin-right: 20px;" type="button" class="btn btn-danger bi-trash m-3"
-          (click)="deleteCheckedItems()">Delete
+          >Delete
   </button>
 
   <button *ngIf="!checkIsEmpty()"
@@ -138,9 +138,17 @@
 
   <app-confirm-delete-dialog
     [deleteInfo]="'Shopping List'"
-    [deleteName]=""
-    [deleteId]=""
-    (click)="deleteList()"
+    [deleteName]="truncateString(shoppingList.name, 20)"
+    [deleteId]="shoppingList.id.toString()"
+    (confirm)="deleteList()"
   ></app-confirm-delete-dialog>
+
+  <app-confirm-delete-dialog
+    [deleteInfo]="'checked'"
+    [deleteName]="'items'"
+    [deleteId]="items[0].itemId.toString()"
+    (confirm)="deleteCheckedItems()"
+  ></app-confirm-delete-dialog>
+
 
 </div>
