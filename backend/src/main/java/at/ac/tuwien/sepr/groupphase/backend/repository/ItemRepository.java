@@ -28,7 +28,7 @@ public interface ItemRepository extends JpaRepository<DigitalStorageItem, Long> 
         Long storageId
     );
 
-    List<DigitalStorageItem> findAllByDigitalStorage_StorageIdAndItemCache_ProductNameStartingWith(Long storageId, String productName);
+    List<DigitalStorageItem> findAllByDigitalStorage_StorageIdAndItemCache_ProductNameStartingWithIgnoreCase(Long storageId, String productName);
 
     @Query("SELECT a FROM DigitalStorageItem i JOIN i.itemCache.alternativeNames a WHERE i.itemId = :itemId")
     List<AlternativeName> findAlternativeNamesByItemId(@Param("itemId") Long itemId);
