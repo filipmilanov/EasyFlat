@@ -6,6 +6,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.IngredientDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDtoBuilder;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.OpenFoodFactsItemDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.OpenFoodFactsItemDtoBuilder;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ShoppingListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnitDto;
@@ -275,5 +277,24 @@ public interface TestData {
         .boughtAt("Hofer")
         .digitalStorage(digitalStorageDto)
         .ingredients(invalidIngredientDtoList)
+        .build();
+
+    long validEan = 3017620422003L;
+    long invalidEan = 4719321L;
+
+    IngredientDto validOpenFoodFactsIngredient = IngredientDtoBuilder.builder()
+        .name("Sucre")
+        .build();
+
+    OpenFoodFactsItemDto expectedOpenFoodFactsItemDto = OpenFoodFactsItemDtoBuilder.builder()
+        .eanCode("3017620422003")
+        .generalName("Pâte à tartiner aux noisettes et au cacao")
+        .productName("Nutella")
+        .brand("Ferrero")
+        .quantityTotal(400L)
+        .unit(g)
+        .description("Chocolate spread with hazelnuts")
+        .boughtAt("Hermes,Kyrmes,Carrefour")
+        .ingredients(List.of(validOpenFoodFactsIngredient))
         .build();
 }
