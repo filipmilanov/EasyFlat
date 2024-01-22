@@ -222,4 +222,30 @@ class ItemEndpointTest {
         );
     }
 
+    @Test
+    @DisplayName("Given invalid item name, then findByName returns empty list")
+    void givenInvalidItemNameThanFindByNameReturnsEmptyList() throws Exception {
+        String itemName = "InvalidProductName";
+        String unitName = "pcs";
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/name/InvalidProductName")
+                .param("unitName", unitName)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> {
+                String content = response.getContentAsString();
+                List<ItemDto> foundItems = objectMapper.readValue(content, new TypeReference<>() {
+                });
+                assertThat(foundItems.size()).isEqualTo(0);
+            }
+        );
+    }
+
 }
