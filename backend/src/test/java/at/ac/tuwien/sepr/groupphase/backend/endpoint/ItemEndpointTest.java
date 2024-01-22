@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.List;
+
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemDto;
@@ -37,6 +40,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -193,4 +197,29 @@ class ItemEndpointTest {
             }
         );
     }
+
+    @Test
+    @DisplayName("Does findAllDelivers all items with limit")
+    public void doesFindAllDeliversAllItemsWithLimit() throws Exception {
+        // given
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI)
+                .param("limit", "5")
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+
+        MockHttpServletResponse response = mvcResult.getResponse();
+        // then
+        assertAll(
+            () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+            () -> {
+                String content = response.getContentAsString();
+                List<ItemDto> items = objectMapper.readValue(content, new TypeReference<>() {
+                });
+                assertThat(items.size()).isEqualTo(5);
+            }
+        );
+    }
+
 }

@@ -32,13 +32,22 @@ export class DebitsComponent {
     }
 
 
-    payback(debit: BalanceDebitDto) {
-        let expenseDto: ExpenseDto = {
-            amountInCents: debit.valueInCent,
-            title: "Payback",
-            description: this.formatUserName(debit.debtor) + " pays back " + this.formatUserName(debit.creditor),
-            paidBy: debit.debtor,
-            createdAt: new Date(),
+  payback(debit: BalanceDebitDto) {
+    let now = new Date();
+    let expenseDto: ExpenseDto = {
+      amountInCents: debit.valueInCent,
+      title: "Payback",
+      description: this.formatUserName(debit.debtor) + " pays back " + this.formatUserName(debit.creditor),
+      paidBy: debit.debtor,
+      createdAt: new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours() + 1,
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds()
+      ),
 
             debitUsers: [
                 {

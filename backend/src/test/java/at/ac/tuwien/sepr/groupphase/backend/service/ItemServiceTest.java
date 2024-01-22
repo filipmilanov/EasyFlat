@@ -18,6 +18,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.IngredientRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ItemRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +30,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
-import java.util.AbstractList;
 import java.util.List;
 
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.digitalStorageDto;
@@ -70,6 +70,9 @@ class ItemServiceTest {
 
     @Autowired
     private IngredientRepository ingredientRepository;
+
+    @Autowired
+    private ItemRepository itemRepository;
 
     @MockBean
     private AuthService authService;
@@ -643,6 +646,32 @@ class ItemServiceTest {
 
         assertThat(updatedItem.getItemCache().getAlternativeNames()).contains(alternativeNameEntity);
 
+    }
+
+    @Test
+    @DisplayName("Check if findAll delivers all items without limit")
+    public void givenNoLimitWhenFindAllThenAllItemsAreReturned() {
+        // given
+        // when
+        List<DigitalStorageItem> result = service.findAll(0);
+
+        // then
+        assertThat(result).isNotEmpty();
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(itemRepository.findAll().size());
+    }
+
+    @Test
+    @DisplayName("Check if findAll delivers all items with limit")
+    public void givenLimitWhenFindAllThenAllItemsAreReturned() {
+        // given
+        // when
+        List<DigitalStorageItem> result = service.findAll(5);
+
+        // then
+        assertThat(result).isNotEmpty();
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(5);
     }
 
 

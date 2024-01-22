@@ -96,9 +96,7 @@ public class ItemServiceImpl implements ItemService {
         Long digitalStorageId = applicationUser.getSharedFlat().getDigitalStorage().getStorageId();
 
         if (limit > 0) {
-            var log = itemRepository.findAllByDigitalStorage_StorageId(digitalStorageId).stream().limit(limit).collect(Collectors.toList());
-            LOGGER.info("found {}", log);
-            return log;
+            return itemRepository.findAllByDigitalStorage_StorageId(digitalStorageId).stream().limit(limit).collect(Collectors.toList());
         } else {
             return itemRepository.findAllByDigitalStorage_StorageId(digitalStorageId);
         }
