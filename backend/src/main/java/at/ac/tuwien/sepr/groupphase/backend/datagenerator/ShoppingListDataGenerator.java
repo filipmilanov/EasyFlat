@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
-@Profile({"generateData", "test", "unitTest"})
+@Profile({"test", "unitTest"})
 @Component("ShoppingListDataGenerator")
 @DependsOn({"CleanDatabase"})
 public class ShoppingListDataGenerator {
