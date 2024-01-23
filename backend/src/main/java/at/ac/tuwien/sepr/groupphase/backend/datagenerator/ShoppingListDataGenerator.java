@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
-@Profile({"test", "unitTest"})
-@Component("ShoppingListDataGenerator")
+@Profile({"test", "generateData", "unitTest"})
+@Component("ShoppingListPresentationDataGenerator")
 @DependsOn({"CleanDatabase"})
 public class ShoppingListDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -29,18 +29,32 @@ public class ShoppingListDataGenerator {
     public void generateShoppingLists() {
         LOGGER.debug("generating {} ShoppingLists", NUMBER_OF_ENTITIES_TO_GENERATE);
         for (int i = 0; i < NUMBER_OF_ENTITIES_TO_GENERATE; i++) {
-            ShoppingList shoppingList = new ShoppingList();
-            ShoppingList second = new ShoppingList();
-            shoppingList.setName("Shopping List (Default)");
-            second.setName("Second" + (i + 1));
-
             SharedFlat sharedFlat = new SharedFlat();
-            sharedFlat.setId((long) (i + 1));
-            shoppingList.setSharedFlat(sharedFlat);
-            second.setSharedFlat(sharedFlat);
+            sharedFlat.setId((long) i + 1);
 
-            shoppingListRepository.save(shoppingList);
-            shoppingListRepository.save(second);
+            // ShoppingList Default
+            ShoppingList def = new ShoppingList();
+            def.setName("Shopping List (Default)");
+            def.setSharedFlat(sharedFlat);
+            shoppingListRepository.save(def);
+
+            // ShoppingList 1: Tech
+            ShoppingList techList = new ShoppingList();
+            techList.setName("Tech");
+            techList.setSharedFlat(sharedFlat);
+            shoppingListRepository.save(techList);
+
+            // ShoppingList 2: Home Improvements
+            ShoppingList homeImprovementsList = new ShoppingList();
+            homeImprovementsList.setName("Home Improvements");
+            homeImprovementsList.setSharedFlat(sharedFlat);
+            shoppingListRepository.save(homeImprovementsList);
+
+            // ShoppingList 3: Foodstuff
+            ShoppingList foodstuffList = new ShoppingList();
+            foodstuffList.setName("Foodstuff");
+            foodstuffList.setSharedFlat(sharedFlat);
+            shoppingListRepository.save(foodstuffList);
         }
     }
 }

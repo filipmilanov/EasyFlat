@@ -49,7 +49,7 @@ public class TestDataGenerator {
                              RecipeDataGenerator recipeDataGenerator,
                              CookbookDataGenerator cookbookDataGenerator,
                              EventDataGenerator eventDataGenerator,
-                             ShoppingListDataGenerator shoppingListDataGenerator1,
+                             ShoppingListDataGenerator shoppingListDataGenerator,
                              ShoppingItemDataGenerator shoppingItemDataGenerator,
                              ChoreDataGenerator choreDataGenerator) {
         this.digitalStorageDataGenerator = digitalStorageDataGenerator;
@@ -63,7 +63,7 @@ public class TestDataGenerator {
         this.cookbookDataGenerator = cookbookDataGenerator;
         this.eventDataGenerator = eventDataGenerator;
         this.expenseDataGenerator = expenseDataGenerator;
-        this.shoppingListDataGenerator = shoppingListDataGenerator1;
+        this.shoppingListDataGenerator = shoppingListDataGenerator;
         this.shoppingItemDataGenerator = shoppingItemDataGenerator;
         this.choreDataGenerator = choreDataGenerator;
     }

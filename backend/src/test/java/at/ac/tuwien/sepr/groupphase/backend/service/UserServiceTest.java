@@ -2,9 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ChoreDataGenerator;
-import at.ac.tuwien.sepr.groupphase.backend.datagenerator.SharedFlatDataGenerator;
-import at.ac.tuwien.sepr.groupphase.backend.datagenerator.ShoppingListDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
@@ -58,15 +55,6 @@ public class UserServiceTest implements TestData {
     @Autowired
     private TestDataGenerator testDataGenerator;
 
-    @Autowired
-    private ChoreDataGenerator choreDataGenerator;
-
-    @Autowired
-    private ShoppingListDataGenerator shoppingListDataGenerator;
-
-    @Autowired
-    private SharedFlatDataGenerator sharedFlatDataGenerator;
-
     @SpyBean
     private JwtTokenizer jwtTokenizer;
 
@@ -76,9 +64,7 @@ public class UserServiceTest implements TestData {
     @BeforeEach
     public void cleanUp() throws ValidationException, ConflictException {
         testDataGenerator.cleanUp();
-        sharedFlatDataGenerator.generateSharedFlats();
-        shoppingListDataGenerator.generateShoppingLists();
-        choreDataGenerator.generateChores();
+
         applicationUser = userRepository.findById(1L).orElseThrow();
         when(authService.getUserFromToken()).thenReturn(applicationUser);
     }
