@@ -78,15 +78,13 @@ public record ItemDto(
     @AssertTrue(message = "The current quantity cannot have more than 2 decimal places")
     private boolean isQuantityCurrentValidDecimalPlaces() {
 
-        if (this.quantityCurrent == null || this.quantityCurrent > 5000) {
+        if (this.quantityCurrent == null || this.quantityCurrent > 5000 || this.quantityCurrent < 0) {
             return true;
         }
 
-        int maximumDecimalPlaces = 2;
-
         String valueString = this.quantityCurrent.toString();
 
-        String regex = "^\\d+(\\.\\d{1," + maximumDecimalPlaces + "})?$";
+        String regex = "^[0-9]*(?:\\.[0-9]{1,2})?$";
         // fully qualified name necessary due to conflict with Jakarta Pattern
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
 
@@ -102,15 +100,29 @@ public record ItemDto(
     @AssertTrue(message = "The total quantity cannot have more than 2 decimal places")
     private boolean isQuantityTotalValidDecimalPlaces() {
 
-        if (this.quantityTotal == null || this.quantityTotal > 5000) {
+        if (this.quantityTotal == null || this.quantityTotal > 5000  || this.quantityTotal < 0) {
             return true;
         }
 
-        int maximumDecimalPlaces = 2;
-
         String valueString = this.quantityTotal.toString();
 
-        String regex = "^\\d+(\\.\\d{1," + maximumDecimalPlaces + "})?$";
+        String regex = "^[0-9]*(?:\\.[0-9]{1,2})?$";
+        // fully qualified name necessary due to conflict with Jakarta Pattern
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
+
+        return pattern.matcher(valueString).matches();
+    }
+
+    @AssertTrue(message = "The minimum quantity cannot have more than 2 decimal places")
+    private boolean isMinimumQuantityValidDecimalPlaces() {
+
+        if (this.alwaysInStock == null || this.minimumQuantity == null || this.minimumQuantity > 5000  || this.minimumQuantity < 0) {
+            return true;
+        }
+
+        String valueString = this.minimumQuantity.toString();
+
+        String regex = "^[0-9]*(?:\\.[0-9]{1,2})?$";
         // fully qualified name necessary due to conflict with Jakarta Pattern
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
 

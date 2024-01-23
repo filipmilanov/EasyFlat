@@ -143,7 +143,7 @@ export class ExpenseCreateEditComponent implements OnInit {
               let date: Date = new Date(res.createdAt);
               this.expenseDate = {year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate()}
               this.expenseTime = {hour: date.getHours(), minute: date.getMinutes(), second: date.getSeconds()};
-              this.amountInEuro = res.amountInCents / 100;
+              this.amountInEuro = Math.ceil(res.amountInCents / 100 * 100) / 100;
               this.selectedSplitBy = res.debitUsers[0].splitBy;
 
               this.userService.findFlatmates().subscribe({

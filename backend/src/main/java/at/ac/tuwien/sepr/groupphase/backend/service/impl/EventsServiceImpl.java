@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.EventLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventsRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
@@ -28,9 +29,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class EventsServiceImpl implements EventsService {
@@ -123,7 +126,7 @@ public class EventsServiceImpl implements EventsService {
                 throw new AuthorizationException("User does not have access to delete this event", new ArrayList<>());
             }
         } else {
-            throw new EntityNotFoundException("Event not found with id: " + id);
+            throw new NotFoundException("Event not found with id: " + id);
         }
     }
 
@@ -133,7 +136,14 @@ public class EventsServiceImpl implements EventsService {
         LOGGER.trace("findAll");
         ApplicationUser user = authService.getUserFromToken();
 
-        return eventsRepository.getBySharedFlatIs(user.getSharedFlat()).stream().map(event -> eventMapper.entityToDto(event, sharedFlatMapper.entityToWgDetailDto(user.getSharedFlat()))).toList();
+        List<EventDto> eventDtoList = eventsRepository.getBySharedFlatIs(user.getSharedFlat())
+            .stream()
+            .map(event -> eventMapper.entityToDto(event, sharedFlatMapper.entityToWgDetailDto(user.getSharedFlat())))
+            .collect(Collectors.toCollection(ArrayList::new)); // Collect into ArrayList
+
+        eventDtoList.sort(Comparator.comparing(EventDto::date));
+
+        return eventDtoList;
     }
 
     @Override

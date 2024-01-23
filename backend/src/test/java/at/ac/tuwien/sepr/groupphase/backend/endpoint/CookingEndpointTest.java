@@ -398,28 +398,29 @@ public class CookingEndpointTest {
 
         List<RecipeIngredientDto> ingredients = new ArrayList<>();
 
-        Unit unit = unitRepository.findByName("kg").orElseThrow();
+        Unit g = unitRepository.findByName("g").orElseThrow();
+        Unit ml = unitRepository.findByName("ml").orElseThrow();
 
-        RecipeIngredient ingredient1 = new RecipeIngredient();
-        ingredient1.setName("Banana " + (1));
-        ingredient1.setAmount(1);
-        ingredient1.setUnit(unit.getName());
-        ingredient1.setUnitEnum(unit);
-        ingredients.add(ingredientMapper.entityToDto(ingredient1));
+        RecipeIngredient ingredient1_1 = new RecipeIngredient();
+        ingredient1_1.setName("Ground Beef");
+        ingredient1_1.setAmount(500);
+        ingredient1_1.setUnit(g.getName());
+        ingredient1_1.setUnitEnum(g);
+        ingredients.add(ingredientMapper.entityToDto(ingredient1_1));
 
-        RecipeIngredient ingredient2 = new RecipeIngredient();
-        ingredient2.setName("Apple " + (2));
-        ingredient2.setAmount(1);
-        ingredient2.setUnit(unit.getName());
-        ingredient2.setUnitEnum(unit);
-        ingredients.add(ingredientMapper.entityToDto(ingredient2));
+        RecipeIngredient ingredient1_2 = new RecipeIngredient();
+        ingredient1_2.setName("Tomato Sauce");
+        ingredient1_2.setAmount(400);
+        ingredient1_2.setUnit(ml.getName());
+        ingredient1_2.setUnitEnum(ml);
+        ingredients.add(ingredientMapper.entityToDto(ingredient1_2));
 
         RecipeSuggestionDto recipe = RecipeSuggestionDtoBuilder.builder()
             .id(1L)
-            .title("Recipe Number 1")
-            .servings(2)
-            .readyInMinutes(20)
-            .summary("This is recipe 1")
+            .title("Spaghetti Bolognese")
+            .servings(4)
+            .readyInMinutes(30)
+            .summary("Classic Italian pasta dish with savory meat sauce. Begin by browning 500g of ground beef in a pan. Add 400ml of tomato sauce and let it simmer, allowing the flavors to meld. Meanwhile, cook spaghetti until al dente. Serve the rich meat sauce over the perfectly cooked spaghetti.")
             .extendedIngredients(ingredients)
             .build();
 
@@ -472,28 +473,29 @@ public class CookingEndpointTest {
 
         List<RecipeIngredientDto> ingredients = new ArrayList<>();
 
-        Unit unit = unitRepository.findByName("kg").orElseThrow();
+        Unit g = unitRepository.findByName("g").orElseThrow();
+        Unit ml = unitRepository.findByName("ml").orElseThrow();
 
-        RecipeIngredient ingredient1 = new RecipeIngredient();
-        ingredient1.setName("Banana " + (1));
-        ingredient1.setAmount(1);
-        ingredient1.setUnit(unit.getName());
-        ingredient1.setUnitEnum(unit);
-        ingredients.add(ingredientMapper.entityToDto(ingredient1));
+        RecipeIngredient ingredient1_1 = new RecipeIngredient();
+        ingredient1_1.setName("Ground Beef");
+        ingredient1_1.setAmount(500);
+        ingredient1_1.setUnit(g.getName());
+        ingredient1_1.setUnitEnum(g);
+        ingredients.add(ingredientMapper.entityToDto(ingredient1_1));
 
-        RecipeIngredient ingredient2 = new RecipeIngredient();
-        ingredient2.setName("Apple " + (2));
-        ingredient2.setAmount(1);
-        ingredient2.setUnit(unit.getName());
-        ingredient2.setUnitEnum(unit);
-        ingredients.add(ingredientMapper.entityToDto(ingredient2));
+        RecipeIngredient ingredient1_2 = new RecipeIngredient();
+        ingredient1_2.setName("Tomato Sauce");
+        ingredient1_2.setAmount(400);
+        ingredient1_2.setUnit(ml.getName());
+        ingredient1_2.setUnitEnum(ml);
+        ingredients.add(ingredientMapper.entityToDto(ingredient1_2));
 
         RecipeSuggestionDto mockedRecipe = RecipeSuggestionDtoBuilder.builder()
             .id(1L)
-            .title("Recipe Number 1")
-            .servings(2)
-            .readyInMinutes(20)
-            .summary("This is recipe 1")
+            .title("Spaghetti Bolognese")
+            .servings(4)
+            .readyInMinutes(30)
+            .summary("Classic Italian pasta dish with savory meat sauce. Begin by browning 500g of ground beef in a pan. Add 400ml of tomato sauce and let it simmer, allowing the flavors to meld. Meanwhile, cook spaghetti until al dente. Serve the rich meat sauce over the perfectly cooked spaghetti.")
             .extendedIngredients(ingredients)
             .build();
 

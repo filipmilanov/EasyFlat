@@ -123,7 +123,9 @@ export class CookbookCreateComponent implements OnInit{
 
     this.unitService.findAll().subscribe({
       next: res => {
-        this.availableUnits = res;
+        this.availableUnits = res.filter((unit) => {
+          return unit.name === "g" || unit.name === "kg" || unit.name === "ml" || unit.name === "l" || unit.name === "pcs";
+        });
         this.selectedUnit = this.availableUnits[0]
         console.log(this.availableUnits)
       },

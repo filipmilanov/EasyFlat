@@ -2,7 +2,7 @@ export class EventDto {
   id?: number;
   title: string;
   description?: string;
-  date: string;
+  date: Date;
   startTime: string;
   endTime: string;
   labels?: [EventLabel];

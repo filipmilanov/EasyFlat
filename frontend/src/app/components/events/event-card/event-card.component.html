@@ -8,10 +8,10 @@
   </div>
   <div class="card-body">
     <div class="row">
-      <p class="card-text">{{truncateString(event.description, 40)}}</p>
+      <p class="card-text">{{truncateString(event.description, 30)}}</p>
     </div>
     <div class="row">
-      <p class="card-text"><strong>Date:</strong> {{event.date}}</p>
+      <p class="card-text"><strong>Date:</strong> {{event.date | date:'MMM dd, yyyy'}}</p>
     </div>
     <div>
       <div class="row">
@@ -20,7 +20,7 @@
         </p>
       </div>
       <ng-container *ngFor="let label of event.labels; let last = last">
-        <span [style.color]="label.labelColour">{{ label.labelName }}</span>
+        <span style="font-weight: bold" [style.color]="label.labelColour">{{ label.labelName }}</span>
         <ng-container *ngIf="!last">,</ng-container>
       </ng-container>
     </div>

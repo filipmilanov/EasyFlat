@@ -25,7 +25,7 @@ export class EventsCreateComponent implements OnInit {
   event: EventDto = {
     title: '',
     description: '',
-    date: '',
+    date: new Date(),
     startTime: '',
     endTime: ''
   };

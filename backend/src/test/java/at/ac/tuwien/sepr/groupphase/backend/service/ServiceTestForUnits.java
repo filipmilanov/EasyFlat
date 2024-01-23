@@ -93,7 +93,7 @@ public class ServiceTestForUnits {
 
         Double convertedValueTSPtoML = unitService.convertUnits(
             unitService.findByName("tsp"),
-            unitService.findByName("ml"),
+            unitService.findByName("g"),
             5.0
         );
         Double convertedValueCupToG = unitService.convertUnits(
@@ -154,10 +154,10 @@ public class ServiceTestForUnits {
         assertAll(
 
             () -> assertThat(minUnitKG.getName()).isEqualTo("g"),
-            () -> assertThat(minUnitTSP.getName()).isEqualTo("ml"),
-            () -> assertThat(minUnitTBSP.getName()).isEqualTo("ml"),
-            () -> assertThat(minUnitTABLESPOONS.getName()).isEqualTo("ml"),
-            () -> assertThat(minUnitTEASPOON.getName()).isEqualTo("ml"),
+            () -> assertThat(minUnitTSP.getName()).isEqualTo("g"),
+            () -> assertThat(minUnitTBSP.getName()).isEqualTo("g"),
+            () -> assertThat(minUnitTABLESPOONS.getName()).isEqualTo("g"),
+            () -> assertThat(minUnitTEASPOON.getName()).isEqualTo("g"),
             () -> assertThat(minUnitCUPS.getName()).isEqualTo("g"),
             () -> assertThat(minUnitCUP.getName()).isEqualTo("g"),
             () -> assertThat(minUnitL.getName()).isEqualTo("ml")
@@ -175,13 +175,13 @@ public class ServiceTestForUnits {
 
         // When
         boolean comparableGToKG = unitService.areUnitsComparable(gUnit, kgUnit);
-        boolean comparableTSPToML = unitService.areUnitsComparable(tspUnit, mlUnit);
+        boolean comparableTSPToG = unitService.areUnitsComparable(tspUnit, gUnit);
         boolean comparableGtoML = unitService.areUnitsComparable(gUnit, mlUnit);
 
         // Then
         assertAll(
             () -> assertThat(comparableGToKG).isTrue(),
-            () -> assertThat(comparableTSPToML).isTrue(),
+            () -> assertThat(comparableTSPToG).isTrue(),
             () -> assertThat(comparableGtoML).isFalse()
         );
     }

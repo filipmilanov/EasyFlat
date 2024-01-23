@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
@@ -63,6 +64,7 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Given Valid EventDto When Create Then Return Created EventDto")
     void givenValidEventDtoWhenCreateThenReturnCreatedEventDto() throws ValidationException {
         // given
         SharedFlat sharedFlat = new SharedFlat().setId(1L);
@@ -95,6 +97,7 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Given Invalid EventDto With Empty Title When Create Then Throw ValidationException")
     void givenUpdatedEventDtoWhenUpdateThenReturnUpdatedEventDto() throws AuthorizationException, ValidationException {
 
         //given
@@ -122,6 +125,7 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Given Updated EventDto When Update Then Return Updated EventDto")
     void givenInvalidEventDtoWithEmptyTitleWhenCreateThenThrowValidationException() {
 
         EventDto invalidEventDto = EventDtoBuilder.builder()
@@ -139,6 +143,7 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Given Non-Existing EventId When Update Then Throw EntityNotFoundException")
     void givenNonExistingEventIdWhenUpdateThenThrowEntityNotFoundException() {
         EventDto nonExistingEventDto = EventDtoBuilder.builder()
             .id(100L) // Assume ID 100 doesn't exist
@@ -155,6 +160,7 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Throw AuthorizationException when unauthorized user attempts to update an event")
     void givenUnauthorizedUserWhenUpdateThenThrowAuthorizationException() {
         applicationUser = userRepository.findById(2L).orElseThrow();
         when(authService.getUserFromToken()).thenReturn(applicationUser);
@@ -174,6 +180,7 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Given Valid EventId When Delete Then Return Deleted EventDto")
     void givenValidEventIdWhenDeleteThenReturnDeletedEventDto() throws AuthorizationException {
         // given
         Long eventIdToDelete = 1L;
@@ -191,13 +198,15 @@ public class EventServiceTest {
     }
 
     @Test
-    void givenNonExistingEventIdWhenDeleteThenThrowEntityNotFoundException() {
+    @DisplayName("Given Non-Existing Event ID When Delete Then Throw NotFoundException")
+    void givenNonExistingEventIdWhenDeleteThenThrowNotFoundException() {
         Long nonExistingEventId = 100L;
 
-        assertThrows(EntityNotFoundException.class, () -> eventsService.delete(nonExistingEventId));
+        assertThrows(NotFoundException.class, () -> eventsService.delete(nonExistingEventId));
     }
 
     @Test
+    @DisplayName("Given Unauthorized User When Delete Then Throw AuthorizationException")
     void givenUnauthorizedUserWhenDeleteThenThrowAuthorizationException() {
 
         applicationUser = userRepository.findById(2L).orElseThrow();
@@ -209,6 +218,7 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Given Valid User When Find All Then Return List of EventDtos")
     void givenValidUserWhenFindAllThenReturnListOfEventDtos() {
         // given
         List<EventDto> result = eventsService.findAll();
@@ -218,6 +228,7 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Given Valid Event ID When Get Event With ID Then Return EventDto")
     void givenValidEventIdWhenGetEventWithIdThenReturnEventDto() throws AuthorizationException {
         // given
         Long eventIdToRetrieve = 1L;
@@ -235,6 +246,7 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Given Non-Existing Event ID When Get Event With ID Then Throw EntityNotFoundException")
     void givenNonExistingEventIdWhenGetEventWithIdThenThrowEntityNotFoundException() {
 
         Long nonExistingEventId = 100L;
@@ -243,6 +255,7 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Given Invalid EventDto With End Time Before Start Time When Create Then Throw ValidationException")
     void givenInvalidEventDtoWithEndTimeBeforeStartTimeWhenCreateThenThrowValidationException() {
 
         EventDto invalidEventDto = EventDtoBuilder.builder()
@@ -272,6 +285,7 @@ public class EventServiceTest {
        );
     }
     @Test
+    @DisplayName("Positive Test for Exporting a Valid Event")
     void givenValidEventIdForAllDayEventExportShouldSucceed() throws AuthorizationException {
 
         String exported = this.eventsService.exportEvent(2L);
@@ -385,6 +399,7 @@ public class EventServiceTest {
     }
 
     @Test
+    @DisplayName("Given Label Name Return List with All Events with This Label")
     void givenLabelNameReturnListWithAllEventsWithThisLabel() throws AuthorizationException {
         String labelName = "party";
 

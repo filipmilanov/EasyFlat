@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ItemDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorageItem;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
@@ -36,14 +37,21 @@ import java.util.List;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_ROLES;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.ADMIN_USER;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemDto;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemId;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidUpdatedItemDto;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.itemDtoWithInvalidDigitalStorage;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validAlwaysInStockItem;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validItemDto;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validUpdatedItemDto;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @ExtendWith(SpringExtension.class)
@@ -173,7 +181,7 @@ class ItemEndpointTest {
             () -> {
                 String content = response.getContentAsString();
                 String[] errors = content.split(",");
-                assertEquals(7, errors.length);
+                assertEquals(6, errors.length);
             }
         );
     }
@@ -258,7 +266,7 @@ class ItemEndpointTest {
     @DisplayName("Given valid item name, then findByName returns non-empty list")
     void givenValidItemNameThanFindByNameReturnsNonEmptyList() throws Exception {
 
-        DigitalStorageItem validItem= itemService.findById(1L);
+        DigitalStorageItem validItem = itemService.findById(1L);
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/name/" + validItem.getItemCache().getProductName())
@@ -276,8 +284,8 @@ class ItemEndpointTest {
                 List<ItemDto> foundItems = objectMapper.readValue(content, new TypeReference<>() {
                 });
                 assertAll(
-                    () ->assertThat(foundItems.size()).isNotEqualTo(0),
-                    () ->assertThat(foundItems.get(0).productName()).isEqualTo(validItem.getItemCache().getProductName())
+                    () -> assertThat(foundItems.size()).isNotEqualTo(0),
+                    () -> assertThat(foundItems.get(0).productName()).isEqualTo(validItem.getItemCache().getProductName())
                 );
 
             }
@@ -351,7 +359,7 @@ class ItemEndpointTest {
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/search")
-                .param("boughtAt", "Hofer")
+                .param("boughtAt", "Pagro")
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();
@@ -363,7 +371,7 @@ class ItemEndpointTest {
         // then
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
-            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.size()).isEqualTo(2),
             () -> assertThat(items.get(0)).extracting(
                 ItemDto::ean,
                 ItemDto::generalName,
@@ -378,25 +386,25 @@ class ItemEndpointTest {
                 (i) -> i.digitalStorage().storageId(),
                 ItemDto::boughtAt
             ).containsExactly(
-                validItemDto.ean(),
-                validItemDto.generalName(),
-                validItemDto.productName(),
-                validItemDto.brand(),
-                validItemDto.quantityCurrent(),
-                validItemDto.quantityTotal(),
-                validItemDto.unit(),
-                validItemDto.expireDate(),
-                validItemDto.description(),
-                validItemDto.priceInCent(),
-                validItemDto.digitalStorage().storageId(),
-                validItemDto.boughtAt()
+                validAlwaysInStockItem.ean(),
+                validAlwaysInStockItem.generalName(),
+                validAlwaysInStockItem.productName(),
+                validAlwaysInStockItem.brand(),
+                validAlwaysInStockItem.quantityCurrent(),
+                validAlwaysInStockItem.quantityTotal(),
+                validAlwaysInStockItem.unit(),
+                validAlwaysInStockItem.expireDate(),
+                validAlwaysInStockItem.description(),
+                validAlwaysInStockItem.priceInCent(),
+                validAlwaysInStockItem.digitalStorage().storageId(),
+                validAlwaysInStockItem.boughtAt()
             ),
             () -> assertThat(
                 items.get(0).ingredients().stream()
                     .map(IngredientDto::name)
                     .toList()
             ).isEqualTo(
-                validItemDto.ingredients().stream()
+                validAlwaysInStockItem.ingredients().stream()
                     .map(IngredientDto::name)
                     .toList()
             )
@@ -411,7 +419,7 @@ class ItemEndpointTest {
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/search")
-                .param("brand", "Hofer")
+                .param("brand", "Kraft")
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();
@@ -423,7 +431,7 @@ class ItemEndpointTest {
         // then
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
-            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.size()).isEqualTo(2),
             () -> assertThat(items.get(0)).extracting(
                 ItemDto::ean,
                 ItemDto::generalName,
@@ -471,7 +479,7 @@ class ItemEndpointTest {
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/search")
-                .param("generalName", "Test")
+                .param("generalName", "spreads")
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();
@@ -483,7 +491,7 @@ class ItemEndpointTest {
         // then
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
-            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.size()).isEqualTo(2),
             () -> assertThat(items.get(0)).extracting(
                 ItemDto::ean,
                 ItemDto::generalName,
@@ -530,7 +538,7 @@ class ItemEndpointTest {
         itemService.create(validItemDto);
 
         // when
-        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/general-name/Test")
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/general-name/spreads")
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();
@@ -542,7 +550,7 @@ class ItemEndpointTest {
         // then
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
-            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.size()).isEqualTo(2),
             () -> assertThat(items.get(0)).extracting(
                 ItemDto::ean,
                 ItemDto::generalName,
@@ -582,5 +590,128 @@ class ItemEndpointTest {
         );
     }
 
+    @Test
+    @DisplayName("Update item with valid values")
+    void updateItemWithValidValuesUpdatesItem() throws Exception {
+        // given
+        DigitalStorageItem createdItem = itemService.create(validItemDto);
 
+        // when
+        String updateItemBody = objectMapper.writeValueAsString(validUpdatedItemDto);
+
+        MvcResult mvcResult = mockMvc.perform(put(BASE_URI + "/" + createdItem.getItemId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateItemBody)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse updateResponse = mvcResult.getResponse();
+        ItemDto actualItemDto = objectMapper.readValue(updateResponse.getContentAsString(), ItemDto.class);
+
+        // then
+        assertAll(
+            () -> assertThat(updateResponse.getStatus()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(updateResponse.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE),
+            () -> assertThat(actualItemDto).extracting(
+                ItemDto::ean,
+                ItemDto::generalName,
+                ItemDto::productName,
+                ItemDto::brand,
+                ItemDto::quantityCurrent,
+                ItemDto::quantityTotal,
+                ItemDto::unit,
+                ItemDto::expireDate,
+                ItemDto::description,
+                ItemDto::priceInCent,
+                (i) -> i.digitalStorage().storageId(),
+                ItemDto::boughtAt
+            ).containsExactly(
+                validUpdatedItemDto.ean(),
+                validUpdatedItemDto.generalName(),
+                validUpdatedItemDto.productName(),
+                validUpdatedItemDto.brand(),
+                validUpdatedItemDto.quantityCurrent(),
+                validUpdatedItemDto.quantityTotal(),
+                validUpdatedItemDto.unit(),
+                validUpdatedItemDto.expireDate(),
+                validUpdatedItemDto.description(),
+                validUpdatedItemDto.priceInCent(),
+                validUpdatedItemDto.digitalStorage().storageId(),
+                validUpdatedItemDto.boughtAt()
+            ),
+            () -> assertThat(
+                actualItemDto.ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            ).isEqualTo(
+                validUpdatedItemDto.ingredients().stream()
+                    .map(IngredientDto::name)
+                    .toList()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Update item with invalid values")
+    void updateWithInvalidValuesThrowsValidationException() throws Exception {
+        // given
+        DigitalStorageItem createdItem = itemService.create(validItemDto);
+
+        // when
+        String updateItemBody = objectMapper.writeValueAsString(invalidUpdatedItemDto);
+
+        MvcResult mvcResult = mockMvc.perform(put(BASE_URI + "/" + createdItem.getItemId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateItemBody)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse updateResponse = mvcResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertThat(updateResponse.getStatus()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value()),
+            () -> {
+                String content = updateResponse.getContentAsString();
+                String[] errors = content.split(",");
+                assertEquals(2, errors.length);
+            }
+        );
+    }
+
+    @Test
+    @DisplayName("Deleting an existing item should be possible")
+    void givenItemWhenDeleteItemThenItemIsDeleted() throws Exception {
+        // given
+        DigitalStorageItem createdItem = itemService.create(validItemDto);
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(delete(BASE_URI + "/" + createdItem.getItemId())
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse deleteResponse = mvcResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertThat(deleteResponse.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+            () -> assertThrows(NotFoundException.class, () -> itemService.findById(createdItem.getItemId()))
+        );
+    }
+
+    @Test
+    @DisplayName("Deleting a non existent item should not be possible")
+    void givenInvalidIdWhenDeleteThrowsNotFoundException() throws Exception {
+        // when
+        MvcResult mvcResult = mockMvc.perform(delete(BASE_URI + "/" + invalidItemId)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse deleteResponse = mvcResult.getResponse();
+
+        // then
+        assertAll(
+            () -> assertThat(deleteResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value())
+        );
+    }
 }

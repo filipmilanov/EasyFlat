@@ -12,7 +12,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemOrderType;
-import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
@@ -177,11 +176,11 @@ class DigitalStorageServiceTest {
         // given
         ItemSearchDto searchParams = new ItemSearchDto(false, null, null, null, null);
         ItemListDto itemListDto = ItemListDtoBuilder.builder()
-            .generalName("apples")
-            .quantityCurrent(1.0)
-            .quantityTotal(1.0)
+            .generalName("sweets")
+            .quantityCurrent(100.0)
+            .quantityTotal(100.0)
             .storageId(1L)
-            .unit(UnitDtoBuilder.builder().name("pcs").build())
+            .unit(UnitDtoBuilder.builder().name("g").build())
             .build();
 
         // when

@@ -85,4 +85,5 @@ export class EventCardComponent {
   getIdForm(): string {
     return `${this.event.title}${this.event.id.toString()}`.replace(/\s/g, '');
   }
+
 }
