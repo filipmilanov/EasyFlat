@@ -118,7 +118,7 @@ export class ExpenseOverviewComponent implements OnInit {
 
     }  else if (this.searchParams.maxAmountInEuro?.toString().length > 6) {
       this.notification.error("The maximum amount search cannot have more than 5 digits.", "Error");
-      this.searchParams.minAmountInEuro = null;
+      this.searchParams.maxAmountInEuro = null;
     }
   }
 
