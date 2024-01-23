@@ -123,8 +123,8 @@
       <td>
         <app-confirm-delete-dialog
           [deleteInfo]="'expense'"
-          [deleteName]="expense.title"
-          [deleteId]="expense.id.toString()"
+          [deleteName]="expense.title !== null ? expense.title : ''"
+          [deleteId]="expense.id !== null ? expense.id.toString() : null"
           (confirm)="delete(expense)">
         </app-confirm-delete-dialog>
         <div class="btn-group">

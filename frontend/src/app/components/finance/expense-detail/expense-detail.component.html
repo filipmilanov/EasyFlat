@@ -30,8 +30,8 @@
 
   <app-confirm-delete-dialog
     deleteInfo="finance entry"
-    [deleteName]="expense.title"
-    [deleteId]="expense.id.toString()"
+    [deleteName]="expense.title !== null ? expense.title : ''"
+    [deleteId]="expense.id !== null ? expense.id.toString() : null"
     (confirm)="delete()">
   </app-confirm-delete-dialog>
 

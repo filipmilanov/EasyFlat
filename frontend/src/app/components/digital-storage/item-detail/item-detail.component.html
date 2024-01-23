@@ -35,8 +35,8 @@
 
   <app-confirm-delete-dialog
     deleteInfo="item"
-    [deleteName]="item.productName"
-    [deleteId]="item.itemId.toString()"
+    [deleteName]="item.productName !== null ? item.productName : ''"
+    [deleteId]="item.itemId !== null ? item.itemId.toString() : null"
     (confirm)="delete()">
   </app-confirm-delete-dialog>
 
