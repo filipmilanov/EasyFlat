@@ -236,7 +236,7 @@ public class ChoreServiceTest {
         Chore newChore = new Chore();
         newChore.setName("New Chore");
         newChore.setSharedFlat(testUser.getSharedFlat());
-        choreRepository.save(newChore);
+        Chore result = choreRepository.save(newChore);
         //Test
         choreService.assignChores();
 
@@ -259,7 +259,7 @@ public class ChoreServiceTest {
             () -> assertTrue(choresTestUser2.contains(pref2.getSecond())),
             () -> assertTrue(choresTestUser2.contains(pref2.getFirst())),
             //ChoreDataGenerator generates 25 chores, the new one is with id = 26
-            () -> assertTrue(choresTestUser.contains(new Chore().setId(26L)))
+            () -> assertTrue(choresTestUser.contains(result))
         );
     }
 
