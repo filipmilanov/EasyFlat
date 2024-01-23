@@ -191,7 +191,7 @@ public class ItemDataGenerator {
             g,
             LocalDate.now().plusMonths(4),
             "",
-            "Spar",
+            "Pagro",
             storage,
             List.of(
                 "while milk",
