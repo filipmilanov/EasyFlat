@@ -47,6 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @ExtendWith(SpringExtension.class)
@@ -137,6 +139,113 @@ public class EventEndpointTest {
 
 
     }
+
+    @Test
+    public void givenNoEventsWhenGetEventsThenReturnEmptyList() throws Exception {
+
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andReturn();
+
+        // then
+        assertEquals(200, mvcResult.getResponse().getStatus());
+
+        String responseContent = mvcResult.getResponse().getContentAsString();
+        List<EventDto> events = objectMapper.readValue(responseContent, new TypeReference<List<EventDto>>() {});
+
+        assertThat(events).isNotEmpty();
+    }
+
+    @Test
+    public void givenEventIdWhenUpdateThenEventIsUpdated() throws Exception {
+        // given
+        Long eventId = 1L;
+        EventDto updatedEventDto = new EventDto(eventId, "Updated Event", "Updated Description", LocalTime.now(),LocalTime.now().plusHours(2),LocalDate.now().plusDays(1), null,new ArrayList<>());
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(put(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedEventDto))
+                .header("Authorization", "Bearer " + jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
+
+        EventDto updatedEvent = objectMapper.readValue(response.getContentAsString(), EventDto.class);
+
+        assertAll(
+            () -> assertNotNull(updatedEvent.id()),
+            () -> assertEquals(updatedEventDto.title(), updatedEvent.title()),
+            () -> assertEquals(updatedEventDto.description(), updatedEvent.description()),
+            () -> assertEquals(updatedEventDto.date(), updatedEvent.date())
+        );
+    }
+
+    @Test
+    public void givenEventIdWhenDeleteThenEventIsDeleted() throws Exception {
+        // given
+        Long eventId = 1L;
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(delete(BASE_URI + "/{id}", eventId)
+                .header("Authorization", "Bearer " + jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
+
+        EventDto deletedEvent = objectMapper.readValue(response.getContentAsString(), EventDto.class);
+
+        assertAll(
+            () -> assertNotNull(deletedEvent.id()),
+            () -> assertEquals(eventId, deletedEvent.id())
+        );
+    }
+    @Test
+    public void givenInvalidEventWhenUpdateThenValidationException() throws Exception {
+        // given
+        EventDto invalidEventDto = new EventDto(1L, "", "", LocalTime.now(),LocalTime.now().plusHours(2),LocalDate.now().plusDays(1), null,new ArrayList<>());
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(put(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidEventDto))
+                .header("Authorization", "Bearer " + jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
+    }
+
+    @Test
+    public void givenNonExistingEventIdWhenDeleteThenEventNotFound() throws Exception {
+        // given
+        Long nonExistingEventId = -1000L;
+
+        // when
+        MvcResult mvcResult = this.mockMvc.perform(delete(BASE_URI + "/{id}", nonExistingEventId)
+                .header("Authorization", "Bearer " + jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+            .andDo(print())
+            .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        // then
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+    }
+
+
 
     @Test
     public void givenExistingEventIdWhenGetEventWithIdThenReturnEvent() throws Exception {
