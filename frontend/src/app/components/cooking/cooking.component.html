@@ -1,4 +1,4 @@
-<ng-container *ngIf="empty && !isLoading">
+<ng-container *ngIf="empty && !isLoading" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
   <div class="container-fluid d-flex align-items-center justify-content-center" style="height: 100vh;">
     <div class="text-center">
       <h1 class="display-4">Cooking Suggestions</h1>
@@ -52,12 +52,19 @@
         <i class="bi-arrow-left"></i>
         Back
       </button>
+      <button type="button"
+              class="btn btn-success float-end m-3"
+              (click)="reloadRecipes()">
+        Suggest New Recipes
+      </button>
     </div>
-
+  </div>
+  <div>
     <div *ngIf="recipes.length === 0" style="text-align: center; margin-top: 20px">
       <h3>No recipes matching the selected type '{{type}}' were found.</h3>
     </div>
   </div>
+
 
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 ">
     <div class="col" *ngFor="let recipe of recipes" style="margin-right: 2.5rem; margin-bottom: 2rem;">

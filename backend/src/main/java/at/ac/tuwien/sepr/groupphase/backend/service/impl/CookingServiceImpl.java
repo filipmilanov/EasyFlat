@@ -65,6 +65,7 @@ import org.springframework.web.client.RestTemplate;
 import java.lang.invoke.MethodHandles;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -165,19 +166,25 @@ public class CookingServiceImpl implements CookingService {
         });
 
 
-        List<RecipeSuggestionDto> recipeInfo = new LinkedList<>();
+        List<RecipeDto> recipes = new LinkedList<>();
         if (exchange.getBody() != null) {
-            for (RecipeDto recipeDto : exchange.getBody()) {
-                String newReqString = getNewReqStringForInformation(recipeDto.id());
-                LOGGER.debug("Sending request to Spoonacular API for recipe information.");
-                ResponseEntity<RecipeSuggestionDto> response = restTemplate.exchange(newReqString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<RecipeSuggestionDto>() {
-                });
-                recipeInfo.add(response.getBody());
-            }
+            recipes.addAll(exchange.getBody());
         }
 
 
-        List<RecipeSuggestionDto> toReturn = getRecipeSuggestionDtos(recipeInfo, exchange);
+        List<RecipeSuggestionDto> recipeInfo = new LinkedList<>();
+
+        for (RecipeDto recipeDto : recipes) {
+            String newReqString = getNewReqStringForInformation(recipeDto.id());
+            LOGGER.debug("Sending request to Spoonacular API for recipe information.");
+            ResponseEntity<RecipeSuggestionDto> response = restTemplate.exchange(newReqString, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<RecipeSuggestionDto>() {
+            });
+            recipeInfo.add(response.getBody());
+
+        }
+
+
+        List<RecipeSuggestionDto> toReturn = getRecipeSuggestionDtos(recipeInfo, recipes);
 
         if (type != null) {
             toReturn = filterSuggestions(toReturn, type);
@@ -547,12 +554,12 @@ public class CookingServiceImpl implements CookingService {
         return recipesToRet;
     }
 
-    private List<RecipeSuggestionDto> getRecipeSuggestionDtos(List<RecipeSuggestionDto> response, ResponseEntity<List<RecipeDto>> exchange) {
+    private List<RecipeSuggestionDto> getRecipeSuggestionDtos(List<RecipeSuggestionDto> response, List<RecipeDto> recipes) {
         List<RecipeSuggestionDto> toReturn = new LinkedList<>();
 
         if (response != null) {
             for (int i = 0; i < response.size(); i++) {
-                RecipeDto hereWeHaveMissIng = exchange.getBody().get(i);
+                RecipeDto hereWeHaveMissIng = recipes.get(i);
                 RecipeSuggestionDto details = response.get(i);
 
                 RecipeSuggestionDto toAdd = new RecipeSuggestionDto(
@@ -784,11 +791,15 @@ public class CookingServiceImpl implements CookingService {
         for (ItemDto item : items) {
             ingredients.add(item.productName());
         }
-
+        ingredients = reorderList(ingredients);
         String requestString = apiUrlNew + "?";
 
         boolean isFirst = true;
+        int max = 0;
         for (String ingredient : ingredients) {
+            if (max == 10) {
+                break;
+            }
             TextResult textResult = translator.translateText(ingredient, null, "en-GB");
             ingredient = textResult.getText();
             if (isFirst) {
@@ -797,8 +808,9 @@ public class CookingServiceImpl implements CookingService {
             } else {
                 requestString += "%2C" + ingredient;
             }
+            max++;
         }
-        requestString += "&number=5";
+        requestString += "&number=9";
         return requestString + "&ranking=2";
     }
 
@@ -814,6 +826,15 @@ public class CookingServiceImpl implements CookingService {
         }
 
         return null;
+    }
+
+    private List<String> reorderList(List<String> ingredientList) {
+
+        List<String> shuffledList = new ArrayList<>(ingredientList);
+
+        Collections.shuffle(shuffledList);
+
+        return shuffledList;
     }
 
     private Double getItemQuantityTotalInMinQuantity(List<DigitalStorageItem> digitalStorageItems, RecipeIngredientDto ingredient) throws
