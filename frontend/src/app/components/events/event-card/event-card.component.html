@@ -6,7 +6,8 @@
       </button>
     </div>
   </div>
-  <div class="card-body">
+  <div class="card-body" [ngbTooltip]="event.description"
+       placement="bottom">
     <div class="row">
       <p class="card-text">{{truncateString(event.description, 30)}}</p>
     </div>
