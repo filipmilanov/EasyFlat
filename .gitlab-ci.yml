@@ -61,13 +61,6 @@ cache:
     - 'npm install'
     - 'npm run build'
 
-.e2e-test:
-  stage: test
-  script:
-    - 'cd e2e'
-    - 'npm install'
-    - 'npm run cypress'
-
 # For merge requests do not `deploy` but only run `verify`.
 # See https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
 .unit-test:
@@ -90,7 +83,3 @@ frontend:
 unit-test:
   extends:
     - .unit-test
-
-e2e-test:
-  extends:
-    - .e2e-test
