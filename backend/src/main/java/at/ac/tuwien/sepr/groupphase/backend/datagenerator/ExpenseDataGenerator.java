@@ -26,7 +26,7 @@ public class ExpenseDataGenerator {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ExpenseRepository expenseRepository;
     private final UserRepository userRepository;
-    private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 20;
+    private static final int NUMBER_OF_ENTITIES_TO_GENERATE = 100;
     private Random random;
 
     public ExpenseDataGenerator(ExpenseRepository expenseRepository,
@@ -111,7 +111,13 @@ public class ExpenseDataGenerator {
             "Movie Night",
             "Home Supplies",
             "Party",
-            "Cleaning Supplies"
+            "Cleaning Supplies",
+            "Shared Car Maintenance",
+            "Book Purchase",
+            "Gift for Mike",
+            "Vacuum cleaner",
+            "Television",
+
         };
         return titles[random.nextInt(titles.length)];
     }
@@ -122,7 +128,12 @@ public class ExpenseDataGenerator {
             "Celebrating a special occasion",
             "Electricity and water bills",
             "Entertainment expenses",
-            "Restocking home supplies"
+            "Restocking home supplies",
+            "Regular service for shared car",
+            "Bought Fahrenheit 451 from Ray Bradbury",
+            "Bought backpack for Mike for his birthday",
+            "Bought a new vacuum cleaner because the old one broke",
+            "Bought a new tv for the flat"
         };
         return descriptions[random.nextInt(descriptions.length)];
     }
