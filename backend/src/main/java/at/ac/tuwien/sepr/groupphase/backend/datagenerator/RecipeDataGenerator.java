@@ -42,11 +42,6 @@ public class RecipeDataGenerator {
         LOGGER.debug("generating Items");
         Cookbook cookbook = new Cookbook();
         cookbook.setId(1L);
-        Unit kg = unitRepository.findByName("kg").orElseThrow();
-        Unit g = unitRepository.findByName("g").orElseThrow();
-        Unit l = unitRepository.findByName("l").orElseThrow();
-        Unit ml = unitRepository.findByName("ml").orElseThrow();
-        Unit pcs = unitRepository.findByName("pcs").orElseThrow();
 
         RecipeSuggestion recipe1 = new RecipeSuggestion();
         recipe1.setTitle("Spaghetti Bolognese");
@@ -57,19 +52,21 @@ public class RecipeDataGenerator {
         recipe1.setReadyInMinutes(30);
         recipe1.setCookbook(cookbook);
 
-        RecipeIngredient ingredient1_1 = new RecipeIngredient();
-        ingredient1_1.setName("Ground Beef");
-        ingredient1_1.setAmount(500);
-        ingredient1_1.setUnit(g.getName());
-        ingredient1_1.setUnitEnum(g);
+        RecipeIngredient ingredient1v1 = new RecipeIngredient();
+        ingredient1v1.setName("Ground Beef");
+        ingredient1v1.setAmount(500);
+        Unit g = unitRepository.findByName("g").orElseThrow();
+        ingredient1v1.setUnit(g.getName());
+        ingredient1v1.setUnitEnum(g);
 
-        RecipeIngredient ingredient1_2 = new RecipeIngredient();
-        ingredient1_2.setName("Tomato Sauce");
-        ingredient1_2.setAmount(400);
-        ingredient1_2.setUnit(ml.getName());
-        ingredient1_2.setUnitEnum(ml);
+        RecipeIngredient ingredient1v2 = new RecipeIngredient();
+        ingredient1v2.setName("Tomato Sauce");
+        ingredient1v2.setAmount(400);
+        Unit ml = unitRepository.findByName("ml").orElseThrow();
+        ingredient1v2.setUnit(ml.getName());
+        ingredient1v2.setUnitEnum(ml);
 
-        List<RecipeIngredient> ingredients1 = List.of(ingredient1_1, ingredient1_2);
+        List<RecipeIngredient> ingredients1 = List.of(ingredient1v1, ingredient1v2);
         recipeIngredientRepository.saveAll(ingredients1);
         recipe1.setExtendedIngredients(ingredients1);
         recipeSuggestionRepository.save(recipe1);
@@ -83,31 +80,32 @@ public class RecipeDataGenerator {
         recipe2.setReadyInMinutes(20);
         recipe2.setCookbook(cookbook);
 
-        RecipeIngredient ingredient2_1 = new RecipeIngredient();
-        ingredient2_1.setName("Spaghetti");
-        ingredient2_1.setAmount(200);
-        ingredient2_1.setUnit(g.getName());
-        ingredient2_1.setUnitEnum(g);
+        RecipeIngredient ingredient2v1 = new RecipeIngredient();
+        ingredient2v1.setName("Spaghetti");
+        ingredient2v1.setAmount(200);
+        ingredient2v1.setUnit(g.getName());
+        ingredient2v1.setUnitEnum(g);
 
-        RecipeIngredient ingredient2_2 = new RecipeIngredient();
-        ingredient2_2.setName("Bacon");
-        ingredient2_2.setAmount(100);
-        ingredient2_2.setUnit(g.getName());
-        ingredient2_2.setUnitEnum(g);
+        RecipeIngredient ingredient2v2 = new RecipeIngredient();
+        ingredient2v2.setName("Bacon");
+        ingredient2v2.setAmount(100);
+        ingredient2v2.setUnit(g.getName());
+        ingredient2v2.setUnitEnum(g);
 
-        RecipeIngredient ingredient2_3 = new RecipeIngredient();
-        ingredient2_3.setName("Eggs");
-        ingredient2_3.setAmount(2);
-        ingredient2_3.setUnit(pcs.getName());
-        ingredient2_3.setUnitEnum(pcs);
+        RecipeIngredient ingredient2v3 = new RecipeIngredient();
+        ingredient2v3.setName("Eggs");
+        ingredient2v3.setAmount(2);
+        Unit pcs = unitRepository.findByName("pcs").orElseThrow();
+        ingredient2v3.setUnit(pcs.getName());
+        ingredient2v3.setUnitEnum(pcs);
 
-        RecipeIngredient ingredient2_4 = new RecipeIngredient();
-        ingredient2_4.setName("Parmesan Cheese");
-        ingredient2_4.setAmount(50);
-        ingredient2_4.setUnit(g.getName());
-        ingredient2_4.setUnitEnum(g);
+        RecipeIngredient ingredient2v4 = new RecipeIngredient();
+        ingredient2v4.setName("Parmesan Cheese");
+        ingredient2v4.setAmount(50);
+        ingredient2v4.setUnit(g.getName());
+        ingredient2v4.setUnitEnum(g);
 
-        List<RecipeIngredient> ingredients2 = List.of(ingredient2_1, ingredient2_2, ingredient2_3, ingredient2_4);
+        List<RecipeIngredient> ingredients2 = List.of(ingredient2v1, ingredient2v2, ingredient2v3, ingredient2v4);
         recipeIngredientRepository.saveAll(ingredients2);
         recipe2.setExtendedIngredients(ingredients2);
         recipeSuggestionRepository.save(recipe2);
@@ -121,31 +119,31 @@ public class RecipeDataGenerator {
         recipe3.setReadyInMinutes(30);
         recipe3.setCookbook(cookbook);
 
-        RecipeIngredient ingredient3_1 = new RecipeIngredient();
-        ingredient3_1.setName("Chicken Breast");
-        ingredient3_1.setAmount(300);
-        ingredient3_1.setUnit(g.getName());
-        ingredient3_1.setUnitEnum(g);
+        RecipeIngredient ingredient3v1 = new RecipeIngredient();
+        ingredient3v1.setName("Chicken Breast");
+        ingredient3v1.setAmount(300);
+        ingredient3v1.setUnit(g.getName());
+        ingredient3v1.setUnitEnum(g);
 
-        RecipeIngredient ingredient3_2 = new RecipeIngredient();
-        ingredient3_2.setName("Carrots");
-        ingredient3_2.setAmount(2);
-        ingredient3_2.setUnit(pcs.getName());
-        ingredient3_2.setUnitEnum(pcs);
+        RecipeIngredient ingredient3v2 = new RecipeIngredient();
+        ingredient3v2.setName("Carrots");
+        ingredient3v2.setAmount(2);
+        ingredient3v2.setUnit(pcs.getName());
+        ingredient3v2.setUnitEnum(pcs);
 
-        RecipeIngredient ingredient3_3 = new RecipeIngredient();
-        ingredient3_3.setName("Potatoes");
-        ingredient3_3.setAmount(2);
-        ingredient3_3.setUnit(pcs.getName());
-        ingredient3_3.setUnitEnum(pcs);
+        RecipeIngredient ingredient3v3 = new RecipeIngredient();
+        ingredient3v3.setName("Potatoes");
+        ingredient3v3.setAmount(2);
+        ingredient3v3.setUnit(pcs.getName());
+        ingredient3v3.setUnitEnum(pcs);
 
-        RecipeIngredient ingredient3_4 = new RecipeIngredient();
-        ingredient3_4.setName("Onion");
-        ingredient3_4.setAmount(1);
-        ingredient3_4.setUnit(pcs.getName());
-        ingredient3_4.setUnitEnum(pcs);
+        RecipeIngredient ingredient3v4 = new RecipeIngredient();
+        ingredient3v4.setName("Onion");
+        ingredient3v4.setAmount(1);
+        ingredient3v4.setUnit(pcs.getName());
+        ingredient3v4.setUnitEnum(pcs);
 
-        List<RecipeIngredient> ingredients3 = List.of(ingredient3_1, ingredient3_2, ingredient3_3, ingredient3_4);
+        List<RecipeIngredient> ingredients3 = List.of(ingredient3v1, ingredient3v2, ingredient3v3, ingredient3v4);
         recipeIngredientRepository.saveAll(ingredients3);
         recipe3.setExtendedIngredients(ingredients3);
         recipeSuggestionRepository.save(recipe3);
@@ -160,32 +158,32 @@ public class RecipeDataGenerator {
         recipe4.setReadyInMinutes(20);
         recipe4.setCookbook(cookbook);
 
-        RecipeIngredient ingredient4_1 = new RecipeIngredient();
-        ingredient4_1.setName("Flour");
-        ingredient4_1.setAmount(200);
-        ingredient4_1.setUnit(g.getName());
-        ingredient4_1.setUnitEnum(g);
+        RecipeIngredient ingredient4v1 = new RecipeIngredient();
+        ingredient4v1.setName("Flour");
+        ingredient4v1.setAmount(200);
+        ingredient4v1.setUnit(g.getName());
+        ingredient4v1.setUnitEnum(g);
 
-        RecipeIngredient ingredient4_2 = new RecipeIngredient();
-        ingredient4_2.setName("Milk");
-        ingredient4_2.setAmount(250);
-        ingredient4_2.setUnit(ml.getName());
-        ingredient4_2.setUnitEnum(ml);
+        RecipeIngredient ingredient4v2 = new RecipeIngredient();
+        ingredient4v2.setName("Milk");
+        ingredient4v2.setAmount(250);
+        ingredient4v2.setUnit(ml.getName());
+        ingredient4v2.setUnitEnum(ml);
 
-        RecipeIngredient ingredient4_3 = new RecipeIngredient();
-        ingredient4_3.setName("Eggs");
-        ingredient4_3.setAmount(2);
-        ingredient4_3.setUnit(pcs.getName());
-        ingredient4_3.setUnitEnum(pcs);
+        RecipeIngredient ingredient4v3 = new RecipeIngredient();
+        ingredient4v3.setName("Eggs");
+        ingredient4v3.setAmount(2);
+        ingredient4v3.setUnit(pcs.getName());
+        ingredient4v3.setUnitEnum(pcs);
 
-        RecipeIngredient ingredient4_4 = new RecipeIngredient();
-        ingredient4_4.setName("Sugar");
-        ingredient4_4.setAmount(25);
-        ingredient4_4.setUnit(g.getName());
-        ingredient4_4.setUnitEnum(g);
+        RecipeIngredient ingredient4v4 = new RecipeIngredient();
+        ingredient4v4.setName("Sugar");
+        ingredient4v4.setAmount(25);
+        ingredient4v4.setUnit(g.getName());
+        ingredient4v4.setUnitEnum(g);
 
 
-        List<RecipeIngredient> ingredients4 = List.of(ingredient4_1, ingredient4_2, ingredient4_3, ingredient4_4);
+        List<RecipeIngredient> ingredients4 = List.of(ingredient4v1, ingredient4v2, ingredient4v3, ingredient4v4);
         recipeIngredientRepository.saveAll(ingredients4);
         recipe4.setExtendedIngredients(ingredients4);
         recipeSuggestionRepository.save(recipe4);
@@ -200,37 +198,38 @@ public class RecipeDataGenerator {
         recipe5.setReadyInMinutes(40);
         recipe5.setCookbook(cookbook);
 
-        RecipeIngredient ingredient5_1 = new RecipeIngredient();
-        ingredient5_1.setName("Carrots");
-        ingredient5_1.setAmount(250);
-        ingredient5_1.setUnit(g.getName());
-        ingredient5_1.setUnitEnum(g);
+        RecipeIngredient ingredient5v1 = new RecipeIngredient();
+        ingredient5v1.setName("Carrots");
+        ingredient5v1.setAmount(250);
+        ingredient5v1.setUnit(g.getName());
+        ingredient5v1.setUnitEnum(g);
 
-        RecipeIngredient ingredient5_2 = new RecipeIngredient();
-        ingredient5_2.setName("Potatoes");
-        ingredient5_2.setAmount(300);
-        ingredient5_2.setUnit(g.getName());
-        ingredient5_2.setUnitEnum(g);
+        RecipeIngredient ingredient5v2 = new RecipeIngredient();
+        ingredient5v2.setName("Potatoes");
+        ingredient5v2.setAmount(300);
+        ingredient5v2.setUnit(g.getName());
+        ingredient5v2.setUnitEnum(g);
 
-        RecipeIngredient ingredient5_3 = new RecipeIngredient();
-        ingredient5_3.setName("Onions");
-        ingredient5_3.setAmount(150);
-        ingredient5_3.setUnit(g.getName());
-        ingredient5_3.setUnitEnum(g);
+        RecipeIngredient ingredient5v3 = new RecipeIngredient();
+        ingredient5v3.setName("Onions");
+        ingredient5v3.setAmount(150);
+        ingredient5v3.setUnit(g.getName());
+        ingredient5v3.setUnitEnum(g);
 
-        RecipeIngredient ingredient5_4 = new RecipeIngredient();
-        ingredient5_4.setName("Garlic");
-        ingredient5_4.setAmount(2);
-        ingredient5_4.setUnit(pcs.getName());
-        ingredient5_4.setUnitEnum(pcs);
+        RecipeIngredient ingredient5v4 = new RecipeIngredient();
+        ingredient5v4.setName("Garlic");
+        ingredient5v4.setAmount(2);
+        ingredient5v4.setUnit(pcs.getName());
+        ingredient5v4.setUnitEnum(pcs);
 
-        RecipeIngredient ingredient5_5 = new RecipeIngredient();
-        ingredient5_5.setName("Vegetable Broth");
-        ingredient5_5.setAmount(1);
-        ingredient5_5.setUnit(l.getName());
-        ingredient5_5.setUnitEnum(l);
+        RecipeIngredient ingredient5v5 = new RecipeIngredient();
+        ingredient5v5.setName("Vegetable Broth");
+        ingredient5v5.setAmount(1);
+        Unit l = unitRepository.findByName("l").orElseThrow();
+        ingredient5v5.setUnit(l.getName());
+        ingredient5v5.setUnitEnum(l);
 
-        List<RecipeIngredient> ingredients5 = List.of(ingredient5_1, ingredient5_2, ingredient5_3, ingredient5_4, ingredient5_5);
+        List<RecipeIngredient> ingredients5 = List.of(ingredient5v1, ingredient5v2, ingredient5v3, ingredient5v4, ingredient5v5);
         recipeIngredientRepository.saveAll(ingredients5);
         recipe5.setExtendedIngredients(ingredients5);
         recipeSuggestionRepository.save(recipe5);
