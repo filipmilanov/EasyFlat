@@ -50,7 +50,7 @@ public class EventDataGenerator {
         test1.setSharedFlat(sharedFlat);
         test1.setStartTime(LocalTime.of(16, 0));
         test1.setEndTime(LocalTime.of(17, 0));
-        test1.setDate(LocalDate.now().plusDays(7)); // Set a date one week from now
+        test1.setDate(LocalDate.now().plusDays(7));
 
         Event test2 = new Event();
         test2.setTitle("Cleaning Day");
@@ -58,7 +58,7 @@ public class EventDataGenerator {
         test2.setSharedFlat(sharedFlat);
         test2.setStartTime(LocalTime.of(0, 0));
         test2.setEndTime(LocalTime.of(23, 59));
-        test2.setDate(LocalDate.now().plusDays(14)); // Set a date two weeks from now
+        test2.setDate(LocalDate.now().plusDays(18));
 
         Event test3 = new Event();
         test3.setTitle("Movie Night");
@@ -66,7 +66,7 @@ public class EventDataGenerator {
         test3.setSharedFlat(sharedFlat);
         test3.setStartTime(LocalTime.of(16, 0));
         test3.setEndTime(LocalTime.of(17, 0));
-        test3.setDate(LocalDate.now().plusDays(21)); // Set a date three weeks from now
+        test3.setDate(LocalDate.now().plusDays(11));
 
         Event test4 = new Event();
         test4.setTitle("Game Night");
@@ -74,7 +74,7 @@ public class EventDataGenerator {
         test4.setSharedFlat(sharedFlat);
         test4.setStartTime(LocalTime.of(18, 0));
         test4.setEndTime(LocalTime.of(22, 0));
-        test4.setDate(LocalDate.now().plusDays(45)); // Set a date 1.5 months from now
+        test4.setDate(LocalDate.now().plusDays(28));
         test4.setLabels(labels);
 
         Event test5 = new Event();
@@ -83,7 +83,7 @@ public class EventDataGenerator {
         test5.setSharedFlat(sharedFlat);
         test5.setStartTime(LocalTime.of(19, 0));
         test5.setEndTime(LocalTime.of(22, 0));
-        test5.setDate(LocalDate.now().plusDays(60)); // Set a date two months from now
+        test5.setDate(LocalDate.now().plusDays(5));
         test5.setLabels(labels);
 
         eventsRepository.save(test1);

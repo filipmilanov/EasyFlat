@@ -28,9 +28,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class EventsServiceImpl implements EventsService {
@@ -133,7 +135,14 @@ public class EventsServiceImpl implements EventsService {
         LOGGER.trace("findAll");
         ApplicationUser user = authService.getUserFromToken();
 
-        return eventsRepository.getBySharedFlatIs(user.getSharedFlat()).stream().map(event -> eventMapper.entityToDto(event, sharedFlatMapper.entityToWgDetailDto(user.getSharedFlat()))).toList();
+        List<EventDto> eventDtoList = eventsRepository.getBySharedFlatIs(user.getSharedFlat())
+            .stream()
+            .map(event -> eventMapper.entityToDto(event, sharedFlatMapper.entityToWgDetailDto(user.getSharedFlat())))
+            .collect(Collectors.toCollection(ArrayList::new)); // Collect into ArrayList
+
+        eventDtoList.sort(Comparator.comparing(EventDto::date));
+
+        return eventDtoList;
     }
 
     @Override
