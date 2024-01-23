@@ -62,8 +62,7 @@ cache:
     - 'npm run build'
 
 .e2e-test:
-  stage: e2e
-  image: cypress/base:14
+  stage: test
   script:
     - 'cd e2e'
     - 'npm install'
