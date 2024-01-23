@@ -6,6 +6,7 @@ import {ChoreService} from "../../../services/chore.service";
 import {HttpResponse} from "@angular/common/http";
 import {tap} from "rxjs/operators";
 import {UserDetail} from "../../../dtos/auth-request";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 @Component({
   selector: 'app-all-chore',
@@ -23,7 +24,9 @@ export class AllChoreComponent {
 
   constructor(private router: Router,
               private choreService: ChoreService,
-              private notification: ToastrService) {
+              private notification: ToastrService,
+              private errorHandler: ErrorHandlerService
+  ) {
   }
 
   navigateToNewChore() {
@@ -44,13 +47,7 @@ export class AllChoreComponent {
         this.unassigned = this.chores.filter(chore => chore.user === null);
       },
       error: error => {
-        let firstBracket = error.error.indexOf('[');
-        let lastBracket = error.error.indexOf(']');
-        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-        let errorDescription = error.error.substring(0, firstBracket);
-        errorMessages.forEach(message => {
-          this.notification.error("Error loading chores", 'Error')
-        });
+        this.notification.error("Error loading chores", "Error");
       }
     });
   }
@@ -70,16 +67,16 @@ export class AllChoreComponent {
 
   exportPDF() {
     this.choreService.generateChoreListPDF().subscribe((response: HttpResponse<Blob>) => {
-        const fileName = 'chores.pdf';
+      const fileName = 'chores.pdf';
 
-        const blob = new Blob([response.body], {type: 'application/pdf'});
-        const downloadLink = document.createElement('a');
-        downloadLink.href = window.URL.createObjectURL(blob);
-        downloadLink.download = fileName;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-      });
+      const blob = new Blob([response.body], {type: 'application/pdf'});
+      const downloadLink = document.createElement('a');
+      downloadLink.href = window.URL.createObjectURL(blob);
+      downloadLink.download = fileName;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    });
   }
 
   navigateToMyChores() {

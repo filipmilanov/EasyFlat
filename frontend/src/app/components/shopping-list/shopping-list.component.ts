@@ -52,14 +52,14 @@ export class ShoppingListComponent implements OnInit {
                 this.getItems();
               },
               error: (error: any) => {
-                this.notification.error("Failed to load shopping list", 'Error')
+                this.errorHandler.handleErrors(error, "shopping list", 'get');
               }
             });
           }
         });
       },
       error: error => {
-        this.notification.error("Failed to load shopping lista", 'Error')
+        this.errorHandler.handleErrors(error, "shopping lists", 'get');
       }
     });
     this.checkedItems = [];
@@ -71,7 +71,7 @@ export class ShoppingListComponent implements OnInit {
         this.items = res;
       },
       error: error => {
-        this.notification.error("Failed to load shopping items", 'Error')
+        this.errorHandler.handleErrors(error, "shopping items", 'get');
       }
     });
   }

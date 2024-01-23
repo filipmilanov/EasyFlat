@@ -13,6 +13,7 @@ import {Preference} from "../../../dtos/preference";
 import {PreferenceService} from "../../../services/preference.service";
 import {PreferenceStorageService} from "../../../services/preference-storage-service";
 import {SharedFlat} from "../../../dtos/sharedFlat";
+import {ErrorHandlerService} from "../../../services/util/error-handler.service";
 
 @Component({
   selector: 'app-chore-preference',
@@ -49,6 +50,7 @@ export class ChorePreferenceComponent implements OnInit {
     private route: ActivatedRoute,
     private notification: ToastrService,
     private choreService: ChoreService,
+    private errorHandler: ErrorHandlerService
   ) {
   }
 
@@ -79,13 +81,7 @@ export class ChorePreferenceComponent implements OnInit {
           this.router.navigate(['/chores/all']);
         },
         error: error => {
-          let firstBracket = error.error.indexOf('[');
-          let lastBracket = error.error.indexOf(']');
-          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-          let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach(message => {
-            this.notification.error(errorMessages)
-          });
+          this.errorHandler.handleErrors(error, "last preference", 'get');
         }
       });
     }
@@ -99,13 +95,11 @@ export class ChorePreferenceComponent implements OnInit {
         if (lastPreference) {
           this.oldPreference = lastPreference;
         }
-        // Rest of your code...
         this.choreService.getUnassignedChores().subscribe({
           next: (chores: any[]) => {
             this.chores = chores;
-            // Initialize filteredChores array based on all chores
             this.filteredChores[0] = this.chores;
-            this.filteredChores[1] = this.chores.slice(); // Create a copy to avoid modifying the original array
+            this.filteredChores[1] = this.chores.slice();
             this.filteredChores[2] = this.chores.slice();
             this.filteredChores[3] = this.chores.slice();
           }

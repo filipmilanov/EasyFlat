@@ -37,7 +37,7 @@ export class ShoppingListCreateComponent {
           this.router.navigate(['/shopping-lists']);
         },
         error: error => {
-          this.errorHandler.handleErrors(error, "shopping item", 'create');
+          this.errorHandler.handleErrors(error, "shopping list", 'create');
         }
       });
     }

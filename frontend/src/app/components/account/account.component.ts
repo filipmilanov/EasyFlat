@@ -164,23 +164,23 @@ export class AccountComponent implements OnInit {
   }
 
   delete() {
-      this.authService.delete(this.user).subscribe({
-        next: (deletedUser: UserDetail) => {
-          console.log('User deleted:', deletedUser);
-          this.authService.logoutUser();
-          this.router.navigate(['']);
-        },
-        error: error => {
-          console.error(error.message, error);
-        }
-      });
+    this.authService.delete(this.user).subscribe({
+      next: (deletedUser: UserDetail) => {
+        console.log('User deleted:', deletedUser);
+        this.authService.logoutUser();
+        this.router.navigate(['']);
+      },
+      error: error => {
+        console.error(error.message, error);
+      }
+    });
   }
 
   signOut() {
     this.authService.signOut(this.accountForm.controls.flatName.value, this.user.id).subscribe({
       next: () => {
         this.router.navigate(['']);
-        this.notification.success("You have successfully signed out" , "Success");
+        this.notification.success("You have successfully signed out", "Success");
         this.sharedFlatService.changeEventToFalse();
       },
       error: error => {
@@ -196,31 +196,30 @@ export class AccountComponent implements OnInit {
   }
 
   deleteFlat() {
-    if (confirm("Are you sure you want to delete the shared flat?")) {
-      this.sharedFlatService.delete(this.user).subscribe({
-        next: (deletedFlat: SharedFlat) => {
-          console.log('Shared flat deleted from user :', deletedFlat);
-          this.router.navigate(['']);
-          this.sharedFlatService.changeEventToFalse();
-          this.notification.success("Flat " + deletedFlat.name + " is successfully deleted.", "Success");
-        },
-        error: error => {
-          console.error(error.message, error);
-          let firstBracket = error.error.indexOf('[');
-          let lastBracket = error.error.indexOf(']');
-          let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
-          let errorDescription = error.error.substring(0, firstBracket);
-          errorMessages.forEach(message => {
-            this.notification.error(message, errorDescription);
-          });
-        }
-      });
-    }
+    this.sharedFlatService.delete(this.user).subscribe({
+      next: (deletedFlat: SharedFlat) => {
+        console.log('Shared flat deleted from user :', deletedFlat);
+        this.router.navigate(['']);
+        this.sharedFlatService.changeEventToFalse();
+        this.notification.success("Flat " + deletedFlat.name + " is successfully deleted.", "Success");
+      },
+      error: error => {
+        console.error(error.message, error);
+        let firstBracket = error.error.indexOf('[');
+        let lastBracket = error.error.indexOf(']');
+        let errorMessages = error.error.substring(firstBracket + 1, lastBracket).split(',');
+        let errorDescription = error.error.substring(0, firstBracket);
+        errorMessages.forEach(message => {
+          this.notification.error(message, errorDescription);
+        });
+      }
+    });
+
   }
 
   changePassword() {
     this.submittedPassword = true;
-    if(this.passwordForm.controls.repeatPassword.value == this.passwordForm.controls.newPassword.value) {
+    if (this.passwordForm.controls.repeatPassword.value == this.passwordForm.controls.newPassword.value) {
       this.user.password = this.passwordForm.controls.newPassword.value;
       console.log(this.user);
       this.authService.update(this.user).subscribe({
@@ -246,6 +245,19 @@ export class AccountComponent implements OnInit {
 
   getIdFormatForDeleteModal(user:UserDetail): string {
     return `${user.firstName}${user.id.toString()}`.replace(/\s/g, '');
+  }
+
+  truncateString(input: string, maxLength: number): string {
+    if (input.length <= maxLength) {
+      return input;
+    }
+
+    const truncated = input.substring(0, maxLength - 3);
+    return truncated + '...';
+  }
+
+  getIdFormatForDeleteFlatModal(user: UserDetail) {
+    return `${user.flatName}-1224`.replace(/[^a-zA-Z0-9]+/g, '');
   }
 }
 

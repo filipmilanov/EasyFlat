@@ -138,9 +138,6 @@ export class ShoppingItemCreateEditComponent implements OnInit {
       this.item.quantityCurrent = this.item.quantityTotal;
       switch (this.mode) {
         case ShoppingItemCreateEditMode.create:
-          if (this.item.generalName == null) {
-            this.item.generalName = this.item.productName;
-          }
           observable = this.shoppingService.createItem(this.item);
           break;
         case ShoppingItemCreateEditMode.edit:

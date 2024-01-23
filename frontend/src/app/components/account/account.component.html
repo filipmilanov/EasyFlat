@@ -73,9 +73,24 @@
                 <label>Flat name</label>
                 <div class="flat-name-display">{{ user.flatName }}</div>              </div>
             </div>
-            <button style="margin-right: 10px; margin-top: 20px" type="button" data-bs-toggle="modal"  data-bs-toggle="modal" [attr.data-bs-target]="'#sign-out-modal' + getIdFormatForDeleteModal(user)" class="btn btn-danger float-right">Sign Out</button>
-            <button *ngIf="user.admin" style="margin-right: 10px; margin-top: 20px" type="button" (click)="deleteFlat()" class="btn btn-danger float-right">Delete Flat</button>
+            <button
+              style="margin-right: 10px; margin-top: 20px"
+              type="button" data-bs-toggle="modal"
+              [attr.data-bs-target]="'#sign-out-modal' + getIdFormatForDeleteModal(user)"
+
+              class="btn btn-danger float-right">Sign Out</button>
+
+            <button *ngIf="user.admin" style="margin-right: 10px; margin-top: 20px"
+                    type="button" data-bs-toggle="modal"
+                    [attr.data-bs-target]="'#confirm-delete-modal' + getIdFormatForDeleteFlatModal(user)" class="btn btn-danger float-right">Delete Flat</button>
           </form>
+          <app-confirm-delete-dialog
+            [deleteInfo]="'shared flat'"
+            [deleteName]="truncateString(user.flatName, 20)"
+            [deleteId]="'-1224'"
+            (confirm)="deleteFlat()"
+          ></app-confirm-delete-dialog>
+
           <app-sign-out-modal
             [signOutInfo]="'from flat'"
             [signOutName]="user.firstName"
