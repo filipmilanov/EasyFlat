@@ -22,7 +22,7 @@ public class OpenFoodFactsServiceImpl implements OpenFoodFactsService {
 
     private final RestTemplate restTemplate;
     private final ItemFromOpenFoodFactsApiMapper itemFromApiMapper;
-    private final String openFoodFactsApi = "https://world.openfoodfacts.net/api/v2/product/";
+    private final String openFoodFactsApi = "https://world.openfoodfacts.org/api/v2/product/";
 
     public OpenFoodFactsServiceImpl(RestTemplate restTemplate,
                                     ItemFromOpenFoodFactsApiMapper itemFromApiMapper) {
