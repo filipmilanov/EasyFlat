@@ -10,11 +10,15 @@ export class ChoreCardComponent {
   @Input() name: string;
   @Input() description: string;
   @Input() endDate: Date;
-  @Input() points: number;
+  @Input() points: string;
   @Input() user: string;
   @Input() completed: boolean;
   @Input() mode: number;
-  @Input() truncated: boolean;
+  truncated: boolean;
+
+  ngOnInit() {
+    this.truncated = this.mode === 0
+  }
 
   getColorBasedOnDeadline(): string {
     let daysForWarning: number = 3;
@@ -39,5 +43,9 @@ export class ChoreCardComponent {
     } else {
       return text;
     }
+  }
+
+  toggleTruncate() {
+    this.truncated = !this.truncated;
   }
 }

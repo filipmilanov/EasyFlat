@@ -71,11 +71,6 @@
     <div class="col col-9">
       <h2 class="display-5">Assigned Chores</h2>
     </div>
-    <div class="col mt-4 text-end">
-      <button class="btn btn-toggle" [class.active]="truncateAssigned" (click)="toggleTruncateAssigned()">
-        {{ truncateAssigned ? 'Show' : 'Hide' }}
-      </button>
-    </div>
   </div>
 
   <div class="row row-cols-4">
@@ -86,8 +81,7 @@
                         [endDate]="chore.endDate"
                         [points]="chore.points"
                         [user]="chore.user ? chore.user.firstName + ' ' + chore.user.lastName : ''"
-                        [mode]=0
-                        [truncated]="truncateAssigned">
+                        [mode]=0>
         </app-chore-card>
       </a>
     </div>
@@ -99,11 +93,6 @@
     <div class="col col-9">
       <h2 class="display-5">Unassigned Chores</h2>
     </div>
-    <div class="col mt-4 text-end">
-      <button class="btn btn-toggle" [class.active]="truncateUnassigned" (click)="toggleTruncateUnassigned()">
-        {{ truncateUnassigned ? 'Show' : 'Hide' }}
-      </button>
-    </div>
   </div>
   <div class="row row-cols-4">
     <div style="margin-bottom: 20px;" class="col" *ngFor="let chore of unassigned">
@@ -112,8 +101,7 @@
                         [description]="chore.description"
                         [endDate]="chore.endDate"
                         [points]="chore.points"
-                        [mode]=0
-                        [truncated]="truncateUnassigned">
+                        [mode]=0>
         </app-chore-card>
       </a>
     </div>

@@ -22,9 +22,6 @@
     <i class="bi bi-check-square"></i>
     Completed
   </button>
-    <button *ngIf="chores.length > 0" class="btn btn-toggle float-end" [class.active]="truncate" (click)="toggleTruncate()">
-      {{ truncate ? 'Show' : 'Hide' }}
-    </button>
 </div>
 
 
@@ -34,17 +31,14 @@
 
 <div class="row row-cols-4" *ngIf="chores.length > 0">
   <div style="margin-bottom: 20px;" class="col" *ngFor="let chore of chores">
-    <a style="text-decoration: none"
-       aria-label="Show chore details">
+    <a style="text-decoration: none">
       <app-chore-card [name]="chore.name"
                       [description]="chore.description"
                       [endDate]="chore.endDate"
                       [points]="chore.points"
                       [completed]="chore.completed"
                       [mode]=1
-                      [truncated]="truncate"
-                      (click)="updateChoreComplete(chore)"
-                      ngbTooltip="Click to select">
+                      (click)="updateChoreComplete(chore)">
       </app-chore-card>
     </a>
 
