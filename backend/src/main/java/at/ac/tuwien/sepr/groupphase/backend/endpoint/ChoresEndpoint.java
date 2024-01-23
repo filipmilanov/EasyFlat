@@ -118,10 +118,10 @@ public class ChoresEndpoint {
 
     @PatchMapping("/{userId}")
     @Secured("ROLE_USER")
-    public UserDetailDto updatePoints(@PathVariable Long userId, @RequestBody UserDetailDto searchParams) {
-        LOGGER.trace("updatePoints({}, {})", userId, searchParams);
+    public UserDetailDto updatePoints(@PathVariable Long userId, @RequestBody UserDetailDto userPoints) {
+        LOGGER.trace("updatePoints({}, {})", userId, userPoints);
 
-        Integer points = searchParams.getPoints();
+        Integer points = userPoints.getPoints();
 
         ApplicationUser updatedChore = choreService.updatePoints(userId, points);
 

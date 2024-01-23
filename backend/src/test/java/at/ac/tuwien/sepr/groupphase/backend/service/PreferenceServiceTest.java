@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PreferenceDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Chore;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Preference;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -26,6 +27,9 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -34,9 +38,6 @@ public class PreferenceServiceTest {
 
     @Autowired
     private SharedFlatDataGenerator sharedFlatDataGenerator;
-
-    @Autowired
-    private ChoreDataGenerator choreDataGenerator;
 
     @Autowired
     private PreferenceService preferenceService;
@@ -60,71 +61,116 @@ public class PreferenceServiceTest {
 
     private PreferenceDto preferenceDto;
 
-    private ChoreDto first;
+    private ChoreDto firstDto;
 
-    private ChoreDto second;
+    private ChoreDto secondDto;
 
-    private ChoreDto third;
-
-    private ChoreDto fourth;
     @BeforeEach
     public void cleanUp() throws ValidationException, ConflictException {
         cleanDatabase.truncateAllTablesAndRestartIds();
         sharedFlatDataGenerator.generateSharedFlats();
-        choreDataGenerator.generateChores();
         testUser.setPoints(0);
         testUser.setSharedFlat(new SharedFlat().setId(1L));
         userRepository.save(testUser);
         when(authService.getUserFromToken()).thenReturn(testUser);
 
-        first = new ChoreDto(
-            null,
+        firstDto = new ChoreDto(
+            1L,
             "First",
             "",
             LocalDate.of(2022, 8, 18),
             "5",
             null
         );
-        second = new ChoreDto(
-            null,
+
+
+        secondDto = new ChoreDto(
+            2L,
             "Second",
             "Description for Chore 2",
             LocalDate.of(2022, 8, 18),
             "5",
             null
         );
-        third = new ChoreDto(
-            null,
-            "Third",
-            "",
-            LocalDate.of(2022, 8, 18),
-            "5",
-            null
-        );
-        fourth = new ChoreDto(
-            null,
-            "Fourth",
-            "",
-            LocalDate.of(2022, 8, 18),
-            "5",
-            null
-        );
+
+
+    }
+
+    @Test
+    void updateWithValidPreferenceDtoShouldSucceed() throws ValidationException, AuthenticationException {
+        Chore first = new Chore();
+        first.setName("First");
+        first.setDescription("");
+        first.setEndDate(LocalDate.of(2022, 8, 18));
+        first.setPoints(5);
+        choreRepository.save(first);
+        Chore second = new Chore();
+        second.setName("Second");
+        second.setDescription("Description for Chore 2");
+        second.setEndDate(LocalDate.of(2022, 8, 18));
+        second.setPoints(5);
+        choreRepository.save(second);
 
         preferenceDto = new PreferenceDto(
             null,
-            first,
-            second,
-            third,
-            fourth
+            firstDto,
+            secondDto,
+            null,
+            null
+        );
+
+        PreferenceDto result = this.preferenceService.update(preferenceDto);
+
+        // Assertions
+        assertAll(
+            () -> assertNotNull(result),
+            () -> assertEquals(firstDto.name(), result.first().name()),
+            () -> assertEquals(secondDto.name(), result.second().name()),
+            () -> assertEquals(secondDto.description(), result.second().description()),
+            () -> assertEquals(firstDto.points(), result.first().points()),
+            () -> assertEquals(firstDto.endDate(), result.first().endDate()),
+            () -> assertNull( result.third()),
+            () -> assertNull( result.fourth())
         );
     }
 
-    @Test
-    void updateWithValidPreferenceDtoShouldSucceed()  {
-    }
 
     @Test
-    void getLastPreferenceShouldSucceed() {
+    void getLastPreferenceShouldSucceed() throws ValidationException, AuthenticationException {
+        Chore first = new Chore();
+        first.setName("First");
+        first.setDescription("");
+        first.setEndDate(LocalDate.of(2022, 8, 18));
+        first.setPoints(5);
+        choreRepository.save(first);
+        Chore second = new Chore();
+        second.setName("Second");
+        second.setDescription("Description for Chore 2");
+        second.setEndDate(LocalDate.of(2022, 8, 18));
+        second.setPoints(5);
+        choreRepository.save(second);
 
+        preferenceDto = new PreferenceDto(
+            null,
+            firstDto,
+            secondDto,
+            null,
+            null
+        );
+
+        PreferenceDto preference = this.preferenceService.update(preferenceDto);
+
+        PreferenceDto result = preferenceService.getLastPreference();
+
+        assertAll(
+            () -> assertNotNull(result),
+            () -> assertEquals(preference.first().name(), result.first().name()),
+            () -> assertEquals(preference.second().name(), result.second().name()),
+            () -> assertEquals(preference.second().description(), result.second().description()),
+            () -> assertEquals(preference.first().points(), result.first().points()),
+            () -> assertEquals(preference.first().endDate(), result.first().endDate()),
+            () -> assertNull( result.third()),
+            () -> assertNull( result.fourth())
+        );
     }
 }

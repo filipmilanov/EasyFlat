@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.SharedFlatEndpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.WgDetailDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.service.SharedFlatService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
