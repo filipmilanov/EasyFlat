@@ -118,7 +118,7 @@
         {{ (expense.amountInCents / 100).toFixed(2) }} €
       </td>
       <td class="d-none d-md-table-cell">
-        {{ expense.createdAt | date:'dd.MM.yyyy HH:mm' }}
+        {{ expense.createdAt | date:'MMM dd, yyyy HH:mm' }}
       </td>
       <td>
         <app-confirm-delete-dialog
