@@ -283,6 +283,7 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     private Chore getRandomChore(List<Chore> chores) {
+        LOGGER.trace("getRandomChore({})", chores);
         if (chores == null || chores.isEmpty()) {
             throw new IllegalArgumentException("List is empty or null");
         }
@@ -293,6 +294,7 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     private List<Chore> getPreferences(ApplicationUser user) {
+        LOGGER.trace("getPreferences({})", user);
         List<Chore> toReturn = new ArrayList<>();
         if (!preferenceRepository.existsByUserId(user)) {
             return toReturn;
@@ -330,6 +332,7 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     private void sortUsersByPoints(List<ApplicationUser> users) {
+        LOGGER.trace("sortUsersByPoints({})", users);
         int n = users.size();
         for (int i = 0; i < n - 1; i++) {
             for (int j = 0; j < n - i - 1; j++) {
@@ -346,6 +349,7 @@ public class ChoreServiceImpl implements ChoreService {
 
     @Override
     public List<ApplicationUser> getUsers() {
+        LOGGER.trace("getUsers()");
         ApplicationUser existingUser = authService.getUserFromToken();
         return userRepository.findAllBySharedFlat(existingUser.getSharedFlat());
     }
@@ -353,6 +357,7 @@ public class ChoreServiceImpl implements ChoreService {
     @Override
     @Transactional
     public ApplicationUser updatePoints(Long userId, Integer points) {
+        LOGGER.trace("updatePoints({},{})", userId, points);
         ApplicationUser existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
@@ -361,6 +366,7 @@ public class ChoreServiceImpl implements ChoreService {
     }
 
     public byte[] generatePdf() throws IOException {
+        LOGGER.trace("generatePdf()");
         String htmlContent = this.createChoreListHtml();
 
         Path tempFilePath = Files.createTempFile("my-pdf", ".html");
@@ -389,6 +395,10 @@ public class ChoreServiceImpl implements ChoreService {
     @Override
     @Transactional
     public ChoreDto repeatChore(Long choreId, Date newDate) throws AuthorizationException, ValidationException, ConflictException {
+        LOGGER.trace("repeatChore({},{})", choreId, newDate);
+        if (newDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(LocalDate.now())) {
+            throw new ValidationException("The data is not valid", List.of("The deadline must be in the present or in the future"));
+        }
         ApplicationUser user = authService.getUserFromToken();
         Optional<Chore> toChange = choreRepository.findById(choreId);
         if (toChange.isPresent()) {

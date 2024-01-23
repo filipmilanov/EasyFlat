@@ -101,7 +101,7 @@ public class SharedFlatServiceTest {
     }
 
     @Test
-    void deleteFlatWihtOneUserShouldSucceed() {
+    void deleteFlatWihtOneUserShouldSucceed() throws AuthorizationException {
         SharedFlat newSharedFlat = new SharedFlat();
         newSharedFlat.setName("New Shared Flat");
         newSharedFlat.setPassword("12341234");
@@ -118,7 +118,7 @@ public class SharedFlatServiceTest {
     }
 
     @Test
-    void deleteFlatWithMoreUsersShouldSucceed()  {
+    void deleteFlatWithMoreUsersShouldSucceed() throws AuthorizationException {
         SharedFlat newSharedFlat = new SharedFlat();
         newSharedFlat.setName("New Shared Flat");
         newSharedFlat.setPassword("12341234");

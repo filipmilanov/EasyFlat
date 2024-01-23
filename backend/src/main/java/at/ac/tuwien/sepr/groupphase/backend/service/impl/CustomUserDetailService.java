@@ -174,7 +174,7 @@ public class CustomUserDetailService implements UserService {
             ApplicationUser returnUser = userRepository.save(user);
             return userMapper.entityToUserDetailDto(returnUser);
         }
-        throw new ConflictException("User with this email doesn't exists");
+        throw new NotFoundException("User with this email doesn't exists");
     }
 
     @Override
@@ -183,17 +183,19 @@ public class CustomUserDetailService implements UserService {
         LOGGER.trace("delete({})", id);
         if (userRepository.findApplicationUserById(id) != null) {
             ApplicationUser deletedUser = userRepository.findApplicationUserById(id);
-            List<Chore> chores = choreRepository.allChoresByUserId(deletedUser.getSharedFlat().getId(), deletedUser.getId());
-            if (!chores.isEmpty()) {
-                for (Chore chore : chores) {
-                    chore.setUser(null);
-                    choreRepository.save(chore);
+            if (deletedUser.getSharedFlat() != null) {
+                List<Chore> chores = choreRepository.allChoresByUserId(deletedUser.getSharedFlat().getId(), deletedUser.getId());
+                if (!chores.isEmpty()) {
+                    for (Chore chore : chores) {
+                        chore.setUser(null);
+                        choreRepository.save(chore);
+                    }
                 }
             }
             userRepository.delete(deletedUser);
             return userMapper.entityToUserDetailDto(deletedUser);
         }
-        throw new BadCredentialsException("User with this email doesn't exists");
+        throw new NotFoundException("User with this email doesn't exists");
     }
 
     @Override
@@ -265,7 +267,7 @@ public class CustomUserDetailService implements UserService {
             user.setAdmin(true);
             userRepository.save(user);
         } else {
-            throw new NoSuchElementException("User with this id does not exist");
+            throw new NotFoundException("User with this id does not exist");
         }
         return userMapper.entityToUserDetailDto(user);
     }

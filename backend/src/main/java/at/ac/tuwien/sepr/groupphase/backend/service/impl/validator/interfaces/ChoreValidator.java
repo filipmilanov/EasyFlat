@@ -26,4 +26,5 @@ public interface ChoreValidator {
      * @throws ConflictException  Thrown if there is a conflict with existing data preventing creation.
      */
     void validateForUpdate(Chore chore) throws ValidationException, ConflictException;
+
 }

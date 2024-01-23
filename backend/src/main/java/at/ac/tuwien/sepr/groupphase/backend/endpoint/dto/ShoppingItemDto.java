@@ -14,7 +14,7 @@ import java.util.List;
 @RecordBuilder
 public record ShoppingItemDto(
     Long itemId,
-    @Pattern(regexp = "^\\d{13}$")
+
     String ean,
     @NotBlank(message = "The product category cannot be blank")
     @Size(max = 30, message = "The product category cannot have more than 30 characters")
@@ -36,8 +36,7 @@ public record ShoppingItemDto(
     @Min(value = 0)
     Long priceInCent,
     Boolean alwaysInStock,
-    @Min(value = 0)
-    @Max(value = 5000)
+    
     Double minimumQuantity,
     String boughtAt,
     List<IngredientDto> ingredients,

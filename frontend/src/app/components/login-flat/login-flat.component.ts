@@ -7,6 +7,7 @@ import {UserDetail} from "../../dtos/auth-request";
 import {AuthService} from "../../services/auth.service";
 import {getTokenAtPosition} from "@angular/compiler-cli/src/ngtsc/util/src/typescript";
 import {ToastrService} from "ngx-toastr";
+import {ErrorHandlerService} from "../../services/util/error-handler.service";
 
 @Component({
   selector: 'app-login-flat',
@@ -21,7 +22,7 @@ export class LoginFlatComponent implements OnInit{
   errorMessage = '';
 
 
-  constructor(private formBuilder: UntypedFormBuilder, private sharedFlatService: SharedFlatService,private authService: AuthService, private notification: ToastrService, private router: Router) {
+  constructor(private formBuilder: UntypedFormBuilder, private sharedFlatService: SharedFlatService,private authService: AuthService, private notification: ToastrService, private router: Router,  private errorHandler: ErrorHandlerService) {
     this.loginForm = this.formBuilder.group({
       flatName: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8)]]
@@ -43,18 +44,15 @@ export class LoginFlatComponent implements OnInit{
           this.notification.success("You have successfully logged in shared flat: " + sharedFlat.name , "Success");
         },
         (error) => {
-          console.log('Could not log in due to:');
-          console.log(error);
           this.error = true;
           if (error) {
             this.errorMessage = 'Invalid credentials. Could not log in.';
             this.router.navigate(['/wgLogin']);
-            this.notification.error("", this.errorMessage);
+            this.errorHandler.handleErrors(error, "shared flat", 'log in');
           }
         }
       );
     } else {
-      console.log('Invalid input');
       this.notification.error("Invalid input");
     }
   }
@@ -63,10 +61,9 @@ export class LoginFlatComponent implements OnInit{
     this.authService.getUser(this.authService.getToken()).subscribe(
       (user) => {
         this.user = user;
-        console.log('User :', this.user);
       },
       (error) => {
-        console.error('Error fetching user:', error);
+        this.errorHandler.handleErrors(error, "user", 'get');
       }
     );
   }

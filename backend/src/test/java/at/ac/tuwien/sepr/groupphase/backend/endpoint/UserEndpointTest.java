@@ -1,13 +1,20 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
+import at.ac.tuwien.sepr.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ChoreDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,13 +22,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -36,6 +53,8 @@ public class UserEndpointTest implements TestData {
     @Autowired
     private RegisterEndpoint registerEndpoint;
 
+    private ApplicationUser applicationUser;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -49,10 +68,23 @@ public class UserEndpointTest implements TestData {
     private JwtTokenizer jwtTokenizer;
 
     @Autowired
+    private TestDataGenerator testDataGenerator;
+
+    @MockBean
+    private AuthService authService;
+
+    @Autowired
     private SecurityProperties securityProperties;
 
     private final String LOGIN_BASE_URI = "/api/v1/authentication";
     private final String REGISTER_BASE_URI = "/api/v1/register";
+
+    @BeforeEach
+    public void cleanUp() throws ValidationException, ConflictException {
+        testDataGenerator.cleanUp();
+        applicationUser = userRepository.findById(1L).orElseThrow();
+        when(authService.getUserFromToken()).thenReturn(applicationUser);
+    }
 
     @Test
     @Disabled
@@ -142,6 +174,5 @@ public class UserEndpointTest implements TestData {
 
             .andExpect(status().isOk());
     }
-
 
 }

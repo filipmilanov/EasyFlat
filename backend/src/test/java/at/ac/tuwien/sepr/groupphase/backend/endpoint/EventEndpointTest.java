@@ -94,7 +94,7 @@ public class EventEndpointTest {
     @Test
     public void givenEventWhenCreateThenEventIsCreated() throws Exception {
         // given
-        EventDto eventDto = new EventDto(null, "Test Event", "Description", LocalTime.now(),LocalTime.now().plusHours(2),LocalDate.now().plusDays(1), null,new ArrayList<>());
+        EventDto eventDto = new EventDto(null, "Test Event", "Description", LocalTime.now(),LocalTime.now().plusMinutes(30),LocalDate.now().plusDays(1), null,new ArrayList<>());
 
 
         // when
@@ -163,7 +163,7 @@ public class EventEndpointTest {
     public void givenEventIdWhenUpdateThenEventIsUpdated() throws Exception {
         // given
         Long eventId = 1L;
-        EventDto updatedEventDto = new EventDto(eventId, "Updated Event", "Updated Description", LocalTime.now(),LocalTime.now().plusHours(2),LocalDate.now().plusDays(1), null,new ArrayList<>());
+        EventDto updatedEventDto = new EventDto(eventId, "Updated Event", "Updated Description", LocalTime.now(),LocalTime.now().plusMinutes(30),LocalDate.now().plusDays(1), null,new ArrayList<>());
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(put(BASE_URI)

@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Cookbook;
 import at.ac.tuwien.sepr.groupphase.backend.entity.DigitalStorage;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ShoppingList;
+import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -146,13 +147,13 @@ public class SharedFlatService implements at.ac.tuwien.sepr.groupphase.backend.s
 
     @Override
     @Transactional
-    public WgDetailDto delete(Long id) {
+    public WgDetailDto delete(Long id) throws AuthorizationException {
         LOGGER.trace("delete()");
         Optional<ApplicationUser> applicationUser = userRepository.findById(id);
         if (applicationUser.isPresent()) {
             ApplicationUser user = applicationUser.get();
             if (!user.getAdmin()) {
-                throw new BadCredentialsException("User is not admin, so he can not delete the flat");
+                throw new AuthorizationException("Authorization Error", List.of("User is not admin, so he can not delete the flat"));
             } else {
                 SharedFlat flat = user.getSharedFlat();
                 if (flat == null) {

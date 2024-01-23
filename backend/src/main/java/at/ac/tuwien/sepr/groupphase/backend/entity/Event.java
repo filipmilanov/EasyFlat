@@ -38,6 +38,7 @@ public class Event {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private SharedFlat sharedFlat;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<EventLabel> labels;
 
     public void setId(Long id) {

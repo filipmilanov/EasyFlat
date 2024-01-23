@@ -84,6 +84,7 @@ public abstract class ItemMapper {
     public abstract ShoppingItemDto shoppingItemEntityToShoppingItemDto(ShoppingItem item,
                                                                         @Context ShoppingListDto shoppingList);
 
+    @Mapping(target = "itemId", ignore = true)
     @Mapping(target = "itemCache.ean", source = "ean")
     @Mapping(target = "itemCache.generalName", source = "generalName")
     @Mapping(target = "itemCache.productName", source = "productName")

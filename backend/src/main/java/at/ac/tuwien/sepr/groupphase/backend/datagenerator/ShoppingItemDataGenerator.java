@@ -232,7 +232,7 @@ public class ShoppingItemDataGenerator {
         shoppingItemRepository.save(homeImprovementItem2);
 
         ShoppingItem homeImprovementItem3 = new ShoppingItem();
-        homeImprovementItem3.setQuantityCurrent(3.0);
+        homeImprovementItem3.setQuantityCurrent(2.0);
         homeImprovementItem3.setAlwaysInStock(false);
         homeImprovementItem3.setBoughtAt("Home Improvement Center");
         ItemCache homeImprovementItemCache3 = createLightFixtureItemCache();
@@ -266,7 +266,6 @@ public class ShoppingItemDataGenerator {
         Unit pcs = unitRepository.findByName("pcs").orElseThrow();
 
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("123456789012345");
         itemCache.setGeneralName("Snacks");
         itemCache.setProductName("Butter Croissant");
         itemCache.setBrand("Local Bakery");
@@ -281,7 +280,6 @@ public class ShoppingItemDataGenerator {
         Unit kg = unitRepository.findByName("kg").orElseThrow();
 
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("987654321098765");
         itemCache.setGeneralName("Foods");
         itemCache.setProductName("Atlantic Salmon");
         itemCache.setBrand("Fresh Fish Market");
@@ -296,11 +294,10 @@ public class ShoppingItemDataGenerator {
         Unit kg = unitRepository.findByName("kg").orElseThrow();
 
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("567890123456789");
         itemCache.setGeneralName("Foods");
         itemCache.setProductName("Fresh Green Kale");
         itemCache.setBrand("Organic Farm Stand");
-        itemCache.setQuantityTotal(1.5);
+        itemCache.setQuantityTotal(800.0);
         itemCache.setDescription("Rich in nutrients");
         itemCache.setUnit(kg);
 
@@ -311,7 +308,6 @@ public class ShoppingItemDataGenerator {
         Unit pcs = unitRepository.findByName("pcs").orElseThrow();
 
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("112233445566778");
         itemCache.setGeneralName("Tech Gadgets");
         itemCache.setProductName("Premium AudioPods");
         itemCache.setBrand("Tech Store");
@@ -326,7 +322,6 @@ public class ShoppingItemDataGenerator {
         Unit g = unitRepository.findByName("g").orElseThrow();
 
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("998877665544332");
         itemCache.setGeneralName("Foods");
         itemCache.setProductName("French Camembert");
         itemCache.setBrand("Gourmet Cheese Shop");
@@ -339,7 +334,6 @@ public class ShoppingItemDataGenerator {
 
     private ItemCache createMeatItemCache() {
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("5555555555555");
         itemCache.setGeneralName("Foods");
         itemCache.setProductName("Premium Beef");
         itemCache.setBrand("Local Butcher");
@@ -351,7 +345,6 @@ public class ShoppingItemDataGenerator {
 
     private ItemCache createWineItemCache() {
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("7777777777777");
         itemCache.setGeneralName("Drinks");
         itemCache.setProductName("Cabernet Sauvignon");
         itemCache.setBrand("Winery");
@@ -363,7 +356,6 @@ public class ShoppingItemDataGenerator {
 
     private ItemCache createSpiceItemCache() {
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("8888888888888");
         itemCache.setGeneralName("Spices");
         itemCache.setProductName("Ground Cumin");
         itemCache.setBrand("Spice Bazaar");
@@ -375,7 +367,6 @@ public class ShoppingItemDataGenerator {
 
     private ItemCache createElectronicsItemCache() {
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("9999999999999");
         itemCache.setGeneralName("Tech Gadgets");
         itemCache.setProductName("Ergonomic Mouse");
         itemCache.setBrand("Electronics Store");
@@ -387,7 +378,6 @@ public class ShoppingItemDataGenerator {
 
     private ItemCache createTeaItemCache() {
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("1111222233333");
         itemCache.setGeneralName("Drinks");
         itemCache.setProductName("Organic Green Tea Leaves");
         itemCache.setBrand("Tea Emporium");
@@ -399,7 +389,6 @@ public class ShoppingItemDataGenerator {
 
     private ItemCache createPaintItemCache() {
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("1111111111111");
         itemCache.setGeneralName("Tool Set");
         itemCache.setProductName("Interior Latex Paint");
         itemCache.setBrand("Home Improvement Store");
@@ -411,11 +400,10 @@ public class ShoppingItemDataGenerator {
 
     private ItemCache createToolItemCache() {
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("2222222222222");
         itemCache.setGeneralName("Tool Set");
         itemCache.setProductName("Professional Tool Kit");
         itemCache.setBrand("Hardware Store");
-        itemCache.setQuantityTotal(1.0); // In pcs
+        itemCache.setQuantityTotal(6.0); // In pcs
         itemCache.setDescription("Essential tools for home repairs");
         itemCache.setUnit(pcs);
         return itemCache;
@@ -423,7 +411,6 @@ public class ShoppingItemDataGenerator {
 
     private ItemCache createLightFixtureItemCache() {
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("3333333333333");
         itemCache.setGeneralName("Tool Set");
         itemCache.setProductName("Modern LED Ceiling Fixture");
         itemCache.setBrand("Home Improvement Center");
@@ -435,11 +422,10 @@ public class ShoppingItemDataGenerator {
 
     private ItemCache createCurtainItemCache() {
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("4444444444444");
         itemCache.setGeneralName("Furniture");
         itemCache.setProductName("Blackout Curtains");
         itemCache.setBrand("Home Decor Shop");
-        itemCache.setQuantityTotal(8.0); // In pcs
+        itemCache.setQuantityTotal(10.0); // In pcs
         itemCache.setDescription("Provides privacy and blocks sunlight");
         itemCache.setUnit(pcs);
         return itemCache;
@@ -447,7 +433,6 @@ public class ShoppingItemDataGenerator {
 
     private ItemCache createFurnitureItemCache() {
         ItemCache itemCache = new ItemCache();
-        itemCache.setEan("5555555555555");
         itemCache.setGeneralName("Furniture");
         itemCache.setProductName("Solid Wood Dining Table");
         itemCache.setBrand("Furniture Store");
