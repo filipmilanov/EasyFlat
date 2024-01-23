@@ -23,7 +23,7 @@ import java.util.Arrays;
 @Profile({"generateData", "test"})
 @Component("ShoppingItemDataGenerator")
 @DependsOn({"CleanDatabase", "UnitDataGenerator",
-    "ShoppingListDataGenerator", "labelRepository", "ingredientRepository"})
+    "ShoppingListPresentationDataGenerator", "labelRepository", "ingredientRepository"})
 public class ShoppingItemDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ShoppingItemRepository shoppingItemRepository;

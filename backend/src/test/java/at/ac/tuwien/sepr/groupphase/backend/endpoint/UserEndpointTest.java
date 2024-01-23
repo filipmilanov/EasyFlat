@@ -142,4 +142,6 @@ public class UserEndpointTest implements TestData {
 
             .andExpect(status().isOk());
     }
+
+
 }
