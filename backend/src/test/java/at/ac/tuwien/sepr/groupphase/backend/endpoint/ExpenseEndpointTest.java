@@ -221,10 +221,10 @@ class ExpenseEndpointTest {
                 (BalanceDebitDto balanceDebitDto) -> balanceDebitDto.creditor().id(),
                 (BalanceDebitDto balanceDebitDto) -> Math.round(balanceDebitDto.valueInCent() * 10) / 10.0
             ).contains(
-                new Tuple(11L, 6L, 791.8),
-                new Tuple(1L, 6L, 331.7),
-                new Tuple(16L, 21L, 153.9),
-                new Tuple(16L, 6L, 115.4)
+                new Tuple(1L, 6L, 4577.9),
+                new Tuple(1L, 11L, 988.2),
+                new Tuple(21L, 11L, 459.6),
+                new Tuple(21L, 16L, 1451.9)
             )
         );
     }
@@ -266,11 +266,11 @@ class ExpenseEndpointTest {
                 ).toList()
             ).containsAll(
                 List.of(
-                    2549.4,
-                    1562.0,
-                    2952.8,
-                    745.7,
-                    0.0
+                    1726.6,
+                    3188.4,
+                    4440.7,
+                    5372.9,
+                    6764.2
                 )
             )
         );
@@ -313,11 +313,11 @@ class ExpenseEndpointTest {
                 ).toList()
             ).containsAll(
                 List.of(
-                    2881.0,
-                    1408.0,
-                    1713.0,
-                    1537.0,
-                    269.0
+                    274.0,
+                    1740.0,
+                    2186.0,
+                    7284.0,
+                    10006.0
                 )
             )
         );
@@ -347,11 +347,11 @@ class ExpenseEndpointTest {
                 (UserValuePairDto userValuePairDto) -> userValuePairDto.user().id(),
                 (UserValuePairDto userValuePairDto) -> Math.round((userValuePairDto.value()) * 10) / 10.0
             ).containsExactlyInAnyOrder(
-                new Tuple(1L, -331.7),
-                new Tuple(21L, 153.9),
-                new Tuple(6L, 1238.9),
-                new Tuple(11L, -791.8),
-                new Tuple(16L, -269.3)
+                new Tuple(1L, -5566.1),
+                new Tuple(6L, 4577.9),
+                new Tuple(11L, 1447.7),
+                new Tuple(16L, 1451.9),
+                new Tuple(21L, -1911.5)
             )
         );
     }
