@@ -111,7 +111,7 @@ class ItemServiceTest {
     void givenGeneralNameWhenFindByFieldsThenItemWithGeneralNameIsReturned() {
         // given
         ItemFieldSearchDto itemFieldSearchDto = ItemFieldSearchDtoBuilder.builder()
-            .generalName("Noodles")
+            .generalName("noodles")
             .build();
 
         // when
@@ -448,7 +448,7 @@ class ItemServiceTest {
     @DisplayName("Items should be retrievable using their general name")
     void givenValidSearchParamsWhenGetItemsWithGeneralNameThenReturnList() {
         // given
-        String itemName = "apples";
+        String itemName = "spreads";
 
         // when
         List<DigitalStorageItem> result = service.getItemWithGeneralName(itemName);

@@ -40,6 +40,7 @@ import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItem
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidItemId;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.invalidUpdatedItemDto;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.itemDtoWithInvalidDigitalStorage;
+import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validAlwaysInStockItem;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validItemDto;
 import static at.ac.tuwien.sepr.groupphase.backend.basetest.TestData.validUpdatedItemDto;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -358,7 +359,7 @@ class ItemEndpointTest {
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/search")
-                .param("boughtAt", "Hofer")
+                .param("boughtAt", "Pagro")
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();
@@ -370,7 +371,7 @@ class ItemEndpointTest {
         // then
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
-            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.size()).isEqualTo(2),
             () -> assertThat(items.get(0)).extracting(
                 ItemDto::ean,
                 ItemDto::generalName,
@@ -385,25 +386,25 @@ class ItemEndpointTest {
                 (i) -> i.digitalStorage().storageId(),
                 ItemDto::boughtAt
             ).containsExactly(
-                validItemDto.ean(),
-                validItemDto.generalName(),
-                validItemDto.productName(),
-                validItemDto.brand(),
-                validItemDto.quantityCurrent(),
-                validItemDto.quantityTotal(),
-                validItemDto.unit(),
-                validItemDto.expireDate(),
-                validItemDto.description(),
-                validItemDto.priceInCent(),
-                validItemDto.digitalStorage().storageId(),
-                validItemDto.boughtAt()
+                validAlwaysInStockItem.ean(),
+                validAlwaysInStockItem.generalName(),
+                validAlwaysInStockItem.productName(),
+                validAlwaysInStockItem.brand(),
+                validAlwaysInStockItem.quantityCurrent(),
+                validAlwaysInStockItem.quantityTotal(),
+                validAlwaysInStockItem.unit(),
+                validAlwaysInStockItem.expireDate(),
+                validAlwaysInStockItem.description(),
+                validAlwaysInStockItem.priceInCent(),
+                validAlwaysInStockItem.digitalStorage().storageId(),
+                validAlwaysInStockItem.boughtAt()
             ),
             () -> assertThat(
                 items.get(0).ingredients().stream()
                     .map(IngredientDto::name)
                     .toList()
             ).isEqualTo(
-                validItemDto.ingredients().stream()
+                validAlwaysInStockItem.ingredients().stream()
                     .map(IngredientDto::name)
                     .toList()
             )
@@ -418,7 +419,7 @@ class ItemEndpointTest {
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/search")
-                .param("brand", "Hofer")
+                .param("brand", "Kraft")
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();
@@ -430,7 +431,7 @@ class ItemEndpointTest {
         // then
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
-            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.size()).isEqualTo(2),
             () -> assertThat(items.get(0)).extracting(
                 ItemDto::ean,
                 ItemDto::generalName,
@@ -478,7 +479,7 @@ class ItemEndpointTest {
 
         // when
         MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/search")
-                .param("generalName", "Test")
+                .param("generalName", "spreads")
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();
@@ -490,7 +491,7 @@ class ItemEndpointTest {
         // then
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
-            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.size()).isEqualTo(2),
             () -> assertThat(items.get(0)).extracting(
                 ItemDto::ean,
                 ItemDto::generalName,
@@ -537,7 +538,7 @@ class ItemEndpointTest {
         itemService.create(validItemDto);
 
         // when
-        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/general-name/Test")
+        MvcResult mvcResult = this.mockMvc.perform(get(BASE_URI + "/general-name/spreads")
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
             .andDo(print())
             .andReturn();
@@ -549,7 +550,7 @@ class ItemEndpointTest {
         // then
         assertAll(
             () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
-            () -> assertThat(items.size()).isEqualTo(1),
+            () -> assertThat(items.size()).isEqualTo(2),
             () -> assertThat(items.get(0)).extracting(
                 ItemDto::ean,
                 ItemDto::generalName,
