@@ -33,6 +33,7 @@ export class AccountComponent implements OnInit {
   };
   accountForm: FormGroup;
   passwordForm: FormGroup;
+  flatForm: FormGroup;
   submitted = false;
   error = false;
   errorMessage = '';
@@ -52,6 +53,9 @@ export class AccountComponent implements OnInit {
     this.passwordForm = this.formBuilder.group({
       repeatPassword: ['', [Validators.minLength(8)]],
       newPassword: ['', [Validators.minLength(8)]],
+    });
+    this.flatForm = this.formBuilder.group({
+      flatName: [''],
     });
 
   }
@@ -108,6 +112,9 @@ export class AccountComponent implements OnInit {
           flatName: this.user.flatName,
           admin: this.user.admin
         });
+        this.flatForm.patchValue({
+          flatName: this.user.flatName
+        })
         // Fetch all other users
         this.authService.getUsers(this.user.id).subscribe({
           next: (users) => {
@@ -129,7 +136,7 @@ export class AccountComponent implements OnInit {
     this.submitted = true;
     const formValue = this.accountForm.value;
 
-      const userDetail: UserDetail = new UserDetail(this.user.id,this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,  this.accountForm.controls.email.value, null , this.user.password,this.accountForm.controls.admin.value, this.user.points);
+      const userDetail: UserDetail = new UserDetail(this.user.id,this.accountForm.controls.firstName.value,this.accountForm.controls.lastName.value,  this.accountForm.controls.email.value, this.user.flatName , this.user.password,this.accountForm.controls.admin.value, this.user.points);
       console.log(userDetail)
       this.authService.update(userDetail).subscribe({
         next: () => {
