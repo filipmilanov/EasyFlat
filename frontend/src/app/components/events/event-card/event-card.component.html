@@ -20,7 +20,7 @@
         </p>
       </div>
       <ng-container *ngFor="let label of event.labels; let last = last">
-        <span [style.color]="label.labelColour">{{ label.labelName }}</span>
+        <span style="font-weight: bold" [style.color]="label.labelColour">{{ label.labelName }}</span>
         <ng-container *ngIf="!last">,</ng-container>
       </ng-container>
     </div>

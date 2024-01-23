@@ -39,6 +39,7 @@ public class EventDataGenerator {
 
         EventLabel label = new EventLabel();
         label.setLabelName("party");
+        label.setLabelColour("#de1b17");
         labelRepository.save(label);
         List<EventLabel> labels = new ArrayList<>();
         labels.add(label);
