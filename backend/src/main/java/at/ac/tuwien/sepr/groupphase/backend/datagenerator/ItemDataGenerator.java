@@ -47,50 +47,151 @@ public class ItemDataGenerator {
         Unit pcs = unitRepository.findByName("pcs").orElseThrow();
         Unit g = unitRepository.findByName("g").orElseThrow();
         Unit ml = unitRepository.findByName("ml").orElseThrow();
+        Unit l = unitRepository.findByName("l").orElseThrow();
         DigitalStorage storage = new DigitalStorage();
         storage.setStorageId(1L);
 
         DigitalStorageItem digitalStorageItem1 = generateDigitalStorageItem(
-            "1234567890123",
-            "apples",
-            "Granny Smith Apples",
-            "Granny Smith",
-            1.0,
-            1.0,
+            null,
+            "fruits",
+            "Apples",
+            "",
+            10.0,
+            10.0,
             pcs,
-            LocalDate.now().plusDays(1),
-            "Granny Smith Apples",
+            LocalDate.now().plusDays(7),
+            "",
             "Billa",
             storage,
-            List.of("Apple")
+            List.of(
+                "Apple"
+            )
         );
 
         DigitalStorageItem digitalStorageItem2 = generateDigitalStorageItem(
-            "4311501468753",
-            "Junge Erbsen",
-            "Junge Erbsen - Edeka Bio - 1pcs",
-            "Edeka Bio",
-            450.0,
-            450.0,
-            g,
+            null,
+            "fruits",
+            "Bananas",
+            "",
+            8.0,
+            8.0,
+            pcs,
+            LocalDate.now().plusDays(2),
+            "",
+            "Billa",
+            storage,
+            List.of(
+                "Banana"
+            )
+        );
+
+        DigitalStorageItem digitalStorageItem3 = generateDigitalStorageItem(
+            null,
+            "fruits",
+            "Pears",
+            "",
+            3.0,
+            3.0,
+            pcs,
+            LocalDate.now().plusDays(3),
+            "",
+            "Hofer",
+            storage,
+            List.of(
+                "Pear"
+            )
+        );
+
+        DigitalStorageItem digitalStorageItem4 = generateDigitalStorageItem(
+            null,
+            "fruits",
+            "Grapes",
+            "",
+            20.0,
+            20.0,
+            pcs,
             LocalDate.now().plusMonths(3),
             "",
             "Billa",
             storage,
-            List.of("Erbsen")
+            List.of(
+                "Grape"
+            )
         );
 
-        DigitalStorageItem digitalStorageItem3 = generateDigitalStorageItem(
-            "7622300441937",
-            "Philadelphia",
-            "Philadelphia Original - Kraft - 150g",
-            "Kraft",
-            150.0,
-            150.0,
-            g,
-            LocalDate.now().plusMonths(3),
+        DigitalStorageItem digitalStorageItem5 = generateDigitalStorageItem(
+            null,
+            "fruits",
+            "Plums",
+            "",
+            2.0,
+            2.0,
+            pcs,
+            LocalDate.now().plusDays(10),
             "",
             "Billa",
+            storage,
+            List.of(
+                "Plum"
+            )
+        );
+
+        DigitalStorageItem digitalStorageItem6 = generateDigitalStorageItem(
+            null,
+            "vegetables",
+            "Avocados",
+            "Edeka Bio",
+            5.0,
+            5.0,
+            pcs,
+            LocalDate.now().plusMonths(6),
+            "",
+            "Hofer",
+            storage,
+            List.of("Avocado")
+        );
+
+        DigitalStorageItem digitalStorageItem7 = generateDigitalStorageItem(
+            null,
+            "vegetables",
+            "Tomatoes",
+            "",
+            8.0,
+            8.0,
+            pcs,
+            LocalDate.now().plusMonths(6),
+            "",
+            "Spar",
+            storage,
+            List.of("Tomatoes")
+        );
+
+        DigitalStorageItem digitalStorageItem8 = generateDigitalStorageItem(
+            null,
+            "vegetables",
+            "Pumpkin",
+            "",
+            1.0,
+            1.0,
+            pcs,
+            LocalDate.now().plusMonths(8),
+            "",
+            "Spar",
+            storage,
+            List.of("Tomatoes")
+        );
+
+        DigitalStorageItem digitalStorageItem9 = generateDigitalStorageItem(
+            "7622300441937",
+            "spreads",
+            "Philadelphia",
+            "Kraft",
+            55.0,
+            150.0,
+            g,
+            LocalDate.now().plusMonths(4),
+            "",
+            "Spar",
             storage,
             List.of(
                 "while milk",
@@ -101,17 +202,17 @@ public class ItemDataGenerator {
             )
         );
 
-        DigitalStorageItem digitalStorageItem4 = generateDigitalStorageAlwaysInStockItem(
+        DigitalStorageItem digitalStorageItem10 = generateDigitalStorageAlwaysInStockItem(
             "8076809513722",
-            "Sauce tomate au basilic",
-            "Pesto alla Genovese - Barilla - 190g",
+            "sauces",
+            "Tomatosauce",
             "Barilla",
-            190.0,
+            20.0,
             190.0,
             g,
-            LocalDate.now().plusMonths(3),
+            LocalDate.now().plusMonths(5),
             "",
-            "Billa",
+            "Hofer",
             storage,
             List.of(
                 "tomato pulp",
@@ -125,15 +226,15 @@ public class ItemDataGenerator {
             100L
         );
 
-        DigitalStorageItem digitalStorageItem5 = generateDigitalStorageItem(
+        DigitalStorageItem digitalStorageItem11 = generateDigitalStorageItem(
             "8076809513753",
-            "Sauce tomate au basilic",
-            "Pesto alla Genovese - Barilla - 190g",
+            "sauces",
+            "Tomatosauce",
             "Barilla",
-            190.0,
+            10.0,
             190.0,
             g,
-            LocalDate.now().plusMonths(3),
+            LocalDate.now().plusMonths(1),
             "",
             "Billa",
             storage,
@@ -148,10 +249,10 @@ public class ItemDataGenerator {
             )
         );
 
-        DigitalStorageItem digitalStorageItem6 = generateDigitalStorageAlwaysInStockItem(
+        DigitalStorageItem digitalStorageItem12 = generateDigitalStorageAlwaysInStockItem(
             "8076800195057",
-            "Noodles",
-            "Spaghetti - Barilla - 500g",
+            "noodles",
+            "Spaghetti",
             "Barilla",
             450.0,
             500.0,
@@ -164,20 +265,20 @@ public class ItemDataGenerator {
                 "durum wheat semolina",
                 "water"
             ),
-            150L
+            100L
         );
 
-        DigitalStorageItem digitalStorageItem7 = generateDigitalStorageAlwaysInStockItem(
+        DigitalStorageItem digitalStorageItem13 = generateDigitalStorageAlwaysInStockItem(
             "8076802085738",
-            "Noodles",
-            "Nudeln Penne Rigate N°73 - Barilla - 500g",
+            "noodles",
+            "Penne",
             "Barilla",
             500.0,
             500.0,
             g,
-            LocalDate.now().plusMonths(3),
+            LocalDate.now().plusMonths(7),
             "",
-            "Billa",
+            "Spar",
             storage,
             List.of(
                 "wheat semolina",
@@ -186,14 +287,14 @@ public class ItemDataGenerator {
             150L
         );
 
-        DigitalStorageItem digitalStorageItem8 = generateDigitalStorageItem(
+        DigitalStorageItem digitalStorageItem14 = generateDigitalStorageItem(
             null,
-            "Milk",
-            "Milch 3,5% Fett - Spar - 1l",
+            "milk",
+            "Milch",
             "Spar",
-            200.0,
-            1000.0,
-            ml,
+            2.0,
+            2.0,
+            l,
             LocalDate.now().plusMonths(3),
             "",
             "Billa",
@@ -203,10 +304,10 @@ public class ItemDataGenerator {
             )
         );
 
-        DigitalStorageItem digitalStorageItem9 = generateDigitalStorageItem(
+        DigitalStorageItem digitalStorageItem15 = generateDigitalStorageItem(
             null,
-            "Milk",
-            "Almonddrink - Alpro - 1l",
+            "milk",
+            "Almond milk",
             "alpro",
             1000.0,
             1000.0,
@@ -227,12 +328,12 @@ public class ItemDataGenerator {
             )
         );
 
-        DigitalStorageItem digitalStorageItem10 = generateDigitalStorageItem(
+        DigitalStorageItem digitalStorageItem16 = generateDigitalStorageItem(
             "5411188103387",
-            "Yogurt",
-            "Alpro Vanille - 500 g",
+            "desserts",
+            "Vanilla Yogurt",
             "alpro",
-            250.0,
+            500.0,
             500.0,
             g,
             LocalDate.now().plusMonths(3),
@@ -255,17 +356,17 @@ public class ItemDataGenerator {
             )
         );
 
-        DigitalStorageItem digitalStorageItem11 = generateDigitalStorageItem(
+        DigitalStorageItem digitalStorageItem17 = generateDigitalStorageItem(
             "8000500037560",
-            "Sweets",
-            "Kinder Schokolade - 100 g",
+            "sweets",
+            "Kinder Schokolade",
             "Ferrero",
             100.0,
             100.0,
             g,
             LocalDate.now().plusMonths(3),
             "",
-            "Spar",
+            "Hofer",
             storage,
             List.of(
                 "fine milk chocolate 40% (sugar, whole milk powder, cocoa butter, cocoa mass, emulsifier lecithin (soy), vanillin)",
@@ -278,20 +379,375 @@ public class ItemDataGenerator {
             )
         );
 
+        DigitalStorageItem digitalStorageItem18 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "fruits",
+            "Pineapple",
+            "San Lucar",
+            300.0,
+            300.0,
+            g,
+            LocalDate.now().plusDays(3),
+            "",
+            "Billa",
+            storage,
+            List.of(
+                "pineapple"
+            ),
+            150L
+        );
+
+        DigitalStorageItem digitalStorageItem19 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "fruits",
+            "Raspberries",
+            "San Lucar",
+            200.0,
+            200.0,
+            g,
+            LocalDate.now().plusDays(5),
+            "",
+            "Billa",
+            storage,
+            List.of(
+                "raspberries"
+            ),
+            150L
+        );
+
+        DigitalStorageItem digitalStorageItem20 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "meat",
+            "Chicken",
+            "Bio Gasthof",
+            400.0,
+            400.0,
+            g,
+            LocalDate.now().plusDays(3),
+            "",
+            "Billa",
+            storage,
+            List.of(
+                "chicken"
+            ),
+            200L
+        );
+
+        DigitalStorageItem digitalStorageItem21 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "meat",
+            "Beef",
+            "Bio Gasthof",
+            350.0,
+            350.0,
+            g,
+            LocalDate.now().plusDays(6),
+            "",
+            "Billa",
+            storage,
+            List.of(
+                "beef"
+            ),
+            250L
+        );
+
+        DigitalStorageItem digitalStorageItem22 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "bread",
+            "White bread",
+            "",
+            7.0,
+            20.0,
+            pcs,
+            LocalDate.now().plusDays(8),
+            "",
+            "Hofer",
+            storage,
+            List.of(
+                "yeast",
+                "salt",
+                "sugar",
+                "oil",
+                "flour"
+            ),
+            5L
+        );
+
+        DigitalStorageItem digitalStorageItem23 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "bread",
+            "Wholewheat bread",
+            "",
+            16.0,
+            45.0,
+            pcs,
+            LocalDate.now().plusDays(4),
+            "",
+            "Hofer",
+            storage,
+            List.of(
+                "yeast",
+                "salt",
+                "sugar",
+                "oil",
+                "flour"
+            ),
+            3L
+        );
+
+        DigitalStorageItem digitalStorageItem24 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "sugar",
+            "White sugar",
+            "",
+            400.0,
+            400.0,
+            g,
+            LocalDate.now().plusDays(4),
+            "",
+            "Hofer",
+            storage,
+            List.of(
+                "sugar",
+                "sugar cane"
+            ),
+            100L
+        );
+
+        DigitalStorageItem digitalStorageItem25 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "sugar",
+            "Brown sugar",
+            "",
+            600.0,
+            600.0,
+            g,
+            LocalDate.now().plusDays(4),
+            "",
+            "Billa",
+            storage,
+            List.of(
+                "sugar",
+                "sugar cane"
+            ),
+            100L
+        );
+
+        DigitalStorageItem digitalStorageItem26 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "flour",
+            "Flour",
+            "",
+            650.0,
+            650.0,
+            g,
+            LocalDate.now().plusMonths(6),
+            "",
+            "Billa",
+            storage,
+            List.of(
+                "flour"
+            ),
+            200L
+        );
+
+        DigitalStorageItem digitalStorageItem27 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "onion",
+            "Onions",
+            "",
+            2.0,
+            7.0,
+            pcs,
+            LocalDate.now().plusMonths(6),
+            "",
+            "Billa",
+            storage,
+            List.of(
+                "onions"
+            ),
+            1L
+        );
+
+        DigitalStorageItem digitalStorageItem28 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "garlic",
+            "Garlic",
+            "",
+            5.0,
+            12.0,
+            pcs,
+            LocalDate.now().plusMonths(6),
+            "",
+            "Spar",
+            storage,
+            List.of(
+                "garlic"
+            ),
+            3L
+        );
+
+        DigitalStorageItem digitalStorageItem29 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "vegetables",
+            "Potatoes",
+            "",
+            350.0,
+            450.0,
+            pcs,
+            LocalDate.now().plusMonths(6),
+            "",
+            "Billa",
+            storage,
+            List.of(
+                "potatoes"
+            ),
+            100L
+        );
+
+        DigitalStorageItem digitalStorageItem30 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "vegetables",
+            "Erbsen",
+            "",
+            500.0,
+            500.0,
+            g,
+            LocalDate.now().plusMonths(9),
+            "",
+            "Spar",
+            storage,
+            List.of(
+                "erbsen"
+            ),
+            50L
+        );
+
+        DigitalStorageItem digitalStorageItem31 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "oil",
+            "Oil",
+            "",
+            700.0,
+            800.0,
+            g,
+            LocalDate.now().plusMonths(9),
+            "",
+            "Spar",
+            storage,
+            List.of(
+                "oil"
+            ),
+            200L
+        );
+
+        DigitalStorageItem digitalStorageItem32 = generateDigitalStorageAlwaysInStockItem(
+            null,
+            "vinegar",
+            "Vinegar",
+            "",
+            500.0,
+            500.0,
+            g,
+            LocalDate.now().plusMonths(9),
+            "",
+            "Hofer",
+            storage,
+            List.of(
+                "vinegar"
+            ),
+            50L
+        );
+
+        DigitalStorageItem digitalStorageItem33 = generateDigitalStorageItem(
+            null,
+            "mushrooms",
+            "Mushrooms",
+            "",
+            400.0,
+            400.0,
+            g,
+            LocalDate.now().plusMonths(3),
+            "",
+            "Billa",
+            storage,
+            List.of(
+                "mushrooms"
+            )
+        );
+
+        DigitalStorageItem digitalStorageItem34 = generateDigitalStorageItem(
+            null,
+            "salt",
+            "Salt",
+            "",
+            600.0,
+            600.0,
+            g,
+            LocalDate.now().plusMonths(8),
+            "",
+            "Billa",
+            storage,
+            List.of(
+                "salt"
+            )
+        );
+
+        DigitalStorageItem digitalStorageItem35 = generateDigitalStorageItem(
+            null,
+            "pepper",
+            "Pepper",
+            "",
+            500.0,
+            500.0,
+            g,
+            LocalDate.now().plusMonths(8),
+            "",
+            "Spar",
+            storage,
+            List.of(
+                "pepper"
+            )
+        );
 
         LOGGER.debug("saving digitalStorageItem {}", digitalStorageItem1);
-        itemRepository.saveAll(List.of(
+        itemRepository.saveAll(
+            List.of(
                 digitalStorageItem1,
                 digitalStorageItem2,
                 digitalStorageItem3,
                 digitalStorageItem4,
                 digitalStorageItem5,
                 digitalStorageItem6,
-            digitalStorageItem7,
-            digitalStorageItem8,
-            digitalStorageItem9,
-            digitalStorageItem10,
-            digitalStorageItem11
+                digitalStorageItem7,
+                digitalStorageItem8,
+                digitalStorageItem9,
+                digitalStorageItem10,
+                digitalStorageItem11,
+                digitalStorageItem12,
+                digitalStorageItem13,
+                digitalStorageItem14,
+                digitalStorageItem15,
+                digitalStorageItem16,
+                digitalStorageItem17,
+                digitalStorageItem18,
+                digitalStorageItem19,
+                digitalStorageItem20,
+                digitalStorageItem21,
+                digitalStorageItem22,
+                digitalStorageItem23,
+                digitalStorageItem24,
+                digitalStorageItem25,
+                digitalStorageItem26,
+                digitalStorageItem27,
+                digitalStorageItem28,
+                digitalStorageItem29,
+                digitalStorageItem30,
+                digitalStorageItem31,
+                digitalStorageItem32,
+                digitalStorageItem33,
+                digitalStorageItem34,
+                digitalStorageItem35
             )
         );
 
