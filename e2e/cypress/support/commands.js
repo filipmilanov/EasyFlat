@@ -8,17 +8,9 @@ Cypress.Commands.add('loginAdmin', () => {
     })
 })
 
-Cypress.Commands.add('createMessage', (msg) => {
-    cy.fixture('settings').then(settings => {
-        cy.contains('a', 'Message');
-        cy.contains('button', 'Add message').click();
-        cy.get('input[name="title"]').type('title' +  msg);
-        cy.get('textarea[name="summary"]').type('summary' +  msg);
-        cy.get('textarea[name="text"]').type('text' +  msg);
-        cy.get('button[id="add-msg"]').click();
-        cy.get('button[id="close-modal-btn"]').click();
+Cypress.Commands.add('resetDb', () => {
+    // Your logic to reset the database goes here
+    // For example, you can make API calls or interact with your backend to reset the database.
 
-        cy.contains('title' +  msg).should('be.visible');
-        cy.contains('summary' +  msg).should('be.visible');
-    })
-})
+    cy.log('Resetting the database...');
+});

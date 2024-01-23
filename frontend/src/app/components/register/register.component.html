@@ -15,7 +15,7 @@
               <label for="firstName">First name <span style="color: red">*</span></label>
               <input data-cy="first-name-input" type="text" name="firstName" formControlName="firstName" class="form-control" id="firstName"
                      aria-describedby="firstNameHelp" placeholder="Enter First name">
-              <div *ngIf="submitted && registerForm.controls.firstName.errors" class="error">
+              <div data-cy="error-first-name" *ngIf="submitted && registerForm.controls.firstName.errors" class="error">
 
               </div>
             </div>
@@ -24,7 +24,7 @@
               <label for="lastName">Last name <span style="color: red">*</span></label>
               <input data-cy="last-name-input" type="text" name="lastName" formControlName="lastName" class="form-control" id="lastName"
                      aria-describedby="lastNameHelp" placeholder="Enter Last name">
-              <div *ngIf="submitted && registerForm.controls.lastName.errors" class="error">
+              <div data-cy="error-last-name" *ngIf="submitted && registerForm.controls.lastName.errors" class="error">
 
               </div>
             </div>
@@ -33,7 +33,7 @@
               <label for="inputEmail">Email <span style="color: red">*</span></label>
               <input data-cy="email-input" type="text" name="email" formControlName="email" class="form-control" id="inputEmail"
                      aria-describedby="emailHelp" placeholder="Enter Email">
-              <div *ngIf="submitted && registerForm.controls.email.errors" class="error">
+              <div data-cy="error-email" *ngIf="submitted && registerForm.controls.email.errors" class="error">
 
               </div>
             </div>
@@ -42,12 +42,12 @@
               <label for="password">Password <span style="color: red">*</span></label>
               <input data-cy="password-input" type="password" name="password" formControlName="password" class="form-control" id="password"
                      placeholder="Password">
-              <div *ngIf="submitted && registerForm.controls.password.errors" class="error"></div>
+              <div data-cy="error-password" *ngIf="submitted && registerForm.controls.password.errors" class="error"></div>
 
               <label for="password2">Repeat password <span style="color: red">*</span></label>
-              <input type="password" name="password2" formControlName="password2" class="form-control" id="password2"
+              <input data-cy="password-repeat-input" type="password" name="password2" formControlName="password2" class="form-control" id="password2"
                      placeholder="Repeat password">
-              <div *ngIf="submitted && registerForm.controls.password.errors" class="error">
+              <div data-cy="error-password-repeat" *ngIf="submitted && registerForm.controls.password.errors" class="error">
 
               </div>
             </div>
