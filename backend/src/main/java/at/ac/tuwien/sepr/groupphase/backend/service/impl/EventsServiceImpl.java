@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.EventLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ItemLabel;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthenticationException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.AuthorizationException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventsRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.AuthService;
@@ -125,7 +126,7 @@ public class EventsServiceImpl implements EventsService {
                 throw new AuthorizationException("User does not have access to delete this event", new ArrayList<>());
             }
         } else {
-            throw new EntityNotFoundException("Event not found with id: " + id);
+            throw new NotFoundException("Event not found with id: " + id);
         }
     }
 
