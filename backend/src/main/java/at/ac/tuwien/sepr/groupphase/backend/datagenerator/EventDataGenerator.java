@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.EventLabel;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SharedFlat;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventLabelRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventsRepository;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.DependsOn;
@@ -30,6 +31,7 @@ public class EventDataGenerator {
         this.labelRepository = labelRepository;
     }
 
+    @PostConstruct
     public void generateEvents() {
 
         SharedFlat sharedFlat = new SharedFlat();
@@ -47,7 +49,6 @@ public class EventDataGenerator {
         test1.setSharedFlat(sharedFlat);
         test1.setStartTime(LocalTime.of(16, 0));
         test1.setEndTime(LocalTime.of(17, 0));
-        test1.setEndTime(LocalTime.now().plusHours(2));
         test1.setDate(LocalDate.now().plusDays(7)); // Set a date one week from now
 
         Event test2 = new Event();

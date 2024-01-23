@@ -33,6 +33,7 @@ public class UnitDataGenerator {
 
         UnitDto ml = new UnitDto("ml", 10L, Set.of());
         UnitDto l = new UnitDto("l", 1000L, Set.of(ml));
+        UnitDto liter = new UnitDto("liter", 1000L, Set.of(ml));
 
 
         UnitDto cups = new UnitDto("cups", 125L, Set.of(g));
@@ -40,13 +41,20 @@ public class UnitDataGenerator {
 
 
         UnitDto pcs = new UnitDto("pcs", null, Set.of());
-        UnitDto tablespoons = new UnitDto("tablespoons", 15L, Set.of(ml));
-        UnitDto tbsp = new UnitDto("tbsp", 15L, Set.of(ml));
-        UnitDto tsp = new UnitDto("tsp", 5L, Set.of(ml));
-        UnitDto teaspoon = new UnitDto("teaspoon", 5L, Set.of(ml));
+        UnitDto tablespoons = new UnitDto("tablespoons", 15L, Set.of(g));
+        UnitDto tbsp = new UnitDto("tbsp", 15L, Set.of(g));
+        UnitDto tsp = new UnitDto("tsp", 5L, Set.of(g));
+        UnitDto teaspoon = new UnitDto("teaspoon", 5L, Set.of(g));
+        UnitDto scoops = new UnitDto("scoops", 15L, Set.of(g));
+
+        UnitDto ounce = new UnitDto("ounce", 30L, Set.of(g));
+        UnitDto ounces = new UnitDto("ounces", 30L, Set.of(g));
+        UnitDto oz = new UnitDto("oz", 30L, Set.of(g));
+
 
         UnitDto pound = new UnitDto("pound", 455L, Set.of(g));
         UnitDto gallon = new UnitDto("gallon", 3785L, Set.of(ml));
+
 
 
         unitService.create(g);
@@ -64,6 +72,11 @@ public class UnitDataGenerator {
         unitService.create(cups);
         unitService.create(teaspoon);
         unitService.create(tsp);
+        unitService.create(liter);
+        unitService.create(scoops);
+        unitService.create(ounces);
+        unitService.create(oz);
+        unitService.create(ounce);
     }
 
 
